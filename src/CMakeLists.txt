@@ -17,6 +17,7 @@ set(DTLS_PROTOCOL_SOURCES
     protocol/record.cpp
     protocol/record_layer.cpp
     protocol/handshake.cpp
+    protocol/message_layer.cpp
 )
 
 # Crypto layer sources  
