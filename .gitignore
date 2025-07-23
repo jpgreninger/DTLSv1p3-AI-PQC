@@ -11,6 +11,28 @@ out/
 *.dylib
 *.a
 *.lib
+*.d
+*.gch
+*.pch
+
+# CMake files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps/
+
+# Test artifacts
+*.gcov
+*.gcda
+*.gcno
+coverage/
+test_results/
+
+# Generated configuration
+include/dtls/config.h
 
 # IDE files
 .vscode/
@@ -43,4 +65,15 @@ transcript
 
 # Documentation build artifacts
 docs/_build/
+docs/html/
+docs/latex/
 *.pdf.bak
+
+# Benchmark results
+benchmarks/results/
+
+# Package files
+*.deb
+*.rpm
+*.tar.gz
+*.zip
