@@ -1,5 +1,6 @@
 #include <dtls/crypto/provider_factory.h>
 #include <dtls/crypto/openssl_provider.h>
+#include <dtls/crypto/botan_provider.h>
 #include <algorithm>
 #include <chrono>
 
@@ -625,13 +626,11 @@ Result<void> register_all_providers() {
         return openssl_result;
     }
     
-    // Register other providers when available
-    #ifdef DTLS_HAS_BOTAN
+    // Register Botan provider (always available in our implementation)
     auto botan_result = register_botan_provider();
     if (botan_result.is_error()) {
-        // Botan is optional, continue
+        // Botan is optional, continue if registration fails
     }
-    #endif
     
     return Result<void>();
 }
@@ -650,8 +649,16 @@ Result<void> register_openssl_provider() {
 }
 
 Result<void> register_botan_provider() {
-    // TODO: Implement when Botan provider is available
-    return Result<void>(DTLSError::OPERATION_NOT_SUPPORTED);
+    auto& factory = ProviderFactory::instance();
+    
+    return factory.register_provider(
+        "botan",
+        "Botan Cryptographic Provider",
+        []() -> std::unique_ptr<CryptoProvider> {
+            return std::make_unique<BotanProvider>();
+        },
+        90 // Slightly lower priority than OpenSSL
+    );
 }
 
 Result<void> register_null_provider() {

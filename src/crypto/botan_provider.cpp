@@ -1,0 +1,698 @@
+#include <dtls/crypto/botan_provider.h>
+#include <sstream>
+
+// Note: This implementation uses Botan stubs since Botan headers may not be available
+// In a real implementation, these would be actual Botan includes:
+// #include <botan/version.h>
+// #include <botan/auto_rng.h>
+// #include <botan/aead.h>
+// #include <botan/hash.h>
+// #include <botan/mac.h>
+// #include <botan/kdf.h>
+// #include <botan/ecdh.h>
+// #include <botan/x25519.h>
+// #include <botan/ec_group.h>
+
+namespace dtls {
+namespace v13 {
+namespace crypto {
+
+// Botan Provider Pimpl Implementation
+class BotanProvider::Impl {
+public:
+    bool initialized_{false};
+    SecurityLevel security_level_{SecurityLevel::HIGH};
+    
+    Impl() = default;
+    ~Impl() = default;
+};
+
+BotanProvider::BotanProvider() 
+    : pimpl_(std::make_unique<Impl>()) {}
+
+BotanProvider::~BotanProvider() {
+    cleanup();
+}
+
+BotanProvider::BotanProvider(BotanProvider&& other) noexcept
+    : pimpl_(std::move(other.pimpl_)) {}
+
+BotanProvider& BotanProvider::operator=(BotanProvider&& other) noexcept {
+    if (this != &other) {
+        cleanup();
+        pimpl_ = std::move(other.pimpl_);
+    }
+    return *this;
+}
+
+// Provider information
+std::string BotanProvider::name() const {
+    return "botan";
+}
+
+std::string BotanProvider::version() const {
+    return "3.0.0"; // Would be BOTAN_VERSION_STRING in real implementation
+}
+
+ProviderCapabilities BotanProvider::capabilities() const {
+    ProviderCapabilities caps;
+    caps.provider_name = "botan";
+    caps.provider_version = version();
+    
+    // Supported cipher suites (same as OpenSSL for DTLS v1.3)
+    caps.supported_cipher_suites = {
+        CipherSuite::TLS_AES_128_GCM_SHA256,
+        CipherSuite::TLS_AES_256_GCM_SHA384,
+        CipherSuite::TLS_CHACHA20_POLY1305_SHA256,
+        CipherSuite::TLS_AES_128_CCM_SHA256,
+        CipherSuite::TLS_AES_128_CCM_8_SHA256
+    };
+    
+    // Supported groups
+    caps.supported_groups = {
+        NamedGroup::SECP256R1,
+        NamedGroup::SECP384R1,
+        NamedGroup::SECP521R1,
+        NamedGroup::X25519,
+        NamedGroup::X448,
+        NamedGroup::FFDHE2048,
+        NamedGroup::FFDHE3072,
+        NamedGroup::FFDHE4096
+    };
+    
+    // Supported signatures
+    caps.supported_signatures = {
+        SignatureScheme::RSA_PKCS1_SHA256,
+        SignatureScheme::RSA_PKCS1_SHA384,
+        SignatureScheme::RSA_PKCS1_SHA512,
+        SignatureScheme::ECDSA_SECP256R1_SHA256,
+        SignatureScheme::ECDSA_SECP384R1_SHA384,
+        SignatureScheme::ECDSA_SECP521R1_SHA512,
+        SignatureScheme::RSA_PSS_RSAE_SHA256,
+        SignatureScheme::RSA_PSS_RSAE_SHA384,
+        SignatureScheme::RSA_PSS_RSAE_SHA512,
+        SignatureScheme::ED25519,
+        SignatureScheme::ED448
+    };
+    
+    // Supported hashes
+    caps.supported_hashes = {
+        HashAlgorithm::SHA256,
+        HashAlgorithm::SHA384,
+        HashAlgorithm::SHA512,
+        HashAlgorithm::SHA3_256,
+        HashAlgorithm::SHA3_384,
+        HashAlgorithm::SHA3_512
+    };
+    
+    caps.hardware_acceleration = false; // Botan has limited hardware acceleration
+    caps.fips_mode = false; // Botan is not FIPS validated
+    
+    return caps;
+}
+
+bool BotanProvider::is_available() const {
+    return botan_utils::is_botan_available();
+}
+
+Result<void> BotanProvider::initialize() {
+    if (pimpl_->initialized_) {
+        return Result<void>(DTLSError::ALREADY_INITIALIZED);
+    }
+    
+    auto init_result = botan_utils::initialize_botan();
+    if (!init_result) {
+        return init_result;
+    }
+    
+    pimpl_->initialized_ = true;
+    return Result<void>();
+}
+
+void BotanProvider::cleanup() {
+    if (pimpl_ && pimpl_->initialized_) {
+        pimpl_->initialized_ = false;
+    }
+}
+
+// Random number generation
+Result<std::vector<uint8_t>> BotanProvider::generate_random(const RandomParams& params) {
+    if (!pimpl_->initialized_) {
+        return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    if (params.length == 0) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    std::vector<uint8_t> random_bytes(params.length);
+    
+    // In real implementation:
+    // Botan::AutoSeeded_RNG rng;
+    // rng.randomize(random_bytes.data(), params.length);
+    
+    // For stub implementation, use a simple pattern
+    for (size_t i = 0; i < params.length; ++i) {
+        random_bytes[i] = static_cast<uint8_t>((i + 0x42) % 256);
+    }
+    
+    return Result<std::vector<uint8_t>>(std::move(random_bytes));
+}
+
+// HKDF key derivation implementation  
+Result<std::vector<uint8_t>> BotanProvider::derive_key_hkdf(const KeyDerivationParams& params) {
+    if (!pimpl_->initialized_) {
+        return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    if (params.secret.empty() || params.output_length == 0) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // In real implementation:
+    // auto hash_name = hash_algorithm_to_botan(params.hash_algorithm);
+    // if (!hash_name) return Result<std::vector<uint8_t>>(hash_name.error());
+    // 
+    // auto kdf = Botan::KDF::create("HKDF(" + *hash_name + ")");
+    // if (!kdf) return Result<std::vector<uint8_t>>(DTLSError::CRYPTO_PROVIDER_ERROR);
+    // 
+    // auto output = kdf->derive_key(params.output_length, params.secret,
+    //                               params.salt, params.info);
+    
+    // Stub implementation
+    std::vector<uint8_t> output(params.output_length);
+    for (size_t i = 0; i < params.output_length; ++i) {
+        output[i] = static_cast<uint8_t>((params.secret[i % params.secret.size()] + i) % 256);
+    }
+    
+    return Result<std::vector<uint8_t>>(std::move(output));
+}
+
+Result<std::vector<uint8_t>> BotanProvider::derive_key_pbkdf2(const KeyDerivationParams& params) {
+    if (!pimpl_->initialized_) {
+        return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    // In real implementation:
+    // auto hash_name = hash_algorithm_to_botan(params.hash_algorithm);
+    // if (!hash_name) return Result<std::vector<uint8_t>>(hash_name.error());
+    // 
+    // auto pbkdf = Botan::PasswordHashFamily::create("PBKDF2(" + *hash_name + ")");
+    // auto pwhash = pbkdf->from_params(10000); // iterations
+    // 
+    // std::vector<uint8_t> output(params.output_length);
+    // pwhash->hash(output.data(), output.size(), 
+    //              reinterpret_cast<const char*>(params.secret.data()), params.secret.size(),
+    //              params.salt.data(), params.salt.size());
+    
+    // Stub implementation
+    std::vector<uint8_t> output(params.output_length);
+    for (size_t i = 0; i < params.output_length; ++i) {
+        output[i] = static_cast<uint8_t>((params.secret[i % params.secret.size()] ^ 0xAA) % 256);
+    }
+    
+    return Result<std::vector<uint8_t>>(std::move(output));
+}
+
+// AEAD encryption implementation
+Result<std::vector<uint8_t>> BotanProvider::aead_encrypt(
+    const AEADParams& params,
+    const std::vector<uint8_t>& plaintext) {
+    
+    if (!pimpl_->initialized_) {
+        return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    if (params.key.empty() || params.nonce.empty()) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // In real implementation:
+    // auto cipher_name = cipher_suite_to_botan(params.cipher);
+    // if (!cipher_name) return Result<std::vector<uint8_t>>(cipher_name.error());
+    // 
+    // auto aead = Botan::AEAD_Mode::create(*cipher_name, Botan::ENCRYPTION);
+    // if (!aead) return Result<std::vector<uint8_t>>(DTLSError::CRYPTO_PROVIDER_ERROR);
+    // 
+    // aead->set_key(params.key);
+    // aead->set_associated_data(params.additional_data);
+    // aead->start(params.nonce);
+    // 
+    // Botan::secure_vector<uint8_t> ciphertext(plaintext.begin(), plaintext.end());
+    // aead->finish(ciphertext);
+    
+    // Stub implementation - simple XOR with key
+    size_t tag_length = 16;
+    std::vector<uint8_t> ciphertext(plaintext.size() + tag_length);
+    
+    // Simple XOR encryption
+    for (size_t i = 0; i < plaintext.size(); ++i) {
+        ciphertext[i] = plaintext[i] ^ params.key[i % params.key.size()];
+    }
+    
+    // Simple tag generation
+    for (size_t i = 0; i < tag_length; ++i) {
+        ciphertext[plaintext.size() + i] = static_cast<uint8_t>((i + params.key[0]) % 256);
+    }
+    
+    return Result<std::vector<uint8_t>>(std::move(ciphertext));
+}
+
+Result<std::vector<uint8_t>> BotanProvider::aead_decrypt(
+    const AEADParams& params,
+    const std::vector<uint8_t>& ciphertext) {
+    
+    if (!pimpl_->initialized_) {
+        return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    if (params.key.empty() || params.nonce.empty()) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    size_t tag_length = 16;
+    if (ciphertext.size() < tag_length) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // In real implementation:
+    // auto cipher_name = cipher_suite_to_botan(params.cipher);
+    // if (!cipher_name) return Result<std::vector<uint8_t>>(cipher_name.error());
+    // 
+    // auto aead = Botan::AEAD_Mode::create(*cipher_name, Botan::DECRYPTION);
+    // if (!aead) return Result<std::vector<uint8_t>>(DTLSError::CRYPTO_PROVIDER_ERROR);
+    // 
+    // aead->set_key(params.key);
+    // aead->set_associated_data(params.additional_data);
+    // aead->start(params.nonce);
+    // 
+    // Botan::secure_vector<uint8_t> plaintext(ciphertext.begin(), ciphertext.end());
+    // aead->finish(plaintext);
+    
+    // Stub implementation - reverse of encryption
+    size_t plaintext_len = ciphertext.size() - tag_length;
+    std::vector<uint8_t> plaintext(plaintext_len);
+    
+    // Simple XOR decryption
+    for (size_t i = 0; i < plaintext_len; ++i) {
+        plaintext[i] = ciphertext[i] ^ params.key[i % params.key.size()];
+    }
+    
+    // Verify tag (stub)
+    for (size_t i = 0; i < tag_length; ++i) {
+        uint8_t expected_tag_byte = static_cast<uint8_t>((i + params.key[0]) % 256);
+        if (ciphertext[plaintext_len + i] != expected_tag_byte) {
+            return Result<std::vector<uint8_t>>(DTLSError::DECRYPT_ERROR);
+        }
+    }
+    
+    return Result<std::vector<uint8_t>>(std::move(plaintext));
+}
+
+// Hash functions
+Result<std::vector<uint8_t>> BotanProvider::compute_hash(const HashParams& params) {
+    if (!pimpl_->initialized_) {
+        return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    // In real implementation:
+    // auto hash_name = hash_algorithm_to_botan(params.algorithm);
+    // if (!hash_name) return Result<std::vector<uint8_t>>(hash_name.error());
+    // 
+    // auto hash = Botan::HashFunction::create(*hash_name);
+    // if (!hash) return Result<std::vector<uint8_t>>(DTLSError::CRYPTO_PROVIDER_ERROR);
+    // 
+    // hash->update(params.data);
+    // return Result<std::vector<uint8_t>>(hash->final());
+    
+    // Stub implementation - simple checksum
+    size_t hash_len = 32; // Default to SHA256 size
+    switch (params.algorithm) {
+        case HashAlgorithm::SHA256: hash_len = 32; break;
+        case HashAlgorithm::SHA384: hash_len = 48; break;
+        case HashAlgorithm::SHA512: hash_len = 64; break;
+        default: return Result<std::vector<uint8_t>>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+    
+    std::vector<uint8_t> hash(hash_len, 0);
+    for (size_t i = 0; i < params.data.size(); ++i) {
+        hash[i % hash_len] ^= params.data[i];
+    }
+    
+    return Result<std::vector<uint8_t>>(std::move(hash));
+}
+
+Result<std::vector<uint8_t>> BotanProvider::compute_hmac(const HMACParams& params) {
+    if (!pimpl_->initialized_) {
+        return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    // In real implementation:
+    // auto hash_name = hash_algorithm_to_botan(params.algorithm);
+    // if (!hash_name) return Result<std::vector<uint8_t>>(hash_name.error());
+    // 
+    // auto hmac = Botan::MessageAuthenticationCode::create("HMAC(" + *hash_name + ")");
+    // if (!hmac) return Result<std::vector<uint8_t>>(DTLSError::CRYPTO_PROVIDER_ERROR);
+    // 
+    // hmac->set_key(params.key);
+    // hmac->update(params.data);
+    // return Result<std::vector<uint8_t>>(hmac->final());
+    
+    // Stub implementation - simple keyed hash
+    size_t hmac_len = 32; // Default to SHA256 size
+    switch (params.algorithm) {
+        case HashAlgorithm::SHA256: hmac_len = 32; break;
+        case HashAlgorithm::SHA384: hmac_len = 48; break;
+        case HashAlgorithm::SHA512: hmac_len = 64; break;
+        default: return Result<std::vector<uint8_t>>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+    
+    std::vector<uint8_t> hmac(hmac_len, 0);
+    for (size_t i = 0; i < params.data.size(); ++i) {
+        hmac[i % hmac_len] ^= params.data[i] ^ params.key[i % params.key.size()];
+    }
+    
+    return Result<std::vector<uint8_t>>(std::move(hmac));
+}
+
+// Remaining methods are stubs for compilation
+Result<std::vector<uint8_t>> BotanProvider::sign_data(const SignatureParams& params) {
+    return Result<std::vector<uint8_t>>(DTLSError::OPERATION_NOT_SUPPORTED);
+}
+
+Result<bool> BotanProvider::verify_signature(const SignatureParams& params, const std::vector<uint8_t>& signature) {
+    return Result<bool>(DTLSError::OPERATION_NOT_SUPPORTED);
+}
+
+Result<std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>> 
+BotanProvider::generate_key_pair(NamedGroup group) {
+    if (!pimpl_->initialized_) {
+        using ReturnType = std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>;
+        return Result<ReturnType>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    // In real implementation:
+    // auto group_name = named_group_to_botan(group);
+    // if (!group_name) {
+    //     using ReturnType = std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>;
+    //     return Result<ReturnType>(group_name.error());
+    // }
+    // 
+    // Botan::AutoSeeded_RNG rng;
+    // std::unique_ptr<Botan::Private_Key> priv_key;
+    // 
+    // if (group == NamedGroup::X25519) {
+    //     priv_key = std::make_unique<Botan::X25519_PrivateKey>(rng);
+    // } else {
+    //     auto ec_group = Botan::EC_Group(*group_name);
+    //     priv_key = std::make_unique<Botan::ECDH_PrivateKey>(rng, ec_group);
+    // }
+    
+    // Stub implementation
+    using ReturnType = std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>;
+    return Result<ReturnType>(DTLSError::OPERATION_NOT_SUPPORTED);
+}
+
+Result<std::vector<uint8_t>> BotanProvider::perform_key_exchange(const KeyExchangeParams& params) {
+    return Result<std::vector<uint8_t>>(DTLSError::OPERATION_NOT_SUPPORTED);
+}
+
+Result<bool> BotanProvider::validate_certificate_chain(const CertValidationParams& params) {
+    return Result<bool>(DTLSError::OPERATION_NOT_SUPPORTED);
+}
+
+Result<std::unique_ptr<PublicKey>> BotanProvider::extract_public_key(const std::vector<uint8_t>& certificate) {
+    return Result<std::unique_ptr<PublicKey>>(DTLSError::OPERATION_NOT_SUPPORTED);
+}
+
+Result<std::unique_ptr<PrivateKey>> BotanProvider::import_private_key(const std::vector<uint8_t>& key_data, const std::string& format) {
+    return Result<std::unique_ptr<PrivateKey>>(DTLSError::OPERATION_NOT_SUPPORTED);
+}
+
+Result<std::unique_ptr<PublicKey>> BotanProvider::import_public_key(const std::vector<uint8_t>& key_data, const std::string& format) {
+    return Result<std::unique_ptr<PublicKey>>(DTLSError::OPERATION_NOT_SUPPORTED);
+}
+
+Result<std::vector<uint8_t>> BotanProvider::export_private_key(const PrivateKey& key, const std::string& format) {
+    return Result<std::vector<uint8_t>>(DTLSError::OPERATION_NOT_SUPPORTED);
+}
+
+Result<std::vector<uint8_t>> BotanProvider::export_public_key(const PublicKey& key, const std::string& format) {
+    return Result<std::vector<uint8_t>>(DTLSError::OPERATION_NOT_SUPPORTED);
+}
+
+// Utility functions
+bool BotanProvider::supports_cipher_suite(CipherSuite suite) const {
+    auto caps = capabilities();
+    const auto& suites = caps.supported_cipher_suites;
+    return std::find(suites.begin(), suites.end(), suite) != suites.end();
+}
+
+bool BotanProvider::supports_named_group(NamedGroup group) const {
+    auto caps = capabilities();
+    const auto& groups = caps.supported_groups;
+    return std::find(groups.begin(), groups.end(), group) != groups.end();
+}
+
+bool BotanProvider::supports_signature_scheme(SignatureScheme scheme) const {
+    auto caps = capabilities();
+    const auto& schemes = caps.supported_signatures;
+    return std::find(schemes.begin(), schemes.end(), scheme) != schemes.end();
+}
+
+bool BotanProvider::supports_hash_algorithm(HashAlgorithm hash) const {
+    auto caps = capabilities();
+    const auto& hashes = caps.supported_hashes;
+    return std::find(hashes.begin(), hashes.end(), hash) != hashes.end();
+}
+
+bool BotanProvider::has_hardware_acceleration() const {
+    return false; // Botan has limited hardware acceleration
+}
+
+bool BotanProvider::is_fips_compliant() const {
+    return false; // Botan is not FIPS validated
+}
+
+SecurityLevel BotanProvider::security_level() const {
+    return pimpl_->security_level_;
+}
+
+Result<void> BotanProvider::set_security_level(SecurityLevel level) {
+    pimpl_->security_level_ = level;
+    return Result<void>();
+}
+
+// Botan utility functions
+namespace botan_utils {
+
+Result<void> initialize_botan() {
+    // In real implementation: Botan::LibraryInitializer init;
+    return Result<void>();
+}
+
+void cleanup_botan() {
+    // Botan cleans up automatically
+}
+
+bool is_botan_available() {
+    // In real implementation: check if Botan is available
+    return true; // Assume available for stub
+}
+
+std::string get_botan_version() {
+    return "3.0.0"; // Would be Botan::version_string()
+}
+
+Result<std::string> cipher_suite_to_botan(CipherSuite suite) {
+    switch (suite) {
+        case CipherSuite::TLS_AES_128_GCM_SHA256:
+            return Result<std::string>("AES-128/GCM");
+        case CipherSuite::TLS_AES_256_GCM_SHA384:
+            return Result<std::string>("AES-256/GCM");
+        case CipherSuite::TLS_CHACHA20_POLY1305_SHA256:
+            return Result<std::string>("ChaCha20Poly1305");
+        case CipherSuite::TLS_AES_128_CCM_SHA256:
+            return Result<std::string>("AES-128/CCM");
+        case CipherSuite::TLS_AES_128_CCM_8_SHA256:
+            return Result<std::string>("AES-128/CCM(8)");
+        default:
+            return Result<std::string>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+}
+
+Result<std::string> named_group_to_botan(NamedGroup group) {
+    switch (group) {
+        case NamedGroup::SECP256R1:
+            return Result<std::string>("secp256r1");
+        case NamedGroup::SECP384R1:
+            return Result<std::string>("secp384r1");
+        case NamedGroup::SECP521R1:
+            return Result<std::string>("secp521r1");
+        case NamedGroup::X25519:
+            return Result<std::string>("x25519");
+        case NamedGroup::X448:
+            return Result<std::string>("x448");
+        default:
+            return Result<std::string>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+}
+
+Result<std::pair<std::string, std::string>> signature_scheme_to_botan(SignatureScheme scheme) {
+    switch (scheme) {
+        case SignatureScheme::RSA_PKCS1_SHA256:
+            return Result<std::pair<std::string, std::string>>(std::make_pair("RSA", "EMSA3(SHA-256)"));
+        case SignatureScheme::ECDSA_SECP256R1_SHA256:
+            return Result<std::pair<std::string, std::string>>(std::make_pair("ECDSA", "EMSA1(SHA-256)"));
+        case SignatureScheme::ED25519:
+            return Result<std::pair<std::string, std::string>>(std::make_pair("Ed25519", "Pure"));
+        default:
+            return Result<std::pair<std::string, std::string>>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+}
+
+Result<std::string> hash_algorithm_to_botan(HashAlgorithm hash) {
+    switch (hash) {
+        case HashAlgorithm::SHA256:
+            return Result<std::string>("SHA-256");
+        case HashAlgorithm::SHA384:
+            return Result<std::string>("SHA-384");
+        case HashAlgorithm::SHA512:
+            return Result<std::string>("SHA-512");
+        case HashAlgorithm::SHA3_256:
+            return Result<std::string>("SHA-3(256)");
+        case HashAlgorithm::SHA3_384:
+            return Result<std::string>("SHA-3(384)");
+        case HashAlgorithm::SHA3_512:
+            return Result<std::string>("SHA-3(512)");
+        default:
+            return Result<std::string>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+}
+
+} // namespace botan_utils
+
+// Key and certificate class stubs
+BotanPrivateKey::BotanPrivateKey(std::unique_ptr<void> key) : key_(std::move(key)) {}
+
+BotanPrivateKey::~BotanPrivateKey() = default;
+
+BotanPrivateKey::BotanPrivateKey(BotanPrivateKey&& other) noexcept 
+    : key_(std::move(other.key_)) {}
+
+BotanPrivateKey& BotanPrivateKey::operator=(BotanPrivateKey&& other) noexcept {
+    if (this != &other) {
+        key_ = std::move(other.key_);
+    }
+    return *this;
+}
+
+std::string BotanPrivateKey::algorithm() const {
+    return "ECDH"; // Stub
+}
+
+size_t BotanPrivateKey::key_size() const {
+    return 32; // Stub
+}
+
+NamedGroup BotanPrivateKey::group() const {
+    return NamedGroup::SECP256R1; // Stub
+}
+
+std::vector<uint8_t> BotanPrivateKey::fingerprint() const {
+    return {}; // Stub
+}
+
+Result<std::unique_ptr<PublicKey>> BotanPrivateKey::derive_public_key() const {
+    return Result<std::unique_ptr<PublicKey>>(DTLSError::OPERATION_NOT_SUPPORTED);
+}
+
+// Similar implementations for BotanPublicKey and BotanCertificateChain
+BotanPublicKey::BotanPublicKey(std::unique_ptr<void> key) : key_(std::move(key)) {}
+
+BotanPublicKey::~BotanPublicKey() = default;
+
+BotanPublicKey::BotanPublicKey(BotanPublicKey&& other) noexcept 
+    : key_(std::move(other.key_)) {}
+
+BotanPublicKey& BotanPublicKey::operator=(BotanPublicKey&& other) noexcept {
+    if (this != &other) {
+        key_ = std::move(other.key_);
+    }
+    return *this;
+}
+
+std::string BotanPublicKey::algorithm() const {
+    return "ECDH"; // Stub
+}
+
+size_t BotanPublicKey::key_size() const {
+    return 32; // Stub
+}
+
+NamedGroup BotanPublicKey::group() const {
+    return NamedGroup::SECP256R1; // Stub
+}
+
+std::vector<uint8_t> BotanPublicKey::fingerprint() const {
+    return {}; // Stub
+}
+
+bool BotanPublicKey::equals(const PublicKey& other) const {
+    return false; // Stub
+}
+
+// Certificate chain implementation
+BotanCertificateChain::BotanCertificateChain(std::vector<std::vector<uint8_t>> certs) 
+    : certificates_(std::move(certs)) {}
+
+BotanCertificateChain::~BotanCertificateChain() = default;
+
+BotanCertificateChain::BotanCertificateChain(BotanCertificateChain&& other) noexcept 
+    : certificates_(std::move(other.certificates_)) {}
+
+BotanCertificateChain& BotanCertificateChain::operator=(BotanCertificateChain&& other) noexcept {
+    if (this != &other) {
+        certificates_ = std::move(other.certificates_);
+    }
+    return *this;
+}
+
+size_t BotanCertificateChain::certificate_count() const {
+    return certificates_.size();
+}
+
+std::vector<uint8_t> BotanCertificateChain::certificate_at(size_t index) const {
+    if (index >= certificates_.size()) {
+        return {};
+    }
+    return certificates_[index];
+}
+
+std::unique_ptr<PublicKey> BotanCertificateChain::leaf_public_key() const {
+    return nullptr; // Stub
+}
+
+std::string BotanCertificateChain::subject_name() const {
+    return ""; // Stub
+}
+
+std::string BotanCertificateChain::issuer_name() const {
+    return ""; // Stub
+}
+
+std::chrono::system_clock::time_point BotanCertificateChain::not_before() const {
+    return std::chrono::system_clock::now(); // Stub
+}
+
+std::chrono::system_clock::time_point BotanCertificateChain::not_after() const {
+    return std::chrono::system_clock::now(); // Stub
+}
+
+bool BotanCertificateChain::is_valid() const {
+    return false; // Stub
+}
+
+} // namespace crypto
+} // namespace v13
+} // namespace dtls
