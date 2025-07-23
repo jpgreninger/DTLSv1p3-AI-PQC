@@ -1,0 +1,113 @@
+#ifndef DTLS_CONFIG_H
+#define DTLS_CONFIG_H
+
+// Project information
+#define DTLS_VERSION_MAJOR @PROJECT_VERSION_MAJOR@
+#define DTLS_VERSION_MINOR @PROJECT_VERSION_MINOR@
+#define DTLS_VERSION_PATCH @PROJECT_VERSION_PATCH@
+#define DTLS_VERSION_STRING "@PROJECT_VERSION@"
+
+// Build configuration
+#cmakedefine DTLS_BUILD_SHARED
+#cmakedefine DTLS_ENABLE_HARDWARE_ACCEL
+#cmakedefine DTLS_HAS_BOTAN
+#cmakedefine DTLS_HAS_SYSTEMC
+
+// Platform detection
+#ifdef _WIN32
+    #define DTLS_PLATFORM_WINDOWS
+    #ifdef _WIN64
+        #define DTLS_PLATFORM_WIN64
+    #else
+        #define DTLS_PLATFORM_WIN32
+    #endif
+#elif defined(__linux__)
+    #define DTLS_PLATFORM_LINUX
+#elif defined(__APPLE__)
+    #define DTLS_PLATFORM_MACOS
+#elif defined(__FreeBSD__)
+    #define DTLS_PLATFORM_FREEBSD
+#else
+    #define DTLS_PLATFORM_UNKNOWN
+#endif
+
+// Compiler detection
+#ifdef __clang__
+    #define DTLS_COMPILER_CLANG
+    #define DTLS_COMPILER_VERSION_MAJOR __clang_major__
+    #define DTLS_COMPILER_VERSION_MINOR __clang_minor__
+#elif defined(__GNUC__)
+    #define DTLS_COMPILER_GCC
+    #define DTLS_COMPILER_VERSION_MAJOR __GNUC__
+    #define DTLS_COMPILER_VERSION_MINOR __GNUC_MINOR__
+#elif defined(_MSC_VER)
+    #define DTLS_COMPILER_MSVC
+    #define DTLS_COMPILER_VERSION_MAJOR (_MSC_VER / 100)
+    #define DTLS_COMPILER_VERSION_MINOR (_MSC_VER % 100)
+#endif
+
+// API decoration
+#ifdef DTLS_BUILD_SHARED
+    #ifdef DTLS_PLATFORM_WINDOWS
+        #ifdef DTLS_BUILDING_DLL
+            #define DTLS_API __declspec(dllexport)
+        #else
+            #define DTLS_API __declspec(dllimport)
+        #endif
+    #else
+        #define DTLS_API __attribute__((visibility("default")))
+    #endif
+#else
+    #define DTLS_API
+#endif
+
+// Optimization hints
+#ifdef DTLS_COMPILER_CLANG
+    #define DTLS_LIKELY(x) __builtin_expect(!!(x), 1)
+    #define DTLS_UNLIKELY(x) __builtin_expect(!!(x), 0)
+    #define DTLS_ALWAYS_INLINE __attribute__((always_inline)) inline
+    #define DTLS_NEVER_INLINE __attribute__((noinline))
+    #define DTLS_FORCE_INLINE __attribute__((always_inline)) inline
+#elif defined(DTLS_COMPILER_GCC)
+    #define DTLS_LIKELY(x) __builtin_expect(!!(x), 1)
+    #define DTLS_UNLIKELY(x) __builtin_expect(!!(x), 0)
+    #define DTLS_ALWAYS_INLINE __attribute__((always_inline)) inline
+    #define DTLS_NEVER_INLINE __attribute__((noinline))
+    #define DTLS_FORCE_INLINE __attribute__((always_inline)) inline
+#elif defined(DTLS_COMPILER_MSVC)
+    #define DTLS_LIKELY(x) (x)
+    #define DTLS_UNLIKELY(x) (x)
+    #define DTLS_ALWAYS_INLINE __forceinline
+    #define DTLS_NEVER_INLINE __declspec(noinline)
+    #define DTLS_FORCE_INLINE __forceinline
+#else
+    #define DTLS_LIKELY(x) (x)
+    #define DTLS_UNLIKELY(x) (x)
+    #define DTLS_ALWAYS_INLINE inline
+    #define DTLS_NEVER_INLINE
+    #define DTLS_FORCE_INLINE inline
+#endif
+
+// Memory alignment
+#define DTLS_CACHE_LINE_SIZE 64
+#define DTLS_CACHE_ALIGNED alignas(DTLS_CACHE_LINE_SIZE)
+
+// Debug configuration
+#ifdef NDEBUG
+    #define DTLS_DEBUG 0
+#else
+    #define DTLS_DEBUG 1
+#endif
+
+#if DTLS_DEBUG
+    #define DTLS_ASSERT(condition) \
+        do { \
+            if (!(condition)) { \
+                std::abort(); \
+            } \
+        } while (0)
+#else
+    #define DTLS_ASSERT(condition) ((void)0)
+#endif
+
+#endif // DTLS_CONFIG_H
