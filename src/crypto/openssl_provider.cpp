@@ -6,6 +6,10 @@
 #include <openssl/hmac.h>
 #include <openssl/kdf.h>
 #include <openssl/err.h>
+#include <openssl/ec.h>
+#include <openssl/obj_mac.h>
+#include <openssl/x509.h>
+#include <openssl/x509v3.h>
 
 namespace dtls {
 namespace v13 {
@@ -148,14 +152,88 @@ Result<std::vector<uint8_t>> OpenSSLProvider::generate_random(const RandomParams
     return Result<std::vector<uint8_t>>(std::move(random_bytes));
 }
 
-// Key derivation - Basic stubs
+// HKDF key derivation implementation
 Result<std::vector<uint8_t>> OpenSSLProvider::derive_key_hkdf(const KeyDerivationParams& params) {
     if (!pimpl_->initialized_) {
         return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
     }
     
-    // TODO: Implement HKDF using OpenSSL EVP_PKEY_derive
-    return Result<std::vector<uint8_t>>(DTLSError::OPERATION_NOT_SUPPORTED);
+    if (params.secret.empty() || params.output_length == 0) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Get the hash algorithm
+    const EVP_MD* md = nullptr;
+    switch (params.hash_algorithm) {
+        case HashAlgorithm::SHA256:
+            md = EVP_sha256();
+            break;
+        case HashAlgorithm::SHA384:
+            md = EVP_sha384();
+            break;
+        case HashAlgorithm::SHA512:
+            md = EVP_sha512();
+            break;
+        default:
+            return Result<std::vector<uint8_t>>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+    
+    if (!md) {
+        return Result<std::vector<uint8_t>>(DTLSError::CRYPTO_PROVIDER_ERROR);
+    }
+    
+    // Create KDF context
+    EVP_PKEY_CTX* pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_HKDF, nullptr);
+    if (!pctx) {
+        return Result<std::vector<uint8_t>>(DTLSError::OUT_OF_MEMORY);
+    }
+    
+    std::vector<uint8_t> output(params.output_length);
+    size_t output_len = params.output_length;
+    
+    int result = 1;
+    
+    // Initialize HKDF
+    if (result == 1) {
+        result = EVP_PKEY_derive_init(pctx);
+    }
+    
+    // Set hash algorithm
+    if (result == 1) {
+        result = EVP_PKEY_CTX_set_hkdf_md(pctx, md);
+    }
+    
+    // Set input key material (IKM)
+    if (result == 1) {
+        result = EVP_PKEY_CTX_set1_hkdf_key(pctx, params.secret.data(), 
+                                           static_cast<int>(params.secret.size()));
+    }
+    
+    // Set salt if provided
+    if (result == 1 && !params.salt.empty()) {
+        result = EVP_PKEY_CTX_set1_hkdf_salt(pctx, params.salt.data(), 
+                                            static_cast<int>(params.salt.size()));
+    }
+    
+    // Set info if provided
+    if (result == 1 && !params.info.empty()) {
+        result = EVP_PKEY_CTX_add1_hkdf_info(pctx, params.info.data(), 
+                                            static_cast<int>(params.info.size()));
+    }
+    
+    // Derive the key
+    if (result == 1) {
+        result = EVP_PKEY_derive(pctx, output.data(), &output_len);
+    }
+    
+    EVP_PKEY_CTX_free(pctx);
+    
+    if (result != 1) {
+        return Result<std::vector<uint8_t>>(DTLSError::KEY_DERIVATION_FAILED);
+    }
+    
+    output.resize(output_len);
+    return Result<std::vector<uint8_t>>(std::move(output));
 }
 
 Result<std::vector<uint8_t>> OpenSSLProvider::derive_key_pbkdf2(const KeyDerivationParams& params) {
@@ -167,7 +245,7 @@ Result<std::vector<uint8_t>> OpenSSLProvider::derive_key_pbkdf2(const KeyDerivat
     return Result<std::vector<uint8_t>>(DTLSError::OPERATION_NOT_SUPPORTED);
 }
 
-// AEAD operations - Basic stubs
+// AEAD encryption implementation
 Result<std::vector<uint8_t>> OpenSSLProvider::aead_encrypt(
     const AEADParams& params,
     const std::vector<uint8_t>& plaintext) {
@@ -176,8 +254,120 @@ Result<std::vector<uint8_t>> OpenSSLProvider::aead_encrypt(
         return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
     }
     
-    // TODO: Implement AEAD encryption using OpenSSL EVP_CIPHER
-    return Result<std::vector<uint8_t>>(DTLSError::OPERATION_NOT_SUPPORTED);
+    if (params.key.empty() || params.nonce.empty()) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Get the cipher algorithm
+    const EVP_CIPHER* cipher = nullptr;
+    size_t tag_length = 16; // Default tag length
+    
+    switch (params.cipher) {
+        case AEADCipher::AES_128_GCM:
+            cipher = EVP_aes_128_gcm();
+            tag_length = 16;
+            break;
+        case AEADCipher::AES_256_GCM:
+            cipher = EVP_aes_256_gcm();
+            tag_length = 16;
+            break;
+        case AEADCipher::CHACHA20_POLY1305:
+            cipher = EVP_chacha20_poly1305();
+            tag_length = 16;
+            break;
+        case AEADCipher::AES_128_CCM:
+            cipher = EVP_aes_128_ccm();
+            tag_length = 16;
+            break;
+        case AEADCipher::AES_128_CCM_8:
+            cipher = EVP_aes_128_ccm();
+            tag_length = 8;
+            break;
+        default:
+            return Result<std::vector<uint8_t>>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+    
+    if (!cipher) {
+        return Result<std::vector<uint8_t>>(DTLSError::CRYPTO_PROVIDER_ERROR);
+    }
+    
+    // Create cipher context
+    EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
+    if (!ctx) {
+        return Result<std::vector<uint8_t>>(DTLSError::OUT_OF_MEMORY);
+    }
+    
+    // Output buffer: plaintext + tag
+    std::vector<uint8_t> ciphertext(plaintext.size() + tag_length);
+    int outlen = 0;
+    int result = 1;
+    
+    // Initialize encryption
+    if (result == 1) {
+        result = EVP_EncryptInit_ex(ctx, cipher, nullptr, nullptr, nullptr);
+    }
+    
+    // Set nonce length (for GCM/CCM)
+    if (result == 1 && (params.cipher == AEADCipher::AES_128_GCM || 
+                        params.cipher == AEADCipher::AES_256_GCM ||
+                        params.cipher == AEADCipher::AES_128_CCM ||
+                        params.cipher == AEADCipher::AES_128_CCM_8)) {
+        result = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_AEAD_SET_IVLEN, 
+                                    static_cast<int>(params.nonce.size()), nullptr);
+    }
+    
+    // For CCM, set tag length
+    if (result == 1 && (params.cipher == AEADCipher::AES_128_CCM ||
+                        params.cipher == AEADCipher::AES_128_CCM_8)) {
+        result = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_AEAD_SET_TAG, 
+                                    static_cast<int>(tag_length), nullptr);
+    }
+    
+    // Set key and nonce
+    if (result == 1) {
+        result = EVP_EncryptInit_ex(ctx, nullptr, nullptr, params.key.data(), params.nonce.data());
+    }
+    
+    // For CCM, set plaintext length
+    if (result == 1 && (params.cipher == AEADCipher::AES_128_CCM ||
+                        params.cipher == AEADCipher::AES_128_CCM_8)) {
+        result = EVP_EncryptUpdate(ctx, nullptr, &outlen, nullptr, static_cast<int>(plaintext.size()));
+    }
+    
+    // Set additional authenticated data (AAD)
+    if (result == 1 && !params.additional_data.empty()) {
+        result = EVP_EncryptUpdate(ctx, nullptr, &outlen, 
+                                  params.additional_data.data(), 
+                                  static_cast<int>(params.additional_data.size()));
+    }
+    
+    // Encrypt plaintext
+    if (result == 1) {
+        result = EVP_EncryptUpdate(ctx, ciphertext.data(), &outlen, 
+                                  plaintext.data(), static_cast<int>(plaintext.size()));
+    }
+    
+    // Finalize encryption
+    int final_len = 0;
+    if (result == 1) {
+        result = EVP_EncryptFinal_ex(ctx, ciphertext.data() + outlen, &final_len);
+    }
+    
+    // Get authentication tag
+    if (result == 1) {
+        result = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_AEAD_GET_TAG, 
+                                    static_cast<int>(tag_length), 
+                                    ciphertext.data() + plaintext.size());
+    }
+    
+    EVP_CIPHER_CTX_free(ctx);
+    
+    if (result != 1) {
+        return Result<std::vector<uint8_t>>(DTLSError::CRYPTO_PROVIDER_ERROR);
+    }
+    
+    ciphertext.resize(plaintext.size() + tag_length);
+    return Result<std::vector<uint8_t>>(std::move(ciphertext));
 }
 
 Result<std::vector<uint8_t>> OpenSSLProvider::aead_decrypt(
@@ -188,8 +378,126 @@ Result<std::vector<uint8_t>> OpenSSLProvider::aead_decrypt(
         return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
     }
     
-    // TODO: Implement AEAD decryption using OpenSSL EVP_CIPHER
-    return Result<std::vector<uint8_t>>(DTLSError::OPERATION_NOT_SUPPORTED);
+    if (params.key.empty() || params.nonce.empty()) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Get the cipher algorithm and tag length
+    const EVP_CIPHER* cipher = nullptr;
+    size_t tag_length = 16; // Default tag length
+    
+    switch (params.cipher) {
+        case AEADCipher::AES_128_GCM:
+            cipher = EVP_aes_128_gcm();
+            tag_length = 16;
+            break;
+        case AEADCipher::AES_256_GCM:
+            cipher = EVP_aes_256_gcm();
+            tag_length = 16;
+            break;
+        case AEADCipher::CHACHA20_POLY1305:
+            cipher = EVP_chacha20_poly1305();
+            tag_length = 16;
+            break;
+        case AEADCipher::AES_128_CCM:
+            cipher = EVP_aes_128_ccm();
+            tag_length = 16;
+            break;
+        case AEADCipher::AES_128_CCM_8:
+            cipher = EVP_aes_128_ccm();
+            tag_length = 8;
+            break;
+        default:
+            return Result<std::vector<uint8_t>>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+    
+    if (!cipher || ciphertext.size() < tag_length) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Create cipher context
+    EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
+    if (!ctx) {
+        return Result<std::vector<uint8_t>>(DTLSError::OUT_OF_MEMORY);
+    }
+    
+    // Split ciphertext and tag
+    size_t plaintext_len = ciphertext.size() - tag_length;
+    std::vector<uint8_t> plaintext(plaintext_len);
+    const uint8_t* tag_data = ciphertext.data() + plaintext_len;
+    
+    int outlen = 0;
+    int result = 1;
+    
+    // Initialize decryption
+    if (result == 1) {
+        result = EVP_DecryptInit_ex(ctx, cipher, nullptr, nullptr, nullptr);
+    }
+    
+    // Set nonce length (for GCM/CCM)
+    if (result == 1 && (params.cipher == AEADCipher::AES_128_GCM || 
+                        params.cipher == AEADCipher::AES_256_GCM ||
+                        params.cipher == AEADCipher::AES_128_CCM ||
+                        params.cipher == AEADCipher::AES_128_CCM_8)) {
+        result = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_AEAD_SET_IVLEN, 
+                                    static_cast<int>(params.nonce.size()), nullptr);
+    }
+    
+    // For CCM, set tag length and tag
+    if (result == 1 && (params.cipher == AEADCipher::AES_128_CCM ||
+                        params.cipher == AEADCipher::AES_128_CCM_8)) {
+        result = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_AEAD_SET_TAG, 
+                                    static_cast<int>(tag_length), 
+                                    const_cast<uint8_t*>(tag_data));
+    }
+    
+    // Set key and nonce
+    if (result == 1) {
+        result = EVP_DecryptInit_ex(ctx, nullptr, nullptr, params.key.data(), params.nonce.data());
+    }
+    
+    // For CCM, set ciphertext length
+    if (result == 1 && (params.cipher == AEADCipher::AES_128_CCM ||
+                        params.cipher == AEADCipher::AES_128_CCM_8)) {
+        result = EVP_DecryptUpdate(ctx, nullptr, &outlen, nullptr, static_cast<int>(plaintext_len));
+    }
+    
+    // Set additional authenticated data (AAD)
+    if (result == 1 && !params.additional_data.empty()) {
+        result = EVP_DecryptUpdate(ctx, nullptr, &outlen, 
+                                  params.additional_data.data(), 
+                                  static_cast<int>(params.additional_data.size()));
+    }
+    
+    // Decrypt ciphertext
+    if (result == 1) {
+        result = EVP_DecryptUpdate(ctx, plaintext.data(), &outlen, 
+                                  ciphertext.data(), static_cast<int>(plaintext_len));
+    }
+    
+    // For GCM, set the tag for verification
+    if (result == 1 && (params.cipher == AEADCipher::AES_128_GCM ||
+                        params.cipher == AEADCipher::AES_256_GCM ||
+                        params.cipher == AEADCipher::CHACHA20_POLY1305)) {
+        result = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_AEAD_SET_TAG, 
+                                    static_cast<int>(tag_length), 
+                                    const_cast<uint8_t*>(tag_data));
+    }
+    
+    // Finalize decryption (this verifies the tag)
+    int final_len = 0;
+    if (result == 1) {
+        result = EVP_DecryptFinal_ex(ctx, plaintext.data() + outlen, &final_len);
+    }
+    
+    EVP_CIPHER_CTX_free(ctx);
+    
+    if (result != 1) {
+        return Result<std::vector<uint8_t>>(DTLSError::DECRYPT_ERROR);
+    }
+    
+    plaintext.resize(outlen + final_len);
+    return Result<std::vector<uint8_t>>(std::move(plaintext));
 }
 
 // Hash functions
@@ -296,11 +604,217 @@ Result<bool> OpenSSLProvider::verify_signature(const SignatureParams& params, co
 
 Result<std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>> 
 OpenSSLProvider::generate_key_pair(NamedGroup group) {
-    return Result<std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>>(DTLSError::OPERATION_NOT_SUPPORTED);
+    if (!pimpl_->initialized_) {
+        using ReturnType = std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>;
+        return Result<ReturnType>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    EVP_PKEY_CTX* pctx = nullptr;
+    EVP_PKEY* pkey = nullptr;
+    int result = 1;
+    
+    switch (group) {
+        case NamedGroup::SECP256R1:
+            pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_EC, nullptr);
+            if (pctx && result == 1) {
+                result = EVP_PKEY_keygen_init(pctx);
+            }
+            if (result == 1) {
+                result = EVP_PKEY_CTX_set_ec_paramgen_curve_nid(pctx, NID_X9_62_prime256v1);
+            }
+            break;
+            
+        case NamedGroup::SECP384R1:
+            pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_EC, nullptr);
+            if (pctx && result == 1) {
+                result = EVP_PKEY_keygen_init(pctx);
+            }
+            if (result == 1) {
+                result = EVP_PKEY_CTX_set_ec_paramgen_curve_nid(pctx, NID_secp384r1);
+            }
+            break;
+            
+        case NamedGroup::SECP521R1:
+            pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_EC, nullptr);
+            if (pctx && result == 1) {
+                result = EVP_PKEY_keygen_init(pctx);
+            }
+            if (result == 1) {
+                result = EVP_PKEY_CTX_set_ec_paramgen_curve_nid(pctx, NID_secp521r1);
+            }
+            break;
+            
+        case NamedGroup::X25519:
+            pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_X25519, nullptr);
+            if (pctx && result == 1) {
+                result = EVP_PKEY_keygen_init(pctx);
+            }
+            break;
+            
+        case NamedGroup::X448:
+            pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_X448, nullptr);
+            if (pctx && result == 1) {
+                result = EVP_PKEY_keygen_init(pctx);
+            }
+            break;
+            
+        default:
+            using ReturnType = std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>;
+            return Result<ReturnType>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+    
+    if (!pctx || result != 1) {
+        if (pctx) EVP_PKEY_CTX_free(pctx);
+        using ReturnType = std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>;
+        return Result<ReturnType>(DTLSError::KEY_EXCHANGE_FAILED);
+    }
+    
+    // Generate the key pair
+    if (result == 1) {
+        result = EVP_PKEY_keygen(pctx, &pkey);
+    }
+    
+    EVP_PKEY_CTX_free(pctx);
+    
+    if (result != 1 || !pkey) {
+        if (pkey) EVP_PKEY_free(pkey);
+        using ReturnType = std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>;
+        return Result<ReturnType>(DTLSError::KEY_EXCHANGE_FAILED);
+    }
+    
+    // Create private key wrapper
+    auto private_key = std::make_unique<OpenSSLPrivateKey>(pkey);
+    
+    // Derive public key
+    auto public_key_result = private_key->derive_public_key();
+    if (!public_key_result) {
+        using ReturnType = std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>;
+        return Result<ReturnType>(public_key_result.error());
+    }
+    
+    auto public_key = std::move(*public_key_result);
+    
+    using ReturnType = std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>;
+    return Result<ReturnType>(std::make_pair(std::move(private_key), std::move(public_key)));
 }
 
 Result<std::vector<uint8_t>> OpenSSLProvider::perform_key_exchange(const KeyExchangeParams& params) {
-    return Result<std::vector<uint8_t>>(DTLSError::OPERATION_NOT_SUPPORTED);
+    if (!pimpl_->initialized_) {
+        return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    if (!params.private_key || params.peer_public_key.empty()) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Cast to OpenSSL private key
+    const auto* openssl_private_key = dynamic_cast<const OpenSSLPrivateKey*>(params.private_key);
+    if (!openssl_private_key) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    EVP_PKEY* private_key = openssl_private_key->native_key();
+    if (!private_key) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Create peer public key from raw bytes
+    EVP_PKEY* peer_key = nullptr;
+    
+    switch (params.group) {
+        case NamedGroup::X25519: {
+            peer_key = EVP_PKEY_new_raw_public_key(EVP_PKEY_X25519, nullptr,
+                                                  params.peer_public_key.data(),
+                                                  params.peer_public_key.size());
+            break;
+        }
+        case NamedGroup::X448: {
+            peer_key = EVP_PKEY_new_raw_public_key(EVP_PKEY_X448, nullptr,
+                                                  params.peer_public_key.data(),
+                                                  params.peer_public_key.size());
+            break;
+        }
+        case NamedGroup::SECP256R1:
+        case NamedGroup::SECP384R1:
+        case NamedGroup::SECP521R1: {
+            // For ECDH, we need to reconstruct the EC public key
+            int curve_nid;
+            switch (params.group) {
+                case NamedGroup::SECP256R1: curve_nid = NID_X9_62_prime256v1; break;
+                case NamedGroup::SECP384R1: curve_nid = NID_secp384r1; break;
+                case NamedGroup::SECP521R1: curve_nid = NID_secp521r1; break;
+                default: curve_nid = NID_X9_62_prime256v1; break;
+            }
+            
+            EC_KEY* ec_key = EC_KEY_new_by_curve_name(curve_nid);
+            if (!ec_key) {
+                return Result<std::vector<uint8_t>>(DTLSError::KEY_EXCHANGE_FAILED);
+            }
+            
+            const EC_GROUP* group = EC_KEY_get0_group(ec_key);
+            EC_POINT* point = EC_POINT_new(group);
+            
+            if (point && EC_POINT_oct2point(group, point, params.peer_public_key.data(),
+                                           params.peer_public_key.size(), nullptr) == 1) {
+                EC_KEY_set_public_key(ec_key, point);
+                peer_key = EVP_PKEY_new();
+                if (peer_key) {
+                    EVP_PKEY_assign_EC_KEY(peer_key, ec_key);
+                } else {
+                    EC_KEY_free(ec_key);
+                }
+            } else {
+                EC_KEY_free(ec_key);
+            }
+            
+            if (point) EC_POINT_free(point);
+            break;
+        }
+        default:
+            return Result<std::vector<uint8_t>>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+    
+    if (!peer_key) {
+        return Result<std::vector<uint8_t>>(DTLSError::KEY_EXCHANGE_FAILED);
+    }
+    
+    // Perform key derivation
+    EVP_PKEY_CTX* ctx = EVP_PKEY_CTX_new(private_key, nullptr);
+    if (!ctx) {
+        EVP_PKEY_free(peer_key);
+        return Result<std::vector<uint8_t>>(DTLSError::OUT_OF_MEMORY);
+    }
+    
+    int result = 1;
+    if (result == 1) {
+        result = EVP_PKEY_derive_init(ctx);
+    }
+    
+    if (result == 1) {
+        result = EVP_PKEY_derive_set_peer(ctx, peer_key);
+    }
+    
+    // Determine output length
+    size_t shared_secret_len = 0;
+    if (result == 1) {
+        result = EVP_PKEY_derive(ctx, nullptr, &shared_secret_len);
+    }
+    
+    std::vector<uint8_t> shared_secret;
+    if (result == 1 && shared_secret_len > 0) {
+        shared_secret.resize(shared_secret_len);
+        result = EVP_PKEY_derive(ctx, shared_secret.data(), &shared_secret_len);
+    }
+    
+    EVP_PKEY_CTX_free(ctx);
+    EVP_PKEY_free(peer_key);
+    
+    if (result != 1) {
+        return Result<std::vector<uint8_t>>(DTLSError::KEY_EXCHANGE_FAILED);
+    }
+    
+    shared_secret.resize(shared_secret_len);
+    return Result<std::vector<uint8_t>>(std::move(shared_secret));
 }
 
 Result<bool> OpenSSLProvider::validate_certificate_chain(const CertValidationParams& params) {
@@ -462,7 +976,32 @@ std::vector<uint8_t> OpenSSLPrivateKey::fingerprint() const {
 }
 
 Result<std::unique_ptr<PublicKey>> OpenSSLPrivateKey::derive_public_key() const {
-    return Result<std::unique_ptr<PublicKey>>(DTLSError::OPERATION_NOT_SUPPORTED);
+    if (!key_) {
+        return Result<std::unique_ptr<PublicKey>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Create a copy of the key and extract only the public portion
+    EVP_PKEY* public_key_copy = nullptr;
+    
+    // Create a temporary context to extract public key
+    EVP_PKEY_CTX* ctx = EVP_PKEY_CTX_new(key_, nullptr);
+    if (!ctx) {
+        return Result<std::unique_ptr<PublicKey>>(DTLSError::OUT_OF_MEMORY);
+    }
+    
+    // For most key types, we can simply up the reference and create a public key wrapper
+    // OpenSSL EVP_PKEY handles the separation internally
+    EVP_PKEY_up_ref(key_);
+    public_key_copy = key_;
+    
+    EVP_PKEY_CTX_free(ctx);
+    
+    if (!public_key_copy) {
+        return Result<std::unique_ptr<PublicKey>>(DTLSError::CRYPTO_PROVIDER_ERROR);
+    }
+    
+    auto public_key = std::make_unique<OpenSSLPublicKey>(public_key_copy);
+    return Result<std::unique_ptr<PublicKey>>(std::move(public_key));
 }
 
 // Similar stub implementations for OpenSSLPublicKey and OpenSSLCertificateChain
