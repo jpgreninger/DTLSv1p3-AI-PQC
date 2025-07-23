@@ -15,6 +15,7 @@ set(DTLS_CORE_SOURCES
 set(DTLS_PROTOCOL_SOURCES
     protocol/protocol.cpp
     protocol/record.cpp
+    protocol/record_layer.cpp
     protocol/handshake.cpp
 )
 
