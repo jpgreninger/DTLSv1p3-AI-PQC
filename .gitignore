@@ -1,0 +1,46 @@
+# Build directories
+build/
+cmake-build-*/
+out/
+
+# Compiler output
+*.o
+*.obj
+*.so
+*.dll
+*.dylib
+*.a
+*.lib
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# SystemC specific
+*.vcd
+*.wlf
+simv*
+csrc/
+transcript
+
+# Claude configuration (keep local)
+.claude/
+
+# Documentation build artifacts
+docs/_build/
+*.pdf.bak
