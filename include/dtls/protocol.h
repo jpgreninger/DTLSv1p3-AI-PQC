@@ -1,6 +1,7 @@
 #pragma once
 
 #include "dtls/protocol/record.h"
+#include "dtls/protocol/handshake.h"
 
 // Main protocol module header for DTLS v1.3
 // This header provides access to all protocol-level components
@@ -23,5 +24,10 @@ bool is_supported_version(ProtocolVersion version);
 bool is_valid_content_type(ContentType content_type);
 bool is_handshake_content_type(ContentType content_type);
 bool is_application_data_content_type(ContentType content_type);
+
+// Handshake message validation
+bool is_valid_handshake_type(HandshakeType type);
+bool is_client_handshake_message(HandshakeType type);
+bool is_server_handshake_message(HandshakeType type);
 
 }  // namespace dtls::v13::protocol

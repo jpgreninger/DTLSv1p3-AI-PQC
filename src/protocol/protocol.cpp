@@ -31,4 +31,66 @@ bool is_application_data_content_type(ContentType content_type) {
     return content_type == ContentType::APPLICATION_DATA;
 }
 
+bool is_valid_handshake_type(HandshakeType type) {
+    switch (type) {
+        case HandshakeType::CLIENT_HELLO:
+        case HandshakeType::SERVER_HELLO:
+        case HandshakeType::HELLO_VERIFY_REQUEST:
+        case HandshakeType::NEW_SESSION_TICKET:
+        case HandshakeType::END_OF_EARLY_DATA:
+        case HandshakeType::HELLO_RETRY_REQUEST:
+        case HandshakeType::ENCRYPTED_EXTENSIONS:
+        case HandshakeType::CERTIFICATE:
+        case HandshakeType::SERVER_KEY_EXCHANGE:
+        case HandshakeType::CERTIFICATE_REQUEST:
+        case HandshakeType::SERVER_HELLO_DONE:
+        case HandshakeType::CERTIFICATE_VERIFY:
+        case HandshakeType::CLIENT_KEY_EXCHANGE:
+        case HandshakeType::FINISHED:
+        case HandshakeType::CERTIFICATE_URL:
+        case HandshakeType::CERTIFICATE_STATUS:
+        case HandshakeType::SUPPLEMENTAL_DATA:
+        case HandshakeType::KEY_UPDATE:
+        case HandshakeType::MESSAGE_HASH:
+            return true;
+        default:
+            return false;
+    }
+}
+
+bool is_client_handshake_message(HandshakeType type) {
+    switch (type) {
+        case HandshakeType::CLIENT_HELLO:
+        case HandshakeType::END_OF_EARLY_DATA:
+        case HandshakeType::CERTIFICATE:
+        case HandshakeType::CERTIFICATE_VERIFY:
+        case HandshakeType::CLIENT_KEY_EXCHANGE:
+        case HandshakeType::FINISHED:
+            return true;
+        default:
+            return false;
+    }
+}
+
+bool is_server_handshake_message(HandshakeType type) {
+    switch (type) {
+        case HandshakeType::SERVER_HELLO:
+        case HandshakeType::HELLO_VERIFY_REQUEST:
+        case HandshakeType::NEW_SESSION_TICKET:
+        case HandshakeType::HELLO_RETRY_REQUEST:
+        case HandshakeType::ENCRYPTED_EXTENSIONS:
+        case HandshakeType::CERTIFICATE:
+        case HandshakeType::SERVER_KEY_EXCHANGE:
+        case HandshakeType::CERTIFICATE_REQUEST:
+        case HandshakeType::SERVER_HELLO_DONE:
+        case HandshakeType::CERTIFICATE_VERIFY:
+        case HandshakeType::FINISHED:
+        case HandshakeType::CERTIFICATE_STATUS:
+        case HandshakeType::KEY_UPDATE:
+            return true;
+        default:
+            return false;
+    }
+}
+
 }  // namespace dtls::v13::protocol
