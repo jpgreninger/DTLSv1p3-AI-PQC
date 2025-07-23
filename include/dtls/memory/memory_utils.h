@@ -9,6 +9,7 @@
 #include <chrono>
 #include <atomic>
 #include <unordered_map>
+#include <thread>
 
 namespace dtls {
 namespace v13 {
@@ -177,7 +178,7 @@ public:
         std::chrono::nanoseconds min_time{std::chrono::nanoseconds::max()};
         std::chrono::nanoseconds max_time{0};
         std::chrono::nanoseconds average_time() const {
-            return count > 0 ? total_time / count : std::chrono::nanoseconds{0};
+            return count > 0 ? std::chrono::nanoseconds(total_time / count) : std::chrono::nanoseconds{0};
         }
     };
     

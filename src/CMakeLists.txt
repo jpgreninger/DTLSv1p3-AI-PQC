@@ -13,11 +13,8 @@ set(DTLS_CORE_SOURCES
 
 # Protocol layer sources
 set(DTLS_PROTOCOL_SOURCES
-    protocol/record_layer.cpp
-    protocol/handshake_manager.cpp
-    protocol/message_processor.cpp
-    protocol/state_machine.cpp
-    protocol/reliability_manager.cpp
+    protocol/protocol.cpp
+    protocol/record.cpp
 )
 
 # Crypto layer sources  
