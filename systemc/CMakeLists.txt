@@ -33,6 +33,8 @@ set(DTLS_SYSTEMC_SOURCES
     src/record_layer_tlm.cpp
     src/message_layer_tlm.cpp
     src/dtls_channels.cpp
+    src/dtls_protocol_stack.cpp
+    src/dtls_timing_models.cpp
 )
 
 # SystemC TLM header files
@@ -43,6 +45,9 @@ set(DTLS_SYSTEMC_HEADERS
     include/message_layer_tlm.h
     include/dtls_channels.h
     include/dtls_testbench.h
+    include/dtls_protocol_stack.h
+    include/dtls_timing_models.h
+    include/dtls_tlm_extensions.h
 )
 
 # Create SystemC TLM library
