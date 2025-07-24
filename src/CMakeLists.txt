@@ -26,21 +26,17 @@ set(DTLS_CRYPTO_SOURCES
     crypto/crypto_utils.cpp
     crypto/crypto_system.cpp
     crypto/openssl_provider.cpp
-    crypto/key_manager.cpp
+    # crypto/key_manager.cpp  # TBD
 )
 
 # Transport layer sources
 set(DTLS_TRANSPORT_SOURCES
     transport/udp_transport.cpp
-    transport/network_endpoint.cpp
-    transport/connection_manager.cpp
 )
 
 # Connection layer sources
 set(DTLS_CONNECTION_SOURCES
     connection/connection.cpp
-    connection/context.cpp
-    connection/configuration.cpp
 )
 
 # Optional Botan provider

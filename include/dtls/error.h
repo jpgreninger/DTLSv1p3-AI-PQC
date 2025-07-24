@@ -5,6 +5,9 @@
 #include <system_error>
 #include <string>
 
+// Forward declaration to avoid circular includes
+namespace dtls { namespace v13 { enum class AlertDescription : uint8_t; } }
+
 namespace dtls {
 namespace v13 {
 

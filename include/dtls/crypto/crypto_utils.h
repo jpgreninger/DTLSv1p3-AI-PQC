@@ -8,6 +8,8 @@
 #include <vector>
 #include <string>
 #include <chrono>
+#include <mutex>
+#include <unordered_map>
 
 namespace dtls {
 namespace v13 {
@@ -207,7 +209,7 @@ struct CryptoOperationStats {
     std::chrono::nanoseconds min_time{std::chrono::nanoseconds::max()};
     std::chrono::nanoseconds max_time{0};
     std::chrono::nanoseconds average_time() const {
-        return call_count > 0 ? total_time / call_count : std::chrono::nanoseconds{0};
+        return call_count > 0 ? std::chrono::duration_cast<std::chrono::nanoseconds>(total_time / call_count) : std::chrono::nanoseconds{0};
     }
 };
 
@@ -259,31 +261,31 @@ private:
 namespace constants {
 
 // HKDF labels
-constexpr const char* HKDF_LABEL_DERIVED[] = "derived";
-constexpr const char* HKDF_LABEL_EXTERNAL_PSK_BINDER[] = "ext binder";
-constexpr const char* HKDF_LABEL_RESUMPTION_PSK_BINDER[] = "res binder";
-constexpr const char* HKDF_LABEL_CLIENT_EARLY_TRAFFIC[] = "c e traffic";
-constexpr const char* HKDF_LABEL_EARLY_EXPORTER_MASTER[] = "e exp master";
-constexpr const char* HKDF_LABEL_CLIENT_HANDSHAKE_TRAFFIC[] = "c hs traffic";
-constexpr const char* HKDF_LABEL_SERVER_HANDSHAKE_TRAFFIC[] = "s hs traffic";
-constexpr const char* HKDF_LABEL_CLIENT_APPLICATION_TRAFFIC[] = "c ap traffic";
-constexpr const char* HKDF_LABEL_SERVER_APPLICATION_TRAFFIC[] = "s ap traffic";
-constexpr const char* HKDF_LABEL_EXPORTER_MASTER[] = "exp master";
-constexpr const char* HKDF_LABEL_RESUMPTION_MASTER[] = "res master";
+constexpr const char* HKDF_LABEL_DERIVED = "derived";
+constexpr const char* HKDF_LABEL_EXTERNAL_PSK_BINDER = "ext binder";
+constexpr const char* HKDF_LABEL_RESUMPTION_PSK_BINDER = "res binder";
+constexpr const char* HKDF_LABEL_CLIENT_EARLY_TRAFFIC = "c e traffic";
+constexpr const char* HKDF_LABEL_EARLY_EXPORTER_MASTER = "e exp master";
+constexpr const char* HKDF_LABEL_CLIENT_HANDSHAKE_TRAFFIC = "c hs traffic";
+constexpr const char* HKDF_LABEL_SERVER_HANDSHAKE_TRAFFIC = "s hs traffic";
+constexpr const char* HKDF_LABEL_CLIENT_APPLICATION_TRAFFIC = "c ap traffic";
+constexpr const char* HKDF_LABEL_SERVER_APPLICATION_TRAFFIC = "s ap traffic";
+constexpr const char* HKDF_LABEL_EXPORTER_MASTER = "exp master";
+constexpr const char* HKDF_LABEL_RESUMPTION_MASTER = "res master";
 
 // Key and IV labels
-constexpr const char* HKDF_LABEL_KEY[] = "key";
-constexpr const char* HKDF_LABEL_IV[] = "iv";
-constexpr const char* HKDF_LABEL_SN[] = "sn";
+constexpr const char* HKDF_LABEL_KEY = "key";
+constexpr const char* HKDF_LABEL_IV = "iv";
+constexpr const char* HKDF_LABEL_SN = "sn";
 
 // Finished labels
-constexpr const char* HKDF_LABEL_CLIENT_FINISHED[] = "client finished";
-constexpr const char* HKDF_LABEL_SERVER_FINISHED[] = "server finished";
+constexpr const char* HKDF_LABEL_CLIENT_FINISHED = "client finished";
+constexpr const char* HKDF_LABEL_SERVER_FINISHED = "server finished";
 
 // Certificate verify context
-constexpr const char* CERT_VERIFY_CONTEXT_CLIENT[] = 
+constexpr const char* CERT_VERIFY_CONTEXT_CLIENT = 
     "TLS 1.3, client CertificateVerify";
-constexpr const char* CERT_VERIFY_CONTEXT_SERVER[] = 
+constexpr const char* CERT_VERIFY_CONTEXT_SERVER = 
     "TLS 1.3, server CertificateVerify";
 
 // Standard hash empty values
