@@ -27,9 +27,31 @@ include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}/../include
 )
 
+# Test infrastructure library
+add_library(dtls_test_infrastructure STATIC
+    test_infrastructure/test_certificates.cpp
+    test_infrastructure/test_utilities.cpp
+    test_infrastructure/mock_transport.cpp
+)
+
+target_include_directories(dtls_test_infrastructure PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+target_link_libraries(dtls_test_infrastructure PUBLIC
+    dtls_core
+    GTest::gtest
+    Threads::Threads
+)
+
+# Add random number generation support for mock transport
+find_package(OpenSSL REQUIRED)
+target_link_libraries(dtls_test_infrastructure PRIVATE OpenSSL::SSL OpenSSL::Crypto)
+
 # Common test libraries and dependencies
 set(DTLS_TEST_LIBRARIES
     dtls_core
+    dtls_test_infrastructure
     GTest::gtest
     GTest::gtest_main
     GTest::gmock

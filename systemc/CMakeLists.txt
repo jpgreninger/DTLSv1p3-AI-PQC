@@ -106,6 +106,9 @@ if(DTLS_SYSTEMC_BUILD_TESTS)
         integration_test
         performance_test
         security_test
+        functional_validation_test
+        timing_validation_test
+        co_simulation_test
     )
     
     foreach(test_name ${SYSTEMC_TESTS})
