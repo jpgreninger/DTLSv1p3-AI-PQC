@@ -521,11 +521,114 @@ public:
     }
 };
 
+// EndOfEarlyData message (RFC 9147 Section 4.2.10)
+class EndOfEarlyData {
+public:
+    // EndOfEarlyData has no content, just the handshake header
+    EndOfEarlyData() = default;
+    
+    // Serialization
+    Result<size_t> serialize(memory::Buffer& buffer) const;
+    static Result<EndOfEarlyData> deserialize(const memory::Buffer& buffer, size_t offset = 0);
+    
+    // Validation
+    bool is_valid() const { return true; } // Always valid since no content
+    size_t serialized_size() const { return 0; } // No body content
+    
+    // Equality operators
+    bool operator==(const EndOfEarlyData& other) const {
+        (void)other; // Suppress unused parameter warning
+        return true; // All EndOfEarlyData messages are equal
+    }
+    
+    bool operator!=(const EndOfEarlyData& other) const {
+        return !(*this == other);
+    }
+};
+
+// NewSessionTicket message (RFC 9147 Section 4.2.11)
+class NewSessionTicket {
+private:
+    uint32_t ticket_lifetime_;           // Lifetime in seconds
+    uint32_t ticket_age_add_;           // Random value for obfuscation
+    std::vector<uint8_t> ticket_nonce_; // Unique per ticket
+    std::vector<uint8_t> ticket_;       // Encrypted ticket data
+    std::vector<Extension> extensions_; // Extensions (like early_data)
+    
+public:
+    // Constructors
+    NewSessionTicket() : ticket_lifetime_(0), ticket_age_add_(0) {}
+    
+    NewSessionTicket(uint32_t lifetime, uint32_t age_add, 
+                     const std::vector<uint8_t>& nonce,
+                     const std::vector<uint8_t>& ticket) 
+        : ticket_lifetime_(lifetime), ticket_age_add_(age_add), 
+          ticket_nonce_(nonce), ticket_(ticket) {}
+    
+    // Accessors
+    uint32_t ticket_lifetime() const noexcept { return ticket_lifetime_; }
+    uint32_t ticket_age_add() const noexcept { return ticket_age_add_; }
+    const std::vector<uint8_t>& ticket_nonce() const noexcept { return ticket_nonce_; }
+    const std::vector<uint8_t>& ticket() const noexcept { return ticket_; }
+    const std::vector<Extension>& extensions() const noexcept { return extensions_; }
+    
+    // Mutators
+    void set_ticket_lifetime(uint32_t lifetime) noexcept { ticket_lifetime_ = lifetime; }
+    void set_ticket_age_add(uint32_t age_add) noexcept { ticket_age_add_ = age_add; }
+    void set_ticket_nonce(const std::vector<uint8_t>& nonce) { ticket_nonce_ = nonce; }
+    void set_ticket(const std::vector<uint8_t>& ticket) { ticket_ = ticket; }
+    
+    // Extension management
+    void add_extension(const Extension& ext) { extensions_.push_back(ext); }
+    
+    template<typename T>
+    const T* get_extension() const {
+        auto type_value = static_cast<uint16_t>(T::extension_type);
+        for (const auto& ext : extensions_) {
+            if (static_cast<uint16_t>(ext.type) == type_value) {
+                // Note: This requires proper extension parsing implementation
+                return nullptr; // TODO: Implement proper extension parsing
+            }
+        }
+        return nullptr;
+    }
+    
+    bool has_extension(ExtensionType type) const {
+        for (const auto& ext : extensions_) {
+            if (ext.type == type) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    // Serialization
+    Result<size_t> serialize(memory::Buffer& buffer) const;
+    static Result<NewSessionTicket> deserialize(const memory::Buffer& buffer, size_t offset = 0);
+    
+    // Validation
+    bool is_valid() const;
+    size_t serialized_size() const;
+    
+    // Equality operators
+    bool operator==(const NewSessionTicket& other) const {
+        return ticket_lifetime_ == other.ticket_lifetime_ &&
+               ticket_age_add_ == other.ticket_age_add_ &&
+               ticket_nonce_ == other.ticket_nonce_ &&
+               ticket_ == other.ticket_ &&
+               extensions_ == other.extensions_;
+    }
+    
+    bool operator!=(const NewSessionTicket& other) const {
+        return !(*this == other);
+    }
+};
+
 // Handshake message wrapper
 class HandshakeMessage {
 private:
     HandshakeHeader header_;
-    std::variant<ClientHello, ServerHello, HelloRetryRequest, Certificate, CertificateVerify, Finished, KeyUpdate, ACK> message_;
+    std::variant<ClientHello, ServerHello, HelloRetryRequest, Certificate, CertificateVerify, Finished, KeyUpdate, ACK, EndOfEarlyData, NewSessionTicket> message_;
     
 public:
     HandshakeMessage() = default;
@@ -581,6 +684,110 @@ template<> constexpr HandshakeType HandshakeMessage::get_handshake_type<Certific
 template<> constexpr HandshakeType HandshakeMessage::get_handshake_type<Finished>() { return HandshakeType::FINISHED; }
 template<> constexpr HandshakeType HandshakeMessage::get_handshake_type<KeyUpdate>() { return HandshakeType::KEY_UPDATE; }
 template<> constexpr HandshakeType HandshakeMessage::get_handshake_type<ACK>() { return HandshakeType::ACK; }
+template<> constexpr HandshakeType HandshakeMessage::get_handshake_type<EndOfEarlyData>() { return HandshakeType::END_OF_EARLY_DATA; }
+template<> constexpr HandshakeType HandshakeMessage::get_handshake_type<NewSessionTicket>() { return HandshakeType::NEW_SESSION_TICKET; }
+
+// Early Data Extension Structure (RFC 9147)
+struct EarlyDataExtension {
+    uint32_t max_early_data_size; // Maximum early data the server will accept
+    
+    EarlyDataExtension() : max_early_data_size(0) {}
+    explicit EarlyDataExtension(uint32_t max_size) : max_early_data_size(max_size) {}
+    
+    static constexpr ExtensionType extension_type = ExtensionType::EARLY_DATA;
+    
+    Result<size_t> serialize(memory::Buffer& buffer) const;
+    static Result<EarlyDataExtension> deserialize(const memory::Buffer& buffer, size_t offset = 0);
+    
+    bool is_valid() const { return true; } // Always valid
+    size_t serialized_size() const;
+    
+    bool operator==(const EarlyDataExtension& other) const {
+        return max_early_data_size == other.max_early_data_size;
+    }
+    
+    bool operator!=(const EarlyDataExtension& other) const {
+        return !(*this == other);
+    }
+};
+
+// Pre-Shared Key Extension Structures (RFC 9147)
+struct PskIdentity {
+    std::vector<uint8_t> identity;
+    uint32_t obfuscated_ticket_age;  // Ticket age + ticket_age_add
+    
+    PskIdentity() : obfuscated_ticket_age(0) {}
+    PskIdentity(const std::vector<uint8_t>& id, uint32_t age) 
+        : identity(id), obfuscated_ticket_age(age) {}
+    
+    Result<size_t> serialize(memory::Buffer& buffer) const;
+    static Result<PskIdentity> deserialize(const memory::Buffer& buffer, size_t offset = 0);
+    
+    size_t serialized_size() const;
+    bool is_valid() const;
+    
+    bool operator==(const PskIdentity& other) const {
+        return identity == other.identity && obfuscated_ticket_age == other.obfuscated_ticket_age;
+    }
+};
+
+struct PreSharedKeyExtension {
+    std::vector<PskIdentity> identities;
+    std::vector<std::vector<uint8_t>> binders; // PSK binder values
+    
+    PreSharedKeyExtension() = default;
+    
+    static constexpr ExtensionType extension_type = ExtensionType::PRE_SHARED_KEY;
+    
+    void add_identity(const PskIdentity& identity) { identities.push_back(identity); }
+    void add_binder(const std::vector<uint8_t>& binder) { binders.push_back(binder); }
+    
+    Result<size_t> serialize(memory::Buffer& buffer) const;
+    static Result<PreSharedKeyExtension> deserialize(const memory::Buffer& buffer, size_t offset = 0);
+    
+    bool is_valid() const;
+    size_t serialized_size() const;
+    
+    bool operator==(const PreSharedKeyExtension& other) const {
+        return identities == other.identities && binders == other.binders;
+    }
+    
+    bool operator!=(const PreSharedKeyExtension& other) const {
+        return !(*this == other);
+    }
+};
+
+// PSK Key Exchange Modes Extension (RFC 9147)
+enum class PskKeyExchangeMode : uint8_t {
+    PSK_KE = 0,      // PSK-only key establishment
+    PSK_DHE_KE = 1   // PSK with (EC)DHE key establishment
+};
+
+struct PskKeyExchangeModesExtension {
+    std::vector<PskKeyExchangeMode> modes;
+    
+    PskKeyExchangeModesExtension() = default;
+    explicit PskKeyExchangeModesExtension(const std::vector<PskKeyExchangeMode>& exchange_modes) 
+        : modes(exchange_modes) {}
+    
+    static constexpr ExtensionType extension_type = ExtensionType::PSK_KEY_EXCHANGE_MODES;
+    
+    void add_mode(PskKeyExchangeMode mode) { modes.push_back(mode); }
+    
+    Result<size_t> serialize(memory::Buffer& buffer) const;
+    static Result<PskKeyExchangeModesExtension> deserialize(const memory::Buffer& buffer, size_t offset = 0);
+    
+    bool is_valid() const { return !modes.empty(); }
+    size_t serialized_size() const;
+    
+    bool operator==(const PskKeyExchangeModesExtension& other) const {
+        return modes == other.modes;
+    }
+    
+    bool operator!=(const PskKeyExchangeModesExtension& other) const {
+        return !(*this == other);
+    }
+};
 
 // Utility functions
 bool is_supported_cipher_suite(CipherSuite suite);
@@ -598,6 +805,26 @@ Result<Extension> create_cookie_extension(const memory::Buffer& cookie);
 Result<Extension> create_key_share_hello_retry_request_extension(NamedGroup selected_group);
 Result<memory::Buffer> extract_cookie_from_extension(const Extension& cookie_ext);
 Result<NamedGroup> extract_selected_group_from_extension(const Extension& key_share_ext);
+
+// Early Data and PSK utility functions
+Result<Extension> create_early_data_extension(uint32_t max_early_data_size = 0);
+Result<Extension> create_psk_extension(const std::vector<PskIdentity>& identities, 
+                                       const std::vector<std::vector<uint8_t>>& binders);
+Result<Extension> create_psk_key_exchange_modes_extension(const std::vector<PskKeyExchangeMode>& modes);
+
+// Extension parsing utilities
+Result<EarlyDataExtension> parse_early_data_extension(const Extension& ext);
+Result<PreSharedKeyExtension> parse_psk_extension(const Extension& ext);
+Result<PskKeyExchangeModesExtension> parse_psk_key_exchange_modes_extension(const Extension& ext);
+
+// PSK binder calculation utilities  
+Result<std::vector<uint8_t>> calculate_psk_binder(const std::vector<uint8_t>& psk,
+                                                  const std::vector<uint8_t>& handshake_context,
+                                                  const std::string& label);
+bool verify_psk_binder(const std::vector<uint8_t>& psk,
+                       const std::vector<uint8_t>& handshake_context,
+                       const std::vector<uint8_t>& expected_binder,
+                       const std::string& label);
 
 // ACK utility functions
 Result<ACK> create_ack_message(const std::vector<uint32_t>& acknowledged_sequences);

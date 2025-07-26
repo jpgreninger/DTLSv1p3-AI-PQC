@@ -213,7 +213,11 @@ enum class ConnectionState : uint8_t {
     WAIT_CLIENT_CERTIFICATE_VERIFY = 7,
     WAIT_CLIENT_FINISHED = 8,
     CONNECTED = 9,
-    CLOSED = 10
+    CLOSED = 10,
+    // Early data states (RFC 9147 Section 4.2.10)
+    EARLY_DATA = 11,           // Client sending early data
+    WAIT_END_OF_EARLY_DATA = 12, // Server waiting for EndOfEarlyData
+    EARLY_DATA_REJECTED = 13   // Early data was rejected by server
 };
 
 // Security levels

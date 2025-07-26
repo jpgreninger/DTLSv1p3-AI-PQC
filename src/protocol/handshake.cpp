@@ -2127,4 +2127,740 @@ bool KeyUpdate::is_valid() const noexcept {
     return true;
 }
 
+// EndOfEarlyData implementation
+Result<size_t> EndOfEarlyData::serialize(memory::Buffer& buffer) const {
+    // EndOfEarlyData has no content, so we just return success with 0 bytes written
+    return Result<size_t>(0);
+}
+
+Result<EndOfEarlyData> EndOfEarlyData::deserialize(const memory::Buffer& buffer, size_t offset) {
+    // EndOfEarlyData has no content, so we just return a default instance
+    (void)buffer; // Suppress unused parameter warning
+    (void)offset; // Suppress unused parameter warning
+    
+    return Result<EndOfEarlyData>(EndOfEarlyData{});
+}
+
+// NewSessionTicket implementation
+Result<size_t> NewSessionTicket::serialize(memory::Buffer& buffer) const {
+    size_t required_size = serialized_size();
+    
+    if (buffer.capacity() < required_size) {
+        return Result<size_t>(DTLSError::INSUFFICIENT_BUFFER_SIZE);
+    }
+    
+    auto resize_result = buffer.resize(required_size);
+    if (!resize_result.is_success()) {
+        return Result<size_t>(resize_result.error());
+    }
+    
+    std::byte* ptr = buffer.mutable_data();
+    size_t offset = 0;
+    
+    // Serialize ticket_lifetime (4 bytes)
+    uint32_t lifetime_be = htonl(ticket_lifetime_);
+    copy_to_byte_buffer(ptr + offset, &lifetime_be, 4);
+    offset += 4;
+    
+    // Serialize ticket_age_add (4 bytes)
+    uint32_t age_add_be = htonl(ticket_age_add_);
+    copy_to_byte_buffer(ptr + offset, &age_add_be, 4);
+    offset += 4;
+    
+    // Serialize ticket_nonce length (1 byte) + data
+    if (ticket_nonce_.size() > 255) {
+        return Result<size_t>(DTLSError::INVALID_MESSAGE_FORMAT);
+    }
+    uint8_t nonce_len = static_cast<uint8_t>(ticket_nonce_.size());
+    copy_to_byte_buffer(ptr + offset, &nonce_len, 1);
+    offset += 1;
+    
+    if (!ticket_nonce_.empty()) {
+        copy_to_byte_buffer(ptr + offset, ticket_nonce_.data(), ticket_nonce_.size());
+        offset += ticket_nonce_.size();
+    }
+    
+    // Serialize ticket length (2 bytes) + data
+    if (ticket_.size() > 65535) {
+        return Result<size_t>(DTLSError::INVALID_MESSAGE_FORMAT);
+    }
+    uint16_t ticket_len_be = htons(static_cast<uint16_t>(ticket_.size()));
+    copy_to_byte_buffer(ptr + offset, &ticket_len_be, 2);
+    offset += 2;
+    
+    if (!ticket_.empty()) {
+        copy_to_byte_buffer(ptr + offset, ticket_.data(), ticket_.size());
+        offset += ticket_.size();
+    }
+    
+    // Serialize extensions length (2 bytes)
+    size_t extensions_size = 0;
+    for (const auto& ext : extensions_) {
+        extensions_size += ext.serialized_size();
+    }
+    
+    if (extensions_size > 65535) {
+        return Result<size_t>(DTLSError::INVALID_MESSAGE_FORMAT);
+    }
+    uint16_t extensions_len_be = htons(static_cast<uint16_t>(extensions_size));
+    copy_to_byte_buffer(ptr + offset, &extensions_len_be, 2);
+    offset += 2;
+    
+    // Serialize extensions
+    for (const auto& ext : extensions_) {
+        memory::Buffer ext_buffer(ext.serialized_size());
+        auto ext_result = ext.serialize(ext_buffer);
+        if (!ext_result.is_success()) {
+            return Result<size_t>(ext_result.error());
+        }
+        
+        copy_to_byte_buffer(ptr + offset, ext_buffer.data(), ext_buffer.size());
+        offset += ext_buffer.size();
+    }
+    
+    return Result<size_t>(offset);
+}
+
+Result<NewSessionTicket> NewSessionTicket::deserialize(const memory::Buffer& buffer, size_t offset) {
+    if (buffer.size() < offset + 11) { // Minimum size: 4+4+1+2 = 11 bytes
+        return Result<NewSessionTicket>(DTLSError::BUFFER_TOO_SMALL);
+    }
+    
+    const std::byte* ptr = buffer.data() + offset;
+    size_t current_offset = 0;
+    
+    NewSessionTicket ticket;
+    
+    // Deserialize ticket_lifetime (4 bytes)
+    uint32_t lifetime_be;
+    copy_from_byte_buffer(&lifetime_be, ptr + current_offset, 4);
+    ticket.ticket_lifetime_ = ntohl(lifetime_be);
+    current_offset += 4;
+    
+    // Deserialize ticket_age_add (4 bytes)
+    uint32_t age_add_be;
+    copy_from_byte_buffer(&age_add_be, ptr + current_offset, 4);
+    ticket.ticket_age_add_ = ntohl(age_add_be);
+    current_offset += 4;
+    
+    // Deserialize ticket_nonce length and data
+    uint8_t nonce_len;
+    copy_from_byte_buffer(&nonce_len, ptr + current_offset, 1);
+    current_offset += 1;
+    
+    if (buffer.size() < offset + current_offset + nonce_len) {
+        return Result<NewSessionTicket>(DTLSError::BUFFER_TOO_SMALL);
+    }
+    
+    if (nonce_len > 0) {
+        ticket.ticket_nonce_.resize(nonce_len);
+        copy_from_byte_buffer(ticket.ticket_nonce_.data(), ptr + current_offset, nonce_len);
+        current_offset += nonce_len;
+    }
+    
+    // Deserialize ticket length and data
+    if (buffer.size() < offset + current_offset + 2) {
+        return Result<NewSessionTicket>(DTLSError::BUFFER_TOO_SMALL);
+    }
+    
+    uint16_t ticket_len_be;
+    copy_from_byte_buffer(&ticket_len_be, ptr + current_offset, 2);
+    uint16_t ticket_len = ntohs(ticket_len_be);
+    current_offset += 2;
+    
+    if (buffer.size() < offset + current_offset + ticket_len) {
+        return Result<NewSessionTicket>(DTLSError::BUFFER_TOO_SMALL);
+    }
+    
+    if (ticket_len > 0) {
+        ticket.ticket_.resize(ticket_len);
+        copy_from_byte_buffer(ticket.ticket_.data(), ptr + current_offset, ticket_len);
+        current_offset += ticket_len;
+    }
+    
+    // Deserialize extensions length
+    if (buffer.size() < offset + current_offset + 2) {
+        return Result<NewSessionTicket>(DTLSError::BUFFER_TOO_SMALL);
+    }
+    
+    uint16_t extensions_len_be;
+    copy_from_byte_buffer(&extensions_len_be, ptr + current_offset, 2);
+    uint16_t extensions_len = ntohs(extensions_len_be);
+    current_offset += 2;
+    
+    if (buffer.size() < offset + current_offset + extensions_len) {
+        return Result<NewSessionTicket>(DTLSError::BUFFER_TOO_SMALL);
+    }
+    
+    // Deserialize extensions
+    size_t extensions_offset = 0;
+    while (extensions_offset < extensions_len) {
+        if (extensions_len - extensions_offset < 4) { // Minimum extension size
+            return Result<NewSessionTicket>(DTLSError::INVALID_MESSAGE_FORMAT);
+        }
+        
+        // Create a sub-buffer for this extension
+        memory::Buffer ext_buffer(extensions_len - extensions_offset);
+        auto resize_result = ext_buffer.resize(extensions_len - extensions_offset);
+        if (!resize_result.is_success()) {
+            return Result<NewSessionTicket>(resize_result.error());
+        }
+        
+        copy_from_byte_buffer(ext_buffer.mutable_data(), 
+                              ptr + current_offset + extensions_offset, 
+                              extensions_len - extensions_offset);
+        
+        auto ext_result = Extension::deserialize(ext_buffer, 0);
+        if (!ext_result.is_success()) {
+            return Result<NewSessionTicket>(ext_result.error());
+        }
+        
+        ticket.extensions_.push_back(ext_result.value());
+        extensions_offset += ext_result.value().serialized_size();
+    }
+    
+    return Result<NewSessionTicket>(std::move(ticket));
+}
+
+bool NewSessionTicket::is_valid() const {
+    // Check that the nonce length is reasonable (typically small)
+    if (ticket_nonce_.size() > 255) {
+        return false;
+    }
+    
+    // Check that the ticket length is reasonable
+    if (ticket_.size() > 65535) {
+        return false;
+    }
+    
+    // Check that all extensions are valid
+    for (const auto& ext : extensions_) {
+        if (!ext.is_valid()) {
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+size_t NewSessionTicket::serialized_size() const {
+    size_t size = 4 + 4 + 1 + ticket_nonce_.size() + 2 + ticket_.size() + 2;
+    
+    for (const auto& ext : extensions_) {
+        size += ext.serialized_size();
+    }
+    
+    return size;
+}
+
+// EarlyDataExtension implementation
+Result<size_t> EarlyDataExtension::serialize(memory::Buffer& buffer) const {
+    // In ClientHello: extension has no data (just presence indicates support)
+    // In NewSessionTicket: extension contains max_early_data_size (4 bytes)
+    size_t size = (max_early_data_size > 0) ? 4 : 0;
+    
+    if (buffer.capacity() < size) {
+        return Result<size_t>(DTLSError::INSUFFICIENT_BUFFER_SIZE);
+    }
+    
+    auto resize_result = buffer.resize(size);
+    if (!resize_result.is_success()) {
+        return Result<size_t>(resize_result.error());
+    }
+    
+    if (size > 0) {
+        std::byte* ptr = buffer.mutable_data();
+        uint32_t max_size_be = htonl(max_early_data_size);
+        copy_to_byte_buffer(ptr, &max_size_be, 4);
+    }
+    
+    return Result<size_t>(size);
+}
+
+Result<EarlyDataExtension> EarlyDataExtension::deserialize(const memory::Buffer& buffer, size_t offset) {
+    if (buffer.size() == offset) {
+        // Empty extension (ClientHello case)
+        return Result<EarlyDataExtension>(EarlyDataExtension{});
+    }
+    
+    if (buffer.size() < offset + 4) {
+        return Result<EarlyDataExtension>(DTLSError::BUFFER_TOO_SMALL);
+    }
+    
+    const std::byte* ptr = buffer.data() + offset;
+    uint32_t max_size_be;
+    copy_from_byte_buffer(&max_size_be, ptr, 4);
+    uint32_t max_size = ntohl(max_size_be);
+    
+    return Result<EarlyDataExtension>(EarlyDataExtension{max_size});
+}
+
+size_t EarlyDataExtension::serialized_size() const {
+    return (max_early_data_size > 0) ? 4 : 0;
+}
+
+// PskIdentity implementation
+Result<size_t> PskIdentity::serialize(memory::Buffer& buffer) const {
+    size_t required_size = serialized_size();
+    
+    if (buffer.capacity() < required_size) {
+        return Result<size_t>(DTLSError::INSUFFICIENT_BUFFER_SIZE);
+    }
+    
+    auto resize_result = buffer.resize(required_size);
+    if (!resize_result.is_success()) {
+        return Result<size_t>(resize_result.error());
+    }
+    
+    std::byte* ptr = buffer.mutable_data();
+    size_t offset = 0;
+    
+    // Serialize identity length (2 bytes) + data
+    if (identity.size() > 65535) {
+        return Result<size_t>(DTLSError::INVALID_MESSAGE_FORMAT);
+    }
+    uint16_t identity_len_be = htons(static_cast<uint16_t>(identity.size()));
+    copy_to_byte_buffer(ptr + offset, &identity_len_be, 2);
+    offset += 2;
+    
+    if (!identity.empty()) {
+        copy_to_byte_buffer(ptr + offset, identity.data(), identity.size());
+        offset += identity.size();
+    }
+    
+    // Serialize obfuscated_ticket_age (4 bytes)
+    uint32_t age_be = htonl(obfuscated_ticket_age);
+    copy_to_byte_buffer(ptr + offset, &age_be, 4);
+    offset += 4;
+    
+    return Result<size_t>(offset);
+}
+
+Result<PskIdentity> PskIdentity::deserialize(const memory::Buffer& buffer, size_t offset) {
+    if (buffer.size() < offset + 6) { // Minimum: 2 + 4 = 6 bytes
+        return Result<PskIdentity>(DTLSError::BUFFER_TOO_SMALL);
+    }
+    
+    const std::byte* ptr = buffer.data() + offset;
+    size_t current_offset = 0;
+    
+    // Deserialize identity length and data
+    uint16_t identity_len_be;
+    copy_from_byte_buffer(&identity_len_be, ptr + current_offset, 2);
+    uint16_t identity_len = ntohs(identity_len_be);
+    current_offset += 2;
+    
+    if (buffer.size() < offset + current_offset + identity_len + 4) {
+        return Result<PskIdentity>(DTLSError::BUFFER_TOO_SMALL);
+    }
+    
+    std::vector<uint8_t> identity_data;
+    if (identity_len > 0) {
+        identity_data.resize(identity_len);
+        copy_from_byte_buffer(identity_data.data(), ptr + current_offset, identity_len);
+        current_offset += identity_len;
+    }
+    
+    // Deserialize obfuscated_ticket_age
+    uint32_t age_be;
+    copy_from_byte_buffer(&age_be, ptr + current_offset, 4);
+    uint32_t age = ntohl(age_be);
+    
+    return Result<PskIdentity>(PskIdentity{identity_data, age});
+}
+
+size_t PskIdentity::serialized_size() const {
+    return 2 + identity.size() + 4;
+}
+
+bool PskIdentity::is_valid() const {
+    return identity.size() <= 65535;
+}
+
+// PreSharedKeyExtension implementation
+Result<size_t> PreSharedKeyExtension::serialize(memory::Buffer& buffer) const {
+    size_t required_size = serialized_size();
+    
+    if (buffer.capacity() < required_size) {
+        return Result<size_t>(DTLSError::INSUFFICIENT_BUFFER_SIZE);
+    }
+    
+    auto resize_result = buffer.resize(required_size);
+    if (!resize_result.is_success()) {
+        return Result<size_t>(resize_result.error());
+    }
+    
+    std::byte* ptr = buffer.mutable_data();
+    size_t offset = 0;
+    
+    // Serialize identities length and data
+    size_t identities_size = 0;
+    for (const auto& identity : identities) {
+        identities_size += identity.serialized_size();
+    }
+    
+    if (identities_size > 65535) {
+        return Result<size_t>(DTLSError::INVALID_MESSAGE_FORMAT);
+    }
+    uint16_t identities_len_be = htons(static_cast<uint16_t>(identities_size));
+    copy_to_byte_buffer(ptr + offset, &identities_len_be, 2);
+    offset += 2;
+    
+    for (const auto& identity : identities) {
+        memory::Buffer identity_buffer(identity.serialized_size());
+        auto identity_result = identity.serialize(identity_buffer);
+        if (!identity_result.is_success()) {
+            return Result<size_t>(identity_result.error());
+        }
+        
+        copy_to_byte_buffer(ptr + offset, identity_buffer.data(), identity_buffer.size());
+        offset += identity_buffer.size();
+    }
+    
+    // Serialize binders length and data
+    size_t binders_size = 0;
+    for (const auto& binder : binders) {
+        binders_size += 1 + binder.size(); // 1 byte length + data
+    }
+    
+    if (binders_size > 65535) {
+        return Result<size_t>(DTLSError::INVALID_MESSAGE_FORMAT);
+    }
+    uint16_t binders_len_be = htons(static_cast<uint16_t>(binders_size));
+    copy_to_byte_buffer(ptr + offset, &binders_len_be, 2);
+    offset += 2;
+    
+    for (const auto& binder : binders) {
+        if (binder.size() > 255) {
+            return Result<size_t>(DTLSError::INVALID_MESSAGE_FORMAT);
+        }
+        uint8_t binder_len = static_cast<uint8_t>(binder.size());
+        copy_to_byte_buffer(ptr + offset, &binder_len, 1);
+        offset += 1;
+        
+        if (!binder.empty()) {
+            copy_to_byte_buffer(ptr + offset, binder.data(), binder.size());
+            offset += binder.size();
+        }
+    }
+    
+    return Result<size_t>(offset);
+}
+
+Result<PreSharedKeyExtension> PreSharedKeyExtension::deserialize(const memory::Buffer& buffer, size_t offset) {
+    if (buffer.size() < offset + 4) { // Minimum: 2 + 2 = 4 bytes
+        return Result<PreSharedKeyExtension>(DTLSError::BUFFER_TOO_SMALL);
+    }
+    
+    const std::byte* ptr = buffer.data() + offset;
+    size_t current_offset = 0;
+    
+    PreSharedKeyExtension psk_ext;
+    
+    // Deserialize identities
+    uint16_t identities_len_be;
+    copy_from_byte_buffer(&identities_len_be, ptr + current_offset, 2);
+    uint16_t identities_len = ntohs(identities_len_be);
+    current_offset += 2;
+    
+    if (buffer.size() < offset + current_offset + identities_len) {
+        return Result<PreSharedKeyExtension>(DTLSError::BUFFER_TOO_SMALL);
+    }
+    
+    size_t identities_end = current_offset + identities_len;
+    while (current_offset < identities_end) {
+        memory::Buffer identity_buffer(identities_end - current_offset);
+        auto resize_result = identity_buffer.resize(identities_end - current_offset);
+        if (!resize_result.is_success()) {
+            return Result<PreSharedKeyExtension>(resize_result.error());
+        }
+        
+        copy_from_byte_buffer(identity_buffer.mutable_data(), 
+                              ptr + current_offset, 
+                              identities_end - current_offset);
+        
+        auto identity_result = PskIdentity::deserialize(identity_buffer, 0);
+        if (!identity_result.is_success()) {
+            return Result<PreSharedKeyExtension>(identity_result.error());
+        }
+        
+        psk_ext.identities.push_back(identity_result.value());
+        current_offset += identity_result.value().serialized_size();
+    }
+    
+    // Deserialize binders
+    if (buffer.size() < offset + current_offset + 2) {
+        return Result<PreSharedKeyExtension>(DTLSError::BUFFER_TOO_SMALL);
+    }
+    
+    uint16_t binders_len_be;
+    copy_from_byte_buffer(&binders_len_be, ptr + current_offset, 2);
+    uint16_t binders_len = ntohs(binders_len_be);
+    current_offset += 2;
+    
+    if (buffer.size() < offset + current_offset + binders_len) {
+        return Result<PreSharedKeyExtension>(DTLSError::BUFFER_TOO_SMALL);
+    }
+    
+    size_t binders_end = current_offset + binders_len;
+    while (current_offset < binders_end) {
+        if (current_offset >= binders_end) {
+            return Result<PreSharedKeyExtension>(DTLSError::INVALID_MESSAGE_FORMAT);
+        }
+        
+        uint8_t binder_len;
+        copy_from_byte_buffer(&binder_len, ptr + current_offset, 1);
+        current_offset += 1;
+        
+        if (current_offset + binder_len > binders_end) {
+            return Result<PreSharedKeyExtension>(DTLSError::INVALID_MESSAGE_FORMAT);
+        }
+        
+        std::vector<uint8_t> binder_data;
+        if (binder_len > 0) {
+            binder_data.resize(binder_len);
+            copy_from_byte_buffer(binder_data.data(), ptr + current_offset, binder_len);
+            current_offset += binder_len;
+        }
+        
+        psk_ext.binders.push_back(binder_data);
+    }
+    
+    return Result<PreSharedKeyExtension>(std::move(psk_ext));
+}
+
+bool PreSharedKeyExtension::is_valid() const {
+    if (identities.empty() || binders.empty()) {
+        return false;
+    }
+    
+    if (identities.size() != binders.size()) {
+        return false;
+    }
+    
+    for (const auto& identity : identities) {
+        if (!identity.is_valid()) {
+            return false;
+        }
+    }
+    
+    for (const auto& binder : binders) {
+        if (binder.size() > 255) {
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+size_t PreSharedKeyExtension::serialized_size() const {
+    size_t size = 4; // 2 bytes for identities length + 2 bytes for binders length
+    
+    for (const auto& identity : identities) {
+        size += identity.serialized_size();
+    }
+    
+    for (const auto& binder : binders) {
+        size += 1 + binder.size(); // 1 byte length + data
+    }
+    
+    return size;
+}
+
+// PskKeyExchangeModesExtension implementation
+Result<size_t> PskKeyExchangeModesExtension::serialize(memory::Buffer& buffer) const {
+    size_t required_size = serialized_size();
+    
+    if (buffer.capacity() < required_size) {
+        return Result<size_t>(DTLSError::INSUFFICIENT_BUFFER_SIZE);
+    }
+    
+    auto resize_result = buffer.resize(required_size);
+    if (!resize_result.is_success()) {
+        return Result<size_t>(resize_result.error());
+    }
+    
+    std::byte* ptr = buffer.mutable_data();
+    
+    // Serialize modes length (1 byte) + modes data
+    if (modes.size() > 255) {
+        return Result<size_t>(DTLSError::INVALID_MESSAGE_FORMAT);
+    }
+    uint8_t modes_len = static_cast<uint8_t>(modes.size());
+    copy_to_byte_buffer(ptr, &modes_len, 1);
+    
+    for (size_t i = 0; i < modes.size(); ++i) {
+        uint8_t mode_value = static_cast<uint8_t>(modes[i]);
+        copy_to_byte_buffer(ptr + 1 + i, &mode_value, 1);
+    }
+    
+    return Result<size_t>(1 + modes.size());
+}
+
+Result<PskKeyExchangeModesExtension> PskKeyExchangeModesExtension::deserialize(const memory::Buffer& buffer, size_t offset) {
+    if (buffer.size() < offset + 1) {
+        return Result<PskKeyExchangeModesExtension>(DTLSError::BUFFER_TOO_SMALL);
+    }
+    
+    const std::byte* ptr = buffer.data() + offset;
+    
+    uint8_t modes_len;
+    copy_from_byte_buffer(&modes_len, ptr, 1);
+    
+    if (buffer.size() < offset + 1 + modes_len) {
+        return Result<PskKeyExchangeModesExtension>(DTLSError::BUFFER_TOO_SMALL);
+    }
+    
+    std::vector<PskKeyExchangeMode> modes_list;
+    for (size_t i = 0; i < modes_len; ++i) {
+        uint8_t mode_value;
+        copy_from_byte_buffer(&mode_value, ptr + 1 + i, 1);
+        
+        // Validate mode value
+        if (mode_value > static_cast<uint8_t>(PskKeyExchangeMode::PSK_DHE_KE)) {
+            return Result<PskKeyExchangeModesExtension>(DTLSError::INVALID_MESSAGE_FORMAT);
+        }
+        
+        modes_list.push_back(static_cast<PskKeyExchangeMode>(mode_value));
+    }
+    
+    return Result<PskKeyExchangeModesExtension>(PskKeyExchangeModesExtension{modes_list});
+}
+
+size_t PskKeyExchangeModesExtension::serialized_size() const {
+    return 1 + modes.size();
+}
+
+// Early Data and PSK utility function implementations
+Result<Extension> create_early_data_extension(uint32_t max_early_data_size) {
+    EarlyDataExtension early_data_ext(max_early_data_size);
+    
+    memory::Buffer ext_data(early_data_ext.serialized_size());
+    auto serialize_result = early_data_ext.serialize(ext_data);
+    if (!serialize_result.is_success()) {
+        return Result<Extension>(serialize_result.error());
+    }
+    
+    Extension ext(ExtensionType::EARLY_DATA, std::move(ext_data));
+    return Result<Extension>(std::move(ext));
+}
+
+Result<Extension> create_psk_extension(const std::vector<PskIdentity>& identities, 
+                                       const std::vector<std::vector<uint8_t>>& binders) {
+    PreSharedKeyExtension psk_ext;
+    psk_ext.identities = identities;
+    psk_ext.binders = binders;
+    
+    if (!psk_ext.is_valid()) {
+        return Result<Extension>(DTLSError::INVALID_MESSAGE_FORMAT);
+    }
+    
+    memory::Buffer ext_data(psk_ext.serialized_size());
+    auto serialize_result = psk_ext.serialize(ext_data);
+    if (!serialize_result.is_success()) {
+        return Result<Extension>(serialize_result.error());
+    }
+    
+    Extension ext(ExtensionType::PRE_SHARED_KEY, std::move(ext_data));
+    return Result<Extension>(std::move(ext));
+}
+
+Result<Extension> create_psk_key_exchange_modes_extension(const std::vector<PskKeyExchangeMode>& modes) {
+    PskKeyExchangeModesExtension modes_ext(modes);
+    
+    if (!modes_ext.is_valid()) {
+        return Result<Extension>(DTLSError::INVALID_MESSAGE_FORMAT);
+    }
+    
+    memory::Buffer ext_data(modes_ext.serialized_size());
+    auto serialize_result = modes_ext.serialize(ext_data);
+    if (!serialize_result.is_success()) {
+        return Result<Extension>(serialize_result.error());
+    }
+    
+    Extension ext(ExtensionType::PSK_KEY_EXCHANGE_MODES, std::move(ext_data));
+    return Result<Extension>(std::move(ext));
+}
+
+// Extension parsing utilities
+Result<EarlyDataExtension> parse_early_data_extension(const Extension& ext) {
+    if (ext.type != ExtensionType::EARLY_DATA) {
+        return Result<EarlyDataExtension>(DTLSError::INVALID_MESSAGE_FORMAT);
+    }
+    
+    return EarlyDataExtension::deserialize(ext.data, 0);
+}
+
+Result<PreSharedKeyExtension> parse_psk_extension(const Extension& ext) {
+    if (ext.type != ExtensionType::PRE_SHARED_KEY) {
+        return Result<PreSharedKeyExtension>(DTLSError::INVALID_MESSAGE_FORMAT);
+    }
+    
+    return PreSharedKeyExtension::deserialize(ext.data, 0);
+}
+
+Result<PskKeyExchangeModesExtension> parse_psk_key_exchange_modes_extension(const Extension& ext) {
+    if (ext.type != ExtensionType::PSK_KEY_EXCHANGE_MODES) {
+        return Result<PskKeyExchangeModesExtension>(DTLSError::INVALID_MESSAGE_FORMAT);
+    }
+    
+    return PskKeyExchangeModesExtension::deserialize(ext.data, 0);
+}
+
+// PSK binder calculation utilities (simplified implementation)
+Result<std::vector<uint8_t>> calculate_psk_binder(const std::vector<uint8_t>& psk,
+                                                  const std::vector<uint8_t>& handshake_context,
+                                                  const std::string& label) {
+    // This is a simplified implementation. In a production system, this would:
+    // 1. Use HKDF-Expand-Label with the PSK as the key
+    // 2. Include the handshake context and label
+    // 3. Generate the binder value using the transcript hash
+    
+    // For now, we'll create a placeholder binder
+    std::vector<uint8_t> binder(32); // Typical binder size
+    
+    // Simple hash combination (NOT cryptographically secure - just for structure)
+    size_t hash_val = 0;
+    for (uint8_t byte : psk) {
+        hash_val = hash_val * 31 + byte;
+    }
+    for (uint8_t byte : handshake_context) {
+        hash_val = hash_val * 31 + byte;
+    }
+    for (char c : label) {
+        hash_val = hash_val * 31 + static_cast<uint8_t>(c);
+    }
+    
+    // Fill binder with derived values
+    for (size_t i = 0; i < binder.size(); ++i) {
+        binder[i] = static_cast<uint8_t>((hash_val >> (i % 8)) & 0xFF);
+        hash_val = hash_val * 17 + i;
+    }
+    
+    return Result<std::vector<uint8_t>>(std::move(binder));
+}
+
+bool verify_psk_binder(const std::vector<uint8_t>& psk,
+                       const std::vector<uint8_t>& handshake_context,
+                       const std::vector<uint8_t>& expected_binder,
+                       const std::string& label) {
+    auto calculated_binder_result = calculate_psk_binder(psk, handshake_context, label);
+    if (!calculated_binder_result.is_success()) {
+        return false;
+    }
+    
+    const auto& calculated_binder = calculated_binder_result.value();
+    if (calculated_binder.size() != expected_binder.size()) {
+        return false;
+    }
+    
+    // Constant-time comparison
+    uint8_t diff = 0;
+    for (size_t i = 0; i < calculated_binder.size(); ++i) {
+        diff |= calculated_binder[i] ^ expected_binder[i];
+    }
+    
+    return diff == 0;
+}
+
 }  // namespace dtls::v13::protocol

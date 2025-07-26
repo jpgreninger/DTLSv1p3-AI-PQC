@@ -6,6 +6,7 @@
 #include <dtls/crypto/provider.h>
 #include <dtls/protocol/record_layer.h>
 #include <dtls/protocol/handshake.h>
+#include <dtls/protocol/early_data.h>
 #include <dtls/memory/buffer.h>
 #include <dtls/transport/udp_transport.h>
 
@@ -21,6 +22,9 @@ namespace v13 {
 namespace protocol {
     class HandshakeManager;
     class MessageLayer;
+    class SessionTicketManager;
+    class EarlyDataReplayProtection;
+    struct EarlyDataContext;
 }
 
 /**
@@ -44,6 +48,10 @@ struct ConnectionConfig {
     // Early data support
     bool enable_early_data = false;
     size_t max_early_data_size = 16384;  // 16KB
+    
+    // Early data configuration
+    std::chrono::milliseconds early_data_timeout{5000}; // Max time to wait for early data acceptance
+    bool allow_early_data_replay_protection{true};      // Enable replay protection for early data
     
     // Session management
     bool enable_session_resumption = true;
@@ -96,7 +104,12 @@ enum class ConnectionEvent : uint8_t {
     CONNECTION_CLOSED,
     ERROR_OCCURRED,
     ALERT_RECEIVED,
-    KEY_UPDATE_COMPLETED
+    KEY_UPDATE_COMPLETED,
+    // Early data events (RFC 9147)
+    EARLY_DATA_ACCEPTED,      // Server accepted early data
+    EARLY_DATA_REJECTED,      // Server rejected early data
+    EARLY_DATA_RECEIVED,      // Data received during early data phase
+    NEW_SESSION_TICKET_RECEIVED // New session ticket for future 0-RTT
 };
 
 /**
@@ -251,6 +264,56 @@ public:
      */
     Result<void> process_handshake_timeouts();
     
+    // ========== Early Data Support (RFC 9147) ==========
+    
+    /**
+     * Send early data (0-RTT) - client only
+     * Must be called after start_handshake() but before handshake completion
+     */
+    Result<void> send_early_data(const memory::ZeroCopyBuffer& data);
+    
+    /**
+     * Check if early data can be sent (client has valid session ticket)
+     */
+    bool can_send_early_data() const;
+    
+    /**
+     * Check if early data was accepted by the server
+     */
+    bool is_early_data_accepted() const;
+    
+    /**
+     * Check if early data was rejected by the server
+     */
+    bool is_early_data_rejected() const;
+    
+    /**
+     * Get early data statistics
+     */
+    struct EarlyDataStats {
+        size_t bytes_sent = 0;
+        size_t bytes_accepted = 0;
+        size_t bytes_rejected = 0;
+        std::chrono::milliseconds response_time{0};
+        bool was_attempted = false;
+    };
+    EarlyDataStats get_early_data_stats() const;
+    
+    /**
+     * Store a session ticket for future early data use
+     */
+    Result<void> store_session_ticket(const protocol::NewSessionTicket& ticket);
+    
+    /**
+     * Get available session tickets for early data
+     */
+    std::vector<std::string> get_available_session_tickets() const;
+    
+    /**
+     * Clear all stored session tickets
+     */
+    void clear_session_tickets();
+    
 private:
     // Private constructor - use factory methods
     Connection(const ConnectionConfig& config,
@@ -305,6 +368,12 @@ private:
     mutable std::mutex state_mutex_;
     std::atomic<bool> is_closing_{false};
     std::atomic<bool> force_closed_{false};
+    
+    // Early data support
+    std::unique_ptr<protocol::SessionTicketManager> session_ticket_manager_;
+    std::unique_ptr<protocol::EarlyDataReplayProtection> replay_protection_;
+    protocol::EarlyDataContext early_data_context_;
+    mutable std::mutex early_data_mutex_;
 };
 
 /**
