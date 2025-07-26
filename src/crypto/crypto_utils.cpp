@@ -325,8 +325,92 @@ Result<KeySchedule> update_traffic_keys(
     
     DTLS_CRYPTO_TIMER("update_traffic_keys");
     
-    // Key update not implemented in this basic version
-    return Result<KeySchedule>(DTLSError::OPERATION_NOT_SUPPORTED);
+    KeySchedule updated_keys = current_keys;
+    
+    // RFC 9147 Section 4.6.3: Key Update
+    // application_traffic_secret_N+1 = HKDF-Expand-Label(application_traffic_secret_N, "traffic upd", "", Hash.length)
+    
+    // Update client write key using current client write key as the base secret
+    auto updated_client_secret = hkdf_expand_label(
+        provider, cipher_spec.hash_algorithm, current_keys.client_write_key,
+        "traffic upd", {}, cipher_spec.hash_length);
+    
+    if (!updated_client_secret) {
+        return Result<KeySchedule>(updated_client_secret.error());
+    }
+    
+    // Update server write key using current server write key as the base secret
+    auto updated_server_secret = hkdf_expand_label(
+        provider, cipher_spec.hash_algorithm, current_keys.server_write_key,
+        "traffic upd", {}, cipher_spec.hash_length);
+    
+    if (!updated_server_secret) {
+        return Result<KeySchedule>(updated_server_secret.error());
+    }
+    
+    // Derive new client write key from updated secret
+    auto new_client_key = hkdf_expand_label(
+        provider, cipher_spec.hash_algorithm, *updated_client_secret,
+        constants::HKDF_LABEL_KEY, {}, cipher_spec.key_length);
+    
+    if (!new_client_key) {
+        return Result<KeySchedule>(new_client_key.error());
+    }
+    
+    // Derive new client IV from updated secret
+    auto new_client_iv = hkdf_expand_label(
+        provider, cipher_spec.hash_algorithm, *updated_client_secret,
+        constants::HKDF_LABEL_IV, {}, cipher_spec.iv_length);
+    
+    if (!new_client_iv) {
+        return Result<KeySchedule>(new_client_iv.error());
+    }
+    
+    // Derive new server write key from updated secret
+    auto new_server_key = hkdf_expand_label(
+        provider, cipher_spec.hash_algorithm, *updated_server_secret,
+        constants::HKDF_LABEL_KEY, {}, cipher_spec.key_length);
+    
+    if (!new_server_key) {
+        return Result<KeySchedule>(new_server_key.error());
+    }
+    
+    // Derive new server IV from updated secret
+    auto new_server_iv = hkdf_expand_label(
+        provider, cipher_spec.hash_algorithm, *updated_server_secret,
+        constants::HKDF_LABEL_IV, {}, cipher_spec.iv_length);
+    
+    if (!new_server_iv) {
+        return Result<KeySchedule>(new_server_iv.error());
+    }
+    
+    // Update sequence number keys
+    auto new_client_sn_key = derive_sequence_number_key(
+        provider, *updated_client_secret, cipher_spec.hash_algorithm);
+    
+    if (!new_client_sn_key) {
+        return Result<KeySchedule>(new_client_sn_key.error());
+    }
+    
+    auto new_server_sn_key = derive_sequence_number_key(
+        provider, *updated_server_secret, cipher_spec.hash_algorithm);
+    
+    if (!new_server_sn_key) {
+        return Result<KeySchedule>(new_server_sn_key.error());
+    }
+    
+    // Update the key schedule with new keys
+    updated_keys.client_write_key = std::move(*new_client_key);
+    updated_keys.server_write_key = std::move(*new_server_key);
+    updated_keys.client_write_iv = std::move(*new_client_iv);
+    updated_keys.server_write_iv = std::move(*new_server_iv);
+    updated_keys.client_sequence_number_key = std::move(*new_client_sn_key);
+    updated_keys.server_sequence_number_key = std::move(*new_server_sn_key);
+    
+    // Increment epoch for key update
+    updated_keys.epoch++;
+    
+    return Result<KeySchedule>(std::move(updated_keys));
 }
 
 // TranscriptHash implementation

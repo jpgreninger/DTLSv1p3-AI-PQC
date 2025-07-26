@@ -2085,4 +2085,46 @@ Result<NamedGroup> extract_selected_group_from_extension(const Extension& key_sh
     return Result<NamedGroup>(selected_group);
 }
 
+// ============================================================================
+// KeyUpdate Implementation
+// ============================================================================
+
+Result<size_t> KeyUpdate::serialize(memory::Buffer& buffer) const {
+    if (buffer.size() < serialized_size()) {
+        return Result<size_t>(DTLSError::BUFFER_TOO_SMALL);
+    }
+    
+    // Write the update request field (1 byte)
+    std::byte* ptr = buffer.mutable_data();
+    *ptr = static_cast<std::byte>(update_request_);
+    
+    return Result<size_t>(serialized_size());
+}
+
+Result<KeyUpdate> KeyUpdate::deserialize(const memory::Buffer& buffer, size_t offset) {
+    if (buffer.size() < offset + serialized_size()) {
+        return Result<KeyUpdate>(DTLSError::BUFFER_TOO_SMALL);
+    }
+    
+    const std::byte* ptr = buffer.data() + offset;
+    
+    // Read the update request field
+    uint8_t request_value = static_cast<uint8_t>(*ptr);
+    
+    // Validate the request value
+    if (request_value > static_cast<uint8_t>(KeyUpdateRequest::UPDATE_REQUESTED)) {
+        return Result<KeyUpdate>(DTLSError::INVALID_MESSAGE_FORMAT);
+    }
+    
+    KeyUpdateRequest request = static_cast<KeyUpdateRequest>(request_value);
+    KeyUpdate key_update(request);
+    
+    return Result<KeyUpdate>(std::move(key_update));
+}
+
+bool KeyUpdate::is_valid() const noexcept {
+    // KeyUpdate is always valid - the enum ensures proper values
+    return true;
+}
+
 }  // namespace dtls::v13::protocol

@@ -283,7 +283,11 @@ RecordLayer::RecordLayer(std::unique_ptr<crypto::CryptoProvider> crypto_provider
     : crypto_provider_(std::move(crypto_provider)),
       send_sequence_manager_(std::make_unique<SequenceNumberManager>()),
       epoch_manager_(std::make_unique<EpochManager>()),
-      connection_id_manager_(std::make_unique<ConnectionIDManager>()) {
+      connection_id_manager_(std::make_unique<ConnectionIDManager>()),
+      connection_start_time_(std::chrono::steady_clock::now()) {
+    
+    // Initialize key update stats
+    key_update_stats_.last_update_time = connection_start_time_;
 }
 
 Result<void> RecordLayer::initialize() {
@@ -399,6 +403,13 @@ Result<CiphertextRecord> RecordLayer::protect_record(const PlaintextRecord& plai
     }
     
     update_stats_protected();
+    
+    // Update key update record counter
+    {
+        std::lock_guard<std::mutex> lock(key_update_mutex_);
+        key_update_stats_.records_since_last_update++;
+    }
+    
     return Result<CiphertextRecord>(std::move(ciphertext));
 }
 
@@ -770,5 +781,111 @@ generate_test_vectors(CipherSuite suite) {
 }
 
 } // namespace record_layer_utils
+
+// ============================================================================
+// RecordLayer Key Update Implementation
+// ============================================================================
+
+Result<void> RecordLayer::update_traffic_keys() {
+    std::lock_guard<std::mutex> lock(key_update_mutex_);
+    
+    // Get current cipher spec
+    auto cipher_spec_result = crypto::CipherSpec::from_cipher_suite(current_cipher_suite_);
+    if (!cipher_spec_result.is_success()) {
+        return Result<void>(cipher_spec_result.error());
+    }
+    auto cipher_spec = cipher_spec_result.value();
+    
+    // Get current epoch crypto parameters
+    auto current_epoch_result = epoch_manager_->get_epoch_crypto_params(epoch_manager_->current_epoch());
+    if (!current_epoch_result.is_success()) {
+        return Result<void>(current_epoch_result.error());
+    }
+    auto current_params = current_epoch_result.value();
+    
+    // Create current key schedule from epoch parameters
+    crypto::KeySchedule current_keys;
+    current_keys.client_write_key = current_params.read_key;  // In DTLS, read_key is peer's write_key
+    current_keys.server_write_key = current_params.write_key;
+    current_keys.client_write_iv = current_params.read_iv;
+    current_keys.server_write_iv = current_params.write_iv;
+    current_keys.epoch = epoch_manager_->current_epoch();
+    
+    // Perform key update using crypto utils
+    auto updated_keys_result = crypto::utils::update_traffic_keys(
+        *crypto_provider_, cipher_spec, current_keys);
+    
+    if (!updated_keys_result.is_success()) {
+        return Result<void>(updated_keys_result.error());
+    }
+    
+    auto updated_keys = updated_keys_result.value();
+    
+    // Update epoch with new keys
+    auto advance_result = advance_epoch(
+        updated_keys.client_write_key,  // read_key (peer's write key)
+        updated_keys.server_write_key,  // write_key (our write key)  
+        updated_keys.client_write_iv,   // read_iv
+        updated_keys.server_write_iv    // write_iv
+    );
+    
+    if (!advance_result.is_success()) {
+        return advance_result;
+    }
+    
+    // Update statistics
+    key_update_stats_.updates_performed++;
+    key_update_stats_.records_since_last_update = 0;
+    key_update_stats_.last_update_time = std::chrono::steady_clock::now();
+    
+    return Result<void>();
+}
+
+Result<void> RecordLayer::update_traffic_keys(const crypto::KeySchedule& new_keys) {
+    std::lock_guard<std::mutex> lock(key_update_mutex_);
+    
+    // Update epoch with provided keys
+    auto advance_result = advance_epoch(
+        new_keys.client_write_key,  // read_key (peer's write key)
+        new_keys.server_write_key,  // write_key (our write key)
+        new_keys.client_write_iv,   // read_iv
+        new_keys.server_write_iv    // write_iv
+    );
+    
+    if (!advance_result.is_success()) {
+        return advance_result;
+    }
+    
+    // Update statistics
+    key_update_stats_.updates_performed++;
+    key_update_stats_.records_since_last_update = 0;
+    key_update_stats_.last_update_time = std::chrono::steady_clock::now();
+    
+    return Result<void>();
+}
+
+bool RecordLayer::needs_key_update(uint64_t max_records, std::chrono::seconds max_time) const {
+    std::lock_guard<std::mutex> lock(key_update_mutex_);
+    
+    // Check record count limit
+    if (key_update_stats_.records_since_last_update >= max_records) {
+        return true;
+    }
+    
+    // Check time limit
+    auto current_time = std::chrono::steady_clock::now();
+    auto time_since_last_update = current_time - key_update_stats_.last_update_time;
+    
+    if (time_since_last_update >= max_time) {
+        return true;
+    }
+    
+    return false;
+}
+
+RecordLayer::KeyUpdateStats RecordLayer::get_key_update_stats() const {
+    std::lock_guard<std::mutex> lock(key_update_mutex_);
+    return key_update_stats_;
+}
 
 } // namespace dtls::v13::protocol

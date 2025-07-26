@@ -9,6 +9,7 @@
 #include <memory>
 #include <mutex>
 #include <unordered_map>
+#include <chrono>
 
 namespace dtls {
 namespace v13 {
@@ -282,6 +283,36 @@ public:
                               const std::vector<uint8_t>& write_iv);
     
     /**
+     * Update traffic keys (RFC 9147 Section 4.6.3)
+     * Generates new read/write keys from current keys using HKDF-Expand-Label
+     */
+    Result<void> update_traffic_keys();
+    
+    /**
+     * Update traffic keys with provided key schedule
+     * Used for coordinated key updates across multiple layers
+     */
+    Result<void> update_traffic_keys(const crypto::KeySchedule& new_keys);
+    
+    /**
+     * Check if key update is needed based on record count or time
+     */
+    bool needs_key_update(uint64_t max_records = (1ULL << 24), 
+                         std::chrono::seconds max_time = std::chrono::hours(24)) const;
+    
+    /**
+     * Get current key update statistics
+     */
+    struct KeyUpdateStats {
+        uint64_t updates_performed{0};
+        uint64_t records_since_last_update{0};
+        std::chrono::steady_clock::time_point last_update_time;
+        uint64_t peer_updates_received{0};
+        uint64_t peer_updates_requested{0};
+    };
+    KeyUpdateStats get_key_update_stats() const;
+    
+    /**
      * Enable connection ID support
      */
     Result<void> enable_connection_id(const ConnectionID& local_cid, 
@@ -316,6 +347,11 @@ private:
     // Statistics
     mutable RecordLayerStats stats_;
     mutable std::mutex stats_mutex_;
+    
+    // Key update state
+    mutable KeyUpdateStats key_update_stats_;
+    std::chrono::steady_clock::time_point connection_start_time_;
+    mutable std::mutex key_update_mutex_;
     
     // Internal methods
     Result<std::vector<uint8_t>> construct_aead_nonce(uint16_t epoch, 

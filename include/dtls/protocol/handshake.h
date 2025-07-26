@@ -478,11 +478,54 @@ public:
     size_t serialized_size() const;
 };
 
+// Key update request field (RFC 9147 Section 4.6.3)
+enum class KeyUpdateRequest : uint8_t {
+    UPDATE_NOT_REQUESTED = 0,
+    UPDATE_REQUESTED = 1
+};
+
+// KeyUpdate message (RFC 9147 Section 4.6.3)
+class KeyUpdate {
+private:
+    KeyUpdateRequest update_request_;
+    
+public:
+    // Constructors
+    KeyUpdate() : update_request_(KeyUpdateRequest::UPDATE_NOT_REQUESTED) {}
+    explicit KeyUpdate(KeyUpdateRequest request) : update_request_(request) {}
+    
+    // Accessors
+    KeyUpdateRequest update_request() const noexcept { return update_request_; }
+    void set_update_request(KeyUpdateRequest request) noexcept { update_request_ = request; }
+    
+    // Key update logic
+    bool requests_peer_update() const noexcept { 
+        return update_request_ == KeyUpdateRequest::UPDATE_REQUESTED; 
+    }
+    
+    // Serialization
+    Result<size_t> serialize(memory::Buffer& buffer) const;
+    static Result<KeyUpdate> deserialize(const memory::Buffer& buffer, size_t offset = 0);
+    
+    // Validation
+    bool is_valid() const noexcept;
+    static constexpr size_t serialized_size() noexcept { return 1; } // Just the request field
+    
+    // Equality
+    bool operator==(const KeyUpdate& other) const noexcept {
+        return update_request_ == other.update_request_;
+    }
+    
+    bool operator!=(const KeyUpdate& other) const noexcept {
+        return !(*this == other);
+    }
+};
+
 // Handshake message wrapper
 class HandshakeMessage {
 private:
     HandshakeHeader header_;
-    std::variant<ClientHello, ServerHello, HelloRetryRequest, Certificate, CertificateVerify, Finished, ACK> message_;
+    std::variant<ClientHello, ServerHello, HelloRetryRequest, Certificate, CertificateVerify, Finished, KeyUpdate, ACK> message_;
     
 public:
     HandshakeMessage() = default;
@@ -536,6 +579,7 @@ template<> constexpr HandshakeType HandshakeMessage::get_handshake_type<HelloRet
 template<> constexpr HandshakeType HandshakeMessage::get_handshake_type<Certificate>() { return HandshakeType::CERTIFICATE; }
 template<> constexpr HandshakeType HandshakeMessage::get_handshake_type<CertificateVerify>() { return HandshakeType::CERTIFICATE_VERIFY; }
 template<> constexpr HandshakeType HandshakeMessage::get_handshake_type<Finished>() { return HandshakeType::FINISHED; }
+template<> constexpr HandshakeType HandshakeMessage::get_handshake_type<KeyUpdate>() { return HandshakeType::KEY_UPDATE; }
 template<> constexpr HandshakeType HandshakeMessage::get_handshake_type<ACK>() { return HandshakeType::ACK; }
 
 // Utility functions
