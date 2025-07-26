@@ -941,6 +941,163 @@ const std::vector<uint8_t> SHA512_EMPTY_HASH = {
 };
 
 } // namespace constants
+
+// Sequence number encryption utilities implementation
+namespace utils {
+
+Result<uint64_t> encrypt_sequence_number(
+    CryptoProvider& provider,
+    uint64_t sequence_number,
+    const std::vector<uint8_t>& sequence_number_key) {
+    
+    DTLS_CRYPTO_TIMER("encrypt_sequence_number");
+    
+    if (sequence_number_key.size() < 16) {
+        return make_error<uint64_t>(DTLSError::INVALID_PARAMETER, "Sequence number key too short");
+    }
+    
+    // For DTLS v1.3, we use AES-128-ECB to encrypt the 48-bit sequence number
+    // The sequence number is padded to 16 bytes with zeros
+    std::vector<uint8_t> plaintext(16, 0);
+    
+    // Store sequence number in big-endian format, right-aligned
+    for (int i = 0; i < 6; ++i) {
+        plaintext[10 + i] = (sequence_number >> (8 * (5 - i))) & 0xFF;
+    }
+    
+    // Use AEAD with empty nonce and AAD for ECB-like behavior
+    AEADParams params;
+    params.key = sequence_number_key;
+    params.nonce = std::vector<uint8_t>(12, 0); // 12-byte nonce of zeros
+    params.additional_data = {}; // No AAD
+    params.cipher = AEADCipher::AES_128_GCM;
+    
+    auto encrypted_result = provider.aead_encrypt(params, plaintext);
+    if (!encrypted_result.is_success()) {
+        return make_error<uint64_t>(encrypted_result.error(), "Failed to encrypt sequence number");
+    }
+    
+    auto encrypted = encrypted_result.value();
+    if (encrypted.size() < 16) {
+        return make_error<uint64_t>(DTLSError::INTERNAL_ERROR, "Encrypted sequence number too short");
+    }
+    
+    // Extract the encrypted sequence number from the last 6 bytes (excluding auth tag)
+    uint64_t encrypted_seq = 0;
+    for (int i = 0; i < 6; ++i) {
+        encrypted_seq |= (static_cast<uint64_t>(encrypted[10 + i]) << (8 * (5 - i)));
+    }
+    
+    // Mask to 48 bits
+    encrypted_seq &= 0xFFFFFFFFFFFFULL;
+    
+    return make_result(encrypted_seq);
+}
+
+Result<uint64_t> decrypt_sequence_number(
+    CryptoProvider& provider,
+    uint64_t encrypted_sequence_number,
+    const std::vector<uint8_t>& sequence_number_key) {
+    
+    DTLS_CRYPTO_TIMER("decrypt_sequence_number");
+    
+    if (sequence_number_key.size() < 16) {
+        return make_error<uint64_t>(DTLSError::INVALID_PARAMETER, "Sequence number key too short");
+    }
+    
+    // Reconstruct the encrypted block
+    std::vector<uint8_t> encrypted_block(16 + 16, 0); // 16 bytes plaintext + 16 bytes auth tag
+    
+    // Store encrypted sequence number in big-endian format, right-aligned
+    for (int i = 0; i < 6; ++i) {
+        encrypted_block[10 + i] = (encrypted_sequence_number >> (8 * (5 - i))) & 0xFF;
+    }
+    
+    // Use AEAD decrypt with same parameters
+    AEADParams params;
+    params.key = sequence_number_key;
+    params.nonce = std::vector<uint8_t>(12, 0); // 12-byte nonce of zeros
+    params.additional_data = {}; // No AAD
+    params.cipher = AEADCipher::AES_128_GCM;
+    
+    auto decrypted_result = provider.aead_decrypt(params, encrypted_block);
+    if (!decrypted_result.is_success()) {
+        return make_error<uint64_t>(decrypted_result.error(), "Failed to decrypt sequence number");
+    }
+    
+    auto decrypted = decrypted_result.value();
+    if (decrypted.size() < 16) {
+        return make_error<uint64_t>(DTLSError::INTERNAL_ERROR, "Decrypted sequence number too short");
+    }
+    
+    // Extract the decrypted sequence number from the last 6 bytes
+    uint64_t sequence_number = 0;
+    for (int i = 0; i < 6; ++i) {
+        sequence_number |= (static_cast<uint64_t>(decrypted[10 + i]) << (8 * (5 - i)));
+    }
+    
+    // Mask to 48 bits
+    sequence_number &= 0xFFFFFFFFFFFFULL;
+    
+    return make_result(sequence_number);
+}
+
+Result<std::vector<uint8_t>> derive_sequence_number_mask(
+    CryptoProvider& provider,
+    const std::vector<uint8_t>& traffic_secret,
+    const std::string& label) {
+    
+    DTLS_CRYPTO_TIMER("derive_sequence_number_mask");
+    
+    // Use HKDF-Expand-Label to derive the sequence number mask
+    // mask = HKDF-Expand-Label(traffic_secret, label, "", 6)
+    return hkdf_expand_label(provider, HashAlgorithm::SHA256, traffic_secret, label, {}, 6);
+}
+
+Result<std::vector<uint8_t>> derive_sequence_number_key(
+    CryptoProvider& provider,
+    const std::vector<uint8_t>& traffic_secret,
+    HashAlgorithm hash_algorithm) {
+    
+    DTLS_CRYPTO_TIMER("derive_sequence_number_key");
+    
+    // Use HKDF-Expand-Label to derive the sequence number encryption key
+    // seq_key = HKDF-Expand-Label(traffic_secret, "sn", "", 16)
+    return hkdf_expand_label(provider, hash_algorithm, traffic_secret, "sn", {}, 16);
+}
+
+Result<void> update_key_schedule_with_sequence_keys(
+    CryptoProvider& provider,
+    KeySchedule& key_schedule,
+    const std::vector<uint8_t>& client_traffic_secret,
+    const std::vector<uint8_t>& server_traffic_secret,
+    HashAlgorithm hash_algorithm) {
+    
+    DTLS_CRYPTO_TIMER("update_key_schedule_with_sequence_keys");
+    
+    // Derive client sequence number key
+    auto client_seq_key_result = derive_sequence_number_key(
+        provider, client_traffic_secret, hash_algorithm);
+    if (!client_seq_key_result.is_success()) {
+        return make_error(client_seq_key_result.error(), "Failed to derive client sequence number key");
+    }
+    
+    // Derive server sequence number key
+    auto server_seq_key_result = derive_sequence_number_key(
+        provider, server_traffic_secret, hash_algorithm);
+    if (!server_seq_key_result.is_success()) {
+        return make_error(server_seq_key_result.error(), "Failed to derive server sequence number key");
+    }
+    
+    // Update the key schedule
+    key_schedule.client_sequence_number_key = client_seq_key_result.value();
+    key_schedule.server_sequence_number_key = server_seq_key_result.value();
+    
+    return make_result();
+}
+
+} // namespace utils
+
 } // namespace crypto
 } // namespace v13
 } // namespace dtls

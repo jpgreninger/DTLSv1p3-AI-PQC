@@ -262,6 +262,61 @@ public:
     bool has_extension(ExtensionType type) const;
 };
 
+class HelloRetryRequest {
+private:
+    ProtocolVersion legacy_version_;
+    std::array<uint8_t, 32> random_;
+    memory::Buffer legacy_session_id_echo_;
+    CipherSuite cipher_suite_;
+    uint8_t legacy_compression_method_;
+    std::vector<Extension> extensions_;
+    
+    // HelloRetryRequest-specific special random (RFC 9147 Section 4.2.1)
+    static constexpr std::array<uint8_t, 32> HELLO_RETRY_REQUEST_RANDOM = {
+        0xCF, 0x21, 0xAD, 0x74, 0xE5, 0x9A, 0x61, 0x11,
+        0xBE, 0x1D, 0x8C, 0x02, 0x1E, 0x65, 0xB8, 0x91,
+        0xC2, 0xA2, 0x11, 0x16, 0x7A, 0xBB, 0x8C, 0x5E,
+        0x07, 0x9E, 0x09, 0xE2, 0xC8, 0xA8, 0x33, 0x9C
+    };
+    
+public:
+    HelloRetryRequest();
+    
+    // Accessors
+    ProtocolVersion legacy_version() const { return legacy_version_; }
+    const std::array<uint8_t, 32>& random() const { return random_; }
+    const memory::Buffer& legacy_session_id_echo() const { return legacy_session_id_echo_; }
+    CipherSuite cipher_suite() const { return cipher_suite_; }
+    const std::vector<Extension>& extensions() const { return extensions_; }
+    
+    // Mutators
+    void set_legacy_version(ProtocolVersion version) { legacy_version_ = version; }
+    void set_legacy_session_id_echo(memory::Buffer session_id) { legacy_session_id_echo_ = std::move(session_id); }
+    void set_cipher_suite(CipherSuite suite) { cipher_suite_ = suite; }
+    void add_extension(Extension extension) { extensions_.push_back(std::move(extension)); }
+    
+    // HelloRetryRequest-specific methods
+    void set_cookie(const memory::Buffer& cookie);
+    void set_selected_group(NamedGroup group);
+    std::optional<memory::Buffer> get_cookie() const;
+    std::optional<NamedGroup> get_selected_group() const;
+    
+    // Serialization
+    Result<size_t> serialize(memory::Buffer& buffer) const;
+    static Result<HelloRetryRequest> deserialize(const memory::Buffer& buffer, size_t offset = 0);
+    
+    // Validation
+    bool is_valid() const;
+    size_t serialized_size() const;
+    
+    // Extension helpers
+    std::optional<Extension> get_extension(ExtensionType type) const;
+    bool has_extension(ExtensionType type) const;
+    
+    // Static helpers
+    static bool is_hello_retry_request_random(const std::array<uint8_t, 32>& random);
+};
+
 struct CertificateEntry {
     memory::Buffer cert_data;
     std::vector<Extension> extensions;
@@ -427,7 +482,7 @@ public:
 class HandshakeMessage {
 private:
     HandshakeHeader header_;
-    std::variant<ClientHello, ServerHello, Certificate, CertificateVerify, Finished, ACK> message_;
+    std::variant<ClientHello, ServerHello, HelloRetryRequest, Certificate, CertificateVerify, Finished, ACK> message_;
     
 public:
     HandshakeMessage() = default;
@@ -477,6 +532,7 @@ private:
 // Template specializations for handshake type mapping
 template<> constexpr HandshakeType HandshakeMessage::get_handshake_type<ClientHello>() { return HandshakeType::CLIENT_HELLO; }
 template<> constexpr HandshakeType HandshakeMessage::get_handshake_type<ServerHello>() { return HandshakeType::SERVER_HELLO; }
+template<> constexpr HandshakeType HandshakeMessage::get_handshake_type<HelloRetryRequest>() { return HandshakeType::HELLO_RETRY_REQUEST; }
 template<> constexpr HandshakeType HandshakeMessage::get_handshake_type<Certificate>() { return HandshakeType::CERTIFICATE; }
 template<> constexpr HandshakeType HandshakeMessage::get_handshake_type<CertificateVerify>() { return HandshakeType::CERTIFICATE_VERIFY; }
 template<> constexpr HandshakeType HandshakeMessage::get_handshake_type<Finished>() { return HandshakeType::FINISHED; }
@@ -492,6 +548,12 @@ Result<memory::Buffer> create_random();
 Result<Extension> create_supported_versions_extension(const std::vector<ProtocolVersion>& versions);
 Result<Extension> create_supported_groups_extension(const std::vector<NamedGroup>& groups);
 Result<Extension> create_signature_algorithms_extension(const std::vector<SignatureScheme>& schemes);
+
+// HelloRetryRequest-specific utility functions
+Result<Extension> create_cookie_extension(const memory::Buffer& cookie);
+Result<Extension> create_key_share_hello_retry_request_extension(NamedGroup selected_group);
+Result<memory::Buffer> extract_cookie_from_extension(const Extension& cookie_ext);
+Result<NamedGroup> extract_selected_group_from_extension(const Extension& key_share_ext);
 
 // ACK utility functions
 Result<ACK> create_ack_message(const std::vector<uint32_t>& acknowledged_sequences);

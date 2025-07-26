@@ -451,6 +451,272 @@ bool ServerHello::has_extension(ExtensionType type) const {
     return get_extension(type).has_value();
 }
 
+// HelloRetryRequest implementation
+HelloRetryRequest::HelloRetryRequest()
+    : legacy_version_(ProtocolVersion::DTLS_1_2)
+    , random_(HELLO_RETRY_REQUEST_RANDOM)
+    , cipher_suite_(CipherSuite::TLS_AES_128_GCM_SHA256)
+    , legacy_compression_method_(0)
+{
+    // HelloRetryRequest uses the special fixed random value
+    // No need to generate random as it's set in the initializer list
+}
+
+void HelloRetryRequest::set_cookie(const memory::Buffer& cookie) {
+    // Remove existing cookie extension if present
+    extensions_.erase(
+        std::remove_if(extensions_.begin(), extensions_.end(),
+            [](const Extension& ext) { return ext.type == ExtensionType::COOKIE; }),
+        extensions_.end());
+    
+    // Add new cookie extension
+    auto cookie_ext_result = create_cookie_extension(cookie);
+    if (cookie_ext_result.is_success()) {
+        extensions_.push_back(std::move(cookie_ext_result.value()));
+    }
+}
+
+void HelloRetryRequest::set_selected_group(NamedGroup group) {
+    // Remove existing key_share extension if present
+    extensions_.erase(
+        std::remove_if(extensions_.begin(), extensions_.end(),
+            [](const Extension& ext) { return ext.type == ExtensionType::KEY_SHARE; }),
+        extensions_.end());
+    
+    // Add new key_share extension with selected group
+    auto key_share_ext_result = create_key_share_hello_retry_request_extension(group);
+    if (key_share_ext_result.is_success()) {
+        extensions_.push_back(std::move(key_share_ext_result.value()));
+    }
+}
+
+std::optional<memory::Buffer> HelloRetryRequest::get_cookie() const {
+    auto cookie_ext = get_extension(ExtensionType::COOKIE);
+    if (!cookie_ext.has_value()) {
+        return std::nullopt;
+    }
+    
+    auto cookie_result = extract_cookie_from_extension(cookie_ext.value());
+    if (!cookie_result.is_success()) {
+        return std::nullopt;
+    }
+    
+    return cookie_result.value();
+}
+
+std::optional<NamedGroup> HelloRetryRequest::get_selected_group() const {
+    auto key_share_ext = get_extension(ExtensionType::KEY_SHARE);
+    if (!key_share_ext.has_value()) {
+        return std::nullopt;
+    }
+    
+    auto group_result = extract_selected_group_from_extension(key_share_ext.value());
+    if (!group_result.is_success()) {
+        return std::nullopt;
+    }
+    
+    return group_result.value();
+}
+
+Result<size_t> HelloRetryRequest::serialize(memory::Buffer& buffer) const {
+    if (!is_valid()) {
+        return Result<size_t>(DTLSError::INVALID_MESSAGE_FORMAT);
+    }
+    
+    size_t total_size = serialized_size();
+    if (buffer.capacity() < total_size) {
+        return Result<size_t>(DTLSError::INSUFFICIENT_BUFFER_SIZE);
+    }
+    
+    auto resize_result = buffer.resize(total_size);
+    if (!resize_result.is_success()) {
+        return Result<size_t>(resize_result.error());
+    }
+    
+    std::byte* ptr = buffer.mutable_data();
+    size_t offset = 0;
+    
+    // Legacy version (2 bytes)
+    uint16_t version_net = htons(static_cast<uint16_t>(legacy_version_));
+    copy_to_byte_buffer(ptr + offset, &version_net, 2);
+    offset += 2;
+    
+    // Random (32 bytes) - always the special HelloRetryRequest value
+    copy_to_byte_buffer(ptr + offset, random_.data(), 32);
+    offset += 32;
+    
+    // Legacy session ID echo
+    uint8_t session_id_len = static_cast<uint8_t>(legacy_session_id_echo_.size());
+    ptr[offset++] = static_cast<std::byte>(session_id_len);
+    if (session_id_len > 0) {
+        copy_to_byte_buffer(ptr + offset, legacy_session_id_echo_.data(), session_id_len);
+        offset += session_id_len;
+    }
+    
+    // Cipher suite (2 bytes)
+    uint16_t suite_net = htons(static_cast<uint16_t>(cipher_suite_));
+    copy_to_byte_buffer(ptr + offset, &suite_net, 2);
+    offset += 2;
+    
+    // Legacy compression method (1 byte)
+    ptr[offset++] = static_cast<std::byte>(legacy_compression_method_);
+    
+    // Extensions
+    size_t extensions_size = 0;
+    for (const auto& ext : extensions_) {
+        extensions_size += ext.serialized_size();
+    }
+    
+    uint16_t extensions_len_net = htons(static_cast<uint16_t>(extensions_size));
+    copy_to_byte_buffer(ptr + offset, &extensions_len_net, 2);
+    offset += 2;
+    
+    for (const auto& ext : extensions_) {
+        memory::Buffer ext_buffer(ext.serialized_size());
+        auto ext_result = ext.serialize(ext_buffer);
+        if (!ext_result.is_success()) {
+            return Result<size_t>(ext_result.error());
+        }
+        copy_to_byte_buffer(ptr + offset, ext_buffer.data(), ext_buffer.size());
+        offset += ext_buffer.size();
+    }
+    
+    return Result<size_t>(total_size);
+}
+
+Result<HelloRetryRequest> HelloRetryRequest::deserialize(const memory::Buffer& buffer, size_t offset) {
+    if (buffer.size() < offset + 38) { // Minimum size: version(2) + random(32) + session_id_len(1) + cipher_suite(2) + compression(1)
+        return Result<HelloRetryRequest>(DTLSError::INSUFFICIENT_BUFFER_SIZE);
+    }
+    
+    const std::byte* ptr = buffer.data() + offset;
+    HelloRetryRequest hello_retry_request;
+    size_t pos = 0;
+    
+    // Legacy version (2 bytes)
+    uint16_t version_net;
+    copy_from_byte_buffer(&version_net, ptr + pos, 2);
+    hello_retry_request.legacy_version_ = static_cast<ProtocolVersion>(ntohs(version_net));
+    pos += 2;
+    
+    // Random (32 bytes) - must be the special HelloRetryRequest value
+    copy_from_byte_buffer(hello_retry_request.random_.data(), ptr + pos, 32);
+    pos += 32;
+    
+    // Validate that this is actually a HelloRetryRequest by checking the random value
+    if (!is_hello_retry_request_random(hello_retry_request.random_)) {
+        return Result<HelloRetryRequest>(DTLSError::INVALID_MESSAGE_FORMAT);
+    }
+    
+    // Legacy session ID echo
+    uint8_t session_id_len = static_cast<uint8_t>(ptr[pos++]);
+    if (buffer.size() < offset + pos + session_id_len) {
+        return Result<HelloRetryRequest>(DTLSError::INSUFFICIENT_BUFFER_SIZE);
+    }
+    
+    if (session_id_len > 0) {
+        hello_retry_request.legacy_session_id_echo_ = memory::Buffer(session_id_len);
+        auto resize_result = hello_retry_request.legacy_session_id_echo_.resize(session_id_len);
+        if (!resize_result.is_success()) {
+            return Result<HelloRetryRequest>(resize_result.error());
+        }
+        copy_to_byte_buffer(hello_retry_request.legacy_session_id_echo_.mutable_data(), ptr + pos, session_id_len);
+        pos += session_id_len;
+    }
+    
+    // Cipher suite (2 bytes)
+    if (buffer.size() < offset + pos + 2) {
+        return Result<HelloRetryRequest>(DTLSError::INSUFFICIENT_BUFFER_SIZE);
+    }
+    uint16_t suite_net;
+    copy_from_byte_buffer(&suite_net, ptr + pos, 2);
+    hello_retry_request.cipher_suite_ = static_cast<CipherSuite>(ntohs(suite_net));
+    pos += 2;
+    
+    // Legacy compression method (1 byte)
+    if (buffer.size() < offset + pos + 1) {
+        return Result<HelloRetryRequest>(DTLSError::INSUFFICIENT_BUFFER_SIZE);
+    }
+    hello_retry_request.legacy_compression_method_ = static_cast<uint8_t>(ptr[pos++]);
+    
+    // Extensions length (2 bytes)
+    if (buffer.size() < offset + pos + 2) {
+        return Result<HelloRetryRequest>(DTLSError::INSUFFICIENT_BUFFER_SIZE);
+    }
+    uint16_t extensions_len_net;
+    copy_from_byte_buffer(&extensions_len_net, ptr + pos, 2);
+    uint16_t extensions_len = ntohs(extensions_len_net);
+    pos += 2;
+    
+    if (buffer.size() < offset + pos + extensions_len) {
+        return Result<HelloRetryRequest>(DTLSError::INSUFFICIENT_BUFFER_SIZE);
+    }
+    
+    // Parse extensions
+    size_t extensions_parsed = 0;
+    while (extensions_parsed < extensions_len) {
+        auto ext_result = Extension::deserialize(buffer, offset + pos + extensions_parsed);
+        if (!ext_result.is_success()) {
+            return Result<HelloRetryRequest>(ext_result.error());
+        }
+        
+        Extension ext = std::move(ext_result.value());
+        extensions_parsed += ext.serialized_size();
+        hello_retry_request.extensions_.push_back(std::move(ext));
+    }
+    
+    // Validate the message
+    if (!hello_retry_request.is_valid()) {
+        return Result<HelloRetryRequest>(DTLSError::INVALID_MESSAGE_FORMAT);
+    }
+    
+    return Result<HelloRetryRequest>(std::move(hello_retry_request));
+}
+
+bool HelloRetryRequest::is_valid() const {
+    // Must use the special HelloRetryRequest random value
+    if (random_ != HELLO_RETRY_REQUEST_RANDOM) {
+        return false;
+    }
+    
+    if (legacy_session_id_echo_.size() > 32) return false;
+    if (legacy_compression_method_ != 0) return false; // Must be null compression
+    
+    // HelloRetryRequest must contain cookie extension for DTLS
+    if (!has_extension(ExtensionType::COOKIE)) {
+        return false;
+    }
+    
+    return true;
+}
+
+size_t HelloRetryRequest::serialized_size() const {
+    size_t size = 2 + 32 + 1 + legacy_session_id_echo_.size() + 2 + 1 + 2;
+    
+    for (const auto& ext : extensions_) {
+        size += ext.serialized_size();
+    }
+    
+    return size;
+}
+
+std::optional<Extension> HelloRetryRequest::get_extension(ExtensionType type) const {
+    for (const auto& ext : extensions_) {
+        if (ext.type == type) {
+            return ext;
+        }
+    }
+    return std::nullopt;
+}
+
+bool HelloRetryRequest::has_extension(ExtensionType type) const {
+    return get_extension(type).has_value();
+}
+
+bool HelloRetryRequest::is_hello_retry_request_random(const std::array<uint8_t, 32>& random) {
+    return std::equal(random.begin(), random.end(), HELLO_RETRY_REQUEST_RANDOM.begin());
+}
+
 // CertificateVerify implementation
 Result<size_t> CertificateVerify::serialize(memory::Buffer& buffer) const {
     if (!is_valid()) {
@@ -1275,6 +1541,14 @@ Result<HandshakeMessage> HandshakeMessage::deserialize(const memory::Buffer& buf
             handshake_msg.message_ = std::move(msg_result.value());
             break;
         }
+        case HandshakeType::HELLO_RETRY_REQUEST: {
+            auto msg_result = HelloRetryRequest::deserialize(buffer, payload_offset);
+            if (!msg_result.is_success()) {
+                return Result<HandshakeMessage>(msg_result.error());
+            }
+            handshake_msg.message_ = std::move(msg_result.value());
+            break;
+        }
         case HandshakeType::CERTIFICATE: {
             auto msg_result = Certificate::deserialize(buffer, payload_offset);
             if (!msg_result.is_success()) {
@@ -1713,6 +1987,102 @@ bool should_send_ack(const std::vector<uint32_t>& received_sequences, const ACK&
     }
     
     return false; // All sequences already acknowledged
+}
+
+// HelloRetryRequest utility functions implementation
+Result<Extension> create_cookie_extension(const memory::Buffer& cookie) {
+    if (cookie.size() == 0 || cookie.size() > 65535) {
+        return Result<Extension>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Cookie extension format: length(2 bytes) + cookie data
+    memory::Buffer ext_data(2 + cookie.size());
+    auto resize_result = ext_data.resize(2 + cookie.size());
+    if (!resize_result.is_success()) {
+        return Result<Extension>(resize_result.error());
+    }
+    
+    std::byte* ptr = ext_data.mutable_data();
+    size_t offset = 0;
+    
+    // Cookie length (2 bytes)
+    uint16_t cookie_len_net = htons(static_cast<uint16_t>(cookie.size()));
+    copy_to_byte_buffer(ptr + offset, &cookie_len_net, 2);
+    offset += 2;
+    
+    // Cookie data
+    copy_to_byte_buffer(ptr + offset, cookie.data(), cookie.size());
+    
+    return Result<Extension>(Extension(ExtensionType::COOKIE, std::move(ext_data)));
+}
+
+Result<Extension> create_key_share_hello_retry_request_extension(NamedGroup selected_group) {
+    // Key share extension for HelloRetryRequest only contains the selected group (2 bytes)
+    memory::Buffer ext_data(2);
+    auto resize_result = ext_data.resize(2);
+    if (!resize_result.is_success()) {
+        return Result<Extension>(resize_result.error());
+    }
+    
+    std::byte* ptr = ext_data.mutable_data();
+    
+    // Selected group (2 bytes)
+    uint16_t group_net = htons(static_cast<uint16_t>(selected_group));
+    copy_to_byte_buffer(ptr, &group_net, 2);
+    
+    return Result<Extension>(Extension(ExtensionType::KEY_SHARE, std::move(ext_data)));
+}
+
+Result<memory::Buffer> extract_cookie_from_extension(const Extension& cookie_ext) {
+    if (cookie_ext.type != ExtensionType::COOKIE) {
+        return Result<memory::Buffer>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    if (cookie_ext.data.size() < 2) {
+        return Result<memory::Buffer>(DTLSError::INVALID_MESSAGE_FORMAT);
+    }
+    
+    const std::byte* ptr = cookie_ext.data.data();
+    
+    // Read cookie length (2 bytes)
+    uint16_t cookie_len_net;
+    copy_from_byte_buffer(&cookie_len_net, ptr, 2);
+    uint16_t cookie_len = ntohs(cookie_len_net);
+    
+    if (cookie_ext.data.size() != 2 + cookie_len) {
+        return Result<memory::Buffer>(DTLSError::INVALID_MESSAGE_FORMAT);
+    }
+    
+    // Extract cookie data
+    memory::Buffer cookie(cookie_len);
+    if (cookie_len > 0) {
+        auto resize_result = cookie.resize(cookie_len);
+        if (!resize_result.is_success()) {
+            return Result<memory::Buffer>(resize_result.error());
+        }
+        copy_to_byte_buffer(cookie.mutable_data(), ptr + 2, cookie_len);
+    }
+    
+    return Result<memory::Buffer>(std::move(cookie));
+}
+
+Result<NamedGroup> extract_selected_group_from_extension(const Extension& key_share_ext) {
+    if (key_share_ext.type != ExtensionType::KEY_SHARE) {
+        return Result<NamedGroup>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    if (key_share_ext.data.size() != 2) {
+        return Result<NamedGroup>(DTLSError::INVALID_MESSAGE_FORMAT);
+    }
+    
+    const std::byte* ptr = key_share_ext.data.data();
+    
+    // Read selected group (2 bytes)
+    uint16_t group_net;
+    copy_from_byte_buffer(&group_net, ptr, 2);
+    NamedGroup selected_group = static_cast<NamedGroup>(ntohs(group_net));
+    
+    return Result<NamedGroup>(selected_group);
 }
 
 }  // namespace dtls::v13::protocol

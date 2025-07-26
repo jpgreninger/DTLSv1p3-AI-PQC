@@ -246,6 +246,11 @@ public:
      */
     bool is_server() const;
     
+    /**
+     * Process handshake timeouts (should be called periodically)
+     */
+    Result<void> process_handshake_timeouts();
+    
 private:
     // Private constructor - use factory methods
     Connection(const ConnectionConfig& config,
@@ -264,6 +269,11 @@ private:
     Result<void> process_record_data(const memory::ZeroCopyBuffer& record_data);
     Result<void> handle_handshake_data(const memory::ZeroCopyBuffer& data);
     Result<void> handle_alert_data(const memory::ZeroCopyBuffer& data);
+    
+    // ACK processing methods
+    Result<void> handle_ack_message(const protocol::ACK& ack_message);
+    Result<void> send_handshake_message(const protocol::HandshakeMessage& message);
+    bool should_process_ack_for_state(ConnectionState state) const;
     void handle_transport_event(transport::TransportEvent event,
                                const transport::NetworkEndpoint& endpoint,
                                const std::vector<uint8_t>& data);
@@ -277,7 +287,7 @@ private:
     std::unique_ptr<crypto::CryptoProvider> crypto_provider_;
     // TODO: Enable when incomplete types are properly implemented
     // std::unique_ptr<protocol::RecordLayer> record_layer_;
-    // std::unique_ptr<protocol::HandshakeManager> handshake_manager_;
+    std::unique_ptr<protocol::HandshakeManager> handshake_manager_;
     // std::unique_ptr<protocol::MessageLayer> message_layer_;
     std::unique_ptr<transport::UDPTransport> transport_;
     

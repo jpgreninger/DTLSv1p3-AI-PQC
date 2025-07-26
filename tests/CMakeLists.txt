@@ -71,6 +71,22 @@ set(DTLS_TEST_COMPILE_OPTIONS
     -fno-omit-frame-pointer
 )
 
+# Protocol Unit Tests
+add_executable(dtls_protocol_test
+    protocol/test_dtls_records.cpp
+    protocol/test_hello_retry_request.cpp
+    protocol/test_cookie.cpp
+)
+
+target_link_libraries(dtls_protocol_test PRIVATE ${DTLS_TEST_LIBRARIES})
+target_compile_options(dtls_protocol_test PRIVATE ${DTLS_TEST_COMPILE_OPTIONS})
+
+add_test(NAME DTLSProtocolTest COMMAND dtls_protocol_test)
+set_tests_properties(DTLSProtocolTest PROPERTIES
+    TIMEOUT 120
+    LABELS "protocol"
+)
+
 # Integration Tests
 add_executable(dtls_integration_test
     integration/dtls_integration_test.cpp
@@ -145,6 +161,7 @@ set_tests_properties(DTLSInteroperabilityTest PROPERTIES
 add_custom_target(run_all_tests
     COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure --parallel 4
     DEPENDS 
+        dtls_protocol_test
         dtls_integration_test
         dtls_performance_test
         dtls_security_test
@@ -154,6 +171,12 @@ add_custom_target(run_all_tests
 )
 
 # Test Categories
+add_custom_target(run_protocol_tests
+    COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure -L protocol
+    DEPENDS dtls_protocol_test
+    COMMENT "Running protocol unit tests"
+)
+
 add_custom_target(run_integration_tests
     COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure -L integration
     DEPENDS dtls_integration_test

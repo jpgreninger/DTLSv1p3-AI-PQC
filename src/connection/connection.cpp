@@ -1,5 +1,6 @@
 #include <dtls/connection.h>
 #include <dtls/protocol/message_layer.h>
+#include <dtls/protocol/handshake_manager.h>
 #include <dtls/crypto/crypto_utils.h>
 #include <dtls/memory/pool.h>
 #include <dtls/transport/udp_transport.h>
@@ -108,10 +109,42 @@ Result<void> Connection::initialize() {
     //     return message_result;
     // }
     
-    // Initialize handshake manager (placeholder - will be implemented in handshake layer)
-    // handshake_manager_ = std::make_unique<protocol::HandshakeManager>(
-    //     crypto_provider_->clone(), is_client_
-    // );
+    // Initialize handshake manager with ACK support
+    protocol::HandshakeManager::Config handshake_config;
+    handshake_config.initial_timeout = config_.retransmission_timeout;
+    handshake_config.max_timeout = config_.handshake_timeout;
+    handshake_config.max_retransmissions = config_.max_retransmissions;
+    handshake_config.enable_ack_processing = true; // Enable ACK processing
+    
+    handshake_manager_ = std::make_unique<protocol::HandshakeManager>(handshake_config);
+    
+    // Setup handshake manager callbacks
+    auto send_callback = [this](const protocol::HandshakeMessage& message) -> Result<void> {
+        return send_handshake_message(message);
+    };
+    
+    auto event_callback = [this](protocol::HandshakeEvent event, const std::vector<uint8_t>& data) {
+        // Map handshake events to connection events
+        switch (event) {
+            case protocol::HandshakeEvent::HANDSHAKE_COMPLETE:
+                fire_event(ConnectionEvent::HANDSHAKE_COMPLETED, data);
+                break;
+            case protocol::HandshakeEvent::HANDSHAKE_FAILED:
+                fire_event(ConnectionEvent::HANDSHAKE_FAILED, data);
+                break;
+            case protocol::HandshakeEvent::RETRANSMISSION_NEEDED:
+                stats_.handshake_retransmissions++;
+                break;
+            default:
+                // Other events are handled internally
+                break;
+        }
+    };
+    
+    auto init_result = handshake_manager_->initialize(send_callback, event_callback);
+    if (!init_result) {
+        return init_result;
+    }
     
     // Update statistics
     stats_.connection_start = std::chrono::steady_clock::now();
@@ -267,24 +300,60 @@ Result<void> Connection::handle_handshake_data(const memory::ZeroCopyBuffer& dat
 }
 
 Result<void> Connection::handle_handshake_message(const protocol::HandshakeMessage& message) {
-    // TODO: Implement handshake state machine processing
-    // This would typically involve the HandshakeManager
+    // Process message through HandshakeManager for ACK support and reliability
+    if (handshake_manager_) {
+        auto process_result = handshake_manager_->process_message(message);
+        if (!process_result) {
+            fire_event(ConnectionEvent::HANDSHAKE_FAILED);
+            return process_result;
+        }
+    }
     
-    // For now, just track the handshake progress
+    // Handle ACK messages specifically
+    if (message.message_type() == HandshakeType::ACK) {
+        if (message.holds<protocol::ACK>()) {
+            return handle_ack_message(message.get<protocol::ACK>());
+        }
+        return make_result(); // ACK processed by HandshakeManager
+    }
+    
+    // State machine processing for non-ACK messages
     switch (message.message_type()) {
-        case protocol::HandshakeType::CLIENT_HELLO:
+        case HandshakeType::CLIENT_HELLO:
             if (!is_client_ && state_ == ConnectionState::INITIAL) {
-                return transition_state(ConnectionState::WAIT_SERVER_HELLO);
+                auto result = transition_state(ConnectionState::WAIT_SERVER_HELLO);
+                if (result && should_process_ack_for_state(state_)) {
+                    // ACK will be generated automatically by HandshakeManager
+                }
+                return result;
             }
             break;
             
-        case protocol::HandshakeType::SERVER_HELLO:
+        case HandshakeType::SERVER_HELLO:
             if (is_client_ && state_ == ConnectionState::WAIT_SERVER_HELLO) {
-                return transition_state(ConnectionState::WAIT_ENCRYPTED_EXTENSIONS);
+                auto result = transition_state(ConnectionState::WAIT_ENCRYPTED_EXTENSIONS);
+                if (result && should_process_ack_for_state(state_)) {
+                    // ACK will be generated automatically by HandshakeManager
+                }
+                return result;
             }
             break;
             
-        case protocol::HandshakeType::FINISHED:
+        case HandshakeType::CERTIFICATE:
+            if (state_ == ConnectionState::WAIT_CERTIFICATE_OR_CERT_REQUEST) {
+                return transition_state(ConnectionState::WAIT_CERTIFICATE_VERIFY);
+            }
+            break;
+            
+        case HandshakeType::CERTIFICATE_VERIFY:
+            if (state_ == ConnectionState::WAIT_CERTIFICATE_VERIFY) {
+                return transition_state(is_client_ ? 
+                    ConnectionState::WAIT_SERVER_FINISHED : 
+                    ConnectionState::WAIT_CLIENT_FINISHED);
+            }
+            break;
+            
+        case HandshakeType::FINISHED:
             // Handshake completion logic
             if (state_ == ConnectionState::WAIT_CLIENT_FINISHED || 
                 state_ == ConnectionState::WAIT_SERVER_FINISHED) {
@@ -515,6 +584,27 @@ bool Connection::is_server() const {
     return !is_client_;
 }
 
+Result<void> Connection::process_handshake_timeouts() {
+    if (!handshake_manager_) {
+        return make_result();
+    }
+    
+    // Only process timeouts during active handshake states
+    if (!should_process_ack_for_state(state_)) {
+        return make_result();
+    }
+    
+    auto timeout_result = handshake_manager_->process_timeouts();
+    if (!timeout_result) {
+        // Timeout processing failed, might indicate handshake failure
+        fire_event(ConnectionEvent::HANDSHAKE_FAILED);
+        return timeout_result;
+    }
+    
+    update_last_activity();
+    return make_result();
+}
+
 // Private helper methods
 
 Result<void> Connection::transition_state(ConnectionState new_state) {
@@ -543,7 +633,7 @@ Result<void> Connection::cleanup_resources() {
     }
     
     // Reset managers (they will clean up automatically via destructors)
-    // handshake_manager_.reset();  // Commented out due to incomplete type
+    handshake_manager_.reset();  // Now properly available
     // message_layer_.reset();      // Commented out due to incomplete type
     // record_layer_.reset();       // Commented out due to incomplete type
     
@@ -604,6 +694,77 @@ void Connection::handle_transport_event(transport::TransportEvent event,
     }
     
     update_last_activity();
+}
+
+// ACK processing methods
+
+Result<void> Connection::handle_ack_message(const protocol::ACK& ack_message) {
+    // ACK messages are primarily handled by the HandshakeManager
+    // but we can perform additional state-specific validation here
+    
+    if (!should_process_ack_for_state(state_)) {
+        // Ignore ACKs in states where they're not expected
+        return make_result();
+    }
+    
+    // The actual ACK processing (sequence number tracking, retransmission management)
+    // is handled by HandshakeManager, but we can add state-specific logic here
+    
+    // Update activity timestamp
+    update_last_activity();
+    
+    // Log ACK reception for debugging/monitoring
+    // (In production, this might be configurable logging)
+    
+    return make_result();
+}
+
+Result<void> Connection::send_handshake_message(const protocol::HandshakeMessage& message) {
+    // This method is called by HandshakeManager to send messages
+    // We need to wrap the handshake message in a record and send it
+    
+    if (force_closed_ || is_closing_) {
+        return make_error<void>(DTLSError::CONNECTION_CLOSED);
+    }
+    
+    // TODO: When record layer is properly implemented, use it to create records
+    // For now, we'll simulate sending by updating statistics
+    
+    // Create a mock transport packet (in real implementation, this would go through record layer)
+    // For demonstration, we'll just update statistics and fire events
+    
+    stats_.records_sent++;
+    update_last_activity();
+    
+    // Message sent successfully
+    return make_result();
+}
+
+bool Connection::should_process_ack_for_state(ConnectionState state) const {
+    // Define which states should process ACK messages
+    switch (state) {
+        case ConnectionState::INITIAL:
+            return false; // No handshake in progress yet
+            
+        case ConnectionState::WAIT_SERVER_HELLO:
+        case ConnectionState::WAIT_ENCRYPTED_EXTENSIONS:
+        case ConnectionState::WAIT_CERTIFICATE_OR_CERT_REQUEST:
+        case ConnectionState::WAIT_CERTIFICATE_VERIFY:
+        case ConnectionState::WAIT_SERVER_FINISHED:
+        case ConnectionState::WAIT_CLIENT_CERTIFICATE:
+        case ConnectionState::WAIT_CLIENT_CERTIFICATE_VERIFY:
+        case ConnectionState::WAIT_CLIENT_FINISHED:
+            return true; // Active handshake states
+            
+        case ConnectionState::CONNECTED:
+            return false; // Handshake complete, no more ACKs needed
+            
+        case ConnectionState::CLOSED:
+            return false; // Connection closed
+            
+        default:
+            return false; // Unknown state, don't process ACKs
+    }
 }
 
 // ConnectionManager implementation

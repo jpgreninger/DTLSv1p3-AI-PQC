@@ -64,6 +64,36 @@ DTLS_API Result<KeySchedule> update_traffic_keys(
     const CipherSpec& cipher_spec,
     const KeySchedule& current_keys);
 
+// Sequence number encryption utilities (RFC 9147 Section 4.1.3)
+DTLS_API Result<uint64_t> encrypt_sequence_number(
+    CryptoProvider& provider,
+    uint64_t sequence_number,
+    const std::vector<uint8_t>& sequence_number_key);
+
+DTLS_API Result<uint64_t> decrypt_sequence_number(
+    CryptoProvider& provider,
+    uint64_t encrypted_sequence_number,
+    const std::vector<uint8_t>& sequence_number_key);
+
+DTLS_API Result<std::vector<uint8_t>> derive_sequence_number_mask(
+    CryptoProvider& provider,
+    const std::vector<uint8_t>& traffic_secret,
+    const std::string& label);
+
+// Sequence number key derivation for KeySchedule
+DTLS_API Result<std::vector<uint8_t>> derive_sequence_number_key(
+    CryptoProvider& provider,
+    const std::vector<uint8_t>& traffic_secret,
+    HashAlgorithm hash_algorithm);
+
+// Utility to update KeySchedule with sequence number keys
+DTLS_API Result<void> update_key_schedule_with_sequence_keys(
+    CryptoProvider& provider,
+    KeySchedule& key_schedule,
+    const std::vector<uint8_t>& client_traffic_secret,
+    const std::vector<uint8_t>& server_traffic_secret,
+    HashAlgorithm hash_algorithm);
+
 // Transcript hash utilities
 class DTLS_API TranscriptHash {
 public:
