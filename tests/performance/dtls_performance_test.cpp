@@ -1,569 +1,554 @@
-#include <gtest/gtest.h>
-#include <benchmark/benchmark.h>
-#include <dtls/connection.h>
-#include <dtls/crypto.h>
-#include <dtls/protocol.h>
-#include <dtls/transport/udp_transport.h>
-#include <dtls/crypto/openssl_provider.h>
-#include <thread>
-#include <chrono>
-#include <vector>
-#include <memory>
-#include <atomic>
-#include <random>
-
-namespace dtls {
-namespace v13 {
-namespace test {
-
-/**
- * DTLS v1.3 Performance Benchmarking Suite
- * 
- * Measures performance characteristics including:
- * - Handshake latency and throughput
- * - Data transfer throughput and latency
- * - Connection setup and teardown performance
- * - Memory usage and CPU utilization
- * - Scalability with multiple connections
- * - Crypto provider performance comparison
+/*
+ * DTLS v1.3 Comprehensive Performance Test Suite
+ * Task 10: Performance Benchmarking - Main Test Application
  */
-class DTLSPerformanceTest : public ::testing::Test {
-protected:
-    void SetUp() override {
-        // Initialize performance test environment
-        setup_crypto_providers();
-        setup_test_data();
-        
-        // Performance measurement configuration
-        measurement_iterations_ = 1000;
-        warmup_iterations_ = 100;
-        max_connections_ = 1000;
-        
-        // Initialize statistics
-        reset_statistics();
-    }
-    
-    void TearDown() override {
-        // Cleanup test environment
-        cleanup_connections();
-        crypto_providers_.clear();
-    }
-    
-    void setup_crypto_providers() {
-        // OpenSSL provider
-        auto openssl = std::make_unique<crypto::OpenSSLProvider>();
-        if (openssl->initialize().is_ok()) {
-            crypto_providers_["OpenSSL"] = std::move(openssl);
-        }
-        
-        // Add other providers as available
-        // auto botan = std::make_unique<crypto::BotanProvider>();
-        // if (botan->initialize().is_ok()) {
-        //     crypto_providers_["Botan"] = std::move(botan);
-        // }
-    }
-    
-    void setup_test_data() {
-        // Create test data of various sizes
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_int_distribution<uint8_t> dis(0, 255);
-        
-        // Small data (64 bytes)
-        test_data_small_.resize(64);
-        std::generate(test_data_small_.begin(), test_data_small_.end(), 
-                     [&]() { return dis(gen); });
-        
-        // Medium data (1 KB)
-        test_data_medium_.resize(1024);
-        std::generate(test_data_medium_.begin(), test_data_medium_.end(), 
-                     [&]() { return dis(gen); });
-        
-        // Large data (16 KB)
-        test_data_large_.resize(16384);
-        std::generate(test_data_large_.begin(), test_data_large_.end(), 
-                     [&]() { return dis(gen); });
-        
-        // Extra large data (64 KB)
-        test_data_xlarge_.resize(65536);
-        std::generate(test_data_xlarge_.begin(), test_data_xlarge_.end(), 
-                     [&]() { return dis(gen); });
-    }
-    
-    std::pair<std::unique_ptr<Connection>, std::unique_ptr<Connection>>
-    create_connection_pair(const std::string& provider_name = "OpenSSL") {
-        auto provider_it = crypto_providers_.find(provider_name);
-        if (provider_it == crypto_providers_.end()) {
-            return {nullptr, nullptr};
-        }
-        
-        // Create contexts
-        auto client_context = std::make_unique<Context>();
-        auto server_context = std::make_unique<Context>();
-        
-        // Clone crypto providers (simplified for test)
-        auto client_provider = std::make_unique<crypto::OpenSSLProvider>();
-        auto server_provider = std::make_unique<crypto::OpenSSLProvider>();
-        
-        client_provider->initialize();
-        server_provider->initialize();
-        
-        client_context->set_crypto_provider(std::move(client_provider));
-        server_context->set_crypto_provider(std::move(server_provider));
-        
-        // Create connections
-        auto client = client_context->create_connection();
-        auto server = server_context->create_connection();
-        
-        // Setup transport (simplified for test)
-        auto client_transport = std::make_unique<transport::UDPTransport>("127.0.0.1", 0);
-        auto server_transport = std::make_unique<transport::UDPTransport>("127.0.0.1", 4433);
-        
-        if (client_transport->bind().is_ok() && server_transport->bind().is_ok()) {
-            client->set_transport(client_transport.get());
-            server->set_transport(server_transport.get());
-            
-            // Store transport instances for cleanup
-            transports_.push_back(std::move(client_transport));
-            transports_.push_back(std::move(server_transport));
-            
-            // Store contexts for cleanup
-            contexts_.push_back(std::move(client_context));
-            contexts_.push_back(std::move(server_context));
-        }
-        
-        return {std::move(client), std::move(server)};
-    }
-    
-    bool perform_handshake_timed(Connection* client, Connection* server,
-                                std::chrono::nanoseconds& handshake_time) {
-        std::atomic<bool> client_complete{false};
-        std::atomic<bool> server_complete{false};
-        std::atomic<bool> handshake_failed{false};
-        
-        // Setup callbacks
-        client->set_handshake_callback([&](const Result<void>& result) {
-            if (result.is_ok()) {
-                client_complete = true;
-            } else {
-                handshake_failed = true;
-            }
-        });
-        
-        server->set_handshake_callback([&](const Result<void>& result) {
-            if (result.is_ok()) {
-                server_complete = true;
-            } else {
-                handshake_failed = true;
-            }
-        });
-        
-        // Measure handshake time
-        auto start_time = std::chrono::high_resolution_clock::now();
-        
-        // Start handshake
-        auto client_result = client->connect("127.0.0.1", 4433);
-        auto server_result = server->accept();
-        
-        if (!client_result.is_ok() || !server_result.is_ok()) {
-            return false;
-        }
-        
-        // Wait for completion
-        const auto timeout = std::chrono::seconds(10);
-        auto timeout_time = start_time + timeout;
-        
-        while (!client_complete || !server_complete) {
-            if (handshake_failed || std::chrono::high_resolution_clock::now() > timeout_time) {
-                return false;
-            }
-            std::this_thread::sleep_for(std::chrono::microseconds(100));
-        }
-        
-        auto end_time = std::chrono::high_resolution_clock::now();
-        handshake_time = std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - start_time);
-        
-        return true;
-    }
-    
-    bool transfer_data_timed(Connection* sender, Connection* receiver,
-                           const std::vector<uint8_t>& data,
-                           std::chrono::nanoseconds& transfer_time) {
-        std::atomic<bool> data_received{false};
-        std::atomic<bool> transfer_failed{false};
-        
-        // Setup callback
-        receiver->set_data_callback([&](const std::vector<uint8_t>&) {
-            data_received = true;
-        });
-        
-        // Measure transfer time
-        auto start_time = std::chrono::high_resolution_clock::now();
-        
-        auto send_result = sender->send(data);
-        if (!send_result.is_ok()) {
-            return false;
-        }
-        
-        // Wait for reception
-        const auto timeout = std::chrono::seconds(5);
-        auto timeout_time = start_time + timeout;
-        
-        while (!data_received) {
-            if (transfer_failed || std::chrono::high_resolution_clock::now() > timeout_time) {
-                return false;
-            }
-            std::this_thread::sleep_for(std::chrono::microseconds(100));
-        }
-        
-        auto end_time = std::chrono::high_resolution_clock::now();
-        transfer_time = std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - start_time);
-        
-        return true;
-    }
-    
-    void reset_statistics() {
-        total_handshakes_ = 0;
-        successful_handshakes_ = 0;
-        total_data_transfers_ = 0;
-        successful_data_transfers_ = 0;
-        total_bytes_transferred_ = 0;
-        
-        handshake_times_.clear();
-        transfer_times_.clear();
-        throughput_measurements_.clear();
-    }
-    
-    void cleanup_connections() {
-        transports_.clear();
-        contexts_.clear();
-    }
-    
-    void print_statistics() {
-        std::cout << "\n=== Performance Test Results ===" << std::endl;
-        std::cout << "Handshakes: " << successful_handshakes_ << "/" << total_handshakes_ << std::endl;
-        std::cout << "Data Transfers: " << successful_data_transfers_ << "/" << total_data_transfers_ << std::endl;
-        std::cout << "Bytes Transferred: " << total_bytes_transferred_ << std::endl;
-        
-        if (!handshake_times_.empty()) {
-            auto avg_handshake = std::accumulate(handshake_times_.begin(), handshake_times_.end(), 
-                                               std::chrono::nanoseconds{0}) / handshake_times_.size();
-            std::cout << "Average Handshake Time: " << avg_handshake.count() / 1000000.0 << " ms" << std::endl;
-        }
-        
-        if (!transfer_times_.empty()) {
-            auto avg_transfer = std::accumulate(transfer_times_.begin(), transfer_times_.end(), 
-                                              std::chrono::nanoseconds{0}) / transfer_times_.size();
-            std::cout << "Average Transfer Time: " << avg_transfer.count() / 1000.0 << " μs" << std::endl;
-        }
-        
-        if (!throughput_measurements_.empty()) {
-            auto avg_throughput = std::accumulate(throughput_measurements_.begin(), 
-                                                throughput_measurements_.end(), 0.0) / throughput_measurements_.size();
-            std::cout << "Average Throughput: " << avg_throughput << " Mbps" << std::endl;
-        }
-    }
 
-protected:
-    // Test configuration
-    size_t measurement_iterations_;
-    size_t warmup_iterations_;
-    size_t max_connections_;
-    
-    // Crypto providers
-    std::map<std::string, std::unique_ptr<crypto::CryptoProvider>> crypto_providers_;
-    
-    // Test data
-    std::vector<uint8_t> test_data_small_;
-    std::vector<uint8_t> test_data_medium_;
-    std::vector<uint8_t> test_data_large_;
-    std::vector<uint8_t> test_data_xlarge_;
-    
-    // Test infrastructure
-    std::vector<std::unique_ptr<transport::UDPTransport>> transports_;
-    std::vector<std::unique_ptr<Context>> contexts_;
-    
-    // Statistics
-    std::atomic<uint64_t> total_handshakes_{0};
-    std::atomic<uint64_t> successful_handshakes_{0};
-    std::atomic<uint64_t> total_data_transfers_{0};
-    std::atomic<uint64_t> successful_data_transfers_{0};
-    std::atomic<uint64_t> total_bytes_transferred_{0};
-    
-    std::vector<std::chrono::nanoseconds> handshake_times_;
-    std::vector<std::chrono::nanoseconds> transfer_times_;
-    std::vector<double> throughput_measurements_;
-};
+#include "benchmark_framework.h"
+#include "handshake_benchmarks.cpp"
+#include "throughput_benchmarks.cpp"
+#include "resource_benchmarks.cpp"
+#include "regression_testing.cpp"
+#include <iostream>
+#include <memory>
+#include <chrono>
+#include <fstream>
+#include <iomanip>
 
-// Benchmark 1: Handshake Performance
-TEST_F(DTLSPerformanceTest, HandshakePerformance) {
-    const size_t num_handshakes = 100;
-    
-    std::cout << "Testing handshake performance with " << num_handshakes << " iterations..." << std::endl;
-    
-    for (size_t i = 0; i < num_handshakes; ++i) {
-        auto [client, server] = create_connection_pair();
-        ASSERT_TRUE(client && server);
-        
-        std::chrono::nanoseconds handshake_time;
-        total_handshakes_++;
-        
-        if (perform_handshake_timed(client.get(), server.get(), handshake_time)) {
-            successful_handshakes_++;
-            handshake_times_.push_back(handshake_time);
-        }
-    }
-    
-    // Verify success rate
-    double success_rate = static_cast<double>(successful_handshakes_) / total_handshakes_ * 100.0;
-    EXPECT_GT(success_rate, 95.0); // Expect >95% success rate
-    
-    print_statistics();
-}
+#ifdef DTLS_HAS_BENCHMARK
+#include <benchmark/benchmark.h>
+#endif
 
-// Benchmark 2: Data Transfer Throughput
-TEST_F(DTLSPerformanceTest, DataTransferThroughput) {
-    const size_t num_transfers = 50;
-    
-    // Test different data sizes
-    std::vector<std::pair<std::string, std::vector<uint8_t>*>> test_cases = {
-        {"Small (64B)", &test_data_small_},
-        {"Medium (1KB)", &test_data_medium_},
-        {"Large (16KB)", &test_data_large_},
-        {"XLarge (64KB)", &test_data_xlarge_}
+namespace dtls::v13::test::performance {
+
+// ============================================================================
+// PRD Compliance Validator Implementation
+// ============================================================================
+
+class PRDComplianceValidator {
+public:
+    struct ComplianceReport {
+        bool overall_compliance = false;
+        double compliance_score = 0.0; // 0-100%
+        
+        // Individual requirement compliance
+        bool latency_compliant = false;
+        bool throughput_compliant = false;
+        bool memory_compliant = false;
+        bool cpu_compliant = false;
+        bool overhead_compliant = false;
+        
+        // Detailed metrics
+        double max_handshake_latency_ms = 0.0;
+        double max_additional_latency_ms = 0.0;
+        double min_throughput_percentage = 0.0;
+        double max_overhead_percentage = 0.0;
+        size_t max_memory_overhead_mb = 0;
+        double max_cpu_overhead_percentage = 0.0;
+        
+        // Test results summary
+        size_t total_tests = 0;
+        size_t passed_tests = 0;
+        std::vector<std::string> failed_requirements;
+        std::vector<std::string> critical_issues;
+        std::map<std::string, double> detailed_metrics;
     };
     
-    for (auto& [name, data] : test_cases) {
-        std::cout << "Testing " << name << " data transfer throughput..." << std::endl;
+    explicit PRDComplianceValidator(const PRDRequirements& requirements)
+        : requirements_(requirements) {}
+    
+    ComplianceReport validate_compliance(const std::vector<BenchmarkResult>& results) {
+        ComplianceReport report;
+        report.total_tests = results.size();
         
-        auto [client, server] = create_connection_pair();
-        ASSERT_TRUE(client && server);
+        // Analyze each test result
+        for (const auto& result : results) {
+            analyze_test_compliance(result, report);
+        }
         
-        // Perform handshake first
-        std::chrono::nanoseconds handshake_time;
-        ASSERT_TRUE(perform_handshake_timed(client.get(), server.get(), handshake_time));
+        // Calculate overall compliance
+        calculate_overall_compliance(report);
         
-        // Measure throughput
-        auto start_time = std::chrono::high_resolution_clock::now();
+        // Generate recommendations
+        generate_compliance_recommendations(report);
         
-        for (size_t i = 0; i < num_transfers; ++i) {
-            std::chrono::nanoseconds transfer_time;
-            total_data_transfers_++;
+        return report;
+    }
+    
+    void generate_compliance_report(const ComplianceReport& report, std::ostream& output) {
+        output << "DTLS v1.3 PRD Compliance Report\n";
+        output << "===============================\n\n";
+        
+        // Executive Summary
+        output << "EXECUTIVE SUMMARY\n";
+        output << "-----------------\n";
+        output << "Overall Compliance: " << (report.overall_compliance ? "✅ PASS" : "❌ FAIL") << "\n";
+        output << "Compliance Score: " << std::fixed << std::setprecision(1) << report.compliance_score << "%\n";
+        output << "Tests Passed: " << report.passed_tests << "/" << report.total_tests << "\n\n";
+        
+        // Requirement Analysis
+        output << "REQUIREMENT ANALYSIS\n";
+        output << "-------------------\n";
+        
+        output << "Latency Requirements: " << (report.latency_compliant ? "✅ PASS" : "❌ FAIL") << "\n";
+        output << "  Max Handshake Latency: " << report.max_handshake_latency_ms << "ms ";
+        output << "(Requirement: ≤" << requirements_.max_handshake_latency_ms << "ms)\n";
+        output << "  Max Additional Latency: " << report.max_additional_latency_ms << "ms ";
+        output << "(Requirement: ≤" << requirements_.max_additional_latency_ms << "ms)\n\n";
+        
+        output << "Throughput Requirements: " << (report.throughput_compliant ? "✅ PASS" : "❌ FAIL") << "\n";
+        output << "  Min Throughput vs UDP: " << report.min_throughput_percentage << "% ";
+        output << "(Requirement: ≥" << requirements_.min_throughput_percent << "%)\n\n";
+        
+        output << "Overhead Requirements: " << (report.overhead_compliant ? "✅ PASS" : "❌ FAIL") << "\n";
+        output << "  Max Overhead vs UDP: " << report.max_overhead_percentage << "% ";
+        output << "(Requirement: ≤" << requirements_.max_overhead_percent << "%)\n\n";
+        
+        output << "Memory Requirements: " << (report.memory_compliant ? "✅ PASS" : "❌ FAIL") << "\n";
+        output << "  Max Memory Overhead: " << report.max_memory_overhead_mb << "MB ";
+        output << "(Requirement: ≤" << requirements_.max_memory_overhead_mb << "MB)\n\n";
+        
+        output << "CPU Requirements: " << (report.cpu_compliant ? "✅ PASS" : "❌ FAIL") << "\n";
+        output << "  Max CPU Overhead: " << report.max_cpu_overhead_percentage << "% ";
+        output << "(Requirement: ≤" << requirements_.max_cpu_overhead_percent << "%)\n\n";
+        
+        // Failed Requirements
+        if (!report.failed_requirements.empty()) {
+            output << "FAILED REQUIREMENTS\n";
+            output << "------------------\n";
+            for (const auto& failure : report.failed_requirements) {
+                output << "❌ " << failure << "\n";
+            }
+            output << "\n";
+        }
+        
+        // Critical Issues
+        if (!report.critical_issues.empty()) {
+            output << "CRITICAL ISSUES\n";
+            output << "--------------\n";
+            for (const auto& issue : report.critical_issues) {
+                output << "🚨 " << issue << "\n";
+            }
+            output << "\n";
+        }
+        
+        // Recommendations
+        output << "RECOMMENDATIONS\n";
+        output << "---------------\n";
+        if (report.overall_compliance) {
+            output << "✅ All PRD requirements met. Consider:\n";
+            output << "   • Performance optimization for future requirements\n";
+            output << "   • Additional load testing scenarios\n";
+            output << "   • Long-term performance monitoring\n";
+        } else {
+            output << "❌ PRD requirements not met. Priority actions:\n";
             
-            if (transfer_data_timed(client.get(), server.get(), *data, transfer_time)) {
-                successful_data_transfers_++;
-                total_bytes_transferred_ += data->size();
-                transfer_times_.push_back(transfer_time);
+            if (!report.latency_compliant) {
+                output << "   • Optimize handshake implementation\n";
+                output << "   • Reduce cryptographic operation overhead\n";
+                output << "   • Implement connection pooling\n";
+            }
+            
+            if (!report.throughput_compliant) {
+                output << "   • Optimize data encryption/decryption pipelines\n";
+                output << "   • Implement zero-copy buffer management\n";
+                output << "   • Tune network I/O parameters\n";
+            }
+            
+            if (!report.memory_compliant) {
+                output << "   • Review memory allocation patterns\n";
+                output << "   • Implement memory pooling\n";
+                output << "   • Fix potential memory leaks\n";
+            }
+            
+            if (!report.cpu_compliant) {
+                output << "   • Profile CPU hotspots\n";
+                output << "   • Optimize algorithmic complexity\n";
+                output << "   • Consider hardware acceleration\n";
             }
         }
-        
-        auto end_time = std::chrono::high_resolution_clock::now();
-        auto total_time = std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - start_time);
-        
-        // Calculate throughput
-        double total_bytes = num_transfers * data->size();
-        double time_seconds = total_time.count() / 1e9;
-        double throughput_mbps = (total_bytes * 8.0) / (time_seconds * 1024.0 * 1024.0);
-        
-        throughput_measurements_.push_back(throughput_mbps);
-        
-        std::cout << name << " Throughput: " << throughput_mbps << " Mbps" << std::endl;
-        
-        // Reset for next test case
-        total_data_transfers_ = 0;
-        successful_data_transfers_ = 0;
-        transfer_times_.clear();
-    }
-}
-
-// Benchmark 3: Connection Scalability
-TEST_F(DTLSPerformanceTest, ConnectionScalability) {
-    std::vector<size_t> connection_counts = {1, 5, 10, 25, 50, 100};
-    
-    for (size_t conn_count : connection_counts) {
-        std::cout << "Testing scalability with " << conn_count << " connections..." << std::endl;
-        
-        std::vector<std::pair<std::unique_ptr<Connection>, std::unique_ptr<Connection>>> connections;
-        
-        // Create connections
-        auto start_creation = std::chrono::high_resolution_clock::now();
-        
-        for (size_t i = 0; i < conn_count; ++i) {
-            auto [client, server] = create_connection_pair();
-            if (client && server) {
-                connections.emplace_back(std::move(client), std::move(server));
-            }
-        }
-        
-        auto end_creation = std::chrono::high_resolution_clock::now();
-        auto creation_time = std::chrono::duration_cast<std::chrono::milliseconds>(
-            end_creation - start_creation);
-        
-        // Perform concurrent handshakes
-        auto start_handshakes = std::chrono::high_resolution_clock::now();
-        
-        std::vector<std::thread> handshake_threads;
-        std::atomic<size_t> successful_concurrent_handshakes{0};
-        
-        for (auto& [client, server] : connections) {
-            handshake_threads.emplace_back([&]() {
-                std::chrono::nanoseconds handshake_time;
-                if (perform_handshake_timed(client.get(), server.get(), handshake_time)) {
-                    successful_concurrent_handshakes++;
-                }
-            });
-        }
-        
-        // Wait for all handshakes
-        for (auto& thread : handshake_threads) {
-            thread.join();
-        }
-        
-        auto end_handshakes = std::chrono::high_resolution_clock::now();
-        auto handshake_time = std::chrono::duration_cast<std::chrono::milliseconds>(
-            end_handshakes - start_handshakes);
-        
-        // Test concurrent data transfer
-        auto start_transfers = std::chrono::high_resolution_clock::now();
-        
-        std::vector<std::thread> transfer_threads;
-        std::atomic<size_t> successful_concurrent_transfers{0};
-        
-        for (auto& [client, server] : connections) {
-            transfer_threads.emplace_back([&]() {
-                std::chrono::nanoseconds transfer_time;
-                if (transfer_data_timed(client.get(), server.get(), test_data_medium_, transfer_time)) {
-                    successful_concurrent_transfers++;
-                }
-            });
-        }
-        
-        // Wait for all transfers
-        for (auto& thread : transfer_threads) {
-            thread.join();
-        }
-        
-        auto end_transfers = std::chrono::high_resolution_clock::now();
-        auto transfer_time = std::chrono::duration_cast<std::chrono::milliseconds>(
-            end_transfers - start_transfers);
-        
-        // Report results
-        std::cout << "  Connection creation: " << creation_time.count() << " ms" << std::endl;
-        std::cout << "  Concurrent handshakes: " << handshake_time.count() << " ms (" 
-                  << successful_concurrent_handshakes << "/" << conn_count << ")" << std::endl;
-        std::cout << "  Concurrent transfers: " << transfer_time.count() << " ms (" 
-                  << successful_concurrent_transfers << "/" << conn_count << ")" << std::endl;
-        
-        // Verify reasonable success rates
-        double handshake_success_rate = static_cast<double>(successful_concurrent_handshakes) / conn_count * 100.0;
-        double transfer_success_rate = static_cast<double>(successful_concurrent_transfers) / conn_count * 100.0;
-        
-        EXPECT_GT(handshake_success_rate, 90.0);
-        EXPECT_GT(transfer_success_rate, 90.0);
-        
-        connections.clear(); // Cleanup before next iteration
-        cleanup_connections();
-    }
-}
-
-// Benchmark 4: Memory Usage Analysis
-TEST_F(DTLSPerformanceTest, MemoryUsageAnalysis) {
-    const size_t num_connections = 100;
-    
-    std::cout << "Analyzing memory usage with " << num_connections << " connections..." << std::endl;
-    
-    // Measure baseline memory usage
-    size_t baseline_memory = get_memory_usage();
-    
-    std::vector<std::pair<std::unique_ptr<Connection>, std::unique_ptr<Connection>>> connections;
-    
-    // Create connections and measure memory growth
-    for (size_t i = 0; i < num_connections; ++i) {
-        auto [client, server] = create_connection_pair();
-        if (client && server) {
-            connections.emplace_back(std::move(client), std::move(server));
-            
-            // Perform handshake
-            std::chrono::nanoseconds handshake_time;
-            perform_handshake_timed(connections.back().first.get(), 
-                                  connections.back().second.get(), handshake_time);
-        }
-        
-        // Sample memory usage every 10 connections
-        if ((i + 1) % 10 == 0) {
-            size_t current_memory = get_memory_usage();
-            size_t memory_per_connection = (current_memory - baseline_memory) / (i + 1);
-            
-            std::cout << "  " << (i + 1) << " connections: " 
-                      << (current_memory - baseline_memory) / 1024 << " KB total, "
-                      << memory_per_connection / 1024 << " KB per connection" << std::endl;
-        }
     }
     
-    size_t final_memory = get_memory_usage();
-    size_t total_memory_used = final_memory - baseline_memory;
-    size_t memory_per_connection = total_memory_used / num_connections;
-    
-    std::cout << "Final memory usage: " << total_memory_used / 1024 << " KB total, "
-              << memory_per_connection / 1024 << " KB per connection" << std::endl;
-    
-    // Verify reasonable memory usage (should be <1MB per connection)
-    EXPECT_LT(memory_per_connection, 1024 * 1024); // 1MB per connection
-}
-
-// Benchmark 5: Crypto Provider Comparison
-TEST_F(DTLSPerformanceTest, CryptoProviderComparison) {
-    const size_t num_operations = 50;
-    
-    for (const auto& [provider_name, provider] : crypto_providers_) {
-        std::cout << "Testing " << provider_name << " crypto provider performance..." << std::endl;
-        
-        std::chrono::nanoseconds total_handshake_time{0};
-        std::chrono::nanoseconds total_transfer_time{0};
-        size_t successful_operations = 0;
-        
-        for (size_t i = 0; i < num_operations; ++i) {
-            auto [client, server] = create_connection_pair(provider_name);
-            if (!client || !server) continue;
-            
-            // Measure handshake time
-            std::chrono::nanoseconds handshake_time;
-            if (perform_handshake_timed(client.get(), server.get(), handshake_time)) {
-                total_handshake_time += handshake_time;
-                
-                // Measure data transfer time
-                std::chrono::nanoseconds transfer_time;
-                if (transfer_data_timed(client.get(), server.get(), test_data_medium_, transfer_time)) {
-                    total_transfer_time += transfer_time;
-                    successful_operations++;
-                }
-            }
-        }
-        
-        if (successful_operations > 0) {
-            auto avg_handshake = total_handshake_time / successful_operations;
-            auto avg_transfer = total_transfer_time / successful_operations;
-            
-            std::cout << "  Average handshake time: " << avg_handshake.count() / 1000000.0 << " ms" << std::endl;
-            std::cout << "  Average transfer time: " << avg_transfer.count() / 1000.0 << " μs" << std::endl;
-            std::cout << "  Success rate: " << (successful_operations * 100.0 / num_operations) << "%" << std::endl;
-        }
-    }
-}
-
 private:
-    // Helper method to get current memory usage (simplified implementation)
-    size_t get_memory_usage() {
-        // In a real implementation, this would use platform-specific methods
-        // to get actual memory usage (e.g., /proc/self/status on Linux)
+    PRDRequirements requirements_;
+    
+    void analyze_test_compliance(const BenchmarkResult& result, ComplianceReport& report) {
+        bool test_passed = true;
         
-        // For this test, we'll simulate memory usage growth
-        static size_t simulated_usage = 1024 * 1024; // Start with 1MB
-        simulated_usage += 1024; // Add 1KB per call (simulated growth)
-        return simulated_usage;
+        // Check latency requirements
+        if (result.mean_time_ms > requirements_.max_handshake_latency_ms) {
+            report.latency_compliant = false;
+            test_passed = false;
+            report.failed_requirements.push_back(
+                result.name + ": Handshake latency " + std::to_string(result.mean_time_ms) + 
+                "ms exceeds limit of " + std::to_string(requirements_.max_handshake_latency_ms) + "ms");
+        }
+        report.max_handshake_latency_ms = std::max(report.max_handshake_latency_ms, result.mean_time_ms);
+        
+        // Check throughput requirements
+        if (result.custom_metrics.count("udp_throughput_mbps") > 0) {
+            double udp_throughput = result.custom_metrics.at("udp_throughput_mbps");
+            if (udp_throughput > 0) {
+                double throughput_percentage = (result.throughput_mbps / udp_throughput) * 100.0;
+                if (throughput_percentage < requirements_.min_throughput_percent) {
+                    report.throughput_compliant = false;
+                    test_passed = false;
+                    report.failed_requirements.push_back(
+                        result.name + ": Throughput " + std::to_string(throughput_percentage) + 
+                        "% of UDP is below requirement of " + std::to_string(requirements_.min_throughput_percent) + "%");
+                }
+                report.min_throughput_percentage = std::min(report.min_throughput_percentage, throughput_percentage);
+            }
+        }
+        
+        // Check overhead requirements
+        if (result.custom_metrics.count("overhead_percent") > 0) {
+            double overhead = result.custom_metrics.at("overhead_percent");
+            if (overhead > requirements_.max_overhead_percent) {
+                report.overhead_compliant = false;
+                test_passed = false;
+                report.failed_requirements.push_back(
+                    result.name + ": Overhead " + std::to_string(overhead) + 
+                    "% exceeds limit of " + std::to_string(requirements_.max_overhead_percent) + "%");
+            }
+            report.max_overhead_percentage = std::max(report.max_overhead_percentage, overhead);
+        }
+        
+        // Check memory requirements
+        size_t memory_mb = result.peak_memory_bytes / (1024 * 1024);
+        if (memory_mb > requirements_.max_memory_overhead_mb) {
+            report.memory_compliant = false;
+            test_passed = false;
+            report.failed_requirements.push_back(
+                result.name + ": Memory usage " + std::to_string(memory_mb) + 
+                "MB exceeds limit of " + std::to_string(requirements_.max_memory_overhead_mb) + "MB");
+        }
+        report.max_memory_overhead_mb = std::max(report.max_memory_overhead_mb, memory_mb);
+        
+        // Check CPU requirements
+        if (result.avg_cpu_percent > requirements_.max_cpu_overhead_percent) {
+            report.cpu_compliant = false;
+            test_passed = false;
+            report.failed_requirements.push_back(
+                result.name + ": CPU usage " + std::to_string(result.avg_cpu_percent) + 
+                "% exceeds limit of " + std::to_string(requirements_.max_cpu_overhead_percent) + "%");
+        }
+        report.max_cpu_overhead_percentage = std::max(report.max_cpu_overhead_percentage, result.avg_cpu_percent);
+        
+        // Check for critical issues
+        if (result.error_rate > 0.01) { // More than 1% error rate
+            report.critical_issues.push_back(
+                result.name + ": High error rate " + std::to_string(result.error_rate * 100) + "%");
+            test_passed = false;
+        }
+        
+        if (test_passed) {
+            report.passed_tests++;
+        }
+    }
+    
+    void calculate_overall_compliance(ComplianceReport& report) {
+        // Calculate compliance score based on individual requirements
+        int passed_requirements = 0;
+        int total_requirements = 5; // latency, throughput, overhead, memory, cpu
+        
+        if (report.latency_compliant) passed_requirements++;
+        if (report.throughput_compliant) passed_requirements++;
+        if (report.overhead_compliant) passed_requirements++;
+        if (report.memory_compliant) passed_requirements++;
+        if (report.cpu_compliant) passed_requirements++;
+        
+        report.compliance_score = (static_cast<double>(passed_requirements) / total_requirements) * 100.0;
+        report.overall_compliance = (passed_requirements == total_requirements) && report.critical_issues.empty();
+    }
+    
+    void generate_compliance_recommendations(ComplianceReport& report) {
+        // Generate specific recommendations based on failed requirements
+        // Implementation would analyze specific failure patterns and suggest optimizations
     }
 };
 
-} // namespace test
-} // namespace v13
-} // namespace dtls
+// ============================================================================
+// Main Performance Test Application
+// ============================================================================
+
+class DTLSPerformanceTestApplication {
+public:
+    explicit DTLSPerformanceTestApplication(const BenchmarkConfig& config = BenchmarkConfig{})
+        : config_(config) {
+        // Set PRD requirements
+        prd_requirements_.max_handshake_latency_ms = 10.0;
+        prd_requirements_.max_additional_latency_ms = 1.0;
+        prd_requirements_.min_throughput_percent = 90.0;
+        prd_requirements_.max_overhead_percent = 5.0;
+        prd_requirements_.max_memory_overhead_mb = 10;
+        prd_requirements_.max_cpu_overhead_percent = 20.0;
+    }
+    
+    int run_performance_tests(int argc, char* argv[]) {
+        std::cout << "DTLS v1.3 Performance Test Suite\n";
+        std::cout << "================================\n\n";
+        
+        parse_command_line_options(argc, argv);
+        
+        try {
+            if (run_all_tests_) {
+                return run_comprehensive_tests();
+            } else if (run_regression_tests_) {
+                return run_regression_testing();
+            } else if (run_prd_validation_) {
+                return run_prd_compliance_validation();
+            } else {
+                return run_default_tests();
+            }
+        } catch (const std::exception& e) {
+            std::cerr << "Error during performance testing: " << e.what() << std::endl;
+            return 1;
+        }
+    }
+    
+private:
+    BenchmarkConfig config_;
+    PRDRequirements prd_requirements_;
+    
+    // Command line options
+    bool run_all_tests_ = false;
+    bool run_regression_tests_ = false;
+    bool run_prd_validation_ = false;
+    bool generate_baseline_ = false;
+    std::string output_format_ = "text";
+    std::string output_file_ = "";
+    
+    void parse_command_line_options(int argc, char* argv[]) {
+        for (int i = 1; i < argc; ++i) {
+            std::string arg = argv[i];
+            
+            if (arg == "--all") {
+                run_all_tests_ = true;
+            } else if (arg == "--regression") {
+                run_regression_tests_ = true;
+            } else if (arg == "--prd-validation") {
+                run_prd_validation_ = true;
+            } else if (arg == "--generate-baseline") {
+                generate_baseline_ = true;
+            } else if (arg == "--output-format" && i + 1 < argc) {
+                output_format_ = argv[++i];
+            } else if (arg == "--output-file" && i + 1 < argc) {
+                output_file_ = argv[++i];
+            } else if (arg == "--iterations" && i + 1 < argc) {
+                config_.iterations = std::stoul(argv[++i]);
+            } else if (arg == "--help") {
+                print_usage();
+                exit(0);
+            }
+        }
+    }
+    
+    void print_usage() {
+        std::cout << "Usage: dtls_performance_test [options]\n\n";
+        std::cout << "Options:\n";
+        std::cout << "  --all                Run all performance tests\n";
+        std::cout << "  --regression         Run regression testing\n";
+        std::cout << "  --prd-validation     Run PRD compliance validation\n";
+        std::cout << "  --generate-baseline  Generate new performance baseline\n";
+        std::cout << "  --output-format      Output format (text, json, csv)\n";
+        std::cout << "  --output-file        Output file name\n";
+        std::cout << "  --iterations N       Number of benchmark iterations\n";
+        std::cout << "  --help              Show this help message\n";
+    }
+    
+    int run_comprehensive_tests() {
+        std::cout << "Running comprehensive performance test suite...\n\n";
+        
+        std::vector<BenchmarkResult> all_results;
+        
+        // Run all test suites
+        HandshakePerformanceTestSuite handshake_suite(config_);
+        auto handshake_results = handshake_suite.run_all_handshake_benchmarks();
+        all_results.insert(all_results.end(), handshake_results.begin(), handshake_results.end());
+        
+        ThroughputPerformanceTestSuite throughput_suite(config_);
+        auto throughput_results = throughput_suite.run_all_throughput_benchmarks();
+        all_results.insert(all_results.end(), throughput_results.begin(), throughput_results.end());
+        
+        ResourcePerformanceTestSuite resource_suite(config_);
+        auto resource_results = resource_suite.run_all_resource_benchmarks();
+        all_results.insert(all_results.end(), resource_results.begin(), resource_results.end());
+        
+        // Generate comprehensive report
+        generate_comprehensive_report(all_results);
+        
+        // PRD compliance validation
+        PRDComplianceValidator validator(prd_requirements_);
+        auto compliance_report = validator.validate_compliance(all_results);
+        
+        std::cout << "\n" << std::string(50, '=') << "\n";
+        validator.generate_compliance_report(compliance_report, std::cout);
+        
+        return compliance_report.overall_compliance ? 0 : 1;
+    }
+    
+    int run_regression_testing() {
+        std::cout << "Running performance regression testing...\n\n";
+        
+        PerformanceRegressionTester regression_tester;
+        regression_tester.run_full_regression_test();
+        
+        std::cout << "Regression testing completed.\n";
+        return 0;
+    }
+    
+    int run_prd_compliance_validation() {
+        std::cout << "Running PRD compliance validation...\n\n";
+        
+        // Run focused tests for PRD validation
+        std::vector<BenchmarkResult> validation_results;
+        
+        // Key handshake latency tests
+        HandshakeBenchmark handshake_bench(config_);
+        validation_results.push_back(handshake_bench.benchmark_full_handshake());
+        validation_results.push_back(handshake_bench.benchmark_resumption_handshake());
+        
+        // Key throughput tests
+        ThroughputBenchmark throughput_bench(config_);
+        validation_results.push_back(throughput_bench.benchmark_udp_comparison(4096));
+        validation_results.push_back(throughput_bench.benchmark_udp_comparison(16384));
+        
+        // Key resource tests
+        MemoryBenchmark memory_bench(config_);
+        memory_bench.set_connection_count(10);
+        validation_results.push_back(memory_bench.benchmark_connection_memory_usage());
+        
+        // Validate compliance
+        PRDComplianceValidator validator(prd_requirements_);
+        auto compliance_report = validator.validate_compliance(validation_results);
+        
+        validator.generate_compliance_report(compliance_report, std::cout);
+        
+        // Save detailed compliance report
+        std::ofstream compliance_file("prd_compliance_report.txt");
+        validator.generate_compliance_report(compliance_report, compliance_file);
+        
+        return compliance_report.overall_compliance ? 0 : 1;
+    }
+    
+    int run_default_tests() {
+        std::cout << "Running default performance tests...\n\n";
+        
+        // Run a subset of key performance tests
+        std::vector<BenchmarkResult> results;
+        
+        HandshakeBenchmark handshake_bench(config_);
+        results.push_back(handshake_bench.benchmark_full_handshake());
+        
+        ThroughputBenchmark throughput_bench(config_);
+        results.push_back(throughput_bench.benchmark_application_data_throughput(4096));
+        
+        MemoryBenchmark memory_bench(config_);
+        results.push_back(memory_bench.benchmark_connection_memory_usage());
+        
+        // Generate simple report
+        BenchmarkRunner runner(config_);
+        runner.set_prd_requirements(prd_requirements_);
+        runner.generate_report(results, std::cout);
+        
+        return 0;
+    }
+    
+    void generate_comprehensive_report(const std::vector<BenchmarkResult>& results) {
+        BenchmarkRunner runner(config_);
+        runner.set_prd_requirements(prd_requirements_);
+        
+        if (output_file_.empty()) {
+            runner.generate_report(results, std::cout);
+        } else {
+            std::ofstream output_stream(output_file_);
+            if (output_format_ == "json") {
+                runner.generate_json_report(results, output_file_);
+            } else if (output_format_ == "csv") {
+                runner.generate_csv_report(results, output_file_);
+            } else {
+                runner.generate_report(results, output_stream);
+            }
+        }
+    }
+};
+
+} // namespace dtls::v13::test::performance
+
+// ============================================================================
+// Google Benchmark Integration (if available)
+// ============================================================================
+
+#ifdef DTLS_HAS_BENCHMARK
+
+using namespace dtls::v13::test::performance;
+
+static void BM_HandshakeLatency(benchmark::State& state) {
+    BenchmarkConfig config;
+    config.iterations = 1; // Google Benchmark handles iterations
+    HandshakeBenchmark handshake_bench(config);
+    
+    for (auto _ : state) {
+        auto result = handshake_bench.benchmark_full_handshake();
+        state.SetIterationTime(result.mean_time_ms / 1000.0); // Convert to seconds
+    }
+    
+    state.SetBytesProcessed(state.iterations() * 1024); // Assume 1KB handshake data
+}
+
+static void BM_ThroughputTest(benchmark::State& state) {
+    BenchmarkConfig config;
+    config.iterations = 1;
+    ThroughputBenchmark throughput_bench(config);
+    
+    size_t data_size = state.range(0);
+    
+    for (auto _ : state) {
+        auto result = throughput_bench.benchmark_application_data_throughput(data_size);
+        state.SetBytesProcessed(data_size);
+    }
+}
+
+static void BM_MemoryUsage(benchmark::State& state) {
+    BenchmarkConfig config;
+    config.iterations = 1;
+    MemoryBenchmark memory_bench(config);
+    
+    size_t connection_count = state.range(0);
+    memory_bench.set_connection_count(connection_count);
+    
+    for (auto _ : state) {
+        auto result = memory_bench.benchmark_connection_memory_usage();
+        // Google Benchmark doesn't have direct memory reporting, use custom counter
+        state.counters["PeakMemoryKB"] = result.peak_memory_bytes / 1024;
+    }
+}
+
+// Register benchmarks
+BENCHMARK(BM_HandshakeLatency)->UseManualTime()->Unit(benchmark::kMillisecond);
+BENCHMARK(BM_ThroughputTest)->Range(1024, 65536)->Unit(benchmark::kMillisecond);
+BENCHMARK(BM_MemoryUsage)->Range(1, 100)->Unit(benchmark::kMillisecond);
+
+#endif // DTLS_HAS_BENCHMARK
+
+// ============================================================================
+// Main Entry Point
+// ============================================================================
+
+int main(int argc, char* argv[]) {
+#ifdef DTLS_HAS_BENCHMARK
+    // Check if running with Google Benchmark
+    for (int i = 1; i < argc; ++i) {
+        if (std::string(argv[i]).find("--benchmark") == 0) {
+            ::benchmark::Initialize(&argc, argv);
+            if (::benchmark::ReportUnrecognizedArguments(argc, argv)) return 1;
+            ::benchmark::RunSpecifiedBenchmarks();
+            return 0;
+        }
+    }
+#endif
+    
+    // Run custom performance test application
+    dtls::v13::test::performance::DTLSPerformanceTestApplication app;
+    return app.run_performance_tests(argc, argv);
+}

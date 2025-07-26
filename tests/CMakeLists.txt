@@ -101,18 +101,53 @@ set_tests_properties(DTLSIntegrationTest PROPERTIES
     LABELS "integration"
 )
 
-# Performance Tests
+# Performance Tests - Task 10: Performance Benchmarking Implementation
 add_executable(dtls_performance_test
     performance/dtls_performance_test.cpp
+    performance/benchmark_framework.cpp
+    performance/handshake_benchmarks.cpp
+    performance/throughput_benchmarks.cpp  
+    performance/resource_benchmarks.cpp
+    performance/regression_testing.cpp
+)
+
+target_include_directories(dtls_performance_test PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}/performance
 )
 
 target_link_libraries(dtls_performance_test PRIVATE ${DTLS_TEST_LIBRARIES})
 target_compile_options(dtls_performance_test PRIVATE ${DTLS_TEST_COMPILE_OPTIONS})
 
+# Add benchmark definitions if available
+if(DTLS_HAS_BENCHMARK)
+    target_compile_definitions(dtls_performance_test PRIVATE DTLS_HAS_BENCHMARK)
+    target_include_directories(dtls_performance_test PRIVATE ${BENCHMARK_INCLUDE_DIRS})
+    target_link_libraries(dtls_performance_test PRIVATE ${BENCHMARK_LIBRARIES})
+endif()
+
 add_test(NAME DTLSPerformanceTest COMMAND dtls_performance_test)
 set_tests_properties(DTLSPerformanceTest PROPERTIES
-    TIMEOUT 600
+    TIMEOUT 1200  # Increased timeout for comprehensive benchmarks
     LABELS "performance"
+)
+
+# Performance Test Variants - Task 10 Implementation
+add_test(NAME DTLSPerformanceTest_All COMMAND dtls_performance_test --all)
+set_tests_properties(DTLSPerformanceTest_All PROPERTIES
+    TIMEOUT 3600  # 1 hour for comprehensive tests
+    LABELS "performance;comprehensive"
+)
+
+add_test(NAME DTLSPerformanceTest_PRD COMMAND dtls_performance_test --prd-validation)
+set_tests_properties(DTLSPerformanceTest_PRD PROPERTIES
+    TIMEOUT 600
+    LABELS "performance;prd-compliance"
+)
+
+add_test(NAME DTLSPerformanceTest_Regression COMMAND dtls_performance_test --regression)
+set_tests_properties(DTLSPerformanceTest_Regression PROPERTIES
+    TIMEOUT 900
+    LABELS "performance;regression"
 )
 
 # Security Tests
@@ -143,19 +178,29 @@ set_tests_properties(DTLSReliabilityTest PROPERTIES
     LABELS "reliability"
 )
 
-# Interoperability Tests
-add_executable(dtls_interop_test
-    interoperability/dtls_interop_test.cpp
-)
+# Interoperability Tests - Task 9 Implementation
+option(DTLS_BUILD_INTEROP_TESTS "Build comprehensive interoperability tests" ON)
 
-target_link_libraries(dtls_interop_test PRIVATE ${DTLS_TEST_LIBRARIES})
-target_compile_options(dtls_interop_test PRIVATE ${DTLS_TEST_COMPILE_OPTIONS})
-
-add_test(NAME DTLSInteroperabilityTest COMMAND dtls_interop_test)
-set_tests_properties(DTLSInteroperabilityTest PROPERTIES
-    TIMEOUT 300
-    LABELS "interoperability"
-)
+if(DTLS_BUILD_INTEROP_TESTS)
+    # Add interoperability subdirectory
+    add_subdirectory(interoperability)
+    
+    # Legacy compatibility test
+    add_executable(dtls_interop_test
+        interoperability/dtls_interop_test.cpp
+    )
+    
+    target_link_libraries(dtls_interop_test PRIVATE ${DTLS_TEST_LIBRARIES})
+    target_compile_options(dtls_interop_test PRIVATE ${DTLS_TEST_COMPILE_OPTIONS})
+    
+    add_test(NAME DTLSInteroperabilityTest COMMAND dtls_interop_test)
+    set_tests_properties(DTLSInteroperabilityTest PROPERTIES
+        TIMEOUT 300
+        LABELS "interoperability"
+    )
+else()
+    message(STATUS "Interoperability tests disabled")
+endif()
 
 # Comprehensive Test Suite Target
 add_custom_target(run_all_tests
@@ -301,16 +346,44 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     )
 endif()
 
-# Benchmarking target (if benchmark library available)
+# Performance Benchmarking targets (Task 10 Implementation)
+add_custom_target(run_performance_benchmarks
+    COMMAND dtls_performance_test --all --output-format json --output-file performance_results.json
+    DEPENDS dtls_performance_test
+    COMMENT "Running comprehensive DTLS v1.3 performance benchmarks"
+)
+
+add_custom_target(run_prd_validation
+    COMMAND dtls_performance_test --prd-validation
+    DEPENDS dtls_performance_test
+    COMMENT "Running PRD compliance validation tests"
+)
+
+add_custom_target(run_performance_regression
+    COMMAND dtls_performance_test --regression
+    DEPENDS dtls_performance_test
+    COMMENT "Running performance regression testing"
+)
+
+# Google Benchmark integration (if available)
 if(DTLS_HAS_BENCHMARK)
-    add_custom_target(run_benchmarks
-        COMMAND dtls_performance_test --benchmark_format=json --benchmark_out=benchmark_results.json
+    add_custom_target(run_google_benchmarks
+        COMMAND dtls_performance_test --benchmark_format=json --benchmark_out=google_benchmark_results.json
         DEPENDS dtls_performance_test
-        COMMENT "Running performance benchmarks with detailed output"
+        COMMENT "Running Google Benchmark integration tests"
     )
     
-    message(STATUS "Benchmark target available: make run_benchmarks")
+    message(STATUS "Google Benchmark targets available:")
+    message(STATUS "  make run_google_benchmarks   - Run Google Benchmark integration")
 endif()
+
+# Performance testing summary target
+add_custom_target(performance_summary
+    COMMAND ${CMAKE_COMMAND} -E echo "=== DTLS v1.3 Performance Test Summary ==="
+    COMMAND dtls_performance_test --help
+    DEPENDS dtls_performance_test
+    COMMENT "Display performance testing options"
+)
 
 # Test result reporting
 add_custom_target(test_report
@@ -369,20 +442,28 @@ endif()
 message(STATUS "  Install tests: ${DTLS_INSTALL_TESTS}")
 message(STATUS "")
 message(STATUS "Available test targets:")
-message(STATUS "  make run_all_tests           - Run all test suites")
-message(STATUS "  make run_integration_tests   - Run integration tests only")
-message(STATUS "  make run_performance_tests   - Run performance tests only")
-message(STATUS "  make run_security_tests      - Run security tests only")
-message(STATUS "  make run_reliability_tests   - Run reliability tests only")
-message(STATUS "  make run_interop_tests       - Run interoperability tests only")
-message(STATUS "  make test_report             - Generate comprehensive test report")
+message(STATUS "  make run_all_tests              - Run all test suites")
+message(STATUS "  make run_integration_tests      - Run integration tests only")
+message(STATUS "  make run_performance_tests      - Run performance tests only")
+message(STATUS "  make run_security_tests         - Run security tests only")
+message(STATUS "  make run_reliability_tests      - Run reliability tests only")
+message(STATUS "  make run_interop_tests          - Run interoperability tests only")
+message(STATUS "  make test_report                - Generate comprehensive test report")
+message(STATUS "")
+message(STATUS "Performance benchmarking targets (Task 10):")
+message(STATUS "  make run_performance_benchmarks - Run comprehensive performance benchmarks")
+message(STATUS "  make run_prd_validation         - Run PRD compliance validation")
+message(STATUS "  make run_performance_regression - Run performance regression testing")
+message(STATUS "  make performance_summary        - Display performance testing options")
 if(GCOV_PATH AND LCOV_PATH AND GENHTML_PATH)
-    message(STATUS "  make test_coverage           - Generate test coverage report")
+    message(STATUS "")
+    message(STATUS "Code analysis targets:")
+    message(STATUS "  make test_coverage              - Generate test coverage report")
 endif()
 if(VALGRIND_PATH)
-    message(STATUS "  make test_memcheck           - Run memory leak detection")
+    message(STATUS "  make test_memcheck              - Run memory leak detection")
 endif()
 if(DTLS_HAS_BENCHMARK)
-    message(STATUS "  make run_benchmarks          - Run detailed performance benchmarks")
+    message(STATUS "  make run_google_benchmarks      - Run Google Benchmark integration")
 endif()
 message(STATUS "")
