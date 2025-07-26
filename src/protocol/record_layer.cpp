@@ -363,8 +363,9 @@ Result<CiphertextRecord> RecordLayer::protect_record(const PlaintextRecord& plai
     encrypt_params.key = crypto_params.write_key;
     encrypt_params.nonce = nonce_result.value();
     encrypt_params.additional_data = aad_result.value();
-    encrypt_params.plaintext = std::vector<uint8_t>(plaintext.payload().data(),
-                                                   plaintext.payload().data() + plaintext.payload().size());
+    encrypt_params.plaintext = std::vector<uint8_t>(
+        reinterpret_cast<const uint8_t*>(plaintext.payload().data()),
+        reinterpret_cast<const uint8_t*>(plaintext.payload().data()) + plaintext.payload().size());
     
     auto encrypt_result = crypto_provider_->encrypt_aead(encrypt_params);
     if (!encrypt_result.is_success()) {
@@ -754,7 +755,7 @@ generate_test_vectors(CipherSuite suite) {
     
     // Mock authentication tag
     memory::Buffer auth_tag(16); // 16 bytes for GCM
-    std::fill(auth_tag.mutable_data(), auth_tag.mutable_data() + 16, 0xAA);
+    std::fill(auth_tag.mutable_data(), auth_tag.mutable_data() + 16, std::byte{0xAA});
     
     CiphertextRecord ciphertext(ContentType::APPLICATION_DATA,
                               ProtocolVersion::DTLS_1_3,
