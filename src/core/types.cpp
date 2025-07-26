@@ -50,6 +50,7 @@ std::string to_string(HandshakeType type) {
         {HandshakeType::CERTIFICATE_STATUS_RESERVED, "CERTIFICATE_STATUS_RESERVED"},
         {HandshakeType::SUPPLEMENTAL_DATA_RESERVED, "SUPPLEMENTAL_DATA_RESERVED"},
         {HandshakeType::KEY_UPDATE, "KEY_UPDATE"},
+        {HandshakeType::ACK, "ACK"},
         {HandshakeType::MESSAGE_HASH, "MESSAGE_HASH"}
     };
     

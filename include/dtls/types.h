@@ -57,6 +57,7 @@ enum class HandshakeType : uint8_t {
     CERTIFICATE_STATUS_RESERVED = 22,
     SUPPLEMENTAL_DATA_RESERVED = 23,
     KEY_UPDATE = 24,
+    ACK = 26,
     MESSAGE_HASH = 254
 };
 

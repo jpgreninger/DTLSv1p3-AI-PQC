@@ -1299,6 +1299,14 @@ Result<HandshakeMessage> HandshakeMessage::deserialize(const memory::Buffer& buf
             handshake_msg.message_ = std::move(msg_result.value());
             break;
         }
+        case HandshakeType::ACK: {
+            auto msg_result = ACK::deserialize(buffer, payload_offset);
+            if (!msg_result.is_success()) {
+                return Result<HandshakeMessage>(msg_result.error());
+            }
+            handshake_msg.message_ = std::move(msg_result.value());
+            break;
+        }
         default:
             return Result<HandshakeMessage>(DTLSError::UNSUPPORTED_HANDSHAKE_TYPE);
     }
@@ -1330,6 +1338,381 @@ size_t HandshakeMessage::serialized_size() const {
     }, message_);
     
     return HandshakeHeader::SERIALIZED_SIZE + payload_size;
+}
+
+// ACKRange implementation
+Result<size_t> ACKRange::serialize(memory::Buffer& buffer) const {
+    if (!is_valid()) {
+        return Result<size_t>(DTLSError::INVALID_MESSAGE_FORMAT);
+    }
+    
+    size_t total_size = serialized_size();
+    if (buffer.capacity() < total_size) {
+        return Result<size_t>(DTLSError::INSUFFICIENT_BUFFER_SIZE);
+    }
+    
+    auto resize_result = buffer.resize(total_size);
+    if (!resize_result.is_success()) {
+        return Result<size_t>(resize_result.error());
+    }
+    
+    std::byte* ptr = buffer.mutable_data();
+    size_t offset = 0;
+    
+    // Start sequence (3 bytes - 24-bit big-endian)
+    uint32_t start_net = htonl(start_sequence);
+    copy_to_byte_buffer(ptr + offset, reinterpret_cast<const std::byte*>(&start_net) + 1, 3);
+    offset += 3;
+    
+    // End sequence (3 bytes - 24-bit big-endian)
+    uint32_t end_net = htonl(end_sequence);
+    copy_to_byte_buffer(ptr + offset, reinterpret_cast<const std::byte*>(&end_net) + 1, 3);
+    offset += 3;
+    
+    return Result<size_t>(total_size);
+}
+
+Result<ACKRange> ACKRange::deserialize(const memory::Buffer& buffer, size_t offset) {
+    if (buffer.size() < offset + 6) { // 3 + 3 bytes
+        return Result<ACKRange>(DTLSError::INSUFFICIENT_BUFFER_SIZE);
+    }
+    
+    const std::byte* ptr = buffer.data() + offset;
+    
+    // Start sequence (3 bytes)
+    uint32_t start_net = 0;
+    copy_from_byte_buffer(reinterpret_cast<std::byte*>(&start_net) + 1, ptr, 3);
+    uint32_t start = ntohl(start_net);
+    ptr += 3;
+    
+    // End sequence (3 bytes)
+    uint32_t end_net = 0;
+    copy_from_byte_buffer(reinterpret_cast<std::byte*>(&end_net) + 1, ptr, 3);
+    uint32_t end = ntohl(end_net);
+    
+    ACKRange range(start, end);
+    
+    if (!range.is_valid()) {
+        return Result<ACKRange>(DTLSError::INVALID_MESSAGE_FORMAT);
+    }
+    
+    return Result<ACKRange>(std::move(range));
+}
+
+bool ACKRange::is_valid() const {
+    // Check 24-bit limits (0 to 2^24-1)
+    return start_sequence <= 0xFFFFFF && 
+           end_sequence <= 0xFFFFFF && 
+           start_sequence <= end_sequence;
+}
+
+// ACK implementation
+void ACK::acknowledge_sequence(uint32_t sequence) {
+    // Find if sequence fits in any existing range
+    for (auto& range : ack_ranges_) {
+        if (range.contains(sequence)) {
+            return; // Already acknowledged
+        }
+        
+        // Check if we can extend an existing range
+        if (sequence == range.start_sequence - 1) {
+            range.start_sequence = sequence;
+            optimize_ranges();
+            return;
+        }
+        if (sequence == range.end_sequence + 1) {
+            range.end_sequence = sequence;
+            optimize_ranges();
+            return;
+        }
+    }
+    
+    // Add new single-sequence range
+    ack_ranges_.emplace_back(sequence, sequence);
+    optimize_ranges();
+}
+
+void ACK::acknowledge_range(uint32_t start, uint32_t end) {
+    if (start > end) return;
+    
+    ack_ranges_.emplace_back(start, end);
+    optimize_ranges();
+}
+
+bool ACK::is_sequence_acknowledged(uint32_t sequence) const {
+    for (const auto& range : ack_ranges_) {
+        if (range.contains(sequence)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void ACK::optimize_ranges() {
+    if (ack_ranges_.size() <= 1) return;
+    
+    // Sort ranges by start sequence
+    std::sort(ack_ranges_.begin(), ack_ranges_.end());
+    
+    // Merge overlapping and adjacent ranges
+    std::vector<ACKRange> merged;
+    merged.reserve(ack_ranges_.size());
+    
+    merged.push_back(ack_ranges_[0]);
+    
+    for (size_t i = 1; i < ack_ranges_.size(); ++i) {
+        ACKRange& last = merged.back();
+        const ACKRange& current = ack_ranges_[i];
+        
+        // Check if ranges overlap or are adjacent
+        if (current.start_sequence <= last.end_sequence + 1) {
+            // Merge ranges
+            last.end_sequence = std::max(last.end_sequence, current.end_sequence);
+        } else {
+            // Non-overlapping, add new range
+            merged.push_back(current);
+        }
+    }
+    
+    ack_ranges_ = std::move(merged);
+}
+
+Result<size_t> ACK::serialize(memory::Buffer& buffer) const {
+    if (!is_valid()) {
+        return Result<size_t>(DTLSError::INVALID_MESSAGE_FORMAT);
+    }
+    
+    size_t total_size = serialized_size();
+    if (buffer.capacity() < total_size) {
+        return Result<size_t>(DTLSError::INSUFFICIENT_BUFFER_SIZE);
+    }
+    
+    auto resize_result = buffer.resize(total_size);
+    if (!resize_result.is_success()) {
+        return Result<size_t>(resize_result.error());
+    }
+    
+    std::byte* ptr = buffer.mutable_data();
+    size_t offset = 0;
+    
+    // ACK ranges length (2 bytes)
+    uint16_t ranges_length = static_cast<uint16_t>(ack_ranges_.size() * 6); // 6 bytes per range
+    uint16_t length_net = htons(ranges_length);
+    copy_to_byte_buffer(ptr + offset, &length_net, 2);
+    offset += 2;
+    
+    // Serialize each ACK range
+    for (const auto& range : ack_ranges_) {
+        memory::Buffer range_buffer(6);
+        auto range_result = range.serialize(range_buffer);
+        if (!range_result.is_success()) {
+            return Result<size_t>(range_result.error());
+        }
+        
+        copy_to_byte_buffer(ptr + offset, range_buffer.data(), 6);
+        offset += 6;
+    }
+    
+    return Result<size_t>(total_size);
+}
+
+Result<ACK> ACK::deserialize(const memory::Buffer& buffer, size_t offset) {
+    if (buffer.size() < offset + 2) {
+        return Result<ACK>(DTLSError::INSUFFICIENT_BUFFER_SIZE);
+    }
+    
+    const std::byte* ptr = buffer.data() + offset;
+    
+    // Read ranges length (2 bytes)
+    uint16_t ranges_length_net;
+    copy_from_byte_buffer(&ranges_length_net, ptr, 2);
+    uint16_t ranges_length = ntohs(ranges_length_net);
+    ptr += 2;
+    
+    if (ranges_length % 6 != 0) {
+        return Result<ACK>(DTLSError::INVALID_MESSAGE_FORMAT);
+    }
+    
+    size_t num_ranges = ranges_length / 6;
+    if (buffer.size() < offset + 2 + ranges_length) {
+        return Result<ACK>(DTLSError::INSUFFICIENT_BUFFER_SIZE);
+    }
+    
+    std::vector<ACKRange> ranges;
+    ranges.reserve(num_ranges);
+    
+    size_t range_offset = offset + 2;
+    for (size_t i = 0; i < num_ranges; ++i) {
+        auto range_result = ACKRange::deserialize(buffer, range_offset);
+        if (!range_result.is_success()) {
+            return Result<ACK>(range_result.error());
+        }
+        
+        ranges.push_back(std::move(range_result.value()));
+        range_offset += 6;
+    }
+    
+    ACK ack(std::move(ranges));
+    
+    if (!ack.is_valid()) {
+        return Result<ACK>(DTLSError::INVALID_MESSAGE_FORMAT);
+    }
+    
+    return Result<ACK>(std::move(ack));
+}
+
+bool ACK::is_valid() const {
+    // Check maximum number of ranges (64KB / 6 bytes per range)
+    if (ack_ranges_.size() > 10922) { // 65535 / 6
+        return false;
+    }
+    
+    // Check that all ranges are valid
+    for (const auto& range : ack_ranges_) {
+        if (!range.is_valid()) {
+            return false;
+        }
+    }
+    
+    // Check for overlapping ranges (should be optimized)
+    for (size_t i = 0; i < ack_ranges_.size(); ++i) {
+        for (size_t j = i + 1; j < ack_ranges_.size(); ++j) {
+            if (ack_ranges_[i].overlaps(ack_ranges_[j])) {
+                return false;
+            }
+        }
+    }
+    
+    return true;
+}
+
+size_t ACK::serialized_size() const {
+    return 2 + (ack_ranges_.size() * 6); // 2 bytes length + 6 bytes per range
+}
+
+// ACK utility functions implementation
+Result<ACK> create_ack_message(const std::vector<uint32_t>& acknowledged_sequences) {
+    if (acknowledged_sequences.empty()) {
+        return Result<ACK>(ACK{});
+    }
+    
+    // Sort sequences for range creation
+    std::vector<uint32_t> sorted_sequences = acknowledged_sequences;
+    std::sort(sorted_sequences.begin(), sorted_sequences.end());
+    
+    // Remove duplicates
+    sorted_sequences.erase(std::unique(sorted_sequences.begin(), sorted_sequences.end()), 
+                          sorted_sequences.end());
+    
+    ACK ack_message;
+    
+    // Create ranges from consecutive sequences
+    uint32_t range_start = sorted_sequences[0];
+    uint32_t range_end = sorted_sequences[0];
+    
+    for (size_t i = 1; i < sorted_sequences.size(); ++i) {
+        if (sorted_sequences[i] == range_end + 1) {
+            // Extend current range
+            range_end = sorted_sequences[i];
+        } else {
+            // End current range and start new one
+            ack_message.add_ack_range(range_start, range_end);
+            range_start = sorted_sequences[i];
+            range_end = sorted_sequences[i];
+        }
+    }
+    
+    // Add the final range
+    ack_message.add_ack_range(range_start, range_end);
+    
+    if (!ack_message.is_valid()) {
+        return Result<ACK>(DTLSError::INVALID_MESSAGE_FORMAT);
+    }
+    
+    return Result<ACK>(std::move(ack_message));
+}
+
+Result<ACK> create_ack_message_from_ranges(const std::vector<std::pair<uint32_t, uint32_t>>& ranges) {
+    ACK ack_message;
+    
+    for (const auto& range_pair : ranges) {
+        if (range_pair.first > range_pair.second) {
+            return Result<ACK>(DTLSError::INVALID_PARAMETER);
+        }
+        
+        ack_message.add_ack_range(range_pair.first, range_pair.second);
+    }
+    
+    // Optimize the ranges
+    ack_message.optimize_ranges();
+    
+    if (!ack_message.is_valid()) {
+        return Result<ACK>(DTLSError::INVALID_MESSAGE_FORMAT);
+    }
+    
+    return Result<ACK>(std::move(ack_message));
+}
+
+bool is_ack_message_valid(const ACK& ack_message) {
+    return ack_message.is_valid();
+}
+
+std::vector<uint32_t> get_missing_sequences(const ACK& ack_message, uint32_t max_sequence) {
+    std::vector<uint32_t> missing_sequences;
+    
+    if (max_sequence == 0 || max_sequence > 0xFFFFFF) {
+        return missing_sequences; // Invalid max_sequence
+    }
+    
+    const auto& ranges = ack_message.ack_ranges();
+    
+    // If no ACK ranges, all sequences are missing
+    if (ranges.empty()) {
+        for (uint32_t seq = 0; seq <= max_sequence; ++seq) {
+            missing_sequences.push_back(seq);
+        }
+        return missing_sequences;
+    }
+    
+    // Sort ranges by start sequence for processing
+    std::vector<ACKRange> sorted_ranges = ranges;
+    std::sort(sorted_ranges.begin(), sorted_ranges.end());
+    
+    uint32_t current_seq = 0;
+    
+    for (const auto& range : sorted_ranges) {
+        // Add missing sequences before this range
+        while (current_seq < range.start_sequence) {
+            missing_sequences.push_back(current_seq);
+            ++current_seq;
+        }
+        
+        // Skip sequences covered by this range
+        current_seq = std::max(current_seq, range.end_sequence + 1);
+    }
+    
+    // Add any remaining missing sequences after the last range
+    while (current_seq <= max_sequence) {
+        missing_sequences.push_back(current_seq);
+        ++current_seq;
+    }
+    
+    return missing_sequences;
+}
+
+bool should_send_ack(const std::vector<uint32_t>& received_sequences, const ACK& last_ack_sent) {
+    if (received_sequences.empty()) {
+        return false; // No new sequences to acknowledge
+    }
+    
+    // Check if any received sequences are not already acknowledged
+    for (uint32_t seq : received_sequences) {
+        if (!last_ack_sent.is_sequence_acknowledged(seq)) {
+            return true; // Found unacknowledged sequence
+        }
+    }
+    
+    return false; // All sequences already acknowledged
 }
 
 }  // namespace dtls::v13::protocol

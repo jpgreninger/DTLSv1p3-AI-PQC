@@ -12,28 +12,7 @@
 
 namespace dtls::v13::protocol {
 
-enum class HandshakeType : uint8_t {
-    HELLO_REQUEST_RESERVED = 0,
-    CLIENT_HELLO = 1,
-    SERVER_HELLO = 2,
-    HELLO_VERIFY_REQUEST = 3,
-    NEW_SESSION_TICKET = 4,
-    END_OF_EARLY_DATA = 5,
-    HELLO_RETRY_REQUEST = 6,
-    ENCRYPTED_EXTENSIONS = 8,
-    CERTIFICATE = 11,
-    SERVER_KEY_EXCHANGE = 12,
-    CERTIFICATE_REQUEST = 13,
-    SERVER_HELLO_DONE = 14,
-    CERTIFICATE_VERIFY = 15,
-    CLIENT_KEY_EXCHANGE = 16,
-    FINISHED = 20,
-    CERTIFICATE_URL = 21,
-    CERTIFICATE_STATUS = 22,
-    SUPPLEMENTAL_DATA = 23,
-    KEY_UPDATE = 24,
-    MESSAGE_HASH = 254
-};
+// Use HandshakeType from dtls/types.h
 
 enum class ExtensionType : uint16_t {
     SERVER_NAME = 0,
@@ -95,22 +74,7 @@ enum class ExtensionType : uint16_t {
     DNSSEC_CHAIN = 59
 };
 
-enum class CipherSuite : uint16_t {
-    // AEAD Cipher Suites for DTLS 1.3
-    TLS_AES_128_GCM_SHA256 = 0x1301,
-    TLS_AES_256_GCM_SHA384 = 0x1302,
-    TLS_CHACHA20_POLY1305_SHA256 = 0x1303,
-    TLS_AES_128_CCM_SHA256 = 0x1304,
-    TLS_AES_128_CCM_8_SHA256 = 0x1305,
-    
-    // Legacy cipher suites for compatibility
-    TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256 = 0xc02b,
-    TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 = 0xc02f,
-    TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384 = 0xc02c,
-    TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 = 0xc030,
-    TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256 = 0xcca9,
-    TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256 = 0xcca8
-};
+// Use CipherSuite from dtls/types.h
 
 enum class NamedGroup : uint16_t {
     // Elliptic Curve Groups (ECDHE)
@@ -385,11 +349,85 @@ public:
     size_t serialized_size() const;
 };
 
+struct ACKRange {
+    uint32_t start_sequence;  // 24-bit value stored in 32-bit
+    uint32_t end_sequence;    // 24-bit value stored in 32-bit
+    
+    ACKRange() = default;
+    ACKRange(uint32_t start, uint32_t end) : start_sequence(start), end_sequence(end) {}
+    
+    // Serialization
+    Result<size_t> serialize(memory::Buffer& buffer) const;
+    static Result<ACKRange> deserialize(const memory::Buffer& buffer, size_t offset = 0);
+    
+    // Validation
+    bool is_valid() const;
+    size_t serialized_size() const { return 6; } // 3 bytes + 3 bytes
+    
+    // Comparison operators
+    bool operator==(const ACKRange& other) const {
+        return start_sequence == other.start_sequence && end_sequence == other.end_sequence;
+    }
+    
+    bool operator<(const ACKRange& other) const {
+        return start_sequence < other.start_sequence;
+    }
+    
+    // Range operations
+    bool contains(uint32_t sequence) const {
+        return sequence >= start_sequence && sequence <= end_sequence;
+    }
+    
+    bool overlaps(const ACKRange& other) const {
+        return !(end_sequence < other.start_sequence || start_sequence > other.end_sequence);
+    }
+    
+    uint32_t length() const {
+        return end_sequence >= start_sequence ? (end_sequence - start_sequence + 1) : 0;
+    }
+};
+
+class ACK {
+private:
+    std::vector<ACKRange> ack_ranges_;
+    
+public:
+    ACK() = default;
+    explicit ACK(std::vector<ACKRange> ranges) : ack_ranges_(std::move(ranges)) {}
+    
+    // Accessors
+    const std::vector<ACKRange>& ack_ranges() const { return ack_ranges_; }
+    
+    // Mutators
+    void set_ack_ranges(std::vector<ACKRange> ranges) { ack_ranges_ = std::move(ranges); }
+    void add_ack_range(const ACKRange& range) { ack_ranges_.push_back(range); }
+    void add_ack_range(uint32_t start, uint32_t end) { ack_ranges_.emplace_back(start, end); }
+    
+    // Convenience methods
+    void acknowledge_sequence(uint32_t sequence);
+    void acknowledge_range(uint32_t start, uint32_t end);
+    bool is_sequence_acknowledged(uint32_t sequence) const;
+    void clear() { ack_ranges_.clear(); }
+    bool empty() const { return ack_ranges_.empty(); }
+    size_t range_count() const { return ack_ranges_.size(); }
+    
+    // Range optimization
+    void optimize_ranges(); // Merge overlapping/adjacent ranges
+    
+    // Serialization
+    Result<size_t> serialize(memory::Buffer& buffer) const;
+    static Result<ACK> deserialize(const memory::Buffer& buffer, size_t offset = 0);
+    
+    // Validation
+    bool is_valid() const;
+    size_t serialized_size() const;
+};
+
 // Handshake message wrapper
 class HandshakeMessage {
 private:
     HandshakeHeader header_;
-    std::variant<ClientHello, ServerHello, Certificate, CertificateVerify, Finished> message_;
+    std::variant<ClientHello, ServerHello, Certificate, CertificateVerify, Finished, ACK> message_;
     
 public:
     HandshakeMessage() = default;
@@ -442,6 +480,7 @@ template<> constexpr HandshakeType HandshakeMessage::get_handshake_type<ServerHe
 template<> constexpr HandshakeType HandshakeMessage::get_handshake_type<Certificate>() { return HandshakeType::CERTIFICATE; }
 template<> constexpr HandshakeType HandshakeMessage::get_handshake_type<CertificateVerify>() { return HandshakeType::CERTIFICATE_VERIFY; }
 template<> constexpr HandshakeType HandshakeMessage::get_handshake_type<Finished>() { return HandshakeType::FINISHED; }
+template<> constexpr HandshakeType HandshakeMessage::get_handshake_type<ACK>() { return HandshakeType::ACK; }
 
 // Utility functions
 bool is_supported_cipher_suite(CipherSuite suite);
@@ -453,5 +492,12 @@ Result<memory::Buffer> create_random();
 Result<Extension> create_supported_versions_extension(const std::vector<ProtocolVersion>& versions);
 Result<Extension> create_supported_groups_extension(const std::vector<NamedGroup>& groups);
 Result<Extension> create_signature_algorithms_extension(const std::vector<SignatureScheme>& schemes);
+
+// ACK utility functions
+Result<ACK> create_ack_message(const std::vector<uint32_t>& acknowledged_sequences);
+Result<ACK> create_ack_message_from_ranges(const std::vector<std::pair<uint32_t, uint32_t>>& ranges);
+bool is_ack_message_valid(const ACK& ack_message);
+std::vector<uint32_t> get_missing_sequences(const ACK& ack_message, uint32_t max_sequence);
+bool should_send_ack(const std::vector<uint32_t>& received_sequences, const ACK& last_ack_sent);
 
 }  // namespace dtls::v13::protocol
