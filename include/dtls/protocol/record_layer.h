@@ -5,6 +5,7 @@
 #include <dtls/types.h>
 #include <dtls/result.h>
 #include <dtls/protocol/record.h>
+#include <dtls/protocol/dtls_records.h>
 #include <dtls/crypto.h>
 #include <memory>
 #include <mutex>
@@ -255,24 +256,28 @@ public:
     Result<void> set_cipher_suite(CipherSuite suite);
     
     /**
-     * Protect a plaintext record (encrypt)
+     * Protect a plaintext record (encrypt) - RFC 9147 compliance
      */
-    Result<CiphertextRecord> protect_record(const PlaintextRecord& plaintext);
+    Result<DTLSCiphertext> protect_record(const DTLSPlaintext& plaintext);
     
     /**
-     * Unprotect a ciphertext record (decrypt)
+     * Unprotect a ciphertext record (decrypt) - RFC 9147 compliance
      */
-    Result<PlaintextRecord> unprotect_record(const CiphertextRecord& ciphertext);
+    Result<DTLSPlaintext> unprotect_record(const DTLSCiphertext& ciphertext);
     
     /**
      * Process incoming record (includes anti-replay check)
      */
-    Result<PlaintextRecord> process_incoming_record(const CiphertextRecord& ciphertext);
+    Result<DTLSPlaintext> process_incoming_record(const DTLSCiphertext& ciphertext);
     
     /**
      * Prepare outgoing record (includes sequence number assignment)
      */
-    Result<CiphertextRecord> prepare_outgoing_record(const PlaintextRecord& plaintext);
+    Result<DTLSCiphertext> prepare_outgoing_record(const DTLSPlaintext& plaintext);
+    
+    // Legacy support for backward compatibility
+    Result<CiphertextRecord> protect_record_legacy(const PlaintextRecord& plaintext);
+    Result<PlaintextRecord> unprotect_record_legacy(const CiphertextRecord& ciphertext);
     
     /**
      * Advance to next epoch with new keys
@@ -361,6 +366,11 @@ private:
     Result<std::vector<uint8_t>> construct_additional_data(const RecordHeader& header,
                                                           const ConnectionID& cid) const;
     
+    // Helper for DTLSCiphertext additional data construction
+    template<typename HeaderType>
+    Result<std::vector<uint8_t>> construct_additional_data_dtls(const HeaderType& header,
+                                                               const ConnectionID& cid) const;
+    
     void update_stats_sent();
     void update_stats_received();
     void update_stats_protected();
@@ -383,10 +393,16 @@ DTLS_API std::unique_ptr<RecordLayer> create_test_record_layer();
 DTLS_API Result<void> validate_record_layer_config(const RecordLayer& layer);
 
 /**
- * Generate test vectors for record protection
+ * Generate test vectors for record protection - RFC 9147 compliance
+ */
+DTLS_API Result<std::vector<std::pair<DTLSPlaintext, DTLSCiphertext>>> 
+    generate_test_vectors(CipherSuite suite);
+
+/**
+ * Legacy test vector generation
  */
 DTLS_API Result<std::vector<std::pair<PlaintextRecord, CiphertextRecord>>> 
-    generate_test_vectors(CipherSuite suite);
+    generate_legacy_test_vectors(CipherSuite suite);
 
 } // namespace record_layer_utils
 } // namespace protocol
