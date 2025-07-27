@@ -18,9 +18,9 @@ namespace systemc_tlm {
  */
 SC_MODULE(CryptoOperationChannel) {
 public:
-    // Channel interface ports
-    sc_export<sc_fifo_in_if<crypto_transaction>> crypto_in;
-    sc_export<sc_fifo_out_if<crypto_transaction>> crypto_out;
+    // Channel interface ports  
+    sc_export<sc_fifo_in_if<crypto_extension>> crypto_in;
+    sc_export<sc_fifo_out_if<crypto_extension>> crypto_out;
     
     // Control signals
     sc_in<bool> enable_crypto_operations;

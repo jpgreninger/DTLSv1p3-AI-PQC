@@ -11,6 +11,13 @@
 #include <queue>
 #include <map>
 
+// Forward declarations for DTLS protocol types
+namespace dtls::v13::protocol {
+    struct MessageFragment;
+    class HandshakeMessage;
+    enum class FlightType : uint32_t;
+}
+
 namespace dtls {
 namespace v13 {
 namespace systemc_tlm {
@@ -24,7 +31,7 @@ namespace systemc_tlm {
 SC_MODULE(MessageReassemblerTLM) {
 public:
     // TLM target socket for fragment processing
-    tlm_utils::simple_target_socket<MessageReassemblerTLM, 32, dtls_protocol_types> target_socket;
+    tlm_utils::simple_target_socket<MessageReassemblerTLM> target_socket;
     
     // Control ports
     sc_in<bool> enable_reassembly;
@@ -64,10 +71,10 @@ public:
                                       tlm::tlm_phase& phase, 
                                       sc_time& delay);
     
-    // Reassembly operations
-    bool add_fragment(const protocol::MessageFragment& fragment);
+    // Reassembly operations (simplified for SystemC modeling)
+    bool add_fragment(uint16_t message_seq, uint32_t fragment_offset, uint32_t fragment_length);
     bool is_message_complete(uint16_t message_seq) const;
-    protocol::HandshakeMessage get_completed_message(uint16_t message_seq);
+    bool get_completed_message(uint16_t message_seq);
     
     // Configuration and monitoring
     void set_reassembly_timeout(sc_time timeout);
@@ -75,14 +82,17 @@ public:
     void reset_statistics();
 
 private:
-    // Fragment storage for active reassemblies
+    // Fragment storage for active reassemblies (simplified for SystemC modeling)
     struct FragmentInfo {
-        protocol::MessageFragment fragment;
         sc_time arrival_time;
         bool processed;
         
-        FragmentInfo(const protocol::MessageFragment& frag) 
-            : fragment(frag), arrival_time(sc_time_stamp()), processed(false) {}
+        // Simplified SystemC modeling - store only essential data
+        uint32_t fragment_offset;
+        uint32_t fragment_length;
+        
+        FragmentInfo(uint32_t offset, uint32_t length) 
+            : arrival_time(sc_time_stamp()), processed(false), fragment_offset(offset), fragment_length(length) {}
     };
     
     struct MessageReassemblyState {
@@ -112,10 +122,10 @@ private:
     void statistics_update_process();
     void configuration_monitor_process();
     
-    // Internal methods
-    bool process_fragment(const protocol::MessageFragment& fragment);
-    bool check_reassembly_complete(uint16_t message_seq);
-    protocol::HandshakeMessage assemble_message(uint16_t message_seq);
+    // Internal methods (simplified for SystemC modeling)
+    bool process_fragment(uint16_t message_seq, uint32_t offset, uint32_t length);
+    bool check_reassembly_complete(uint16_t message_seq) const;
+    bool assemble_message(uint16_t message_seq); // Simplified for SystemC - returns success/failure
     void cleanup_timed_out_reassemblies();
     void update_statistics(const MessageReassemblyState& state, bool completed);
     
@@ -131,7 +141,7 @@ private:
 SC_MODULE(MessageFragmenterTLM) {
 public:
     // TLM target socket for fragmentation requests
-    tlm_utils::simple_target_socket<MessageFragmenterTLM, 32, dtls_protocol_types> target_socket;
+    tlm_utils::simple_target_socket<MessageFragmenterTLM> target_socket;
     
     // Configuration ports
     sc_in<uint32_t> max_fragment_size;
@@ -167,9 +177,8 @@ public:
     // TLM interface methods
     void b_transport(tlm::tlm_generic_payload& trans, sc_time& delay);
     
-    // Fragmentation operations
-    std::vector<protocol::MessageFragment> fragment_message(
-        const protocol::HandshakeMessage& message, uint16_t message_seq);
+    // Fragmentation operations (simplified for SystemC modeling)
+    uint32_t fragment_message(uint32_t message_length, uint16_t message_seq);
     
     // Configuration and monitoring
     void set_max_fragment_size(uint32_t size);
@@ -189,9 +198,8 @@ private:
     void performance_monitor_process();
     void configuration_monitor_process();
     
-    // Internal methods
-    std::vector<protocol::MessageFragment> perform_fragmentation(
-        const protocol::HandshakeMessage& message, uint16_t message_seq);
+    // Internal methods (simplified for SystemC modeling)
+    uint32_t perform_fragmentation(uint32_t message_length, uint16_t message_seq);
     void update_statistics(size_t message_size, size_t fragment_count, sc_time processing_time);
     
     SC_HAS_PROCESS(MessageFragmenterTLM);
@@ -206,7 +214,7 @@ private:
 SC_MODULE(FlightManagerTLM) {
 public:
     // TLM target socket for flight operations
-    tlm_utils::simple_target_socket<FlightManagerTLM, 32, dtls_protocol_types> target_socket;
+    tlm_utils::simple_target_socket<FlightManagerTLM> target_socket;
     
     // Control ports
     sc_in<bool> enable_retransmission;
@@ -248,11 +256,11 @@ public:
                                       tlm::tlm_phase& phase, 
                                       sc_time& delay);
     
-    // Flight operations
-    bool create_flight(protocol::FlightType type);
-    bool add_message_to_flight(protocol::FlightType type, const protocol::HandshakeMessage& message);
-    bool transmit_flight(protocol::FlightType type);
-    bool acknowledge_flight(protocol::FlightType type);
+    // Flight operations (simplified for SystemC modeling)
+    bool create_flight(uint32_t flight_type);
+    bool add_message_to_flight(uint32_t flight_type, uint32_t message_length);
+    bool transmit_flight(uint32_t flight_type);
+    bool acknowledge_flight(uint32_t flight_type);
     
     // Configuration and monitoring
     void set_retransmission_params(sc_time timeout, uint8_t max_retries);
@@ -260,21 +268,21 @@ public:
     void reset_statistics();
 
 private:
-    // Flight state management
+    // Flight state management (simplified for SystemC modeling)
     struct FlightState {
-        protocol::FlightType type;
-        std::vector<protocol::HandshakeMessage> messages;
+        uint32_t type;
+        uint32_t message_count{0};
         sc_time creation_time;
         sc_time last_transmission_time;
         uint8_t retransmission_count{0};
         bool acknowledged{false};
         bool failed{false};
         
-        FlightState(protocol::FlightType t) 
+        FlightState(uint32_t t) 
             : type(t), creation_time(sc_time_stamp()) {}
     };
     
-    std::map<protocol::FlightType, FlightState> active_flights_;
+    std::map<uint32_t, FlightState> active_flights_;
     mutable std::mutex flights_mutex_;
     
     // Configuration
@@ -293,7 +301,7 @@ private:
     
     // Internal methods
     bool should_retransmit_flight(const FlightState& flight) const;
-    void perform_flight_retransmission(protocol::FlightType type);
+    void perform_flight_retransmission(uint32_t type);
     void cleanup_completed_flights();
     void update_flight_statistics(const FlightState& flight, bool completed);
     
@@ -309,13 +317,13 @@ private:
 SC_MODULE(MessageLayerTLM) {
 public:
     // External TLM interfaces
-    tlm_utils::simple_target_socket<MessageLayerTLM, 32, dtls_protocol_types> target_socket;
-    tlm_utils::simple_initiator_socket<MessageLayerTLM, 32, dtls_protocol_types> record_layer_socket;
+    tlm_utils::simple_target_socket<MessageLayerTLM> target_socket;
+    tlm_utils::simple_initiator_socket<MessageLayerTLM> record_layer_socket;
     
     // Internal component interfaces
-    tlm_utils::simple_initiator_socket<MessageLayerTLM, 32, dtls_protocol_types> fragmenter_socket;
-    tlm_utils::simple_initiator_socket<MessageLayerTLM, 32, dtls_protocol_types> reassembler_socket;
-    tlm_utils::simple_initiator_socket<MessageLayerTLM, 32, dtls_protocol_types> flight_mgr_socket;
+    tlm_utils::simple_initiator_socket<MessageLayerTLM> fragmenter_socket;
+    tlm_utils::simple_initiator_socket<MessageLayerTLM> reassembler_socket;
+    tlm_utils::simple_initiator_socket<MessageLayerTLM> flight_mgr_socket;
     
     // Configuration ports
     sc_in<uint32_t> max_fragment_size;
@@ -363,17 +371,15 @@ public:
                                       tlm::tlm_phase& phase, 
                                       sc_time& delay);
     
-    // Message operations
-    bool send_handshake_message(const protocol::HandshakeMessage& message);
-    bool send_handshake_flight(const std::vector<protocol::HandshakeMessage>& messages, 
-                              protocol::FlightType flight_type);
-    std::vector<protocol::HandshakeMessage> process_incoming_fragments(
-        const std::vector<protocol::MessageFragment>& fragments);
+    // Message operations (simplified for SystemC modeling)
+    bool send_handshake_message(uint32_t message_length);
+    bool send_handshake_flight(uint32_t message_count, uint32_t flight_type);
+    uint32_t process_incoming_fragments(uint32_t fragment_count);
     
     // Configuration and monitoring
     void set_max_fragment_size(uint32_t size);
     void set_reassembly_timeout(sc_time timeout);
-    void enable_reliable_delivery(bool enable);
+    void enable_reliable_delivery_mode(bool enable);
     
     MessageLayerStats get_statistics() const;
     void reset_statistics();
@@ -400,15 +406,14 @@ private:
     void configuration_monitor_process();
     
     // Internal message handling
-    bool handle_send_message(message_transaction& trans);
-    bool handle_receive_fragments(message_transaction& trans);
-    bool handle_flight_operation(message_transaction& trans);
+    bool handle_send_message(tlm::tlm_generic_payload& trans);
+    bool handle_receive_fragments(tlm::tlm_generic_payload& trans);
+    bool handle_flight_operation(tlm::tlm_generic_payload& trans);
     
-    // Component coordination
-    bool fragment_and_send_message(const protocol::HandshakeMessage& message, uint16_t seq);
-    bool reassemble_incoming_message(const std::vector<protocol::MessageFragment>& fragments);
-    bool manage_flight_transmission(const std::vector<protocol::HandshakeMessage>& messages, 
-                                   protocol::FlightType flight_type);
+    // Component coordination (simplified for SystemC modeling)
+    bool fragment_and_send_message(uint32_t message_length, uint16_t seq);
+    bool reassemble_incoming_message(uint32_t fragment_count);
+    bool manage_flight_transmission(uint32_t message_count, uint32_t flight_type);
     
     // Statistics updates
     void update_send_statistics(size_t message_size, sc_time processing_time, bool success);
@@ -427,7 +432,7 @@ private:
 SC_MODULE(MessageLayerSystemTLM) {
 public:
     // External interface
-    tlm_utils::simple_target_socket<MessageLayerSystemTLM, 32, dtls_protocol_types> external_socket;
+    tlm_utils::simple_target_socket<MessageLayerSystemTLM> external_socket;
     
     // Component instances
     MessageLayerTLM message_layer;
