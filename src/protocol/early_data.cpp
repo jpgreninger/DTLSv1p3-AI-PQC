@@ -109,7 +109,7 @@ Result<SessionTicket> SessionTicketManager::decrypt_ticket(const std::vector<uin
         }
     }
     
-    return Result<SessionTicket>(DTLSError::UNKNOWN_SESSION_TICKET);
+    return Result<SessionTicket>(DTLSError::DECODE_ERROR);
 }
 
 bool SessionTicketManager::store_ticket(const std::string& identity, const SessionTicket& ticket) {
@@ -335,7 +335,7 @@ bool validate_early_data_extensions(const std::vector<Extension>& extensions) {
             case ExtensionType::EARLY_DATA:
                 has_early_data = true;
                 break;
-            case ExtensionType::PRE_SHARED_KEY:
+            case ExtensionType::PRE_SHARED_KEY: {
                 has_psk = true;
                 // Validate PSK extension format
                 auto psk_result = parse_psk_extension(ext);
@@ -343,6 +343,7 @@ bool validate_early_data_extensions(const std::vector<Extension>& extensions) {
                     return false;
                 }
                 break;
+            }
             default:
                 // Allow other extensions
                 break;

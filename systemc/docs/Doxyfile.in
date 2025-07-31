@@ -1,0 +1,15 @@
+# Doxyfile configuration for DTLS SystemC TLM documentation
+
+PROJECT_NAME           = "DTLS v1.3 SystemC TLM Models"
+PROJECT_VERSION        = @PROJECT_VERSION@
+PROJECT_BRIEF          = "@PROJECT_DESCRIPTION@"
+
+OUTPUT_DIRECTORY       = docs
+INPUT                  = @CMAKE_CURRENT_SOURCE_DIR@/include
+RECURSIVE              = YES
+EXTRACT_ALL            = YES
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+
+HTML_OUTPUT            = html
+HTML_FILE_EXTENSION    = .html

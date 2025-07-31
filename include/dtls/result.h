@@ -33,6 +33,11 @@ public:
         return std::holds_alternative<T>(data_);
     }
     
+    // Alias for is_success() for compatibility
+    bool is_ok() const noexcept {
+        return is_success();
+    }
+    
     bool is_error() const noexcept {
         return std::holds_alternative<DTLSError>(data_);
     }
@@ -208,6 +213,11 @@ public:
         return error_ == DTLSError::SUCCESS;
     }
     
+    // Alias for is_success() for compatibility
+    bool is_ok() const noexcept {
+        return is_success();
+    }
+    
     bool is_error() const noexcept {
         return error_ != DTLSError::SUCCESS;
     }
@@ -265,6 +275,20 @@ inline Result<void> make_result() {
 
 template<typename T>
 Result<T> make_error(DTLSError error) {
+    return Result<T>(error);
+}
+
+template<typename T>
+Result<T> make_error(DTLSError error, const char* message) {
+    // For now, ignore the message and just return the error
+    // In a more sophisticated implementation, this could store the message
+    return Result<T>(error);
+}
+
+template<typename T>
+Result<T> make_error(DTLSError error, const std::string& message) {
+    // For now, ignore the message and just return the error
+    // In a more sophisticated implementation, this could store the message
     return Result<T>(error);
 }
 

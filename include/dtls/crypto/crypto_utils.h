@@ -23,6 +23,10 @@ namespace crypto {
  */
 namespace utils {
 
+// Helper templates for creating Result objects are now in result.h
+
+
+
 // Key derivation utilities
 DTLS_API Result<std::vector<uint8_t>> hkdf_extract(
     CryptoProvider& provider,
@@ -78,7 +82,8 @@ DTLS_API Result<uint64_t> decrypt_sequence_number(
 DTLS_API Result<std::vector<uint8_t>> derive_sequence_number_mask(
     CryptoProvider& provider,
     const std::vector<uint8_t>& traffic_secret,
-    const std::string& label);
+    const std::string& label,
+    HashAlgorithm hash_algorithm);
 
 // Sequence number key derivation for KeySchedule
 DTLS_API Result<std::vector<uint8_t>> derive_sequence_number_key(

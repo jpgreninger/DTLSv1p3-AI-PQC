@@ -13,6 +13,9 @@
 
 namespace dtls::v13::protocol {
 
+// Forward declarations
+struct Extension;
+
 /**
  * Cookie Generator Configuration
  */
@@ -91,8 +94,9 @@ public:
     // Non-copyable, movable
     CookieManager(const CookieManager&) = delete;
     CookieManager& operator=(const CookieManager&) = delete;
-    CookieManager(CookieManager&&) noexcept;
-    CookieManager& operator=(CookieManager&&) noexcept;
+    // Move operations are deleted due to mutex member
+    CookieManager(CookieManager&&) = delete;
+    CookieManager& operator=(CookieManager&&) = delete;
     
     /**
      * Initialize the cookie manager with a secret key

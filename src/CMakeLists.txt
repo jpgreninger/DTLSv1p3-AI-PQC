@@ -18,8 +18,10 @@ set(DTLS_PROTOCOL_SOURCES
     protocol/dtls_records.cpp
     protocol/record_layer.cpp
     protocol/handshake.cpp
+    protocol/handshake_manager.cpp
     protocol/cookie.cpp
     protocol/message_layer.cpp
+    protocol/early_data.cpp
 )
 
 # Crypto layer sources  
@@ -28,6 +30,7 @@ set(DTLS_CRYPTO_SOURCES
     crypto/crypto_utils.cpp
     crypto/crypto_system.cpp
     crypto/openssl_provider.cpp
+    # crypto/advanced_cipher_suites.cpp  # Has compilation issues - TBD
     # crypto/key_manager.cpp  # TBD
 )
 
@@ -39,12 +42,28 @@ set(DTLS_TRANSPORT_SOURCES
 # Connection layer sources
 set(DTLS_CONNECTION_SOURCES
     connection/connection.cpp
+    # connection/advanced_connection_manager.cpp  # Has compilation issues - TBD
 )
 
 # Optional Botan provider
 if(DTLS_HAS_BOTAN)
     list(APPEND DTLS_CRYPTO_SOURCES crypto/botan_provider.cpp)
 endif()
+
+# Additional modules - temporarily disabled due to compilation issues
+# set(DTLS_MONITORING_SOURCES
+#     monitoring/metrics_system.cpp
+# )
+
+# set(DTLS_SECURITY_SOURCES
+#     security/dos_protection.cpp
+#     security/rate_limiter.cpp
+#     security/resource_manager.cpp
+# )
+
+# set(DTLS_COMPATIBILITY_SOURCES
+#     compatibility/dtls12_compat.cpp
+# )
 
 # All sources
 set(DTLS_ALL_SOURCES
@@ -53,6 +72,9 @@ set(DTLS_ALL_SOURCES
     ${DTLS_CRYPTO_SOURCES}
     ${DTLS_TRANSPORT_SOURCES}
     ${DTLS_CONNECTION_SOURCES}
+    # ${DTLS_MONITORING_SOURCES}      # Temporarily disabled
+    # ${DTLS_SECURITY_SOURCES}        # Temporarily disabled
+    # ${DTLS_COMPATIBILITY_SOURCES}   # Temporarily disabled
 )
 
 # Create library
@@ -62,6 +84,9 @@ if(DTLS_BUILD_SHARED)
 else()
     add_library(dtlsv13 STATIC ${DTLS_ALL_SOURCES})
 endif()
+
+# Create alias for backward compatibility
+add_library(dtls_core ALIAS dtlsv13)
 
 # Set library properties
 set_target_properties(dtlsv13 PROPERTIES
@@ -87,10 +112,13 @@ endif()
 
 # Compiler-specific optimizations
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    target_compile_options(dtlsv13 PRIVATE
-        -fvisibility=hidden
-        -fvisibility-inlines-hidden
-    )
+    # Only hide symbols for static builds - shared builds need visibility control
+    if(NOT DTLS_BUILD_SHARED)
+        target_compile_options(dtlsv13 PRIVATE
+            -fvisibility=hidden
+            -fvisibility-inlines-hidden
+        )
+    endif()
     
     if(DTLS_ENABLE_HARDWARE_ACCEL)
         target_compile_options(dtlsv13 PRIVATE

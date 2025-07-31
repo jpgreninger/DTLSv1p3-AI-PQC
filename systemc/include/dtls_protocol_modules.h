@@ -29,9 +29,9 @@ namespace systemc_tlm {
 SC_MODULE(record_layer_module) {
 public:
     // TLM interfaces
-    tlm_utils::simple_target_socket<record_layer_module, 32, dtls_protocol_types> target_socket;
-    tlm_utils::simple_initiator_socket<record_layer_module, 32, dtls_protocol_types> crypto_socket;
-    tlm_utils::simple_initiator_socket<record_layer_module, 32, dtls_protocol_types> network_socket;
+    tlm_utils::simple_target_socket<record_layer_module> target_socket;
+    tlm_utils::simple_initiator_socket<record_layer_module> crypto_socket;
+    tlm_utils::simple_initiator_socket<record_layer_module> network_socket;
     
     // Configuration ports
     sc_in<bool> enable_protection;
@@ -185,10 +185,10 @@ private:
 SC_MODULE(handshake_engine_module) {
 public:
     // TLM interfaces
-    tlm_utils::simple_target_socket<handshake_engine_module, 32, dtls_protocol_types> target_socket;
-    tlm_utils::simple_initiator_socket<handshake_engine_module, 32, dtls_protocol_types> message_socket;
-    tlm_utils::simple_initiator_socket<handshake_engine_module, 32, dtls_protocol_types> crypto_socket;
-    tlm_utils::simple_initiator_socket<handshake_engine_module, 32, dtls_protocol_types> record_socket;
+    tlm_utils::simple_target_socket<handshake_engine_module> target_socket;
+    tlm_utils::simple_initiator_socket<handshake_engine_module> message_socket;
+    tlm_utils::simple_initiator_socket<handshake_engine_module> crypto_socket;
+    tlm_utils::simple_initiator_socket<handshake_engine_module> record_socket;
     
     // Configuration ports
     sc_in<bool> enable_handshake_processing;
@@ -418,8 +418,8 @@ private:
 SC_MODULE(key_manager_module) {
 public:
     // TLM interfaces
-    tlm_utils::simple_target_socket<key_manager_module, 32, dtls_protocol_types> target_socket;
-    tlm_utils::simple_initiator_socket<key_manager_module, 32, dtls_protocol_types> crypto_socket;
+    tlm_utils::simple_target_socket<key_manager_module> target_socket;
+    tlm_utils::simple_initiator_socket<key_manager_module> crypto_socket;
     
     // Configuration ports
     sc_in<bool> enable_key_updates;

@@ -31,7 +31,7 @@ public:
     sc_signal<bool> hardware_acceleration_enable{"hw_accel_enable"};
     sc_signal<uint32_t> max_fragment_size{"max_fragment_size"};
     sc_signal<bool> connection_id_enabled{"connection_id_enabled"};
-    sc_signal<CipherSuite> current_cipher_suite{"current_cipher_suite"};
+    sc_signal<uint32_t> current_cipher_suite{"current_cipher_suite"};
     
     // Network simulation signals
     sc_signal<double> packet_loss_probability{"packet_loss_probability"};

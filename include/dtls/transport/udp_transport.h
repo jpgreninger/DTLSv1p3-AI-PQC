@@ -172,6 +172,61 @@ struct TransportConfig {
  * Provides multi-threaded UDP socket handling with event-driven processing,
  * connection multiplexing, and comprehensive error handling.
  */
+/**
+ * Abstract transport interface for DTLS
+ * 
+ * Provides a common interface for different transport implementations
+ * to be used by the DTLS protocol layer and in testing.
+ */
+class DTLS_API TransportInterface {
+public:
+    virtual ~TransportInterface() = default;
+    
+    /**
+     * Bind to local address/port
+     */
+    virtual Result<void> bind() = 0;
+    
+    /**
+     * Connect to remote endpoint
+     */
+    virtual Result<void> connect(const std::string& remote_addr, uint16_t remote_port) = 0;
+    
+    /**
+     * Send data to connected endpoint
+     */
+    virtual Result<size_t> send(const std::vector<uint8_t>& data) = 0;
+    
+    /**
+     * Receive data from connected endpoint
+     */
+    virtual Result<std::vector<uint8_t>> receive(std::chrono::milliseconds timeout) = 0;
+    
+    /**
+     * Shutdown the transport
+     */
+    virtual Result<void> shutdown() = 0;
+    
+    /**
+     * Check if transport is bound
+     */
+    virtual bool is_bound() const = 0;
+    
+    /**
+     * Check if transport is connected
+     */
+    virtual bool is_connected() const = 0;
+    
+    /**
+     * Get local address
+     */
+    virtual std::string get_local_address() const = 0;
+    
+    /**
+     * Get local port
+     */
+    virtual uint16_t get_local_port() const = 0;
+};
 class DTLS_API UDPTransport {
 public:
     UDPTransport();

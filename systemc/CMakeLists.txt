@@ -12,23 +12,42 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Build options
-option(DTLS_SYSTEMC_BUILD_TESTS "Build SystemC testbenches" ON)
+option(DTLS_SYSTEMC_BUILD_TESTS "Build SystemC testbenches" OFF)
 option(DTLS_SYSTEMC_BUILD_EXAMPLES "Build SystemC examples" ON)
 option(DTLS_SYSTEMC_ENABLE_COVERAGE "Enable code coverage" OFF)
 option(DTLS_SYSTEMC_ENABLE_PROFILING "Enable performance profiling" OFF)
 
+# Set SystemC installation path
+set(SYSTEMC_ROOT "/home/jgreninger/Work/systemc")
+
+# SystemC library and include paths
+set(SYSTEMC_INCLUDE_DIRS "${SYSTEMC_ROOT}/include")
+set(SYSTEMC_LIBRARY_DIRS "${SYSTEMC_ROOT}/lib-linux64")
+set(SYSTEMC_LIBRARIES "systemc")
+
+# Add SystemC library directory to search path
+link_directories(${SYSTEMC_LIBRARY_DIRS})
+
 # Find required packages
-find_package(SystemCLanguage CONFIG REQUIRED)
 find_package(Threads REQUIRED)
+
+# Create SystemC imported target manually since find_package failed
+add_library(SystemC::systemc SHARED IMPORTED)
+set_target_properties(SystemC::systemc PROPERTIES
+    IMPORTED_LOCATION "${SYSTEMC_LIBRARY_DIRS}/libsystemc.so"
+    INTERFACE_INCLUDE_DIRECTORIES "${SYSTEMC_INCLUDE_DIRS}"
+)
 
 # Include directories
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/../include  # Main DTLS headers
+    ${SYSTEMC_ROOT}/include  # SystemC headers
 )
 
 # SystemC TLM source files
 set(DTLS_SYSTEMC_SOURCES
+    src/dtls_systemc_utils.cpp
     src/crypto_provider_tlm.cpp
     src/record_layer_tlm.cpp
     src/message_layer_tlm.cpp

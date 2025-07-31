@@ -501,7 +501,7 @@ std::optional<memory::Buffer> HelloRetryRequest::get_cookie() const {
         return std::nullopt;
     }
     
-    return cookie_result.value();
+    return std::make_optional(std::move(cookie_result).value());
 }
 
 std::optional<NamedGroup> HelloRetryRequest::get_selected_group() const {

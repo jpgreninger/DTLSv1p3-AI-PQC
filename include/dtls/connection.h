@@ -380,6 +380,49 @@ private:
  * Connection Manager for handling multiple connections
  */
 class DTLS_API ConnectionManager {
+
+/**
+ * Simple Context wrapper for DTLS connections
+ * 
+ * Provides a simplified interface for testing and basic usage.
+ * This is essentially an alias/wrapper around Connection with
+ * default configuration.
+ */
+class DTLS_API Context {
+public:
+    /**
+     * Create a default client context
+     */
+    static Result<std::unique_ptr<Context>> create_client();
+    
+    /**
+     * Create a default server context  
+     */
+    static Result<std::unique_ptr<Context>> create_server();
+    
+    ~Context() = default;
+    
+    // Non-copyable, movable
+    Context(const Context&) = delete;
+    Context& operator=(const Context&) = delete;
+    Context(Context&&) noexcept = default;
+    Context& operator=(Context&&) noexcept = default;
+    
+    /**
+     * Initialize the context
+     */
+    Result<void> initialize();
+    
+    /**
+     * Get the underlying connection (for advanced usage)
+     */
+    Connection* get_connection() const { return connection_.get(); }
+    
+private:
+    Context(std::unique_ptr<Connection> connection) : connection_(std::move(connection)) {}
+    
+    std::unique_ptr<Connection> connection_;
+};
 public:
     ConnectionManager() = default;
     ~ConnectionManager() = default;

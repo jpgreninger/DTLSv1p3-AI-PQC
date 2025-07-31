@@ -500,6 +500,258 @@ Result<std::vector<uint8_t>> OpenSSLProvider::aead_decrypt(
     return Result<std::vector<uint8_t>>(std::move(plaintext));
 }
 
+// New AEAD interface with separate ciphertext and tag
+Result<AEADEncryptionOutput> OpenSSLProvider::encrypt_aead(const AEADEncryptionParams& params) {
+    if (!pimpl_->initialized_) {
+        return Result<AEADEncryptionOutput>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    if (params.key.empty() || params.nonce.empty()) {
+        return Result<AEADEncryptionOutput>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Get the cipher algorithm
+    const EVP_CIPHER* cipher = nullptr;
+    size_t tag_length = 16; // Default tag length
+    
+    switch (params.cipher) {
+        case AEADCipher::AES_128_GCM:
+            cipher = EVP_aes_128_gcm();
+            tag_length = 16;
+            break;
+        case AEADCipher::AES_256_GCM:
+            cipher = EVP_aes_256_gcm();
+            tag_length = 16;
+            break;
+        case AEADCipher::CHACHA20_POLY1305:
+            cipher = EVP_chacha20_poly1305();
+            tag_length = 16;
+            break;
+        case AEADCipher::AES_128_CCM:
+            cipher = EVP_aes_128_ccm();
+            tag_length = 16;
+            break;
+        case AEADCipher::AES_128_CCM_8:
+            cipher = EVP_aes_128_ccm();
+            tag_length = 8;
+            break;
+        default:
+            return Result<AEADEncryptionOutput>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+    
+    if (!cipher) {
+        return Result<AEADEncryptionOutput>(DTLSError::CRYPTO_PROVIDER_ERROR);
+    }
+    
+    // Create cipher context
+    EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
+    if (!ctx) {
+        return Result<AEADEncryptionOutput>(DTLSError::OUT_OF_MEMORY);
+    }
+    
+    // Output buffers
+    std::vector<uint8_t> ciphertext(params.plaintext.size());
+    std::vector<uint8_t> tag(tag_length);
+    int outlen = 0;
+    int result = 1;
+    
+    // Initialize encryption
+    if (result == 1) {
+        result = EVP_EncryptInit_ex(ctx, cipher, nullptr, nullptr, nullptr);
+    }
+    
+    // Set nonce length (for GCM/CCM)
+    if (result == 1 && (params.cipher == AEADCipher::AES_128_GCM || 
+                        params.cipher == AEADCipher::AES_256_GCM ||
+                        params.cipher == AEADCipher::AES_128_CCM ||
+                        params.cipher == AEADCipher::AES_128_CCM_8)) {
+        result = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_AEAD_SET_IVLEN, 
+                                    static_cast<int>(params.nonce.size()), nullptr);
+    }
+    
+    // For CCM, set tag length
+    if (result == 1 && (params.cipher == AEADCipher::AES_128_CCM ||
+                        params.cipher == AEADCipher::AES_128_CCM_8)) {
+        result = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_AEAD_SET_TAG, 
+                                    static_cast<int>(tag_length), nullptr);
+    }
+    
+    // Set key and nonce
+    if (result == 1) {
+        result = EVP_EncryptInit_ex(ctx, nullptr, nullptr, params.key.data(), params.nonce.data());
+    }
+    
+    // For CCM, set plaintext length
+    if (result == 1 && (params.cipher == AEADCipher::AES_128_CCM ||
+                        params.cipher == AEADCipher::AES_128_CCM_8)) {
+        result = EVP_EncryptUpdate(ctx, nullptr, &outlen, nullptr, static_cast<int>(params.plaintext.size()));
+    }
+    
+    // Set additional authenticated data (AAD)
+    if (result == 1 && !params.additional_data.empty()) {
+        result = EVP_EncryptUpdate(ctx, nullptr, &outlen, 
+                                  params.additional_data.data(), 
+                                  static_cast<int>(params.additional_data.size()));
+    }
+    
+    // Encrypt plaintext
+    if (result == 1) {
+        result = EVP_EncryptUpdate(ctx, ciphertext.data(), &outlen, 
+                                  params.plaintext.data(), static_cast<int>(params.plaintext.size()));
+    }
+    
+    // Finalize encryption
+    int final_len = 0;
+    if (result == 1) {
+        result = EVP_EncryptFinal_ex(ctx, ciphertext.data() + outlen, &final_len);
+    }
+    
+    // Get authentication tag
+    if (result == 1) {
+        result = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_AEAD_GET_TAG, 
+                                    static_cast<int>(tag_length), 
+                                    tag.data());
+    }
+    
+    EVP_CIPHER_CTX_free(ctx);
+    
+    if (result != 1) {
+        return Result<AEADEncryptionOutput>(DTLSError::CRYPTO_PROVIDER_ERROR);
+    }
+    
+    ciphertext.resize(outlen + final_len);
+    
+    AEADEncryptionOutput output;
+    output.ciphertext = std::move(ciphertext);
+    output.tag = std::move(tag);
+    
+    return Result<AEADEncryptionOutput>(std::move(output));
+}
+
+Result<std::vector<uint8_t>> OpenSSLProvider::decrypt_aead(const AEADDecryptionParams& params) {
+    if (!pimpl_->initialized_) {
+        return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    if (params.key.empty() || params.nonce.empty() || params.ciphertext.empty() || params.tag.empty()) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Get the cipher algorithm
+    const EVP_CIPHER* cipher = nullptr;
+    size_t expected_tag_length = 16; // Default tag length
+    
+    switch (params.cipher) {
+        case AEADCipher::AES_128_GCM:
+            cipher = EVP_aes_128_gcm();
+            expected_tag_length = 16;
+            break;
+        case AEADCipher::AES_256_GCM:
+            cipher = EVP_aes_256_gcm();
+            expected_tag_length = 16;
+            break;
+        case AEADCipher::CHACHA20_POLY1305:
+            cipher = EVP_chacha20_poly1305();
+            expected_tag_length = 16;
+            break;
+        case AEADCipher::AES_128_CCM:
+            cipher = EVP_aes_128_ccm();
+            expected_tag_length = 16;
+            break;
+        case AEADCipher::AES_128_CCM_8:
+            cipher = EVP_aes_128_ccm();
+            expected_tag_length = 8;
+            break;
+        default:
+            return Result<std::vector<uint8_t>>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+    
+    if (!cipher || params.tag.size() != expected_tag_length) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Create cipher context
+    EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
+    if (!ctx) {
+        return Result<std::vector<uint8_t>>(DTLSError::OUT_OF_MEMORY);
+    }
+    
+    // Output buffer
+    std::vector<uint8_t> plaintext(params.ciphertext.size());
+    int outlen = 0;
+    int result = 1;
+    
+    // Initialize decryption
+    if (result == 1) {
+        result = EVP_DecryptInit_ex(ctx, cipher, nullptr, nullptr, nullptr);
+    }
+    
+    // Set nonce length (for GCM/CCM)
+    if (result == 1 && (params.cipher == AEADCipher::AES_128_GCM || 
+                        params.cipher == AEADCipher::AES_256_GCM ||
+                        params.cipher == AEADCipher::AES_128_CCM ||
+                        params.cipher == AEADCipher::AES_128_CCM_8)) {
+        result = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_AEAD_SET_IVLEN, 
+                                    static_cast<int>(params.nonce.size()), nullptr);
+    }
+    
+    // For CCM, set tag length and tag
+    if (result == 1 && (params.cipher == AEADCipher::AES_128_CCM ||
+                        params.cipher == AEADCipher::AES_128_CCM_8)) {
+        result = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_AEAD_SET_TAG, 
+                                    static_cast<int>(expected_tag_length), 
+                                    const_cast<uint8_t*>(params.tag.data()));
+    }
+    
+    // Set key and nonce
+    if (result == 1) {
+        result = EVP_DecryptInit_ex(ctx, nullptr, nullptr, params.key.data(), params.nonce.data());
+    }
+    
+    // For CCM, set ciphertext length
+    if (result == 1 && (params.cipher == AEADCipher::AES_128_CCM ||
+                        params.cipher == AEADCipher::AES_128_CCM_8)) {
+        result = EVP_DecryptUpdate(ctx, nullptr, &outlen, nullptr, static_cast<int>(params.ciphertext.size()));
+    }
+    
+    // Set additional authenticated data (AAD)
+    if (result == 1 && !params.additional_data.empty()) {
+        result = EVP_DecryptUpdate(ctx, nullptr, &outlen, 
+                                  params.additional_data.data(), 
+                                  static_cast<int>(params.additional_data.size()));
+    }
+    
+    // Decrypt ciphertext
+    if (result == 1) {
+        result = EVP_DecryptUpdate(ctx, plaintext.data(), &outlen, 
+                                  params.ciphertext.data(), static_cast<int>(params.ciphertext.size()));
+    }
+    
+    // For GCM, set the tag for verification
+    if (result == 1 && (params.cipher == AEADCipher::AES_128_GCM ||
+                        params.cipher == AEADCipher::AES_256_GCM ||
+                        params.cipher == AEADCipher::CHACHA20_POLY1305)) {
+        result = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_AEAD_SET_TAG, 
+                                    static_cast<int>(expected_tag_length), 
+                                    const_cast<uint8_t*>(params.tag.data()));
+    }
+    
+    // Finalize decryption (this verifies the tag)
+    int final_len = 0;
+    if (result == 1) {
+        result = EVP_DecryptFinal_ex(ctx, plaintext.data() + outlen, &final_len);
+    }
+    
+    EVP_CIPHER_CTX_free(ctx);
+    
+    if (result != 1) {
+        return Result<std::vector<uint8_t>>(DTLSError::DECRYPT_ERROR);
+    }
+    
+    plaintext.resize(outlen + final_len);
+    return Result<std::vector<uint8_t>>(std::move(plaintext));
+}
+
 // Hash functions
 Result<std::vector<uint8_t>> OpenSSLProvider::compute_hash(const HashParams& params) {
     if (!pimpl_->initialized_) {

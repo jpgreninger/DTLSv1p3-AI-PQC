@@ -118,12 +118,12 @@ private:
     void update_provider_stats(
         const std::string& name,
         bool success,
-        std::chrono::milliseconds init_time);
+        std::chrono::milliseconds init_time) const;
     
     // Member variables
     mutable std::mutex mutex_;
     std::unordered_map<std::string, ProviderRegistration> providers_;
-    std::unordered_map<std::string, ProviderStats> stats_;
+    mutable std::unordered_map<std::string, ProviderStats> stats_;
     std::string default_provider_;
     std::vector<std::string> preference_order_;
 };

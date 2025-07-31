@@ -61,6 +61,10 @@ public:
         const AEADParams& params,
         const std::vector<uint8_t>& ciphertext) override;
     
+    // New AEAD interface with separate ciphertext and tag
+    Result<AEADEncryptionOutput> encrypt_aead(const AEADEncryptionParams& params) override;
+    Result<std::vector<uint8_t>> decrypt_aead(const AEADDecryptionParams& params) override;
+    
     // Hash functions  
     Result<std::vector<uint8_t>> compute_hash(const HashParams& params) override;
     Result<std::vector<uint8_t>> compute_hmac(const HMACParams& params) override;

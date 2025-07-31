@@ -309,6 +309,107 @@ Result<std::vector<uint8_t>> BotanProvider::aead_decrypt(
     return Result<std::vector<uint8_t>>(std::move(plaintext));
 }
 
+// New AEAD interface with separate ciphertext and tag
+Result<AEADEncryptionOutput> BotanProvider::encrypt_aead(const AEADEncryptionParams& params) {
+    if (!pimpl_->initialized_) {
+        return Result<AEADEncryptionOutput>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    if (params.key.empty() || params.nonce.empty()) {
+        return Result<AEADEncryptionOutput>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // In real implementation:
+    // auto cipher_name = cipher_suite_to_botan(params.cipher);
+    // if (!cipher_name) return Result<AEADEncryptionOutput>(cipher_name.error());
+    // 
+    // auto aead = Botan::AEAD_Mode::create(*cipher_name, Botan::ENCRYPTION);
+    // if (!aead) return Result<AEADEncryptionOutput>(DTLSError::CRYPTO_PROVIDER_ERROR);
+    // 
+    // aead->set_key(params.key);
+    // aead->set_associated_data(params.additional_data);
+    // aead->start(params.nonce);
+    // 
+    // Botan::secure_vector<uint8_t> buffer(params.plaintext.begin(), params.plaintext.end());
+    // aead->finish(buffer);
+    // 
+    // // Split ciphertext and tag
+    // size_t tag_length = aead->tag_size();
+    // AEADEncryptionOutput output;
+    // output.ciphertext.assign(buffer.begin(), buffer.end() - tag_length);
+    // output.tag.assign(buffer.end() - tag_length, buffer.end());
+    
+    // Stub implementation - simple XOR with key
+    size_t tag_length = 16;
+    AEADEncryptionOutput output;
+    output.ciphertext.resize(params.plaintext.size());
+    output.tag.resize(tag_length);
+    
+    // Simple XOR encryption
+    for (size_t i = 0; i < params.plaintext.size(); ++i) {
+        output.ciphertext[i] = params.plaintext[i] ^ params.key[i % params.key.size()];
+    }
+    
+    // Simple tag generation
+    for (size_t i = 0; i < tag_length; ++i) {
+        output.tag[i] = static_cast<uint8_t>((i + params.key[0]) % 256);
+    }
+    
+    return Result<AEADEncryptionOutput>(std::move(output));
+}
+
+Result<std::vector<uint8_t>> BotanProvider::decrypt_aead(const AEADDecryptionParams& params) {
+    if (!pimpl_->initialized_) {
+        return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    if (params.key.empty() || params.nonce.empty()) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // In real implementation:
+    // auto cipher_name = cipher_suite_to_botan(params.cipher);
+    // if (!cipher_name) return Result<std::vector<uint8_t>>(cipher_name.error());
+    // 
+    // auto aead = Botan::AEAD_Mode::create(*cipher_name, Botan::DECRYPTION);
+    // if (!aead) return Result<std::vector<uint8_t>>(DTLSError::CRYPTO_PROVIDER_ERROR);
+    // 
+    // aead->set_key(params.key);
+    // aead->set_associated_data(params.additional_data);
+    // aead->start(params.nonce);
+    // 
+    // // Combine ciphertext and tag
+    // Botan::secure_vector<uint8_t> buffer;
+    // buffer.insert(buffer.end(), params.ciphertext.begin(), params.ciphertext.end());
+    // buffer.insert(buffer.end(), params.tag.begin(), params.tag.end());
+    // 
+    // aead->finish(buffer);
+    // return Result<std::vector<uint8_t>>(buffer.begin(), buffer.end());
+    
+    // Stub implementation - reverse of encryption
+    std::vector<uint8_t> plaintext(params.ciphertext.size());
+    
+    // Verify tag (stub)
+    size_t tag_length = 16;
+    if (params.tag.size() != tag_length) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    for (size_t i = 0; i < tag_length; ++i) {
+        uint8_t expected_tag_byte = static_cast<uint8_t>((i + params.key[0]) % 256);
+        if (params.tag[i] != expected_tag_byte) {
+            return Result<std::vector<uint8_t>>(DTLSError::DECRYPT_ERROR);
+        }
+    }
+    
+    // Simple XOR decryption
+    for (size_t i = 0; i < params.ciphertext.size(); ++i) {
+        plaintext[i] = params.ciphertext[i] ^ params.key[i % params.key.size()];
+    }
+    
+    return Result<std::vector<uint8_t>>(std::move(plaintext));
+}
+
 // Hash functions
 Result<std::vector<uint8_t>> BotanProvider::compute_hash(const HashParams& params) {
     if (!pimpl_->initialized_) {

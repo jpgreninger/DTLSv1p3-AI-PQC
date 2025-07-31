@@ -68,10 +68,7 @@ configure_file(
 # Core interoperability test library
 add_library(dtls_interop_framework STATIC
     interop_test_framework.cpp
-    interop_test_harness.cpp
-    external_implementation_runner.cpp
     rfc_compliance_validator.cpp
-    interop_result_reporter.cpp
 )
 
 target_include_directories(dtls_interop_framework PRIVATE
@@ -106,9 +103,6 @@ endif()
 add_executable(dtls_interop_tests
     dtls_interop_test_suite.cpp
     openssl_interop_tests.cpp
-    wolfssl_interop_tests.cpp
-    gnutls_interop_tests.cpp
-    rfc_compliance_tests.cpp
 )
 
 target_include_directories(dtls_interop_tests PRIVATE

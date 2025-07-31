@@ -8,7 +8,7 @@ namespace dtls::v13::protocol {
 // SequenceNumber48 Implementation
 Result<void> SequenceNumber48::serialize_to_buffer(uint8_t* buffer) const {
     if (!buffer) {
-        return make_error(DTLSError::INTERNAL_ERROR, "Null buffer provided");
+        return make_error<void>(DTLSError::INTERNAL_ERROR, "Null buffer provided");
     }
     
     // Store 48-bit value in big-endian format
@@ -101,7 +101,7 @@ Result<size_t> DTLSPlaintext::serialize(memory::Buffer& buffer) const {
         return make_error<size_t>(DTLSError::INTERNAL_ERROR, "Failed to resize buffer");
     }
     
-    uint8_t* data = buffer.mutable_data();
+    uint8_t* data = reinterpret_cast<uint8_t*>(buffer.mutable_data());
     size_t offset = 0;
     
     // Serialize header fields
@@ -140,7 +140,7 @@ Result<DTLSPlaintext> DTLSPlaintext::deserialize(const memory::Buffer& buffer, s
         return make_error<DTLSPlaintext>(DTLSError::DECODE_ERROR, "Buffer too small for DTLS header");
     }
     
-    const uint8_t* data = buffer.data();
+    const uint8_t* data = reinterpret_cast<const uint8_t*>(buffer.data());
     size_t pos = offset;
     
     // Deserialize header fields
@@ -199,7 +199,7 @@ bool DTLSPlaintext::is_valid() const {
     }
     
     // Check protocol version (should be DTLS v1.3)
-    if (version != ProtocolVersion::DTLS_1_3) {
+    if (version != DTLS_V13) {
         return false;
     }
     
@@ -302,7 +302,7 @@ Result<size_t> DTLSCiphertext::serialize(memory::Buffer& buffer) const {
         return make_error<size_t>(DTLSError::INTERNAL_ERROR, "Failed to resize buffer");
     }
     
-    uint8_t* data = buffer.mutable_data();
+    uint8_t* data = reinterpret_cast<uint8_t*>(buffer.mutable_data());
     size_t offset = 0;
     
     // Serialize header fields (same as DTLSPlaintext)
@@ -354,7 +354,7 @@ Result<DTLSCiphertext> DTLSCiphertext::deserialize(const memory::Buffer& buffer,
         return make_error<DTLSCiphertext>(DTLSError::DECODE_ERROR, "Buffer too small for DTLS header");
     }
     
-    const uint8_t* data = buffer.data();
+    const uint8_t* data = reinterpret_cast<const uint8_t*>(buffer.data());
     size_t pos = offset;
     
     // Deserialize header fields (same as DTLSPlaintext)
@@ -419,7 +419,7 @@ bool DTLSCiphertext::is_valid() const {
     }
     
     // Check protocol version (should be DTLS v1.3)
-    if (version != ProtocolVersion::DTLS_1_3) {
+    if (version != DTLS_V13) {
         return false;
     }
     
@@ -514,7 +514,7 @@ Result<ProtocolVersion> extract_protocol_version(const memory::Buffer& buffer, s
         return make_error<ProtocolVersion>(DTLSError::DECODE_ERROR, "Buffer too small to extract protocol version");
     }
     
-    const uint8_t* data = buffer.data();
+    const uint8_t* data = reinterpret_cast<const uint8_t*>(buffer.data());
     ProtocolVersion version = (static_cast<uint16_t>(data[offset]) << 8) | data[offset + 1];
     
     return make_result(version);
@@ -525,7 +525,7 @@ Result<uint16_t> extract_epoch(const memory::Buffer& buffer, size_t offset) {
         return make_error<uint16_t>(DTLSError::DECODE_ERROR, "Buffer too small to extract epoch");
     }
     
-    const uint8_t* data = buffer.data();
+    const uint8_t* data = reinterpret_cast<const uint8_t*>(buffer.data());
     uint16_t epoch = (static_cast<uint16_t>(data[offset]) << 8) | data[offset + 1];
     
     return make_result(epoch);
@@ -536,7 +536,7 @@ Result<SequenceNumber48> extract_sequence_number(const memory::Buffer& buffer, s
         return make_error<SequenceNumber48>(DTLSError::DECODE_ERROR, "Buffer too small to extract sequence number");
     }
     
-    return SequenceNumber48::deserialize_from_buffer(&buffer.data()[offset]);
+    return SequenceNumber48::deserialize_from_buffer(reinterpret_cast<const uint8_t*>(&buffer.data()[offset]));
 }
 
 bool is_dtls_record(const memory::Buffer& buffer, size_t min_length) {
@@ -563,9 +563,9 @@ bool is_dtls_record(const memory::Buffer& buffer, size_t min_length) {
     
     ProtocolVersion version = version_result.value();
     // Accept DTLS v1.0, v1.2, and v1.3
-    return (version == ProtocolVersion::DTLS_1_0 || 
-            version == ProtocolVersion::DTLS_1_2 || 
-            version == ProtocolVersion::DTLS_1_3);
+    return (version == DTLS_V10 || 
+            version == DTLS_V12 || 
+            version == DTLS_V13);
 }
 
 bool validate_record_length(uint16_t declared_length, size_t actual_payload_size) {

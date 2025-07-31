@@ -19,10 +19,10 @@ namespace systemc_tlm {
  * including timing, performance characteristics, and hardware acceleration.
  * Supports both blocking and non-blocking TLM transport interfaces.
  */
-SC_MODULE(CryptoProviderTLM) {
+class CryptoProviderTLM : public dtls_module_base {
 public:
     // TLM target socket for receiving crypto operation requests
-    tlm_utils::simple_target_socket<CryptoProviderTLM, 32, dtls_protocol_types> target_socket;
+    tlm_utils::simple_target_socket<CryptoProviderTLM> target_socket;
     
     // SystemC events for synchronization
     sc_event operation_completed;
@@ -78,7 +78,6 @@ private:
     bool hardware_accelerated_;
     
     // Processing infrastructure
-    sc_fifo<crypto_transaction> processing_queue_;
     std::atomic<bool> busy_;
     
     // Statistics
@@ -89,17 +88,17 @@ private:
     void crypto_processing_thread();
     
     // Crypto operation implementations
-    void perform_crypto_operation(crypto_transaction& trans);
-    void perform_encryption(crypto_transaction& trans);
-    void perform_decryption(crypto_transaction& trans);
-    void perform_signing(crypto_transaction& trans);
-    void perform_verification(crypto_transaction& trans);
-    void perform_key_derivation(crypto_transaction& trans);
-    void perform_random_generation(crypto_transaction& trans);
-    void perform_hash_computation(crypto_transaction& trans);
+    void perform_crypto_operation(tlm::tlm_generic_payload& trans, crypto_extension& ext);
+    void perform_encryption(tlm::tlm_generic_payload& trans, crypto_extension& ext);
+    void perform_decryption(tlm::tlm_generic_payload& trans, crypto_extension& ext);
+    void perform_signing(tlm::tlm_generic_payload& trans, crypto_extension& ext);
+    void perform_verification(tlm::tlm_generic_payload& trans, crypto_extension& ext);
+    void perform_key_derivation(tlm::tlm_generic_payload& trans, crypto_extension& ext);
+    void perform_random_generation(tlm::tlm_generic_payload& trans, crypto_extension& ext);
+    void perform_hash_computation(tlm::tlm_generic_payload& trans, crypto_extension& ext);
     
     // Statistics updates
-    void update_statistics(const crypto_transaction& trans);
+    void update_statistics(const crypto_extension& ext);
     
     SC_HAS_PROCESS(CryptoProviderTLM);
 };
@@ -110,7 +109,7 @@ private:
  * Specialized version with hardware acceleration characteristics
  * including lower latency and higher throughput.
  */
-SC_MODULE(HardwareAcceleratedCryptoTLM) {
+class HardwareAcceleratedCryptoTLM : public dtls_module_base {
 public:
     // Composition with base crypto provider
     CryptoProviderTLM crypto_provider;
@@ -155,13 +154,13 @@ private:
  * Manages multiple crypto providers and routes operations
  * based on availability, performance, and requirements.
  */
-SC_MODULE(CryptoManagerTLM) {
+class CryptoManagerTLM : public dtls_module_base {
 public:
     // TLM initiator socket for making requests to providers
-    tlm_utils::simple_initiator_socket<CryptoManagerTLM, 32, dtls_protocol_types> initiator_socket;
+    tlm_utils::simple_initiator_socket<CryptoManagerTLM> initiator_socket;
     
     // TLM target socket for receiving requests
-    tlm_utils::simple_target_socket<CryptoManagerTLM, 32, dtls_protocol_types> target_socket;
+    tlm_utils::simple_target_socket<CryptoManagerTLM> target_socket;
     
     // Constructor
     CryptoManagerTLM(sc_module_name name, size_t num_providers = 2);
@@ -194,7 +193,7 @@ private:
     std::atomic<size_t> round_robin_counter_;
     
     // Provider selection logic
-    size_t select_provider(const crypto_transaction& trans);
+    size_t select_provider(const crypto_extension& ext);
     size_t select_round_robin();
     size_t select_least_loaded();
     size_t select_fastest();

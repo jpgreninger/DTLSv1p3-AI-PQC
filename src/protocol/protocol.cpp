@@ -35,21 +35,21 @@ bool is_valid_handshake_type(HandshakeType type) {
     switch (type) {
         case HandshakeType::CLIENT_HELLO:
         case HandshakeType::SERVER_HELLO:
-        case HandshakeType::HELLO_VERIFY_REQUEST:
+        case HandshakeType::HELLO_VERIFY_REQUEST_RESERVED:
         case HandshakeType::NEW_SESSION_TICKET:
         case HandshakeType::END_OF_EARLY_DATA:
         case HandshakeType::HELLO_RETRY_REQUEST:
         case HandshakeType::ENCRYPTED_EXTENSIONS:
         case HandshakeType::CERTIFICATE:
-        case HandshakeType::SERVER_KEY_EXCHANGE:
+        case HandshakeType::SERVER_KEY_EXCHANGE_RESERVED:
         case HandshakeType::CERTIFICATE_REQUEST:
-        case HandshakeType::SERVER_HELLO_DONE:
+        case HandshakeType::SERVER_HELLO_DONE_RESERVED:
         case HandshakeType::CERTIFICATE_VERIFY:
-        case HandshakeType::CLIENT_KEY_EXCHANGE:
+        case HandshakeType::CLIENT_KEY_EXCHANGE_RESERVED:
         case HandshakeType::FINISHED:
-        case HandshakeType::CERTIFICATE_URL:
-        case HandshakeType::CERTIFICATE_STATUS:
-        case HandshakeType::SUPPLEMENTAL_DATA:
+        case HandshakeType::CERTIFICATE_URL_RESERVED:
+        case HandshakeType::CERTIFICATE_STATUS_RESERVED:
+        case HandshakeType::SUPPLEMENTAL_DATA_RESERVED:
         case HandshakeType::KEY_UPDATE:
         case HandshakeType::MESSAGE_HASH:
             return true;
@@ -64,7 +64,7 @@ bool is_client_handshake_message(HandshakeType type) {
         case HandshakeType::END_OF_EARLY_DATA:
         case HandshakeType::CERTIFICATE:
         case HandshakeType::CERTIFICATE_VERIFY:
-        case HandshakeType::CLIENT_KEY_EXCHANGE:
+        case HandshakeType::CLIENT_KEY_EXCHANGE_RESERVED:
         case HandshakeType::FINISHED:
             return true;
         default:
@@ -75,17 +75,17 @@ bool is_client_handshake_message(HandshakeType type) {
 bool is_server_handshake_message(HandshakeType type) {
     switch (type) {
         case HandshakeType::SERVER_HELLO:
-        case HandshakeType::HELLO_VERIFY_REQUEST:
+        case HandshakeType::HELLO_VERIFY_REQUEST_RESERVED:
         case HandshakeType::NEW_SESSION_TICKET:
         case HandshakeType::HELLO_RETRY_REQUEST:
         case HandshakeType::ENCRYPTED_EXTENSIONS:
         case HandshakeType::CERTIFICATE:
-        case HandshakeType::SERVER_KEY_EXCHANGE:
+        case HandshakeType::SERVER_KEY_EXCHANGE_RESERVED:
         case HandshakeType::CERTIFICATE_REQUEST:
-        case HandshakeType::SERVER_HELLO_DONE:
+        case HandshakeType::SERVER_HELLO_DONE_RESERVED:
         case HandshakeType::CERTIFICATE_VERIFY:
         case HandshakeType::FINISHED:
-        case HandshakeType::CERTIFICATE_STATUS:
+        case HandshakeType::CERTIFICATE_STATUS_RESERVED:
         case HandshakeType::KEY_UPDATE:
             return true;
         default:

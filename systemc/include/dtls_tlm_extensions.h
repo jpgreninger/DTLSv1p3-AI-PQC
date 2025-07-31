@@ -12,6 +12,9 @@ namespace dtls {
 namespace v13 {
 namespace systemc_tlm {
 
+using namespace ::sc_core;
+using namespace ::tlm;
+
 /**
  * DTLS Extension for TLM Generic Payload
  * 
@@ -398,6 +401,11 @@ public:
     }
 };
 
+// Output stream operator for dtls_transaction
+inline std::ostream& operator<<(std::ostream& os, const dtls_transaction& trans) {
+    return os << trans.to_string();
+}
+
 /**
  * DTLS Protocol Interface
  * 
@@ -407,10 +415,10 @@ public:
 class dtls_protocol_interface {
 public:
     // Socket types for different protocol layers
-    using crypto_socket_type = tlm_utils::simple_initiator_socket<dtls_protocol_interface, 32, dtls_protocol_types>;
-    using record_socket_type = tlm_utils::simple_initiator_socket<dtls_protocol_interface, 32, dtls_protocol_types>;
-    using message_socket_type = tlm_utils::simple_initiator_socket<dtls_protocol_interface, 32, dtls_protocol_types>;
-    using transport_socket_type = tlm_utils::simple_initiator_socket<dtls_protocol_interface, 32, dtls_protocol_types>;
+    using crypto_socket_type = tlm_utils::simple_initiator_socket<dtls_protocol_interface>;
+    using record_socket_type = tlm_utils::simple_initiator_socket<dtls_protocol_interface>;
+    using message_socket_type = tlm_utils::simple_initiator_socket<dtls_protocol_interface>;
+    using transport_socket_type = tlm_utils::simple_initiator_socket<dtls_protocol_interface>;
 
 private:
     crypto_socket_type* crypto_socket;
@@ -472,7 +480,7 @@ public:
         sc_time delay = quantum_keeper.get_local_time();
         trans.get_extension().start_timing();
         
-        crypto_socket->b_transport(trans.get_payload(), delay);
+        (*crypto_socket)->b_transport(trans.get_payload(), delay);
         
         trans.get_extension().add_crypto_time(delay - quantum_keeper.get_local_time());
         quantum_keeper.set(delay);
@@ -484,7 +492,7 @@ public:
         if (!record_socket) return false;
         
         sc_time delay = quantum_keeper.get_local_time();
-        record_socket->b_transport(trans.get_payload(), delay);
+        (*record_socket)->b_transport(trans.get_payload(), delay);
         
         trans.get_extension().add_network_time(delay - quantum_keeper.get_local_time());
         quantum_keeper.set(delay);
@@ -496,7 +504,7 @@ public:
         if (!message_socket) return false;
         
         sc_time delay = quantum_keeper.get_local_time();
-        message_socket->b_transport(trans.get_payload(), delay);
+        (*message_socket)->b_transport(trans.get_payload(), delay);
         
         trans.add_delay(delay - quantum_keeper.get_local_time());
         quantum_keeper.set(delay);
@@ -508,7 +516,7 @@ public:
         if (!transport_socket) return false;
         
         sc_time delay = quantum_keeper.get_local_time();
-        transport_socket->b_transport(trans.get_payload(), delay);
+        (*transport_socket)->b_transport(trans.get_payload(), delay);
         
         trans.get_extension().add_network_time(delay - quantum_keeper.get_local_time());
         quantum_keeper.set(delay);

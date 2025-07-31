@@ -158,6 +158,17 @@ struct Extension {
     Extension(Extension&& other) = default;
     Extension& operator=(Extension&& other) = default;
     
+    // Equality operators
+    bool operator==(const Extension& other) const {
+        if (type != other.type) return false;
+        if (data.size() != other.data.size()) return false;
+        if (data.size() == 0) return true;
+        return std::memcmp(data.data(), other.data.data(), data.size()) == 0;
+    }
+    
+    bool operator!=(const Extension& other) const {
+        return !(*this == other);
+    }
     Result<size_t> serialize(memory::Buffer& buffer) const;
     static Result<Extension> deserialize(const memory::Buffer& buffer, size_t offset = 0);
     
@@ -193,6 +204,12 @@ private:
     
 public:
     ClientHello();
+    
+    // Move-only semantics (copy disabled due to Buffer containing move-only ZeroCopyBuffer)
+    ClientHello(const ClientHello&) = delete;
+    ClientHello& operator=(const ClientHello&) = delete;
+    ClientHello(ClientHello&&) = default;
+    ClientHello& operator=(ClientHello&&) = default;
     
     // Accessors
     ProtocolVersion legacy_version() const { return legacy_version_; }
@@ -234,6 +251,12 @@ private:
     
 public:
     ServerHello();
+    
+    // Move-only semantics (copy disabled due to Buffer containing move-only ZeroCopyBuffer)
+    ServerHello(const ServerHello&) = delete;
+    ServerHello& operator=(const ServerHello&) = delete;
+    ServerHello(ServerHello&&) = default;
+    ServerHello& operator=(ServerHello&&) = default;
     
     // Accessors
     ProtocolVersion legacy_version() const { return legacy_version_; }
@@ -282,6 +305,12 @@ private:
 public:
     HelloRetryRequest();
     
+    // Move-only semantics (copy disabled due to Buffer containing move-only ZeroCopyBuffer)
+    HelloRetryRequest(const HelloRetryRequest&) = delete;
+    HelloRetryRequest& operator=(const HelloRetryRequest&) = delete;
+    HelloRetryRequest(HelloRetryRequest&&) = default;
+    HelloRetryRequest& operator=(HelloRetryRequest&&) = default;
+    
     // Accessors
     ProtocolVersion legacy_version() const { return legacy_version_; }
     const std::array<uint8_t, 32>& random() const { return random_; }
@@ -321,6 +350,13 @@ struct CertificateEntry {
     memory::Buffer cert_data;
     std::vector<Extension> extensions;
     
+    // Move-only semantics (copy disabled due to Buffer containing move-only ZeroCopyBuffer)
+    CertificateEntry() = default;
+    CertificateEntry(const CertificateEntry&) = delete;
+    CertificateEntry& operator=(const CertificateEntry&) = delete;
+    CertificateEntry(CertificateEntry&&) = default;
+    CertificateEntry& operator=(CertificateEntry&&) = default;
+    
     Result<size_t> serialize(memory::Buffer& buffer) const;
     static Result<CertificateEntry> deserialize(const memory::Buffer& buffer, size_t offset = 0);
     
@@ -335,6 +371,12 @@ private:
     
 public:
     Certificate() = default;
+    
+    // Move-only semantics (copy disabled due to Buffer containing move-only ZeroCopyBuffer)
+    Certificate(const Certificate&) = delete;
+    Certificate& operator=(const Certificate&) = delete;
+    Certificate(Certificate&&) = default;
+    Certificate& operator=(Certificate&&) = default;
     
     // Accessors
     const memory::Buffer& certificate_request_context() const { return certificate_request_context_; }
@@ -364,6 +406,12 @@ public:
     CertificateVerify(SignatureScheme algorithm, memory::Buffer signature)
         : algorithm_(algorithm), signature_(std::move(signature)) {}
     
+    // Move-only semantics (copy disabled due to Buffer containing move-only ZeroCopyBuffer)
+    CertificateVerify(const CertificateVerify&) = delete;
+    CertificateVerify& operator=(const CertificateVerify&) = delete;
+    CertificateVerify(CertificateVerify&&) = default;
+    CertificateVerify& operator=(CertificateVerify&&) = default;
+    
     // Accessors
     SignatureScheme algorithm() const { return algorithm_; }
     const memory::Buffer& signature() const { return signature_; }
@@ -388,6 +436,12 @@ private:
 public:
     Finished() = default;
     explicit Finished(memory::Buffer verify_data) : verify_data_(std::move(verify_data)) {}
+    
+    // Move-only semantics (copy disabled due to Buffer containing move-only ZeroCopyBuffer)
+    Finished(const Finished&) = delete;
+    Finished& operator=(const Finished&) = delete;
+    Finished(Finished&&) = default;
+    Finished& operator=(Finished&&) = default;
     
     // Accessors
     const memory::Buffer& verify_data() const { return verify_data_; }
@@ -633,18 +687,25 @@ private:
 public:
     HandshakeMessage() = default;
     
+    // Move-only semantics (copy disabled due to Buffer containing move-only ZeroCopyBuffer)
+    HandshakeMessage(const HandshakeMessage&) = delete;
+    HandshakeMessage& operator=(const HandshakeMessage&) = delete;
+    HandshakeMessage(HandshakeMessage&&) = default;
+    HandshakeMessage& operator=(HandshakeMessage&&) = default;
+    
     template<typename T>
-    HandshakeMessage(const T& msg, uint16_t message_seq = 0) {
-        message_ = msg;
-        header_.msg_type = get_handshake_type<T>();
+    HandshakeMessage(T&& msg, uint16_t message_seq = 0) {
+        message_ = std::forward<T>(msg);
+        header_.msg_type = get_handshake_type<std::decay_t<T>>();
         header_.message_seq = message_seq;
         header_.fragment_offset = 0;
-        header_.length = msg.serialized_size();
+        header_.length = std::get<std::decay_t<T>>(message_).serialized_size();
         header_.fragment_length = header_.length;
     }
     
     // Accessors
     const HandshakeHeader& header() const { return header_; }
+    HandshakeHeader& header() { return header_; }
     HandshakeType message_type() const { return header_.msg_type; }
     
     template<typename T>
@@ -661,6 +722,10 @@ public:
     bool holds() const {
         return std::holds_alternative<T>(message_);
     }
+    
+    // Access to the message variant
+    const auto& message() const { return message_; }
+    auto& message() { return message_; }
     
     // Serialization
     Result<size_t> serialize(memory::Buffer& buffer) const;

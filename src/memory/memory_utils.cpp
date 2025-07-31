@@ -78,7 +78,18 @@ void MemoryStatsCollector::record_allocation_failure(size_t size) {
 }
 
 MemoryStats MemoryStatsCollector::get_statistics() const {
-    return stats_;
+    MemoryStats stats_copy;
+    stats_copy.total_allocations = stats_.total_allocations.load();
+    stats_copy.total_deallocations = stats_.total_deallocations.load();
+    stats_copy.current_allocations = stats_.current_allocations.load();
+    stats_copy.peak_allocations = stats_.peak_allocations.load();
+    stats_copy.total_bytes_allocated = stats_.total_bytes_allocated.load();
+    stats_copy.total_bytes_deallocated = stats_.total_bytes_deallocated.load();
+    stats_copy.current_bytes_allocated = stats_.current_bytes_allocated.load();
+    stats_copy.peak_bytes_allocated = stats_.peak_bytes_allocated.load();
+    stats_copy.allocation_failures = stats_.allocation_failures.load();
+    stats_copy.start_time = stats_.start_time;
+    return stats_copy;
 }
 
 void MemoryStatsCollector::reset_statistics() {
@@ -443,17 +454,17 @@ void MemoryDebugger::generate_memory_report() const {
     auto stats = MemoryStatsCollector::instance().get_statistics();
     
     std::cout << "=== DTLS Memory Report ===\n";
-    std::cout << "Total allocations: " << stats.total_allocations.load() << "\n";
-    std::cout << "Total deallocations: " << stats.total_deallocations.load() << "\n";
-    std::cout << "Current allocations: " << stats.current_allocations.load() << "\n";
-    std::cout << "Peak allocations: " << stats.peak_allocations.load() << "\n";
-    std::cout << "Total bytes allocated: " << stats.total_bytes_allocated.load() << "\n";
-    std::cout << "Total bytes deallocated: " << stats.total_bytes_deallocated.load() << "\n";
-    std::cout << "Current bytes allocated: " << stats.current_bytes_allocated.load() << "\n";
-    std::cout << "Peak bytes allocated: " << stats.peak_bytes_allocated.load() << "\n";
-    std::cout << "Allocation failures: " << stats.allocation_failures.load() << "\n";
+    std::cout << "Total allocations: " << stats.total_allocations << "\n";
+    std::cout << "Total deallocations: " << stats.total_deallocations << "\n";
+    std::cout << "Current allocations: " << stats.current_allocations << "\n";
+    std::cout << "Peak allocations: " << stats.peak_allocations << "\n";
+    std::cout << "Total bytes allocated: " << stats.total_bytes_allocated << "\n";
+    std::cout << "Total bytes deallocated: " << stats.total_bytes_deallocated << "\n";
+    std::cout << "Current bytes allocated: " << stats.current_bytes_allocated << "\n";
+    std::cout << "Peak bytes allocated: " << stats.peak_bytes_allocated << "\n";
+    std::cout << "Allocation failures: " << stats.allocation_failures << "\n";
     
-    if (stats.current_allocations.load() > 0) {
+    if (stats.current_allocations > 0) {
         std::cout << "\nPotential memory leaks detected!\n";
         MemoryStatsCollector::instance().dump_leaks();
     }
@@ -567,8 +578,8 @@ Result<MemoryHealthReport> perform_memory_health_check() {
     
     auto stats = MemoryStatsCollector::instance().get_statistics();
     
-    report.total_memory_usage = stats.current_bytes_allocated.load();
-    report.active_allocations = stats.current_allocations.load();
+    report.total_memory_usage = stats.current_bytes_allocated;
+    report.active_allocations = stats.current_allocations;
     report.memory_leaks = MemoryStatsCollector::instance().get_leak_count();
     
     // Calculate fragmentation ratio (simplified)
@@ -601,8 +612,8 @@ Result<MemoryHealthReport> perform_memory_health_check() {
         report.issues.push_back("High memory fragmentation detected");
     }
     
-    if (stats.allocation_failures.load() > 0) {
-        report.issues.push_back("Allocation failures detected: " + std::to_string(stats.allocation_failures.load()));
+    if (stats.allocation_failures > 0) {
+        report.issues.push_back("Allocation failures detected: " + std::to_string(stats.allocation_failures));
         report.overall_healthy = false;
     }
     

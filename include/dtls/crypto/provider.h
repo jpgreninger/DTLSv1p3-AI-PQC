@@ -49,6 +49,31 @@ struct AEADParams {
     AEADCipher cipher{AEADCipher::AES_128_GCM};
 };
 
+// AEAD encryption parameters for new interface
+struct AEADEncryptionParams {
+    std::vector<uint8_t> key;
+    std::vector<uint8_t> nonce;
+    std::vector<uint8_t> additional_data;
+    std::vector<uint8_t> plaintext;
+    AEADCipher cipher{AEADCipher::AES_128_GCM};
+};
+
+// AEAD decryption parameters for new interface
+struct AEADDecryptionParams {
+    std::vector<uint8_t> key;
+    std::vector<uint8_t> nonce;
+    std::vector<uint8_t> additional_data;
+    std::vector<uint8_t> ciphertext;
+    std::vector<uint8_t> tag;
+    AEADCipher cipher{AEADCipher::AES_128_GCM};
+};
+
+// AEAD encryption output
+struct AEADEncryptionOutput {
+    std::vector<uint8_t> ciphertext;
+    std::vector<uint8_t> tag;
+};
+
 // Digital signature parameters
 struct SignatureParams {
     std::vector<uint8_t> data;
@@ -126,6 +151,10 @@ public:
     virtual Result<std::vector<uint8_t>> aead_decrypt(
         const AEADParams& params,
         const std::vector<uint8_t>& ciphertext) = 0;
+    
+    // New AEAD interface with separate ciphertext and tag
+    virtual Result<AEADEncryptionOutput> encrypt_aead(const AEADEncryptionParams& params) = 0;
+    virtual Result<std::vector<uint8_t>> decrypt_aead(const AEADDecryptionParams& params) = 0;
     
     // Hash functions
     virtual Result<std::vector<uint8_t>> compute_hash(const HashParams& params) = 0;

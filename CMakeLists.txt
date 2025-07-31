@@ -30,31 +30,34 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -march=native")
 # Find required dependencies
 find_package(Threads REQUIRED)
 
-# OpenSSL (required) - Set custom path if needed
-if(EXISTS "/home/jgreninger/Work/openssl")
-    set(OPENSSL_ROOT_DIR "/home/jgreninger/Work/openssl")
-    set(OPENSSL_INCLUDE_DIR "/home/jgreninger/Work/openssl/include")
-    set(OPENSSL_CRYPTO_LIBRARY "/home/jgreninger/Work/openssl/lib/libcrypto.a")
-    set(OPENSSL_SSL_LIBRARY "/home/jgreninger/Work/openssl/lib/libssl.a")
-    message(STATUS "Using custom OpenSSL at ${OPENSSL_ROOT_DIR}")
-    
-    # Create OpenSSL targets manually for custom installation
-    add_library(OpenSSL::Crypto STATIC IMPORTED)
-    set_target_properties(OpenSSL::Crypto PROPERTIES
-        IMPORTED_LOCATION "${OPENSSL_CRYPTO_LIBRARY}"
-        INTERFACE_INCLUDE_DIRECTORIES "${OPENSSL_INCLUDE_DIR}")
-        
-    add_library(OpenSSL::SSL STATIC IMPORTED)
-    set_target_properties(OpenSSL::SSL PROPERTIES
-        IMPORTED_LOCATION "${OPENSSL_SSL_LIBRARY}"
-        INTERFACE_INCLUDE_DIRECTORIES "${OPENSSL_INCLUDE_DIR}"
-        INTERFACE_LINK_LIBRARIES "OpenSSL::Crypto")
-    
-    set(OPENSSL_FOUND TRUE)
-    set(OPENSSL_VERSION "3.6.0")
-else()
-    find_package(OpenSSL REQUIRED)
-endif()
+# OpenSSL (required) - Use system OpenSSL
+find_package(OpenSSL REQUIRED)
+
+# Commented out custom OpenSSL path that doesn't exist
+# if(EXISTS "/home/jgreninger/Work/openssl")
+#     set(OPENSSL_ROOT_DIR "/home/jgreninger/Work/openssl")
+#     set(OPENSSL_INCLUDE_DIR "/home/jgreninger/Work/openssl/include")
+#     set(OPENSSL_CRYPTO_LIBRARY "/home/jgreninger/Work/openssl/lib/libcrypto.a")
+#     set(OPENSSL_SSL_LIBRARY "/home/jgreninger/Work/openssl/lib/libssl.a")
+#     message(STATUS "Using custom OpenSSL at ${OPENSSL_ROOT_DIR}")
+#     
+#     # Create OpenSSL targets manually for custom installation
+#     add_library(OpenSSL::Crypto STATIC IMPORTED)
+#     set_target_properties(OpenSSL::Crypto PROPERTIES
+#         IMPORTED_LOCATION "${OPENSSL_CRYPTO_LIBRARY}"
+#         INTERFACE_INCLUDE_DIRECTORIES "${OPENSSL_INCLUDE_DIR}")
+#         
+#     add_library(OpenSSL::SSL STATIC IMPORTED)
+#     set_target_properties(OpenSSL::SSL PROPERTIES
+#         IMPORTED_LOCATION "${OPENSSL_SSL_LIBRARY}"
+#         INTERFACE_INCLUDE_DIRECTORIES "${OPENSSL_INCLUDE_DIR}"
+#         INTERFACE_LINK_LIBRARIES "OpenSSL::Crypto")
+#     
+#     set(OPENSSL_FOUND TRUE)
+#     set(OPENSSL_VERSION "3.6.0")
+# else()
+#     find_package(OpenSSL REQUIRED)
+# endif()
 
 if(OpenSSL_FOUND OR OPENSSL_FOUND)
     message(STATUS "Found OpenSSL ${OPENSSL_VERSION}")
@@ -93,7 +96,8 @@ if(DTLS_BUILD_TESTS)
         include(FetchContent)
         FetchContent_Declare(
             googletest
-            URL https://github.com/google/googletest/archive/03597a01ee50ed33e9fd7188ec8e5ef9.zip
+            URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
+            DOWNLOAD_EXTRACT_TIMESTAMP true
         )
         FetchContent_MakeAvailable(googletest)
     endif()
@@ -101,6 +105,15 @@ endif()
 
 # Include directories
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+# Set configuration variables for config.h
+# Debug: Print the current value of DTLS_BUILD_SHARED
+message(STATUS "DTLS_BUILD_SHARED before configure_file: ${DTLS_BUILD_SHARED}")
+
+# Detect platform for config.h
+if(WIN32)
+    set(DTLS_PLATFORM_WINDOWS 1)
+endif()
 
 # Generate configuration header
 configure_file(

@@ -31,8 +31,22 @@ struct AllocationInfo {
     std::thread::id thread_id;
 };
 
-// Global memory statistics
+// Statistics snapshot (non-atomic for return values)
 struct MemoryStats {
+    size_t total_allocations{0};
+    size_t total_deallocations{0};
+    size_t current_allocations{0};
+    size_t peak_allocations{0};
+    size_t total_bytes_allocated{0};
+    size_t total_bytes_deallocated{0};
+    size_t current_bytes_allocated{0};
+    size_t peak_bytes_allocated{0};
+    size_t allocation_failures{0};
+    std::chrono::steady_clock::time_point start_time;
+};
+
+// Internal atomic statistics (for thread-safe updates)
+struct AtomicMemoryStats {
     std::atomic<size_t> total_allocations{0};
     std::atomic<size_t> total_deallocations{0};
     std::atomic<size_t> current_allocations{0};
@@ -72,7 +86,7 @@ private:
     MemoryStatsCollector();
     ~MemoryStatsCollector() = default;
     
-    MemoryStats stats_;
+    AtomicMemoryStats stats_;
     mutable std::mutex tracking_mutex_;
     std::unordered_map<void*, AllocationInfo> active_allocations_;
     std::atomic<bool> tracking_enabled_{false};

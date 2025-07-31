@@ -11,6 +11,63 @@ namespace v13 {
 namespace systemc_tlm {
 
 /**
+ * Custom interfaces to replace sc_fifo interfaces for move-only types
+ */
+template<typename T>
+class queue_in_if : public sc_interface {
+public:
+    virtual bool write(const T& data) = 0;
+    virtual bool nb_write(const T& data) = 0;
+};
+
+template<typename T>
+class queue_out_if : public sc_interface {
+public:
+    virtual bool read(T& data) = 0;
+    virtual bool nb_read(T& data) = 0;
+    virtual bool is_empty() const = 0;
+    virtual uint32_t size() const = 0;
+};
+
+/**
+ * Template wrapper class that implements the queue interfaces and delegates to a channel
+ */
+template<typename ChannelType, typename TransactionType>
+class channel_interface_wrapper : public queue_in_if<TransactionType>, public queue_out_if<TransactionType> {
+private:
+    ChannelType* channel_;
+    
+public:
+    channel_interface_wrapper(ChannelType* channel) : channel_(channel) {}
+    
+    // queue_in_if implementation
+    bool write(const TransactionType& data) override {
+        return channel_->write(data);
+    }
+    
+    bool nb_write(const TransactionType& data) override {
+        return channel_->nb_write(data);
+    }
+    
+    // queue_out_if implementation
+    bool read(TransactionType& data) override {
+        return channel_->read(data);
+    }
+    
+    bool nb_read(TransactionType& data) override {
+        return channel_->nb_read(data);
+    }
+    
+    bool is_empty() const override {
+        return channel_->is_empty();
+    }
+    
+    uint32_t size() const override {
+        return channel_->size();
+    }
+};
+
+/**
  * SystemC Channel for DTLS Crypto Operations
  * 
  * Provides a channel for secure communication of cryptographic
@@ -19,8 +76,8 @@ namespace systemc_tlm {
 SC_MODULE(CryptoOperationChannel) {
 public:
     // Channel interface ports  
-    sc_export<sc_fifo_in_if<crypto_extension>> crypto_in;
-    sc_export<sc_fifo_out_if<crypto_extension>> crypto_out;
+    sc_export<queue_in_if<crypto_transaction>> crypto_in;
+    sc_export<queue_out_if<crypto_transaction>> crypto_out;
     
     // Control signals
     sc_in<bool> enable_crypto_operations;
@@ -62,14 +119,20 @@ public:
     uint32_t get_queue_size() const;
     bool is_full() const;
     bool is_empty() const;
+    uint32_t size() const;
+
     
     // Statistics
     ChannelStats get_statistics() const;
     void reset_statistics();
 
+    // Interface wrapper (public for DTLSInterconnectBus access)
+    channel_interface_wrapper<CryptoOperationChannel, crypto_transaction> interface_wrapper_;
+
 private:
-    // Internal FIFO storage
-    sc_fifo<crypto_transaction> operation_queue_;
+    // Internal queue storage (sc_fifo doesn't work with move-only types)
+    std::queue<crypto_transaction> operation_queue_;
+    mutable std::mutex queue_mutex_;
     
     // Channel configuration
     uint32_t max_queue_size_;
@@ -101,8 +164,8 @@ private:
 SC_MODULE(RecordOperationChannel) {
 public:
     // Channel interface ports
-    sc_export<sc_fifo_in_if<record_transaction>> record_in;
-    sc_export<sc_fifo_out_if<record_transaction>> record_out;
+    sc_export<queue_in_if<record_transaction>> record_in;
+    sc_export<queue_out_if<record_transaction>> record_out;
     
     // Control signals
     sc_in<bool> enable_record_operations;
@@ -158,14 +221,22 @@ public:
     // Channel management
     uint32_t get_queue_size() const;
     uint32_t get_priority_queue_size(RecordPriority priority) const;
+    bool is_empty() const;
+    uint32_t size() const;
+
+
     
     // Statistics
     RecordChannelStats get_statistics() const;
     void reset_statistics();
 
+    // Interface wrapper (public for DTLSInterconnectBus access)
+    channel_interface_wrapper<RecordOperationChannel, record_transaction> interface_wrapper_;
+
 private:
-    // Priority queue storage
-    std::map<RecordPriority, sc_fifo<record_transaction>*> priority_queues_;
+    // Priority queue storage (sc_fifo doesn't work with move-only types)
+    std::map<RecordPriority, std::queue<record_transaction>> priority_queues_;
+    mutable std::mutex priority_mutex_;
     std::map<RecordPriority, double> priority_weights_;
     
     // Channel configuration
@@ -200,8 +271,8 @@ private:
 SC_MODULE(MessageOperationChannel) {
 public:
     // Channel interface ports
-    sc_export<sc_fifo_in_if<message_transaction>> message_in;
-    sc_export<sc_fifo_out_if<message_transaction>> message_out;
+    sc_export<queue_in_if<message_transaction>> message_in;
+    sc_export<queue_out_if<message_transaction>> message_out;
     
     // Control signals
     sc_in<bool> enable_message_operations;
@@ -260,14 +331,22 @@ public:
     // Channel management
     void set_operation_priorities(const std::map<MessageOperationType, int>& priorities);
     uint32_t get_operation_queue_size(MessageOperationType type) const;
+    bool is_empty() const;
+    uint32_t size() const;
+
+
     
     // Statistics
     MessageChannelStats get_statistics() const;
     void reset_statistics();
 
+    // Interface wrapper (public for DTLSInterconnectBus access)
+    channel_interface_wrapper<MessageOperationChannel, message_transaction> interface_wrapper_;
+
 private:
-    // Operation-specific queues
-    std::map<MessageOperationType, sc_fifo<message_transaction>*> operation_queues_;
+    // Operation-specific queues (sc_fifo doesn't work with move-only types)
+    std::map<MessageOperationType, std::queue<message_transaction>> operation_queues_;
+    mutable std::mutex operation_mutex_;
     std::map<MessageOperationType, int> operation_priorities_;
     
     // Channel configuration
@@ -306,8 +385,8 @@ private:
 SC_MODULE(TransportChannel) {
 public:
     // Channel interface ports
-    sc_export<sc_fifo_in_if<transport_transaction>> transport_in;
-    sc_export<sc_fifo_out_if<transport_transaction>> transport_out;
+    sc_export<queue_in_if<transport_transaction>> transport_in;
+    sc_export<queue_out_if<transport_transaction>> transport_out;
     
     // Network condition simulation
     sc_in<double> packet_loss_probability;
@@ -330,6 +409,15 @@ public:
         double bandwidth_mbps{100.0};
         uint32_t mtu_size{1500};
         bool congestion_control_enabled{true};
+        
+        // Constructor with default values
+        NetworkConditions() 
+            : packet_loss_probability(0.0)
+            , base_latency(50, SC_MS)
+            , jitter(10, SC_MS)
+            , bandwidth_mbps(100.0)
+            , mtu_size(1500)
+            , congestion_control_enabled(true) {}
     };
     
     /**
@@ -351,7 +439,7 @@ public:
     };
     
     // Constructor
-    TransportChannel(sc_module_name name, const NetworkConditions& conditions = NetworkConditions{});
+    TransportChannel(sc_module_name name, const NetworkConditions& conditions = NetworkConditions());
     
     // Channel operations
     bool write(const transport_transaction& trans);
@@ -368,22 +456,39 @@ public:
     // Statistics
     TransportChannelStats get_statistics() const;
     void reset_statistics();
+    
+    // Interface methods
+    bool is_empty() const;
+    uint32_t size() const;
+    
+    // Interface wrapper (public for DTLSInterconnectBus access)
+    channel_interface_wrapper<TransportChannel, transport_transaction> interface_wrapper_;
 
 private:
     // Network simulation state
     NetworkConditions network_conditions_;
     bool packet_loss_simulation_enabled_;
     bool congestion_simulation_enabled_;
-    
+
     // Transport queue with timing
     struct TimedPacket {
-        transport_transaction transaction;
+        std::unique_ptr<transport_transaction> transaction;
         sc_time arrival_time;
         sc_time delivery_time;
         bool dropped;
-        
+
         TimedPacket(const transport_transaction& trans) 
-            : transaction(trans), arrival_time(sc_time_stamp()), dropped(false) {}
+            : transaction(std::make_unique<transport_transaction>(std::move(const_cast<transport_transaction&>(trans))))
+            , arrival_time(sc_time_stamp())
+            , dropped(false) {}
+            
+        // Move constructor and assignment to make it work with STL containers
+        TimedPacket(TimedPacket&& other) noexcept = default;
+        TimedPacket& operator=(TimedPacket&& other) noexcept = default;
+        
+        // Delete copy constructor and assignment (non-copyable due to unique_ptr)
+        TimedPacket(const TimedPacket&) = delete;
+        TimedPacket& operator=(const TimedPacket&) = delete;
     };
     
     std::queue<TimedPacket> in_transit_packets_;
@@ -417,14 +522,14 @@ private:
 SC_MODULE(DTLSInterconnectBus) {
 public:
     // Component connection ports
-    sc_export<sc_fifo_in_if<crypto_transaction>> crypto_bus_in;
-    sc_export<sc_fifo_out_if<crypto_transaction>> crypto_bus_out;
-    sc_export<sc_fifo_in_if<record_transaction>> record_bus_in;
-    sc_export<sc_fifo_out_if<record_transaction>> record_bus_out;
-    sc_export<sc_fifo_in_if<message_transaction>> message_bus_in;
-    sc_export<sc_fifo_out_if<message_transaction>> message_bus_out;
-    sc_export<sc_fifo_in_if<transport_transaction>> transport_bus_in;
-    sc_export<sc_fifo_out_if<transport_transaction>> transport_bus_out;
+    sc_export<queue_in_if<crypto_transaction>> crypto_bus_in;
+    sc_export<queue_out_if<crypto_transaction>> crypto_bus_out;
+    sc_export<queue_in_if<record_transaction>> record_bus_in;
+    sc_export<queue_out_if<record_transaction>> record_bus_out;
+    sc_export<queue_in_if<message_transaction>> message_bus_in;
+    sc_export<queue_out_if<message_transaction>> message_bus_out;
+    sc_export<queue_in_if<transport_transaction>> transport_bus_in;
+    sc_export<queue_out_if<transport_transaction>> transport_bus_out;
     
     // Bus control
     sc_in<bool> bus_enable;
@@ -444,6 +549,10 @@ public:
         sc_time bus_cycle_time{10, SC_NS};
         bool priority_arbitration_enabled{true};
         uint32_t congestion_threshold_percent{80};
+        
+        static BusConfig default_config() {
+            return BusConfig{};
+        }
     };
     
     /**
@@ -464,14 +573,11 @@ public:
         uint32_t congestion_events{0};
     };
     
-    // Constructor
-    DTLSInterconnectBus(sc_module_name name, const BusConfig& config = BusConfig{});
+    // Constructor declaration moved after struct definitions
+    DTLSInterconnectBus(sc_module_name name, const BusConfig& config = BusConfig::default_config());
     
     // Bus operations
-    bool route_transaction(const crypto_transaction& trans);
-    bool route_transaction(const record_transaction& trans);
-    bool route_transaction(const message_transaction& trans);
-    bool route_transaction(const transport_transaction& trans);
+    bool route_transaction(const dtls_transaction& trans);
     
     // Bus management
     void set_bus_configuration(const BusConfig& config);

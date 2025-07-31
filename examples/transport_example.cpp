@@ -7,6 +7,7 @@
 
 #include <dtls/transport/udp_transport.h>
 #include <dtls/memory/pool.h>
+#include <dtls/memory/memory_utils.h>
 
 #include <iostream>
 #include <thread>
@@ -112,7 +113,7 @@ void server_example() {
             // Echo back
             std::string response = "Echo: " + std::string(
                 reinterpret_cast<const char*>(packet.data.data()), packet.data.size());
-            auto response_buffer = memory::make_buffer(response.data(), response.size());
+            auto response_buffer = memory::utils::string_to_buffer(response);
             
             auto send_result = server_transport.send_packet(packet.source, response_buffer);
             if (send_result) {
@@ -178,7 +179,7 @@ void client_example() {
     // Send some test messages
     for (int i = 0; i < 3; ++i) {
         std::string message = "Hello from client #" + std::to_string(i);
-        auto message_buffer = memory::make_buffer(message.data(), message.size());
+        auto message_buffer = memory::utils::string_to_buffer(message);
         
         std::cout << "Sending: " << message << std::endl;
         auto send_result = client_transport.send_packet(server_endpoint, message_buffer);

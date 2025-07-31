@@ -54,29 +54,26 @@ CookieManager::CookieManager(const CookieConfig& config)
 
 CookieManager::~CookieManager() = default;
 
-CookieManager::CookieManager(CookieManager&&) noexcept = default;
-CookieManager& CookieManager::operator=(CookieManager&&) noexcept = default;
+// Move operations are deleted due to mutex member
 
 Result<void> CookieManager::initialize(const memory::Buffer& secret_key) {
     std::lock_guard<std::mutex> lock(mutex_);
     
     if (secret_key.size() < 16) {
-        return Result<void>::failure(DTLSError::INVALID_PARAMETER, 
-                                   "Secret key must be at least 16 bytes");
+        return Result<void>(DTLSError::INVALID_PARAMETER);
     }
     
-    secret_key_ = secret_key;
+    secret_key_ = memory::Buffer(secret_key.data(), secret_key.size());
     initialized_ = true;
     
-    return Result<void>::success();
+    return Result<void>();
 }
 
 Result<memory::Buffer> CookieManager::generate_cookie(const ClientInfo& client_info) {
     std::lock_guard<std::mutex> lock(mutex_);
     
     if (!initialized_) {
-        return Result<memory::Buffer>::failure(DTLSError::NOT_INITIALIZED, 
-                                             "Cookie manager not initialized");
+        return Result<memory::Buffer>(DTLSError::NOT_INITIALIZED);
     }
     
     // Check if client has too many active cookies
@@ -96,7 +93,7 @@ Result<memory::Buffer> CookieManager::generate_cookie(const ClientInfo& client_i
         return cookie_result;
     }
     
-    memory::Buffer cookie = cookie_result.value();
+    memory::Buffer cookie = std::move(cookie_result.value());
     
     // Track the cookie
     std::string cookie_key = generate_cookie_key(cookie);
@@ -110,7 +107,7 @@ Result<memory::Buffer> CookieManager::generate_cookie(const ClientInfo& client_i
     ++stats_.cookies_generated;
     stats_.active_cookies = active_cookies_.size();
     
-    return Result<memory::Buffer>::success(std::move(cookie));
+    return Result<memory::Buffer>(std::move(cookie));
 }
 
 CookieManager::CookieValidationResult 
@@ -288,7 +285,7 @@ Result<memory::Buffer> CookieManager::generate_hmac_cookie(
     
     memory::Buffer cookie(total_size);
     cookie.resize(total_size);
-    uint8_t* data = cookie.mutable_data();
+    uint8_t* data = reinterpret_cast<uint8_t*>(cookie.mutable_data());
     size_t offset = 0;
     
     // Write magic number
@@ -336,19 +333,17 @@ Result<memory::Buffer> CookieManager::generate_hmac_cookie(
               secret_key_.data(), static_cast<int>(secret_key_.size()),
               hmac_input.data(), hmac_input.size(),
               hmac_result, &hmac_len)) {
-        return Result<memory::Buffer>::failure(DTLSError::CRYPTO_ERROR, 
-                                             "Failed to compute HMAC");
+        return Result<memory::Buffer>(DTLSError::CRYPTO_PROVIDER_ERROR);
     }
     
     if (hmac_len != HMAC_SIZE) {
-        return Result<memory::Buffer>::failure(DTLSError::CRYPTO_ERROR, 
-                                             "Unexpected HMAC size");
+        return Result<memory::Buffer>(DTLSError::CRYPTO_PROVIDER_ERROR);
     }
     
     // Write HMAC
     std::memcpy(data + offset, hmac_result, HMAC_SIZE);
     
-    return Result<memory::Buffer>::success(std::move(cookie));
+    return Result<memory::Buffer>(std::move(cookie));
 }
 
 bool CookieManager::verify_hmac_cookie(const memory::Buffer& cookie, 
@@ -506,8 +501,7 @@ extract_client_info(const std::string& address,
     // Parse address string (format: "IP:PORT")
     size_t colon_pos = address.find_last_of(':');
     if (colon_pos == std::string::npos) {
-        return Result<CookieManager::ClientInfo>::failure(
-            DTLSError::INVALID_PARAMETER, "Invalid address format");
+        return Result<CookieManager::ClientInfo>(DTLSError::INVALID_PARAMETER);
     }
     
     std::string ip = address.substr(0, colon_pos);
@@ -517,69 +511,14 @@ extract_client_info(const std::string& address,
     try {
         port = static_cast<uint16_t>(std::stoul(port_str));
     } catch (const std::exception&) {
-        return Result<CookieManager::ClientInfo>::failure(
-            DTLSError::INVALID_PARAMETER, "Invalid port number");
+        return Result<CookieManager::ClientInfo>(DTLSError::INVALID_PARAMETER);
     }
     
     CookieManager::ClientInfo client_info(ip, port, client_hello_data);
-    return Result<CookieManager::ClientInfo>::success(std::move(client_info));
+    return Result<CookieManager::ClientInfo>(std::move(client_info));
 }
 
-Result<Extension> create_cookie_extension(const memory::Buffer& cookie) {
-    if (cookie.empty() || cookie.size() > MAX_COOKIE_SIZE) {
-        return Result<Extension>::failure(DTLSError::INVALID_PARAMETER, 
-                                        "Invalid cookie size");
-    }
-    
-    Extension extension;
-    extension.type = ExtensionType::COOKIE;
-    
-    // Cookie extension format: [2 bytes: cookie_length] [N bytes: cookie]
-    size_t extension_size = 2 + cookie.size();
-    extension.data.resize(extension_size);
-    
-    uint8_t* data = extension.data.mutable_data();
-    
-    // Write cookie length
-    uint16_t cookie_len_be = htons(static_cast<uint16_t>(cookie.size()));
-    std::memcpy(data, &cookie_len_be, 2);
-    
-    // Write cookie data
-    std::memcpy(data + 2, cookie.data(), cookie.size());
-    
-    return Result<Extension>::success(std::move(extension));
-}
-
-Result<memory::Buffer> extract_cookie_from_extension(const Extension& extension) {
-    if (extension.type != ExtensionType::COOKIE) {
-        return Result<memory::Buffer>::failure(DTLSError::INVALID_PARAMETER, 
-                                             "Extension is not a cookie extension");
-    }
-    
-    if (extension.data.size() < 2) {
-        return Result<memory::Buffer>::failure(DTLSError::INVALID_MESSAGE_FORMAT, 
-                                             "Cookie extension too short");
-    }
-    
-    const uint8_t* data = reinterpret_cast<const uint8_t*>(extension.data.data());
-    
-    // Read cookie length
-    uint16_t cookie_len;
-    std::memcpy(&cookie_len, data, 2);
-    cookie_len = ntohs(cookie_len);
-    
-    if (extension.data.size() != 2 + cookie_len) {
-        return Result<memory::Buffer>::failure(DTLSError::INVALID_MESSAGE_FORMAT, 
-                                             "Cookie extension length mismatch");
-    }
-    
-    // Extract cookie data
-    memory::Buffer cookie(cookie_len);
-    cookie.resize(cookie_len);
-    std::memcpy(cookie.mutable_data(), data + 2, cookie_len);
-    
-    return Result<memory::Buffer>::success(std::move(cookie));
-}
+// Cookie extension functions are implemented in handshake.cpp to avoid duplicate definitions
 
 bool is_valid_cookie_format(const memory::Buffer& cookie) {
     if (cookie.size() < MIN_COOKIE_SIZE || cookie.size() > MAX_COOKIE_SIZE) {
@@ -615,9 +554,9 @@ memory::Buffer generate_test_cookie(uint8_t size) {
     cookie.resize(size);
     
     // Fill with pseudo-random data for testing
-    if (RAND_bytes(cookie.mutable_data(), static_cast<int>(size)) != 1) {
+    if (RAND_bytes(reinterpret_cast<unsigned char*>(cookie.mutable_data()), static_cast<int>(size)) != 1) {
         // Fallback to deterministic pattern if OpenSSL fails
-        uint8_t* data = cookie.mutable_data();
+        uint8_t* data = reinterpret_cast<uint8_t*>(cookie.mutable_data());
         for (size_t i = 0; i < size; ++i) {
             data[i] = static_cast<uint8_t>(i & 0xFF);
         }

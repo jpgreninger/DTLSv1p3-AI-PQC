@@ -10,6 +10,7 @@
 #include <atomic>
 #include <functional>
 #include <chrono>
+#include <random>
 
 namespace dtls {
 namespace test {
@@ -24,7 +25,7 @@ namespace test {
  * - Error injection
  * - Message interception and logging
  */
-class MockTransport : public transport::TransportInterface {
+class MockTransport : public v13::transport::TransportInterface {
 public:
     /**
      * Network condition simulation parameters
@@ -47,17 +48,25 @@ public:
         std::atomic<uint64_t> packets_corrupted{0};
         std::atomic<uint64_t> bytes_sent{0};
         std::atomic<uint64_t> bytes_received{0};
+        std::atomic<uint64_t> errors_encountered{0};
+        
+        // Disable copy constructor and assignment due to atomics
+        TransportStats() = default;
+        TransportStats(const TransportStats&) = delete;
+        TransportStats& operator=(const TransportStats&) = delete;
+        TransportStats(TransportStats&&) = default;
+        TransportStats& operator=(TransportStats&&) = default;
     };
     
     MockTransport(const std::string& local_addr, uint16_t local_port);
     virtual ~MockTransport();
     
     // TransportInterface implementation
-    Result<void> bind() override;
-    Result<void> connect(const std::string& remote_addr, uint16_t remote_port) override;
-    Result<size_t> send(const std::vector<uint8_t>& data) override;
-    Result<std::vector<uint8_t>> receive(std::chrono::milliseconds timeout) override;
-    Result<void> shutdown() override;
+    v13::Result<void> bind() override;
+    v13::Result<void> connect(const std::string& remote_addr, uint16_t remote_port) override;
+    v13::Result<size_t> send(const std::vector<uint8_t>& data) override;
+    v13::Result<std::vector<uint8_t>> receive(std::chrono::milliseconds timeout) override;
+    v13::Result<void> shutdown() override;
     
     bool is_bound() const override;
     bool is_connected() const override;
@@ -155,7 +164,7 @@ private:
     // Packet manipulation
     std::atomic<size_t> packets_to_drop_{0};
     std::atomic<size_t> packets_to_corrupt_{0};
-    std::atomic<std::chrono::milliseconds> packet_delay_{0};
+    std::atomic<std::chrono::milliseconds> packet_delay_{std::chrono::milliseconds(0)};
     
     // Configuration
     std::atomic<size_t> mtu_{1500};

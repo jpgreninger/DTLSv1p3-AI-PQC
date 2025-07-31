@@ -188,7 +188,7 @@ HandshakeFlight::HandshakeFlight(FlightType type, uint16_t message_seq_start)
     : type_(type), message_seq_start_(message_seq_start) {
 }
 
-void HandshakeFlight::add_message(HandshakeMessage message) {
+void HandshakeFlight::add_message(HandshakeMessage&& message) {
     messages_.push_back(std::move(message));
 }
 
@@ -203,7 +203,7 @@ Result<std::vector<MessageFragment>> HandshakeFlight::fragment_messages(size_t m
         // Serialize the message payload (without handshake header)
         size_t payload_size = std::visit([](const auto& msg) {
             return msg.serialized_size();
-        }, message.message_);
+        }, message.message());
         
         memory::Buffer payload_buffer(payload_size);
         size_t actual_size = 0;
@@ -213,7 +213,7 @@ Result<std::vector<MessageFragment>> HandshakeFlight::fragment_messages(size_t m
             if (result.is_success()) {
                 actual_size = result.value();
             }
-        }, message.message_);
+        }, message.message());
         
         if (actual_size == 0) {
             return Result<std::vector<MessageFragment>>(DTLSError::SERIALIZATION_FAILED);
@@ -293,7 +293,7 @@ Result<void> FlightManager::create_flight(FlightType type) {
     return Result<void>();
 }
 
-Result<void> FlightManager::add_message_to_current_flight(HandshakeMessage message) {
+Result<void> FlightManager::add_message_to_current_flight(HandshakeMessage&& message) {
     std::lock_guard<std::mutex> lock(mutex_);
     
     if (!current_flight_) {
@@ -302,7 +302,7 @@ Result<void> FlightManager::add_message_to_current_flight(HandshakeMessage messa
     
     // Update message sequence number
     HandshakeMessage msg_with_seq = std::move(message);
-    msg_with_seq.header_.message_seq = next_message_seq_++;
+    msg_with_seq.header().message_seq = next_message_seq_++;
     
     current_flight_->add_message(std::move(msg_with_seq));
     
@@ -427,7 +427,15 @@ Result<void> MessageLayer::send_handshake_message(const HandshakeMessage& messag
     
     // Send each fragment as a separate record
     for (const auto& fragment : fragments) {
-        auto record_result = create_handshake_record(fragment, 0); // Epoch 0 for now
+        // Create DTLSPlaintext record from fragment
+        DTLSPlaintext plaintext_record(
+            ContentType::HANDSHAKE,
+            static_cast<ProtocolVersion>(0xfefc), // DTLS v1.3 protocol version
+            0, // Epoch 0 for now
+            SequenceNumber48(0), // Sequence number will be assigned by record layer
+            memory::Buffer(fragment.fragment_data.data(), fragment.fragment_data.size()) // Copy fragment data
+        );
+        Result<DTLSPlaintext> record_result(std::move(plaintext_record));
         if (!record_result.is_success()) {
             return Result<void>(record_result.error());
         }
@@ -459,7 +467,15 @@ Result<void> MessageLayer::send_handshake_flight(std::unique_ptr<HandshakeFlight
     
     // Send all fragments
     for (const auto& fragment : fragments) {
-        auto record_result = create_handshake_record(fragment, 0);
+        // Create DTLSPlaintext record from fragment
+        DTLSPlaintext plaintext_record(
+            ContentType::HANDSHAKE,
+            static_cast<ProtocolVersion>(0xfefc), // DTLS v1.3 protocol version
+            0, // Epoch 0 for now
+            SequenceNumber48(0), // Sequence number will be assigned by record layer
+            memory::Buffer(fragment.fragment_data.data(), fragment.fragment_data.size()) // Copy fragment data
+        );
+        Result<DTLSPlaintext> record_result(std::move(plaintext_record));
         if (!record_result.is_success()) {
             return Result<void>(record_result.error());
         }
@@ -539,16 +555,16 @@ Result<std::vector<HandshakeMessage>> MessageLayer::process_incoming_handshake_r
             
             // Reconstruct complete message with header
             HandshakeMessage message;
-            message.header_ = header;
-            message.header_.fragment_offset = 0;
-            message.header_.fragment_length = header.length;
+            message.header() = header;
+            message.header().fragment_offset = 0;
+            message.header().fragment_length = header.length;
             
             // Deserialize based on message type (simplified - would need full implementation)
             switch (header.msg_type) {
                 case HandshakeType::CLIENT_HELLO: {
                     auto msg_result = ClientHello::deserialize(complete_payload, 0);
                     if (msg_result.is_success()) {
-                        message.message_ = std::move(msg_result.value());
+                        message.message() = std::move(msg_result.value());
                         completed_messages.push_back(std::move(message));
                         update_stats_message_received();
                     }
@@ -557,7 +573,7 @@ Result<std::vector<HandshakeMessage>> MessageLayer::process_incoming_handshake_r
                 case HandshakeType::SERVER_HELLO: {
                     auto msg_result = ServerHello::deserialize(complete_payload, 0);
                     if (msg_result.is_success()) {
-                        message.message_ = std::move(msg_result.value());
+                        message.message() = std::move(msg_result.value());
                         completed_messages.push_back(std::move(message));
                         update_stats_message_received();
                     }
@@ -582,9 +598,9 @@ Result<std::vector<HandshakeMessage>> MessageLayer::process_incoming_handshake_r
                 if (complete_result.is_success()) {
                     // Deserialize complete message (similar to above)
                     HandshakeMessage message;
-                    message.header_ = header;
-                    message.header_.fragment_offset = 0;
-                    message.header_.fragment_length = header.length;
+                    message.header() = header;
+                    message.header().fragment_offset = 0;
+                    message.header().fragment_length = header.length;
                     
                     // Would need full deserialization logic here
                     completed_messages.push_back(std::move(message));
@@ -607,8 +623,8 @@ Result<void> MessageLayer::start_flight(FlightType type) {
     return flight_manager_->create_flight(type);
 }
 
-Result<void> MessageLayer::add_to_current_flight(const HandshakeMessage& message) {
-    return flight_manager_->add_message_to_current_flight(message);
+Result<void> MessageLayer::add_to_current_flight(HandshakeMessage&& message) {
+    return flight_manager_->add_message_to_current_flight(std::move(message));
 }
 
 Result<void> MessageLayer::complete_and_send_flight() {
@@ -651,7 +667,7 @@ Result<std::vector<MessageFragment>> MessageLayer::fragment_message(
     // Serialize message payload
     size_t payload_size = std::visit([](const auto& msg) {
         return msg.serialized_size();
-    }, message.message_);
+    }, message.message());
     
     memory::Buffer payload_buffer(payload_size);
     size_t actual_size = 0;
@@ -661,7 +677,7 @@ Result<std::vector<MessageFragment>> MessageLayer::fragment_message(
         if (result.is_success()) {
             actual_size = result.value();
         }
-    }, message.message_);
+    }, message.message());
     
     if (actual_size == 0) {
         return Result<std::vector<MessageFragment>>(DTLSError::SERIALIZATION_FAILED);
@@ -816,7 +832,7 @@ Result<std::vector<HandshakeMessage>> generate_test_handshake_messages() {
     ClientHello client_hello;
     client_hello.set_cipher_suites({CipherSuite::TLS_AES_128_GCM_SHA256});
     
-    HandshakeMessage ch_message(client_hello, 0);
+    HandshakeMessage ch_message(std::move(client_hello), 0);
     messages.push_back(std::move(ch_message));
     
     return Result<std::vector<HandshakeMessage>>(std::move(messages));

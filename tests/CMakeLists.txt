@@ -5,7 +5,8 @@ cmake_minimum_required(VERSION 3.20)
 project(DTLS_Tests VERSION 1.0.0 LANGUAGES CXX)
 
 # Find required packages for testing
-find_package(GTest REQUIRED)
+# GTest will be available from parent CMakeLists.txt FetchContent
+# find_package(GTest REQUIRED)
 find_package(Threads REQUIRED)
 
 # Find benchmark library for performance tests (optional)

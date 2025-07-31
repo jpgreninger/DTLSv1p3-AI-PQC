@@ -133,7 +133,7 @@ public:
     /**
      * Add a handshake message to the flight
      */
-    void add_message(HandshakeMessage message);
+    void add_message(HandshakeMessage&& message);
     
     /**
      * Get all messages in the flight
@@ -193,7 +193,7 @@ public:
     /**
      * Add message to current flight
      */
-    Result<void> add_message_to_current_flight(HandshakeMessage message);
+    Result<void> add_message_to_current_flight(HandshakeMessage&& message);
     
     /**
      * Complete current flight and prepare for transmission
@@ -291,7 +291,7 @@ public:
     /**
      * Add message to current flight
      */
-    Result<void> add_to_current_flight(const HandshakeMessage& message);
+    Result<void> add_to_current_flight(HandshakeMessage&& message);
     
     /**
      * Complete and send current flight

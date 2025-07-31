@@ -180,10 +180,10 @@ MemorySystemStatus get_memory_system_status() {
     
     // Get memory statistics
     auto memory_stats = utils::MemoryStatsCollector::instance().get_statistics();
-    status.total_memory_usage = memory_stats.current_bytes_allocated.load();
+    status.total_memory_usage = memory_stats.current_bytes_allocated;
     status.direct_memory_usage = status.total_memory_usage - status.pool_memory_usage;
-    status.active_allocations = memory_stats.current_allocations.load();
-    status.peak_allocations = memory_stats.peak_allocations.load();
+    status.active_allocations = memory_stats.current_allocations;
+    status.peak_allocations = memory_stats.peak_allocations;
     
     status.initialization_time = g_initialization_time;
     auto now = std::chrono::steady_clock::now();
@@ -472,7 +472,7 @@ Result<void> preload_pools(const std::vector<std::pair<size_t, size_t>>& usage_h
 size_t predict_memory_usage(std::chrono::minutes time_horizon) {
     // Simple prediction based on current usage trends
     auto memory_stats = utils::MemoryStatsCollector::instance().get_statistics();
-    size_t current_usage = memory_stats.current_bytes_allocated.load();
+    size_t current_usage = memory_stats.current_bytes_allocated;
     
     // Calculate usage rate (bytes per minute)
     auto uptime = std::chrono::steady_clock::now() - memory_stats.start_time;
@@ -601,11 +601,19 @@ Result<BufferPtr> create_aligned_buffer(size_t size, size_t alignment) {
 
 // Buffer operation helpers
 Result<BufferPtr> clone_buffer(const BufferView& source) {
-    return Result<BufferPtr>(utils::copy_buffer(source));
+    auto copy_result = utils::copy_buffer(source);
+    if (!copy_result) {
+        return Result<BufferPtr>(copy_result.error());
+    }
+    return Result<BufferPtr>(std::make_unique<ZeroCopyBuffer>(std::move(*copy_result)));
 }
 
 Result<BufferPtr> merge_buffers(const std::vector<BufferView>& buffers) {
-    return Result<BufferPtr>(utils::concat_buffers(buffers));
+    auto concat_result = utils::concat_buffers(buffers);
+    if (!concat_result) {
+        return Result<BufferPtr>(concat_result.error());
+    }
+    return Result<BufferPtr>(std::make_unique<ZeroCopyBuffer>(std::move(*concat_result)));
 }
 
 Result<std::vector<BufferPtr>> split_buffer(const BufferView& source, 
@@ -676,7 +684,7 @@ void trigger_garbage_collection() {
 
 size_t get_total_memory_usage() {
     auto stats = utils::MemoryStatsCollector::instance().get_statistics();
-    return stats.current_bytes_allocated.load();
+    return stats.current_bytes_allocated;
 }
 
 size_t get_available_memory() {

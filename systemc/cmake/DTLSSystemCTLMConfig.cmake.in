@@ -1,0 +1,10 @@
+# DTLSSystemCTLM CMake Config File
+@PACKAGE_INIT@
+
+# Find dependencies
+find_dependency(Threads)
+
+# Include the targets file
+include("${CMAKE_CURRENT_LIST_DIR}/DTLSSystemCTLMTargets.cmake")
+
+check_required_components(DTLSSystemCTLM)

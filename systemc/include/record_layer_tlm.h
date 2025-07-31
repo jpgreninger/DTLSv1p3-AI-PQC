@@ -11,6 +11,13 @@
 #include <unordered_map>
 #include <bitset>
 
+// Forward declarations for DTLS protocol types
+namespace dtls::v13::protocol {
+    class PlaintextRecord;
+    class CiphertextRecord;
+    struct RecordHeader;
+}
+
 namespace dtls {
 namespace v13 {
 namespace systemc_tlm {
@@ -24,7 +31,7 @@ namespace systemc_tlm {
 SC_MODULE(AntiReplayWindowTLM) {
 public:
     // TLM target socket for replay check requests
-    tlm_utils::simple_target_socket<AntiReplayWindowTLM, 32, dtls_protocol_types> target_socket;
+    tlm_utils::simple_target_socket<AntiReplayWindowTLM> target_socket;
     
     // Configuration ports
     sc_in<uint32_t> window_size_config;
@@ -101,7 +108,7 @@ private:
 SC_MODULE(SequenceNumberManagerTLM) {
 public:
     // TLM target socket
-    tlm_utils::simple_target_socket<SequenceNumberManagerTLM, 32, dtls_protocol_types> target_socket;
+    tlm_utils::simple_target_socket<SequenceNumberManagerTLM> target_socket;
     
     // Control ports
     sc_in<bool> reset_sequence;
@@ -176,7 +183,7 @@ private:
 SC_MODULE(EpochManagerTLM) {
 public:
     // TLM target socket
-    tlm_utils::simple_target_socket<EpochManagerTLM, 32, dtls_protocol_types> target_socket;
+    tlm_utils::simple_target_socket<EpochManagerTLM> target_socket;
     
     // Control ports
     sc_in<bool> advance_epoch_trigger;
@@ -270,17 +277,17 @@ private:
 SC_MODULE(RecordLayerTLM) {
 public:
     // TLM interfaces
-    tlm_utils::simple_target_socket<RecordLayerTLM, 32, dtls_protocol_types> target_socket;
-    tlm_utils::simple_initiator_socket<RecordLayerTLM, 32, dtls_protocol_types> crypto_initiator_socket;
+    tlm_utils::simple_target_socket<RecordLayerTLM> target_socket;
+    tlm_utils::simple_initiator_socket<RecordLayerTLM> crypto_initiator_socket;
     
     // Component interfaces
-    tlm_utils::simple_initiator_socket<RecordLayerTLM, 32, dtls_protocol_types> antireplay_socket;
-    tlm_utils::simple_initiator_socket<RecordLayerTLM, 32, dtls_protocol_types> sequence_socket;
-    tlm_utils::simple_initiator_socket<RecordLayerTLM, 32, dtls_protocol_types> epoch_socket;
+    tlm_utils::simple_initiator_socket<RecordLayerTLM> antireplay_socket;
+    tlm_utils::simple_initiator_socket<RecordLayerTLM> sequence_socket;
+    tlm_utils::simple_initiator_socket<RecordLayerTLM> epoch_socket;
     
     // Control ports
     sc_in<bool> connection_id_enabled;
-    sc_in<CipherSuite> current_cipher_suite;
+    sc_in<uint32_t> current_cipher_suite;
     
     // Status ports
     sc_out<uint64_t> records_protected;
@@ -352,8 +359,8 @@ private:
     void throughput_calculation_process();
     
     // Internal methods
-    bool perform_record_protection(record_transaction& trans);
-    bool perform_record_unprotection(record_transaction& trans);
+    bool perform_record_protection(tlm::tlm_generic_payload& trans);
+    bool perform_record_unprotection(tlm::tlm_generic_payload& trans);
     bool check_anti_replay(uint64_t sequence_number, uint16_t epoch);
     uint64_t get_next_sequence_number();
     
@@ -379,7 +386,7 @@ private:
 SC_MODULE(RecordLayerSecuritySystemTLM) {
 public:
     // External TLM interface
-    tlm_utils::simple_target_socket<RecordLayerSecuritySystemTLM, 32, dtls_protocol_types> external_socket;
+    tlm_utils::simple_target_socket<RecordLayerSecuritySystemTLM> external_socket;
     
     // Component instances
     RecordLayerTLM record_layer;

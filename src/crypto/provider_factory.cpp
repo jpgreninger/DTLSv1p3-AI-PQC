@@ -308,7 +308,7 @@ int ProviderFactory::calculate_provider_score(
 void ProviderFactory::update_provider_stats(
     const std::string& name,
     bool success,
-    std::chrono::milliseconds init_time) {
+    std::chrono::milliseconds init_time) const {
     
     auto& stats = stats_[name];
     stats.creation_count++;

@@ -335,7 +335,8 @@ Result<DTLSCiphertext> RecordLayer::protect_record(const DTLSPlaintext& plaintex
     if (current_epoch > 0 && !crypto_params.write_key.empty()) {
         // Derive sequence number encryption key
         auto seq_key_result = crypto::utils::derive_sequence_number_mask(
-            *crypto_provider_, crypto_params.write_key);
+            *crypto_provider_, crypto_params.write_key, "sn", 
+            crypto::utils::get_cipher_suite_hash(current_cipher_suite_));
         if (!seq_key_result.is_success()) {
             return Result<DTLSCiphertext>(seq_key_result.error());
         }
@@ -448,96 +449,6 @@ Result<DTLSCiphertext> RecordLayer::protect_record(const DTLSPlaintext& plaintex
     return Result<DTLSCiphertext>(std::move(ciphertext));
 }
 
-Result<PlaintextRecord> RecordLayer::unprotect_record(const CiphertextRecord& ciphertext) {
-    if (!ciphertext.is_valid()) {
-        return Result<PlaintextRecord>(DTLSError::INVALID_CIPHERTEXT_RECORD);
-    }
-    
-    uint16_t record_epoch = ciphertext.header().epoch;
-    
-    // Validate epoch
-    if (!epoch_manager_->is_valid_epoch(record_epoch)) {
-        return Result<PlaintextRecord>(DTLSError::INVALID_EPOCH);
-    }
-    
-    // Get crypto parameters for record epoch
-    auto crypto_params_result = epoch_manager_->get_epoch_crypto_params(record_epoch);
-    if (!crypto_params_result.is_success()) {
-        return Result<PlaintextRecord>(crypto_params_result.error());
-    }
-    
-    const auto& crypto_params = crypto_params_result.value();
-    
-    // Epoch 0 uses null protection (no decryption)
-    if (record_epoch == 0 || crypto_params.read_key.empty()) {
-        // Create plaintext record with no decryption
-        memory::Buffer payload(ciphertext.encrypted_payload().size());
-        std::memcpy(payload.mutable_data(), ciphertext.encrypted_payload().data(), 
-                   ciphertext.encrypted_payload().size());
-        
-        PlaintextRecord plaintext(ciphertext.header().content_type,
-                                ciphertext.header().version,
-                                ciphertext.header().epoch,
-                                ciphertext.header().sequence_number,
-                                std::move(payload));
-        update_stats_unprotected();
-        return Result<PlaintextRecord>(std::move(plaintext));
-    }
-    
-    // Construct AEAD nonce
-    auto nonce_result = construct_aead_nonce(record_epoch, 
-                                           ciphertext.header().sequence_number,
-                                           crypto_params.read_iv);
-    if (!nonce_result.is_success()) {
-        return Result<PlaintextRecord>(nonce_result.error());
-    }
-    
-    // Construct additional authenticated data
-    ConnectionID cid;
-    if (ciphertext.has_connection_id()) {
-        const auto& cid_array = ciphertext.connection_id();
-        cid.assign(cid_array.begin(), cid_array.end());
-    }
-    
-    auto aad_result = construct_additional_data(ciphertext.header(), cid);
-    if (!aad_result.is_success()) {
-        return Result<PlaintextRecord>(aad_result.error());
-    }
-    
-    // Perform AEAD decryption
-    crypto::AEADDecryptionParams decrypt_params;
-    decrypt_params.key = crypto_params.read_key;
-    decrypt_params.nonce = nonce_result.value();
-    decrypt_params.additional_data = aad_result.value();
-    decrypt_params.ciphertext = std::vector<uint8_t>(ciphertext.encrypted_payload().data(),
-                                                    ciphertext.encrypted_payload().data() + 
-                                                    ciphertext.encrypted_payload().size());
-    decrypt_params.tag = std::vector<uint8_t>(ciphertext.authentication_tag().data(),
-                                             ciphertext.authentication_tag().data() + 
-                                             ciphertext.authentication_tag().size());
-    
-    auto decrypt_result = crypto_provider_->decrypt_aead(decrypt_params);
-    if (!decrypt_result.is_success()) {
-        update_stats_decryption_failed();
-        return Result<PlaintextRecord>(decrypt_result.error());
-    }
-    
-    const auto& plaintext_data = decrypt_result.value();
-    
-    // Create plaintext record
-    memory::Buffer payload(plaintext_data.size());
-    std::memcpy(payload.mutable_data(), plaintext_data.data(), plaintext_data.size());
-    
-    PlaintextRecord plaintext(ciphertext.header().content_type,
-                            ciphertext.header().version,
-                            ciphertext.header().epoch,
-                            ciphertext.header().sequence_number,
-                            std::move(payload));
-    
-    update_stats_unprotected();
-    return Result<PlaintextRecord>(std::move(plaintext));
-}
-
 Result<DTLSPlaintext> RecordLayer::unprotect_record(const DTLSCiphertext& ciphertext) {
     if (!ciphertext.is_valid()) {
         return Result<DTLSPlaintext>(DTLSError::INVALID_CIPHERTEXT_RECORD);
@@ -563,7 +474,8 @@ Result<DTLSPlaintext> RecordLayer::unprotect_record(const DTLSCiphertext& cipher
     if (record_epoch > 0 && !crypto_params.read_key.empty()) {
         // Derive sequence number decryption key
         auto seq_key_result = crypto::utils::derive_sequence_number_mask(
-            *crypto_provider_, crypto_params.read_key);
+            *crypto_provider_, crypto_params.read_key, "sn",
+            crypto::utils::get_cipher_suite_hash(current_cipher_suite_));
         if (!seq_key_result.is_success()) {
             return Result<DTLSPlaintext>(seq_key_result.error());
         }
@@ -674,57 +586,18 @@ Result<DTLSPlaintext> RecordLayer::unprotect_record(const DTLSCiphertext& cipher
     return Result<DTLSPlaintext>(std::move(plaintext));
 }
 
-Result<PlaintextRecord> RecordLayer::process_incoming_record(const CiphertextRecord& ciphertext) {
-    uint16_t record_epoch = ciphertext.header().epoch;
-    uint64_t sequence_number = ciphertext.header().sequence_number;
-    
-    // Get or create anti-replay window for this epoch
-    auto window_it = receive_windows_.find(record_epoch);
-    if (window_it == receive_windows_.end()) {
-        receive_windows_[record_epoch] = std::make_unique<AntiReplayWindow>();
-        window_it = receive_windows_.find(record_epoch);
-    }
-    
-    // Check for replay attack
-    if (!window_it->second->is_valid_sequence_number(sequence_number)) {
-        update_stats_replay_detected();
-        return Result<PlaintextRecord>(DTLSError::REPLAY_ATTACK_DETECTED);
-    }
-    
-    // Validate connection ID if present
-    if (ciphertext.has_connection_id()) {
-        const auto& cid_array = ciphertext.connection_id();
-        ConnectionID cid(cid_array.begin(), cid_array.end());
-        if (!connection_id_manager_->is_valid_connection_id(cid)) {
-            return Result<PlaintextRecord>(DTLSError::INVALID_CONNECTION_ID);
-        }
-    }
-    
-    // Unprotect the record
-    auto plaintext_result = unprotect_record(ciphertext);
-    if (!plaintext_result.is_success()) {
-        return plaintext_result;
-    }
-    
-    // Mark sequence number as received (prevents replays)
-    window_it->second->mark_received(sequence_number);
-    
-    update_stats_received();
-    return plaintext_result;
-}
-
-Result<CiphertextRecord> RecordLayer::prepare_outgoing_record(const PlaintextRecord& plaintext) {
+Result<DTLSCiphertext> RecordLayer::prepare_outgoing_record(const DTLSPlaintext& plaintext) {
     // Get next sequence number
     uint64_t sequence_number = send_sequence_manager_->get_next_sequence_number();
     
     // Check for sequence number overflow
     if (send_sequence_manager_->would_overflow()) {
-        return Result<CiphertextRecord>(DTLSError::SEQUENCE_NUMBER_OVERFLOW);
+        return Result<DTLSCiphertext>(DTLSError::SEQUENCE_NUMBER_OVERFLOW);
     }
     
     // Create record with assigned sequence number
-    PlaintextRecord outgoing_record = plaintext;
-    outgoing_record.set_sequence_number(sequence_number);
+    DTLSPlaintext outgoing_record = plaintext;
+    outgoing_record.set_sequence_number(SequenceNumber48(sequence_number));
     outgoing_record.set_epoch(epoch_manager_->get_current_epoch());
     
     // Protect the record
@@ -748,7 +621,8 @@ Result<DTLSPlaintext> RecordLayer::process_incoming_record(const DTLSCiphertext&
         if (crypto_params_result.is_success() && !crypto_params_result.value().read_key.empty()) {
             // Derive sequence number decryption key
             auto seq_key_result = crypto::utils::derive_sequence_number_mask(
-                *crypto_provider_, crypto_params_result.value().read_key);
+                *crypto_provider_, crypto_params_result.value().read_key, "sn",
+                crypto::utils::get_cipher_suite_hash(current_cipher_suite_));
             if (seq_key_result.is_success()) {
                 // Decrypt the sequence number for anti-replay check
                 auto decrypted_seq_result = crypto::utils::decrypt_sequence_number(
@@ -792,30 +666,6 @@ Result<DTLSPlaintext> RecordLayer::process_incoming_record(const DTLSCiphertext&
     
     update_stats_received();
     return plaintext_result;
-}
-
-Result<DTLSCiphertext> RecordLayer::prepare_outgoing_record(const DTLSPlaintext& plaintext) {
-    // Get next sequence number
-    uint64_t sequence_number = send_sequence_manager_->get_next_sequence_number();
-    
-    // Check for sequence number overflow
-    if (send_sequence_manager_->would_overflow()) {
-        return Result<DTLSCiphertext>(DTLSError::SEQUENCE_NUMBER_OVERFLOW);
-    }
-    
-    // Create record with assigned sequence number
-    DTLSPlaintext outgoing_record = plaintext;
-    outgoing_record.set_sequence_number(SequenceNumber48(sequence_number));
-    outgoing_record.set_epoch(epoch_manager_->get_current_epoch());
-    
-    // Protect the record
-    auto ciphertext_result = protect_record(outgoing_record);
-    if (!ciphertext_result.is_success()) {
-        return ciphertext_result;
-    }
-    
-    update_stats_sent();
-    return ciphertext_result;
 }
 
 Result<void> RecordLayer::advance_epoch(const std::vector<uint8_t>& read_key,
@@ -1115,10 +965,11 @@ namespace record_layer_utils {
 
 std::unique_ptr<RecordLayer> create_test_record_layer() {
     // Create a mock crypto provider for testing
-    auto crypto_provider = crypto::CryptoProviderFactory::create_provider("mock");
-    if (!crypto_provider) {
+    auto crypto_provider_result = crypto::ProviderFactory::instance().create_provider("mock");
+    if (!crypto_provider_result.is_success()) {
         return nullptr;
     }
+    auto crypto_provider = std::move(crypto_provider_result.value());
     
     auto record_layer = std::make_unique<RecordLayer>(std::move(crypto_provider));
     
@@ -1168,7 +1019,7 @@ generate_test_vectors(CipherSuite suite) {
     // Mock authentication tag at the end
     std::fill(encrypted_record.mutable_data() + test_data.size(), 
               encrypted_record.mutable_data() + encrypted_record.size(), 
-              std::byte{0xAA});
+              static_cast<std::byte>(0xAA));
     
     DTLSCiphertext ciphertext(ContentType::APPLICATION_DATA,
                              ProtocolVersion::DTLS_1_3,
@@ -1202,7 +1053,7 @@ generate_legacy_test_vectors(CipherSuite suite) {
     
     // Mock authentication tag
     memory::Buffer auth_tag(16); // 16 bytes for GCM
-    std::fill(auth_tag.mutable_data(), auth_tag.mutable_data() + 16, std::byte{0xAA});
+    std::fill(auth_tag.mutable_data(), auth_tag.mutable_data() + 16, static_cast<std::byte>(0xAA));
     
     CiphertextRecord ciphertext(ContentType::APPLICATION_DATA,
                               ProtocolVersion::DTLS_1_3,

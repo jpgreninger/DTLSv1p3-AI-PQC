@@ -264,7 +264,20 @@ struct NetworkAddress {
     
     bool is_ipv4() const noexcept { return family == Family::IPv4; }
     bool is_ipv6() const noexcept { return family == Family::IPv6; }
-};
+    
+    // Comparison operators
+    bool operator==(const NetworkAddress& other) const noexcept;
+    bool operator!=(const NetworkAddress& other) const noexcept;
+    bool operator<(const NetworkAddress& other) const noexcept;
+    
+    // Factory methods
+    static NetworkAddress from_ipv4(uint32_t ipv4_addr, uint16_t port_num);
+    static NetworkAddress from_ipv6(const std::array<uint8_t, 16>& ipv6_addr, uint16_t port_num);
+    
+    // Conversion methods
+    uint32_t to_ipv4() const;
+    std::array<uint8_t, 16> to_ipv6() const;
+};;
 
 // Utility functions
 DTLS_API std::string to_string(ContentType type);

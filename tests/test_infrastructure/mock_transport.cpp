@@ -14,10 +14,10 @@ MockTransport::MockTransport(const std::string& local_addr, uint16_t local_port)
 }
 
 MockTransport::~MockTransport() {
-    shutdown();
+    MockTransport::shutdown();
 }
 
-Result<void> MockTransport::bind() {
+dtls::v13::Result<void> MockTransport::bind() {
     if (bound_.load()) {
         return Result<void>::error("Transport already bound");
     }
@@ -27,7 +27,7 @@ Result<void> MockTransport::bind() {
     return Result<void>::ok();
 }
 
-Result<void> MockTransport::connect(const std::string& remote_addr, uint16_t remote_port) {
+dtls::v13::Result<void> MockTransport::connect(const std::string& remote_addr, uint16_t remote_port) {
     if (!bound_.load()) {
         return Result<void>::error("Transport not bound");
     }
@@ -43,7 +43,7 @@ Result<void> MockTransport::connect(const std::string& remote_addr, uint16_t rem
     return Result<void>::ok();
 }
 
-Result<size_t> MockTransport::send(const std::vector<uint8_t>& data) {
+dtls::v13::Result<size_t> MockTransport::send(const std::vector<uint8_t>& data) {
     if (!bound_.load()) {
         return Result<size_t>::error("Transport not bound");
     }
@@ -130,7 +130,7 @@ Result<size_t> MockTransport::send(const std::vector<uint8_t>& data) {
     return Result<size_t>::ok(data.size());
 }
 
-Result<std::vector<uint8_t>> MockTransport::receive(std::chrono::milliseconds timeout) {
+dtls::v13::Result<std::vector<uint8_t>> MockTransport::receive(std::chrono::milliseconds timeout) {
     if (!bound_.load()) {
         return Result<std::vector<uint8_t>>::error("Transport not bound");
     }
@@ -179,7 +179,7 @@ Result<std::vector<uint8_t>> MockTransport::receive(std::chrono::milliseconds ti
     return Result<std::vector<uint8_t>>::ok(data);
 }
 
-Result<void> MockTransport::shutdown() {
+dtls::v13::Result<void> MockTransport::shutdown() {
     if (shutdown_.load()) {
         return Result<void>::ok();
     }
@@ -234,7 +234,15 @@ void MockTransport::disconnect_peer() {
 }
 
 MockTransport::TransportStats MockTransport::get_statistics() const {
-    return stats_;
+    TransportStats copy;
+    copy.packets_sent = stats_.packets_sent.load();
+    copy.packets_received = stats_.packets_received.load();
+    copy.packets_lost = stats_.packets_lost.load();
+    copy.packets_corrupted = stats_.packets_corrupted.load();
+    copy.bytes_sent = stats_.bytes_sent.load();
+    copy.bytes_received = stats_.bytes_received.load();
+    copy.errors_encountered = stats_.errors_encountered.load();
+    return copy;
 }
 
 void MockTransport::reset_statistics() {
@@ -244,6 +252,7 @@ void MockTransport::reset_statistics() {
     stats_.packets_corrupted = 0;
     stats_.bytes_sent = 0;
     stats_.bytes_received = 0;
+    stats_.errors_encountered = 0;
 }
 
 void MockTransport::inject_send_error(bool enable) {

@@ -138,6 +138,11 @@ public:
     uint16_t get_current_epoch() const;
     
     /**
+     * Get current epoch (alias for get_current_epoch)
+     */
+    uint16_t current_epoch() const { return get_current_epoch(); }
+    
+    /**
      * Advance to next epoch
      */
     Result<uint16_t> advance_epoch();

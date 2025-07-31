@@ -35,9 +35,9 @@ namespace systemc_tlm {
 SC_MODULE(dtls_protocol_stack) {
 public:
     // TLM-2.0 Interface Sockets
-    tlm_utils::simple_target_socket<dtls_protocol_stack, 32, dtls_protocol_types> 
+    tlm_utils::simple_target_socket<dtls_protocol_stack> 
         application_target_socket;
-    tlm_utils::simple_initiator_socket<dtls_protocol_stack, 32, dtls_protocol_types> 
+    tlm_utils::simple_initiator_socket<dtls_protocol_stack> 
         network_initiator_socket;
     
     // Configuration ports

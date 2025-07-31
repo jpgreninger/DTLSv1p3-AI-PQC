@@ -1,4 +1,6 @@
 #include "record_layer_tlm.h"
+#include <dtls/protocol/record_layer.h>
+#include <dtls/types.h>
 #include <algorithm>
 #include <numeric>
 
@@ -31,9 +33,9 @@ AntiReplayWindowTLM::AntiReplayWindowTLM(sc_module_name name, uint32_t window_si
 }
 
 void AntiReplayWindowTLM::b_transport(tlm::tlm_generic_payload& trans, sc_time& delay) {
-    record_transaction* record_trans = reinterpret_cast<record_transaction*>(trans.get_data_ptr());
+    record_extension* ext = trans.get_extension<record_extension>();
     
-    if (!record_trans || record_trans->operation != record_transaction::ANTI_REPLAY_CHECK) {
+    if (!ext || ext->operation != record_extension::ANTI_REPLAY_CHECK) {
         trans.set_response_status(tlm::TLM_GENERIC_ERROR_RESPONSE);
         return;
     }
@@ -41,9 +43,9 @@ void AntiReplayWindowTLM::b_transport(tlm::tlm_generic_payload& trans, sc_time& 
     sc_time check_start = sc_time_stamp();
     
     // Perform anti-replay check
-    bool is_replay = !check_and_update_window(record_trans->sequence_number);
-    record_trans->replay_detected = is_replay;
-    record_trans->window_position = highest_sequence_number_;
+    bool is_replay = !check_and_update_window(ext->sequence_number);
+    ext->replay_detected = is_replay;
+    ext->window_position = highest_sequence_number_;
     
     // Calculate processing time
     sc_time check_time = g_dtls_timing.anti_replay_check_time;
@@ -130,7 +132,7 @@ void AntiReplayWindowTLM::update_statistics(bool replay_detected, sc_time check_
     if (stats_.total_checks > 0) {
         stats_.average_check_time = sc_time(
             stats_.total_check_time.to_double() / stats_.total_checks,
-            stats_.total_check_time.get_time_unit()
+            SC_NS
         );
     }
 }
@@ -208,9 +210,9 @@ SequenceNumberManagerTLM::SequenceNumberManagerTLM(sc_module_name name)
 }
 
 void SequenceNumberManagerTLM::b_transport(tlm::tlm_generic_payload& trans, sc_time& delay) {
-    record_transaction* record_trans = reinterpret_cast<record_transaction*>(trans.get_data_ptr());
+    record_extension* ext = trans.get_extension<record_extension>();
     
-    if (!record_trans || record_trans->operation != record_transaction::SEQUENCE_NUMBER_GEN) {
+    if (!ext || ext->operation != record_extension::SEQUENCE_NUMBER_GEN) {
         trans.set_response_status(tlm::TLM_GENERIC_ERROR_RESPONSE);
         return;
     }
@@ -219,7 +221,7 @@ void SequenceNumberManagerTLM::b_transport(tlm::tlm_generic_payload& trans, sc_t
     
     // Generate next sequence number
     uint64_t next_seq = get_next_sequence_number();
-    record_trans->sequence_number = next_seq;
+    ext->sequence_number = next_seq;
     
     // Calculate processing time
     sc_time gen_time = g_dtls_timing.sequence_number_gen_time;
@@ -270,7 +272,7 @@ void SequenceNumberManagerTLM::update_statistics(sc_time generation_time) {
     if (stats_.numbers_generated > 0) {
         stats_.average_generation_time = sc_time(
             stats_.total_generation_time.to_double() / stats_.numbers_generated,
-            stats_.total_generation_time.get_time_unit()
+            SC_NS
         );
     }
     
@@ -353,9 +355,9 @@ RecordLayerTLM::RecordLayerTLM(sc_module_name name)
 }
 
 void RecordLayerTLM::b_transport(tlm::tlm_generic_payload& trans, sc_time& delay) {
-    record_transaction* record_trans = reinterpret_cast<record_transaction*>(trans.get_data_ptr());
+    record_extension* ext = trans.get_extension<record_extension>();
     
-    if (!record_trans) {
+    if (!ext) {
         trans.set_response_status(tlm::TLM_GENERIC_ERROR_RESPONSE);
         return;
     }
@@ -363,14 +365,14 @@ void RecordLayerTLM::b_transport(tlm::tlm_generic_payload& trans, sc_time& delay
     bool success = false;
     sc_time processing_time;
     
-    switch (record_trans->operation) {
-        case record_transaction::PROTECT_RECORD:
-            success = perform_record_protection(*record_trans);
+    switch (ext->operation) {
+        case record_extension::PROTECT_RECORD:
+            success = perform_record_protection(trans);
             processing_time = g_dtls_timing.record_protection_time;
             break;
             
-        case record_transaction::UNPROTECT_RECORD:
-            success = perform_record_unprotection(*record_trans);
+        case record_extension::UNPROTECT_RECORD:
+            success = perform_record_unprotection(trans);
             processing_time = g_dtls_timing.record_unprotection_time;
             break;
             
@@ -379,8 +381,7 @@ void RecordLayerTLM::b_transport(tlm::tlm_generic_payload& trans, sc_time& delay
             return;
     }
     
-    record_trans->response_status = success;
-    record_trans->processing_time = processing_time;
+    ext->processing_time = processing_time;
     delay += processing_time;
     
     trans.set_response_status(success ? tlm::TLM_OK_RESPONSE : tlm::TLM_GENERIC_ERROR_RESPONSE);
@@ -398,95 +399,84 @@ tlm::tlm_sync_enum RecordLayerTLM::nb_transport_fw(tlm::tlm_generic_payload& tra
     return tlm::TLM_ACCEPTED;
 }
 
-bool RecordLayerTLM::perform_record_protection(record_transaction& trans) {
+bool RecordLayerTLM::perform_record_protection(tlm::tlm_generic_payload& trans) {
+    record_extension* ext = trans.get_extension<record_extension>();
+    if (!ext) return false;
+    
     // Step 1: Get next sequence number
     uint64_t seq_num = get_next_sequence_number();
-    trans.sequence_number = seq_num;
+    ext->sequence_number = seq_num;
     
-    // Step 2: Construct AEAD parameters
-    std::vector<uint8_t> nonce = construct_aead_nonce(trans.epoch, seq_num, {});
-    std::vector<uint8_t> additional_data = construct_additional_data(
-        trans.plaintext_record.header(), trans.connection_id);
+    // Step 2: Construct AEAD parameters (simplified for SystemC modeling)
+    std::vector<uint8_t> nonce = construct_aead_nonce(ext->epoch, seq_num, {});
     
-    // Step 3: Perform AEAD encryption (simulated)
-    size_t payload_size = trans.plaintext_record.payload().size();
+    // Step 3: Perform AEAD encryption (simulated for SystemC modeling)
+    size_t payload_size = trans.get_data_length();
+    ext->bytes_processed = payload_size;
     
-    // Create ciphertext record
-    trans.ciphertext_record = protocol::CiphertextRecord(
-        trans.plaintext_record.header().content_type,
-        trans.plaintext_record.header().version,
-        trans.epoch,
-        seq_num,
-        memory::Buffer(payload_size), // encrypted payload
-        memory::Buffer(16) // auth tag
-    );
+    // For SystemC modeling, we just simulate the processing
+    // The actual data transformation is not performed
     
-    // Update statistics
-    update_protection_statistics(payload_size, trans.processing_time, true);
+    // Update statistics 
+    update_protection_statistics(payload_size, ext->processing_time, true);
     
     return true;
 }
 
-bool RecordLayerTLM::perform_record_unprotection(record_transaction& trans) {
+bool RecordLayerTLM::perform_record_unprotection(tlm::tlm_generic_payload& trans) {
+    record_extension* ext = trans.get_extension<record_extension>();
+    if (!ext) return false;
+    
     // Step 1: Check anti-replay
-    if (!check_anti_replay(trans.sequence_number, trans.epoch)) {
-        trans.replay_detected = true;
+    if (!check_anti_replay(ext->sequence_number, ext->epoch)) {
+        ext->replay_detected = true;
         return false;
     }
     
-    // Step 2: Construct AEAD parameters  
-    std::vector<uint8_t> nonce = construct_aead_nonce(trans.epoch, trans.sequence_number, {});
-    std::vector<uint8_t> additional_data = construct_additional_data(
-        trans.ciphertext_record.header(), trans.connection_id);
+    // Step 2: Construct AEAD parameters (simplified for SystemC modeling)
+    std::vector<uint8_t> nonce = construct_aead_nonce(ext->epoch, ext->sequence_number, {});
     
-    // Step 3: Perform AEAD decryption (simulated)
-    size_t payload_size = trans.ciphertext_record.encrypted_payload().size();
+    // Step 3: Perform AEAD decryption (simulated for SystemC modeling)
+    size_t payload_size = trans.get_data_length();
+    ext->bytes_processed = payload_size;
     
-    // Create plaintext record
-    trans.plaintext_record = protocol::PlaintextRecord(
-        trans.ciphertext_record.header().content_type,
-        trans.ciphertext_record.header().version,
-        trans.epoch,
-        trans.sequence_number,
-        memory::Buffer(payload_size) // decrypted payload
-    );
+    // For SystemC modeling, we just simulate the processing
+    // The actual data transformation is not performed
     
     // Update statistics
-    update_unprotection_statistics(payload_size, trans.processing_time, true);
+    update_unprotection_statistics(payload_size, ext->processing_time, true);
     
     return true;
 }
 
 bool RecordLayerTLM::check_anti_replay(uint64_t sequence_number, uint16_t epoch) {
-    // Create anti-replay transaction
-    record_transaction antireplay_trans(record_transaction::ANTI_REPLAY_CHECK);
-    antireplay_trans.sequence_number = sequence_number;
-    antireplay_trans.epoch = epoch;
-    
-    // Create TLM payload
+    // Create TLM payload with record extension
     tlm::tlm_generic_payload payload;
-    payload.set_data_ptr(reinterpret_cast<unsigned char*>(&antireplay_trans));
+    record_extension* ext = new record_extension(record_extension::ANTI_REPLAY_CHECK);
+    ext->sequence_number = sequence_number;
+    ext->epoch = epoch;
+    payload.set_extension(ext);
+    
     sc_time delay = SC_ZERO_TIME;
     
     // Make TLM call to anti-replay window
     antireplay_socket->b_transport(payload, delay);
     
-    return !antireplay_trans.replay_detected;
+    return !ext->replay_detected;
 }
 
 uint64_t RecordLayerTLM::get_next_sequence_number() {
-    // Create sequence number transaction
-    record_transaction seq_trans(record_transaction::SEQUENCE_NUMBER_GEN);
-    
-    // Create TLM payload
+    // Create TLM payload with record extension
     tlm::tlm_generic_payload payload;
-    payload.set_data_ptr(reinterpret_cast<unsigned char*>(&seq_trans));
+    record_extension* ext = new record_extension(record_extension::SEQUENCE_NUMBER_GEN);
+    payload.set_extension(ext);
+    
     sc_time delay = SC_ZERO_TIME;
     
     // Make TLM call to sequence number manager
     sequence_socket->b_transport(payload, delay);
     
-    return seq_trans.sequence_number;
+    return ext->sequence_number;
 }
 
 std::vector<uint8_t> RecordLayerTLM::construct_aead_nonce(uint16_t epoch, 
@@ -523,8 +513,9 @@ std::vector<uint8_t> RecordLayerTLM::construct_additional_data(const protocol::R
     
     // Add record header fields
     additional_data.push_back(static_cast<uint8_t>(header.content_type));
-    additional_data.push_back(static_cast<uint8_t>(header.version >> 8));
-    additional_data.push_back(static_cast<uint8_t>(header.version & 0xFF));
+    uint16_t version_val = static_cast<uint16_t>(header.version);
+    additional_data.push_back(static_cast<uint8_t>(version_val >> 8));
+    additional_data.push_back(static_cast<uint8_t>(version_val & 0xFF));
     additional_data.push_back(static_cast<uint8_t>(header.epoch >> 8));
     additional_data.push_back(static_cast<uint8_t>(header.epoch & 0xFF));
     
@@ -601,7 +592,7 @@ void RecordLayerTLM::update_protection_statistics(size_t bytes_processed, sc_tim
     if (stats_.total_protect_operations > 0) {
         stats_.average_protection_time = sc_time(
             stats_.total_protection_time.to_double() / stats_.total_protect_operations,
-            stats_.total_protection_time.get_time_unit()
+            SC_NS
         );
     }
 }
@@ -622,7 +613,7 @@ void RecordLayerTLM::update_unprotection_statistics(size_t bytes_processed, sc_t
     if (stats_.total_unprotect_operations > 0) {
         stats_.average_unprotection_time = sc_time(
             stats_.total_unprotection_time.to_double() / stats_.total_unprotect_operations,
-            stats_.total_unprotection_time.get_time_unit()
+            SC_NS
         );
     }
 }
