@@ -81,14 +81,13 @@ public:
         std::cout << "Connecting to " << server_address << ":" << server_port << std::endl;
         
         try {
-            // Initialize crypto system
-            if (!crypto::is_crypto_system_initialized()) {
-                auto crypto_result = crypto::initialize_crypto_system();
-                if (!crypto_result) {
-                    std::cerr << "Failed to initialize crypto system" << std::endl;
-                    return false;
-                }
+            // Create crypto provider
+            auto crypto_provider_result = crypto::ProviderFactory::instance().create_default_provider();
+            if (!crypto_provider_result) {
+                std::cerr << "Failed to create crypto provider: " << crypto_provider_result.error() << std::endl;
+                return false;
             }
+            auto crypto_provider = std::move(crypto_provider_result.value());
             
             // Create and configure transport
             transport::TransportConfig transport_config;
@@ -125,22 +124,32 @@ public:
             }
             
             // Create DTLS connection
-            connection_ = Connection::create_client_connection(config_, transport_.get());
-            if (!connection_) {
-                std::cerr << "Failed to create DTLS connection" << std::endl;
+            transport::NetworkEndpoint server_endpoint(server_address, server_port);
+            auto connection_result = Connection::create_client(
+                config_, 
+                std::move(crypto_provider), 
+                NetworkAddress{server_address, server_port, NetworkAddress::Family::IPv4},
+                [this](ConnectionEvent event, const std::vector<uint8_t>& data) {
+                    handle_connection_event(event, data);
+                }
+            );
+            if (!connection_result) {
+                std::cerr << "Failed to create DTLS connection: " << connection_result.error() << std::endl;
+                return false;
+            }
+            connection_ = std::move(connection_result.value());
+            
+            // Initialize connection
+            auto conn_init_result = connection_->initialize();
+            if (!conn_init_result) {
+                std::cerr << "Failed to initialize connection: " << conn_init_result.error() << std::endl;
                 return false;
             }
             
-            // Set up connection event callback
-            connection_->set_event_callback([this](ConnectionEvent event, const std::vector<uint8_t>& data) {
-                handle_connection_event(event, data);
-            });
-            
             // Initiate DTLS handshake
-            transport::NetworkEndpoint server_endpoint(server_address, server_port);
-            auto connect_result = connection_->connect(server_endpoint);
-            if (!connect_result) {
-                std::cerr << "Failed to initiate DTLS handshake: " << connect_result.error() << std::endl;
+            auto handshake_result = connection_->start_handshake();
+            if (!handshake_result) {
+                std::cerr << "Failed to start DTLS handshake: " << handshake_result.error() << std::endl;
                 return false;
             }
             
@@ -175,9 +184,10 @@ public:
         
         // Convert message to buffer
         std::vector<uint8_t> data(message.begin(), message.end());
+        memory::ZeroCopyBuffer buffer(reinterpret_cast<const std::byte*>(data.data()), data.size());
         
         // Send encrypted data
-        auto send_result = connection_->send(data);
+        auto send_result = connection_->send_application_data(buffer);
         if (!send_result) {
             std::cerr << "Failed to send message: " << send_result.error() << std::endl;
             return false;
@@ -195,11 +205,13 @@ public:
         auto start_time = std::chrono::steady_clock::now();
         
         while (std::chrono::steady_clock::now() - start_time < timeout) {
-            auto receive_result = connection_->receive();
+            auto receive_result = connection_->receive_application_data();
             if (receive_result) {
-                const auto& data = receive_result.value();
-                std::string message(data.begin(), data.end());
-                std::cout << "Received: \"" << message << "\" (" << data.size() << " bytes)" << std::endl;
+                const auto& buffer = receive_result.value();
+                const auto* data = buffer.data();
+                size_t size = buffer.size();
+                std::string message(reinterpret_cast<const char*>(data), size);
+                std::cout << "Received: \"" << message << "\" (" << size << " bytes)" << std::endl;
                 return message;
             }
             
@@ -271,7 +283,8 @@ private:
                 return true;
             }
             
-            if (connection_->has_error()) {
+            // Check handshake completion status through connection state
+            if (connection_->get_state() == ConnectionState::CLOSED) {
                 return false;
             }
             
@@ -284,24 +297,48 @@ private:
     void display_connection_info() {
         if (!connection_) return;
         
-        std::cout << "\n=== Connection Information ===" << std::endl;
+        std::cout << "
+=== Connection Information ===" << std::endl;
         
-        auto cipher_info = connection_->get_cipher_suite_info();
-        if (cipher_info) {
-            std::cout << "Cipher Suite: " << cipher_info.value().name << std::endl;
-            std::cout << "Key Exchange: " << cipher_info.value().key_exchange << std::endl;
+        // Display connection state
+        std::cout << "Connection State: ";
+        switch (connection_->get_state()) {
+            case ConnectionState::INITIAL: std::cout << "INITIAL"; break;
+            case ConnectionState::WAIT_SERVER_HELLO: std::cout << "WAIT_SERVER_HELLO"; break;
+            case ConnectionState::WAIT_ENCRYPTED_EXTENSIONS: std::cout << "WAIT_ENCRYPTED_EXTENSIONS"; break;
+            case ConnectionState::WAIT_CERTIFICATE_OR_CERT_REQUEST: std::cout << "WAIT_CERTIFICATE_OR_CERT_REQUEST"; break;
+            case ConnectionState::WAIT_CERTIFICATE_VERIFY: std::cout << "WAIT_CERTIFICATE_VERIFY"; break;
+            case ConnectionState::WAIT_SERVER_FINISHED: std::cout << "WAIT_SERVER_FINISHED"; break;
+            case ConnectionState::WAIT_CLIENT_CERTIFICATE: std::cout << "WAIT_CLIENT_CERTIFICATE"; break;
+            case ConnectionState::WAIT_CLIENT_CERTIFICATE_VERIFY: std::cout << "WAIT_CLIENT_CERTIFICATE_VERIFY"; break;
+            case ConnectionState::WAIT_CLIENT_FINISHED: std::cout << "WAIT_CLIENT_FINISHED"; break;
+            case ConnectionState::CONNECTED: std::cout << "CONNECTED"; break;
+            case ConnectionState::CLOSED: std::cout << "CLOSED"; break;
+            case ConnectionState::EARLY_DATA: std::cout << "EARLY_DATA"; break;
+            case ConnectionState::WAIT_END_OF_EARLY_DATA: std::cout << "WAIT_END_OF_EARLY_DATA"; break;
+            case ConnectionState::EARLY_DATA_REJECTED: std::cout << "EARLY_DATA_REJECTED"; break;
+            default: std::cout << "UNKNOWN"; break;
+        }
+        std::cout << std::endl;
+        
+        // Display peer address  
+        std::cout << "Peer Address: " << to_string(connection_->get_peer_address()) << std::endl;
+        std::cout << "Client Mode: " << (connection_->is_client() ? "Yes" : "No") << std::endl;
+        
+        // Try to get connection IDs if available
+        auto local_id_result = connection_->get_local_connection_id();
+        if (local_id_result && !local_id_result.value().empty()) {
+            std::cout << "Local Connection ID: ";
+            for (uint8_t byte : local_id_result.value()) {
+                std::cout << std::hex << std::setw(2) << std::setfill('0') << (int)byte;
+            }
+            std::cout << std::dec << std::endl;
         }
         
-        auto version_info = connection_->get_protocol_version();
-        if (version_info) {
-            std::cout << "Protocol Version: DTLS v" << version_info.value().major 
-                     << "." << version_info.value().minor << std::endl;
-        }
-        
-        auto connection_id = connection_->get_connection_id();
-        if (connection_id && !connection_id.value().empty()) {
-            std::cout << "Connection ID: ";
-            for (uint8_t byte : connection_id.value()) {
+        auto peer_id_result = connection_->get_peer_connection_id();
+        if (peer_id_result && !peer_id_result.value().empty()) {
+            std::cout << "Peer Connection ID: ";
+            for (uint8_t byte : peer_id_result.value()) {
                 std::cout << std::hex << std::setw(2) << std::setfill('0') << (int)byte;
             }
             std::cout << std::dec << std::endl;
@@ -313,7 +350,7 @@ private:
     void display_connection_stats() {
         if (!connection_) return;
         
-        auto stats = connection_->get_statistics();
+        auto stats = connection_->get_stats();
         
         std::cout << "\n=== Connection Statistics ===" << std::endl;
         std::cout << "Handshake Duration: " << stats.handshake_duration.count() << " ms" << std::endl;

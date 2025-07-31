@@ -105,14 +105,20 @@ public:
         std::cout << "\n=== Setting Up Transport and Connections ===" << std::endl;
         
         try {
-            // Initialize crypto system
-            if (!crypto::is_crypto_system_initialized()) {
-                auto crypto_result = crypto::initialize_crypto_system();
-                if (!crypto_result) {
-                    std::cerr << "Failed to initialize crypto system" << std::endl;
-                    return false;
-                }
+            // Create crypto providers for server and client  
+            auto server_crypto_result = crypto::ProviderFactory::instance().create_default_provider();
+            if (!server_crypto_result) {
+                std::cerr << "Failed to create server crypto provider: " << server_crypto_result.error() << std::endl;
+                return false;
             }
+            auto server_crypto_provider = std::move(server_crypto_result.value());
+            
+            auto client_crypto_result = crypto::ProviderFactory::instance().create_default_provider();
+            if (!client_crypto_result) {
+                std::cerr << "Failed to create client crypto provider: " << client_crypto_result.error() << std::endl;
+                return false;
+            }
+            auto client_crypto_provider = std::move(client_crypto_result.value());
             
             // Setup server transport
             transport::TransportConfig server_transport_config;

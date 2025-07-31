@@ -62,7 +62,7 @@ struct DTLSPlaintext {
     DTLSPlaintext() = default;
     DTLSPlaintext(ContentType content_type, ProtocolVersion proto_version,
                   uint16_t epoch_num, SequenceNumber48 seq_num,
-                  memory::Buffer payload);
+                  memory::ZeroCopyBuffer payload);
     
     // Copy constructor and assignment
     DTLSPlaintext(const DTLSPlaintext& other);
@@ -144,7 +144,7 @@ struct DTLSCiphertext {
     DTLSCiphertext() = default;
     DTLSCiphertext(ContentType content_type, ProtocolVersion proto_version,
                    uint16_t epoch_num, SequenceNumber48 encrypted_seq_num,
-                   memory::Buffer encrypted_payload);
+                   memory::ZeroCopyBuffer encrypted_payload);
     
     // Copy constructor and assignment
     DTLSCiphertext(const DTLSCiphertext& other);

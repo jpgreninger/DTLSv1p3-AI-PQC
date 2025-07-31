@@ -43,7 +43,7 @@ Result<SequenceNumber48> SequenceNumber48::deserialize_from_buffer(const uint8_t
 // DTLSPlaintext Implementation
 DTLSPlaintext::DTLSPlaintext(ContentType content_type, ProtocolVersion proto_version,
                              uint16_t epoch_num, SequenceNumber48 seq_num,
-                             memory::Buffer payload)
+                             memory::ZeroCopyBuffer payload)
     : type(content_type)
     , version(proto_version)
     , epoch(epoch_num)
@@ -232,7 +232,7 @@ void DTLSPlaintext::update_length() {
 // DTLSCiphertext Implementation
 DTLSCiphertext::DTLSCiphertext(ContentType content_type, ProtocolVersion proto_version,
                                uint16_t epoch_num, SequenceNumber48 encrypted_seq_num,
-                               memory::Buffer encrypted_payload)
+                               memory::ZeroCopyBuffer encrypted_payload)
     : type(content_type)
     , version(proto_version)
     , epoch(epoch_num)

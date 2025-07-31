@@ -254,4 +254,178 @@ bool is_dtls_record(const memory::Buffer& buffer, size_t min_length) {
             version == ProtocolVersion::DTLS_1_0);
 }
 
+// CiphertextRecord Implementation
+CiphertextRecord::CiphertextRecord(ContentType content_type, ProtocolVersion version,
+                                 uint16_t epoch, uint64_t sequence_number,
+                                 memory::ZeroCopyBuffer encrypted_payload,
+                                 memory::ZeroCopyBuffer auth_tag)
+    : encrypted_payload_(std::move(encrypted_payload))
+    , authentication_tag_(std::move(auth_tag))
+    , has_connection_id_(false)
+{
+    header_.content_type = content_type;
+    header_.version = version;
+    header_.epoch = epoch;
+    header_.sequence_number = sequence_number;
+    header_.length = static_cast<uint16_t>(encrypted_payload_.size() + authentication_tag_.size());
+    connection_id_.fill(0);
+}
+
+void CiphertextRecord::set_connection_id(const std::array<uint8_t, 16>& cid) {
+    connection_id_ = cid;
+    has_connection_id_ = true;
+    // Update header length to include connection ID
+    header_.length = static_cast<uint16_t>(encrypted_payload_.size() + authentication_tag_.size() + 16);
+}
+
+void CiphertextRecord::clear_connection_id() {
+    connection_id_.fill(0);
+    has_connection_id_ = false;
+    // Update header length to exclude connection ID
+    header_.length = static_cast<uint16_t>(encrypted_payload_.size() + authentication_tag_.size());
+}
+
+Result<size_t> CiphertextRecord::serialize(memory::Buffer& buffer) const {
+    if (!is_valid()) {
+        return Result<size_t>(DTLSError::INVALID_CIPHERTEXT_RECORD);
+    }
+    
+    size_t total_size = RecordHeader::SERIALIZED_SIZE + encrypted_payload_.size() + authentication_tag_.size();
+    if (has_connection_id_) {
+        total_size += 16; // Fixed CID size for now
+    }
+    
+    if (buffer.capacity() < total_size) {
+        return Result<size_t>(DTLSError::INSUFFICIENT_BUFFER_SIZE);
+    }
+    
+    // Resize buffer to accommodate header + encrypted payload + auth tag + optional CID  
+    auto resize_result = buffer.resize(total_size);
+    if (!resize_result.is_success()) {
+        return Result<size_t>(resize_result.error());
+    }
+    
+    size_t offset = 0;
+    
+    // Serialize header
+    memory::Buffer header_buffer(RecordHeader::SERIALIZED_SIZE);
+    auto header_result = header_.serialize(header_buffer);
+    if (!header_result.is_success()) {
+        return header_result;
+    }
+    
+    copy_to_byte_buffer(buffer.mutable_data() + offset, header_buffer.data(), RecordHeader::SERIALIZED_SIZE);
+    offset += RecordHeader::SERIALIZED_SIZE;
+    
+    // Copy connection ID if present
+    if (has_connection_id_) {
+        copy_to_byte_buffer(buffer.mutable_data() + offset, connection_id_.data(), 16);
+        offset += 16;
+    }
+    
+    // Copy encrypted payload
+    if (encrypted_payload_.size() > 0) {
+        copy_to_byte_buffer(buffer.mutable_data() + offset, encrypted_payload_.data(), encrypted_payload_.size());
+        offset += encrypted_payload_.size();
+    }
+    
+    // Copy authentication tag
+    if (authentication_tag_.size() > 0) {
+        copy_to_byte_buffer(buffer.mutable_data() + offset, authentication_tag_.data(), authentication_tag_.size());
+        offset += authentication_tag_.size();
+    }
+    
+    return Result<size_t>(total_size);
+}
+
+Result<CiphertextRecord> CiphertextRecord::deserialize(const memory::Buffer& buffer, size_t offset) {
+    if (buffer.size() < offset + RecordHeader::SERIALIZED_SIZE) {
+        return Result<CiphertextRecord>(DTLSError::INSUFFICIENT_BUFFER_SIZE);
+    }
+    
+    // Deserialize header first
+    auto header_result = RecordHeader::deserialize(buffer, offset);
+    if (!header_result.is_success()) {
+        return Result<CiphertextRecord>(header_result.error());
+    }
+    
+    RecordHeader header = header_result.value();
+    offset += RecordHeader::SERIALIZED_SIZE;
+    
+    if (buffer.size() < offset + header.length) {
+        return Result<CiphertextRecord>(DTLSError::INSUFFICIENT_BUFFER_SIZE);
+    }
+    
+    CiphertextRecord record;
+    record.header_ = header;
+    
+    // For now, assume no connection ID and that the payload includes auth tag
+    // In a real implementation, we'd need additional context to determine CID presence
+    size_t remaining_length = header.length;
+    
+    // For AEAD ciphers, typically last 16 bytes are auth tag
+    constexpr size_t AUTH_TAG_SIZE = 16;
+    if (remaining_length >= AUTH_TAG_SIZE) {
+        size_t encrypted_payload_size = remaining_length - AUTH_TAG_SIZE;
+        
+        // Extract encrypted payload
+        if (encrypted_payload_size > 0) {
+            record.encrypted_payload_ = memory::Buffer(encrypted_payload_size);
+            auto resize_result = record.encrypted_payload_.resize(encrypted_payload_size);
+            if (!resize_result.is_success()) {
+                return Result<CiphertextRecord>(DTLSError::INTERNAL_ERROR);
+            }
+            copy_from_byte_buffer(record.encrypted_payload_.mutable_data(),
+                                buffer.data() + offset, encrypted_payload_size);
+            offset += encrypted_payload_size;
+        }
+        
+        // Extract authentication tag
+        record.authentication_tag_ = memory::Buffer(AUTH_TAG_SIZE);
+        auto resize_result = record.authentication_tag_.resize(AUTH_TAG_SIZE);
+        if (!resize_result.is_success()) {
+            return Result<CiphertextRecord>(DTLSError::INTERNAL_ERROR);
+        }
+        copy_from_byte_buffer(record.authentication_tag_.mutable_data(),
+                            buffer.data() + offset, AUTH_TAG_SIZE);
+    } else {
+        // No auth tag, entire payload is encrypted data
+        record.encrypted_payload_ = memory::Buffer(remaining_length);
+        auto resize_result = record.encrypted_payload_.resize(remaining_length);
+        if (!resize_result.is_success()) {
+            return Result<CiphertextRecord>(DTLSError::INTERNAL_ERROR);
+        }
+        copy_from_byte_buffer(record.encrypted_payload_.mutable_data(),
+                            buffer.data() + offset, remaining_length);
+    }
+    
+    return Result<CiphertextRecord>(std::move(record));
+}
+
+bool CiphertextRecord::is_valid() const {
+    if (!header_.is_valid()) {
+        return false;
+    }
+    
+    // Check that encrypted payload + auth tag size matches header length
+    size_t expected_length = encrypted_payload_.size() + authentication_tag_.size();
+    if (has_connection_id_) {
+        expected_length += 16;
+    }
+    
+    if (header_.length != expected_length) {
+        return false;
+    }
+    
+    return true;
+}
+
+size_t CiphertextRecord::total_size() const {
+    size_t size = RecordHeader::SERIALIZED_SIZE + encrypted_payload_.size() + authentication_tag_.size();
+    if (has_connection_id_) {
+        size += 16;
+    }
+    return size;
+}
+
 }  // namespace dtls::v13::protocol

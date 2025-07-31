@@ -1,6 +1,8 @@
 #include <dtls/crypto/provider_factory.h>
 #include <dtls/crypto/openssl_provider.h>
+#ifdef DTLS_HAS_BOTAN
 #include <dtls/crypto/botan_provider.h>
+#endif
 #include <algorithm>
 #include <chrono>
 
@@ -626,11 +628,13 @@ Result<void> register_all_providers() {
         return openssl_result;
     }
     
-    // Register Botan provider (always available in our implementation)
+#ifdef DTLS_HAS_BOTAN
+    // Register Botan provider (only if available)
     auto botan_result = register_botan_provider();
     if (botan_result.is_error()) {
         // Botan is optional, continue if registration fails
     }
+#endif
     
     return Result<void>();
 }
@@ -648,6 +652,7 @@ Result<void> register_openssl_provider() {
     );
 }
 
+#ifdef DTLS_HAS_BOTAN
 Result<void> register_botan_provider() {
     auto& factory = ProviderFactory::instance();
     
@@ -660,6 +665,12 @@ Result<void> register_botan_provider() {
         90 // Slightly lower priority than OpenSSL
     );
 }
+#else
+Result<void> register_botan_provider() {
+    // Botan not available, return success (no-op)
+    return Result<void>();
+}
+#endif
 
 Result<void> register_null_provider() {
     // TODO: Implement null/mock provider for testing

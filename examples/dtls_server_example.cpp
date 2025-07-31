@@ -97,14 +97,13 @@ public:
         std::cout << "Starting server on " << bind_address << ":" << bind_port << std::endl;
         
         try {
-            // Initialize crypto system
-            if (!crypto::is_crypto_system_initialized()) {
-                auto crypto_result = crypto::initialize_crypto_system();
-                if (!crypto_result) {
-                    std::cerr << "Failed to initialize crypto system" << std::endl;
-                    return false;
-                }
+            // Create crypto provider
+            auto crypto_provider_result = crypto::ProviderFactory::instance().create_default_provider();
+            if (!crypto_provider_result) {
+                std::cerr << "Failed to create crypto provider: " << crypto_provider_result.error() << std::endl;
+                return false;
             }
+            auto crypto_provider = std::move(crypto_provider_result.value());
             
             // Create and configure transport
             transport::TransportConfig transport_config;
@@ -143,16 +142,14 @@ public:
                 return false;
             }
             
-            // Create connection manager
-            connection_manager_ = ConnectionManager::create_server_manager(config_, transport_.get());
-            if (!connection_manager_) {
-                std::cerr << "Failed to create connection manager" << std::endl;
-                return false;
-            }
+            // Initialize connection manager
+            connection_manager_ = std::make_unique<ConnectionManager>();
             
-            // Set up connection event callbacks
-            connection_manager_->set_new_connection_callback([this](std::unique_ptr<Connection> connection) {
-                handle_new_connection(std::move(connection));
+            // Set up transport event callback to handle incoming connections
+            transport_->set_event_callback([this](transport::TransportEvent event, 
+                                                  const transport::NetworkEndpoint& endpoint, 
+                                                  const std::vector<uint8_t>& data) {
+                handle_transport_event(event, endpoint, data);
             });
             
             // Start server processing thread
@@ -222,9 +219,6 @@ private:
         
         while (running_) {
             try {
-                // Process incoming connections and data
-                connection_manager_->process_events();
-                
                 // Process existing connections
                 process_active_connections();
                 
@@ -242,32 +236,78 @@ private:
         std::cout << "[SERVER] Main processing loop stopped" << std::endl;
     }
     
-    void handle_new_connection(std::unique_ptr<Connection> connection) {
-        if (!connection) return;
-        
-        // Get client endpoint information
-        auto remote_endpoint = connection->get_remote_endpoint();
-        std::string endpoint_key = remote_endpoint ? remote_endpoint.value().to_string() : "unknown";
-        
-        std::cout << "[SERVER] New client connection from: " << endpoint_key << std::endl;
-        
-        // Set up connection event callback
-        connection->set_event_callback([this, endpoint_key](ConnectionEvent event, const std::vector<uint8_t>& data) {
-            handle_connection_event(endpoint_key, event, data);
-        });
-        
-        // Store connection
-        {
-            std::lock_guard<std::mutex> lock(connections_mutex_);
-            active_connections_[endpoint_key] = std::move(connection);
+    void handle_transport_event(transport::TransportEvent event, 
+                               const transport::NetworkEndpoint& endpoint, 
+                               const std::vector<uint8_t>& data) {
+        switch (event) {
+            case transport::TransportEvent::PACKET_RECEIVED: {
+                // Handle incoming packet - check if it's a new connection or existing one
+                std::string endpoint_key = endpoint.to_string();
+                
+                std::lock_guard<std::mutex> lock(connections_mutex_);
+                auto it = active_connections_.find(endpoint_key);
+                
+                if (it == active_connections_.end()) {
+                    // New connection attempt - create server connection
+                    auto crypto_provider_result = crypto::ProviderFactory::instance().create_default_provider();
+                    if (!crypto_provider_result) {
+                        std::cerr << "Failed to create crypto provider for new connection" << std::endl;
+                        return;
+                    }
+                    
+                    auto connection_result = Connection::create_server(
+                        config_,
+                        std::move(crypto_provider_result.value()),
+                        NetworkAddress{endpoint.address, endpoint.port},
+                        [this, endpoint_key](ConnectionEvent event, const std::vector<uint8_t>& data) {
+                            handle_connection_event(endpoint_key, event, data);
+                        }
+                    );
+                    
+                    if (!connection_result) {
+                        std::cerr << "Failed to create server connection: " << connection_result.error() << std::endl;
+                        return;
+                    }
+                    
+                    auto connection = std::move(connection_result.value());
+                    
+                    // Initialize the connection
+                    auto init_result = connection->initialize();
+                    if (!init_result) {
+                        std::cerr << "Failed to initialize server connection: " << init_result.error() << std::endl;
+                        return;
+                    }
+                    
+                    // Process the incoming data
+                    memory::ZeroCopyBuffer buffer(data);
+                    auto process_result = connection->process_incoming_data(buffer);
+                    if (!process_result) {
+                        std::cerr << "Failed to process incoming data: " << process_result.error() << std::endl;
+                        return;
+                    }
+                    
+                    // Store the connection
+                    active_connections_[endpoint_key] = std::move(connection);
+                    total_connections_++;
+                    active_connection_count_++;
+                    
+                    std::cout << "[SERVER] New client connection from: " << endpoint_key << std::endl;
+                } else {
+                    // Existing connection - process data
+                    memory::ZeroCopyBuffer buffer(data);
+                    auto process_result = it->second->process_incoming_data(buffer);
+                    if (!process_result) {
+                        std::cerr << "Failed to process data for " << endpoint_key << ": " << process_result.error() << std::endl;
+                    }
+                }
+                break;
+            }
+            default:
+                break;
         }
-        
-        // Update statistics
-        total_connections_++;
-        active_connection_count_++;
-        
-        display_connection_info(endpoint_key);
     }
+    
+
     
     void handle_connection_event(const std::string& endpoint, ConnectionEvent event, const std::vector<uint8_t>& data) {
         switch (event) {
@@ -307,13 +347,14 @@ private:
         // Echo the message back to the client
         std::string echo_response = "Echo: " + message;
         std::vector<uint8_t> response_data(echo_response.begin(), echo_response.end());
+        memory::ZeroCopyBuffer response_buffer(response_data);
         
         // Find and send response through the connection
         {
             std::lock_guard<std::mutex> lock(connections_mutex_);
             auto it = active_connections_.find(endpoint);
             if (it != active_connections_.end() && it->second) {
-                auto send_result = it->second->send(response_data);
+                auto send_result = it->second->send_application_data(response_buffer);
                 if (send_result) {
                     std::cout << "[" << endpoint << "] Sent echo: \"" << echo_response << "\"" << std::endl;
                 } else {
@@ -336,8 +377,8 @@ private:
                 // This could include checking for incoming data, handling retransmissions, etc.
                 
                 // For this simple example, we just ensure the connection is healthy
-                if (connection->has_error()) {
-                    std::cout << "[" << endpoint << "] Connection has error, will be cleaned up" << std::endl;
+                if (connection->get_state() == ConnectionState::FAILED) {
+                    std::cout << "[" << endpoint << "] Connection has failed, will be cleaned up" << std::endl;
                 }
             }
         }
@@ -365,24 +406,40 @@ private:
         
         auto& connection = it->second;
         
-        std::cout << "\n=== Connection Information [" << endpoint << "] ===" << std::endl;
+        std::cout << "
+=== Connection Information [" << endpoint << "] ===" << std::endl;
         
-        auto cipher_info = connection->get_cipher_suite_info();
-        if (cipher_info) {
-            std::cout << "Cipher Suite: " << cipher_info.value().name << std::endl;
-            std::cout << "Key Exchange: " << cipher_info.value().key_exchange << std::endl;
+        // Display connection state
+        std::cout << "Connection State: ";
+        switch (connection->get_state()) {
+            case ConnectionState::IDLE: std::cout << "IDLE"; break;
+            case ConnectionState::CONNECTING: std::cout << "CONNECTING"; break;
+            case ConnectionState::CONNECTED: std::cout << "CONNECTED"; break;
+            case ConnectionState::CLOSING: std::cout << "CLOSING"; break;
+            case ConnectionState::CLOSED: std::cout << "CLOSED"; break;
+            case ConnectionState::FAILED: std::cout << "FAILED"; break;
+            default: std::cout << "UNKNOWN"; break;
+        }
+        std::cout << std::endl;
+        
+        // Display peer address
+        std::cout << "Peer Address: " << connection->get_peer_address().to_string() << std::endl;
+        std::cout << "Server Mode: " << (connection->is_server() ? "Yes" : "No") << std::endl;
+        
+        // Try to get connection IDs if available
+        auto local_id_result = connection->get_local_connection_id();
+        if (local_id_result && !local_id_result.value().empty()) {
+            std::cout << "Local Connection ID: ";
+            for (uint8_t byte : local_id_result.value()) {
+                std::cout << std::hex << std::setw(2) << std::setfill('0') << (int)byte;
+            }
+            std::cout << std::dec << std::endl;
         }
         
-        auto version_info = connection->get_protocol_version();
-        if (version_info) {
-            std::cout << "Protocol Version: DTLS v" << version_info.value().major 
-                     << "." << version_info.value().minor << std::endl;
-        }
-        
-        auto connection_id = connection->get_connection_id();
-        if (connection_id && !connection_id.value().empty()) {
-            std::cout << "Connection ID: ";
-            for (uint8_t byte : connection_id.value()) {
+        auto peer_id_result = connection->get_peer_connection_id();
+        if (peer_id_result && !peer_id_result.value().empty()) {
+            std::cout << "Peer Connection ID: ";
+            for (uint8_t byte : peer_id_result.value()) {
                 std::cout << std::hex << std::setw(2) << std::setfill('0') << (int)byte;
             }
             std::cout << std::dec << std::endl;

@@ -75,8 +75,8 @@ public:
     CiphertextRecord() = default;
     CiphertextRecord(ContentType content_type, ProtocolVersion version,
                     uint16_t epoch, uint64_t sequence_number,
-                    memory::Buffer encrypted_payload,
-                    memory::Buffer auth_tag);
+                    memory::ZeroCopyBuffer encrypted_payload,
+                    memory::ZeroCopyBuffer auth_tag);
     
     const RecordHeader& header() const { return header_; }
     const memory::Buffer& encrypted_payload() const { return encrypted_payload_; }
