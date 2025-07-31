@@ -7,6 +7,7 @@
 #include <tlm_utils/tlm_quantumkeeper.h>
 #include <memory>
 #include <vector>
+#include <sstream>
 
 namespace dtls {
 namespace v13 {

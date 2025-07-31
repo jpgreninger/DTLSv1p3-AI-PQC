@@ -551,7 +551,7 @@ private:
     
     // Statistics and monitoring
     KeyManagerStats stats;
-    std::mutex stats_mutex;
+    mutable std::mutex stats_mutex;
     
     // Configuration
     bool key_updates_enabled{true};

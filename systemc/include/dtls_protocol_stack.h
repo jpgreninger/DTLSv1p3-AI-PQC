@@ -170,7 +170,7 @@ private:
     
     // Statistics and monitoring
     ProtocolStackStats stats;
-    std::mutex stats_mutex;
+    mutable std::mutex stats_mutex;
     
     // Performance monitoring
     sc_time last_performance_update;

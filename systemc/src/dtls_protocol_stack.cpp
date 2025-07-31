@@ -302,21 +302,21 @@ void dtls_protocol_stack::process_network_data(tlm::tlm_generic_payload& trans, 
 
 void dtls_protocol_stack::route_crypto_operation(tlm::tlm_generic_payload& trans, sc_time& delay) {
     if (use_hardware_acceleration && hw_crypto_provider) {
-        hw_crypto_provider->target_socket->b_transport(trans, delay);
+        hw_crypto_provider->crypto_provider.b_transport(trans, delay);
     } else {
-        crypto_provider->target_socket->b_transport(trans, delay);
+        crypto_provider->b_transport(trans, delay);
     }
     
     delay += g_protocol_stack_timing.aes_encryption_time;
 }
 
 void dtls_protocol_stack::route_record_operation(tlm::tlm_generic_payload& trans, sc_time& delay) {
-    record_layer->target_socket->b_transport(trans, delay);
+    record_layer->b_transport(trans, delay);
     delay += g_protocol_stack_timing.record_protection_time;
 }
 
 void dtls_protocol_stack::route_message_operation(tlm::tlm_generic_payload& trans, sc_time& delay) {
-    message_layer->target_socket->b_transport(trans, delay);
+    message_layer->b_transport(trans, delay);
     delay += g_protocol_stack_timing.message_fragmentation_time;
 }
 

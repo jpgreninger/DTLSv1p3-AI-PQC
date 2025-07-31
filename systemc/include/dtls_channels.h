@@ -5,6 +5,7 @@
 #include <systemc>
 #include <queue>
 #include <mutex>
+#include <atomic>
 
 namespace dtls {
 namespace v13 {
