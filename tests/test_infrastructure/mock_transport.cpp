@@ -20,6 +20,10 @@ MockTransport::~MockTransport() {
 dtls::v13::Result<void> MockTransport::bind() {
     if (bound_.load()) {
         return dtls::v13::make_error<void>(dtls::v13::DTLSError::TRANSPORT_ERROR, "Transport already bound");
+    }
+    
+    bound_.store(true);
+    return dtls::v13::make_result();
 }
 
 } // namespace test

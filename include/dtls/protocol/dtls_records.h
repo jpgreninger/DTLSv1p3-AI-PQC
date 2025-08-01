@@ -3,6 +3,7 @@
 #include "dtls/types.h"
 #include "dtls/result.h"
 #include "dtls/memory.h"
+#include "dtls/protocol/record.h"
 #include <cstdint>
 #include <array>
 

@@ -5,7 +5,7 @@
 
 #include "benchmark_framework.h"
 #include <dtls/protocol/handshake.h>
-#include <dtls/connection/connection_manager.h>
+#include <dtls/connection/advanced_connection_manager.h>
 #include <dtls/crypto/cipher_suites.h>
 #include "../test_infrastructure/test_certificates.h"
 #include "../test_infrastructure/mock_transport.h"

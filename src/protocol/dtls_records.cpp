@@ -108,8 +108,9 @@ Result<size_t> DTLSPlaintext::serialize(memory::Buffer& buffer) const {
     data[offset++] = static_cast<uint8_t>(type);
     
     // Protocol version (big-endian uint16_t)
-    data[offset++] = (version >> 8) & 0xFF;
-    data[offset++] = version & 0xFF;
+    uint16_t version_raw = static_cast<uint16_t>(version);
+    data[offset++] = (version_raw >> 8) & 0xFF;
+    data[offset++] = version_raw & 0xFF;
     
     // Epoch (big-endian uint16_t)
     data[offset++] = (epoch >> 8) & 0xFF;
@@ -147,7 +148,8 @@ Result<DTLSPlaintext> DTLSPlaintext::deserialize(const memory::Buffer& buffer, s
     ContentType content_type = static_cast<ContentType>(data[pos++]);
     
     // Protocol version (big-endian uint16_t)
-    ProtocolVersion proto_version = (static_cast<uint16_t>(data[pos]) << 8) | data[pos + 1];
+    uint16_t version_raw = (static_cast<uint16_t>(data[pos]) << 8) | data[pos + 1];
+    ProtocolVersion proto_version = static_cast<ProtocolVersion>(version_raw);
     pos += 2;
     
     // Epoch (big-endian uint16_t)
@@ -199,7 +201,7 @@ bool DTLSPlaintext::is_valid() const {
     }
     
     // Check protocol version (should be DTLS v1.3)
-    if (version != DTLS_V13) {
+    if (version != ::dtls::v13::protocol::ProtocolVersion::DTLS_1_3) {
         return false;
     }
     
@@ -309,8 +311,9 @@ Result<size_t> DTLSCiphertext::serialize(memory::Buffer& buffer) const {
     data[offset++] = static_cast<uint8_t>(type);
     
     // Protocol version (big-endian uint16_t)
-    data[offset++] = (version >> 8) & 0xFF;
-    data[offset++] = version & 0xFF;
+    uint16_t version_raw = static_cast<uint16_t>(version);
+    data[offset++] = (version_raw >> 8) & 0xFF;
+    data[offset++] = version_raw & 0xFF;
     
     // Epoch (big-endian uint16_t)
     data[offset++] = (epoch >> 8) & 0xFF;
@@ -361,7 +364,8 @@ Result<DTLSCiphertext> DTLSCiphertext::deserialize(const memory::Buffer& buffer,
     ContentType content_type = static_cast<ContentType>(data[pos++]);
     
     // Protocol version (big-endian uint16_t)
-    ProtocolVersion proto_version = (static_cast<uint16_t>(data[pos]) << 8) | data[pos + 1];
+    uint16_t version_raw = (static_cast<uint16_t>(data[pos]) << 8) | data[pos + 1];
+    ProtocolVersion proto_version = static_cast<ProtocolVersion>(version_raw);
     pos += 2;
     
     // Epoch (big-endian uint16_t)
@@ -419,7 +423,7 @@ bool DTLSCiphertext::is_valid() const {
     }
     
     // Check protocol version (should be DTLS v1.3)
-    if (version != DTLS_V13) {
+    if (version != ::dtls::v13::protocol::ProtocolVersion::DTLS_1_3) {
         return false;
     }
     
@@ -515,7 +519,8 @@ Result<ProtocolVersion> extract_protocol_version(const memory::Buffer& buffer, s
     }
     
     const uint8_t* data = reinterpret_cast<const uint8_t*>(buffer.data());
-    ProtocolVersion version = (static_cast<uint16_t>(data[offset]) << 8) | data[offset + 1];
+    uint16_t version_raw = (static_cast<uint16_t>(data[offset]) << 8) | data[offset + 1];
+    ProtocolVersion version = static_cast<ProtocolVersion>(version_raw);
     
     return make_result(version);
 }
@@ -563,9 +568,9 @@ bool is_dtls_record(const memory::Buffer& buffer, size_t min_length) {
     
     ProtocolVersion version = version_result.value();
     // Accept DTLS v1.0, v1.2, and v1.3
-    return (version == DTLS_V10 || 
-            version == DTLS_V12 || 
-            version == DTLS_V13);
+    return (version == ::dtls::v13::protocol::ProtocolVersion::DTLS_1_0 || 
+            version == ::dtls::v13::protocol::ProtocolVersion::DTLS_1_2 || 
+            version == ::dtls::v13::protocol::ProtocolVersion::DTLS_1_3);
 }
 
 bool validate_record_length(uint16_t declared_length, size_t actual_payload_size) {
