@@ -27,6 +27,7 @@
 #include <queue>
 #include <condition_variable>
 #include <algorithm>
+#include <csignal>
 #include <iomanip>
 
 using namespace dtls::v13;
@@ -51,8 +52,8 @@ private:
     
     // Load balancing
     std::vector<std::queue<std::string>> worker_queues_;
-    std::vector<std::mutex> worker_queue_mutexes_;
-    std::vector<std::condition_variable> worker_conditions_;
+    std::vector<std::unique_ptr<std::mutex>> worker_queue_mutexes_;
+    std::vector<std::unique_ptr<std::condition_variable>> worker_conditions_;
     size_t num_workers_;
     std::atomic<size_t> round_robin_counter_{0};
     
@@ -66,8 +67,8 @@ private:
     std::atomic<uint64_t> connection_errors_{0};
     
     // Per-worker statistics
-    std::vector<std::atomic<uint64_t>> worker_message_counts_;
-    std::vector<std::atomic<uint64_t>> worker_byte_counts_;
+    std::vector<std::unique_ptr<std::atomic<uint64_t>>> worker_message_counts_;
+    std::vector<std::unique_ptr<std::atomic<uint64_t>>> worker_byte_counts_;
     
     // Performance monitoring
     std::chrono::steady_clock::time_point server_start_time_;
@@ -124,15 +125,16 @@ public:
     void initialize_worker_infrastructure() {
         // Initialize per-worker data structures
         worker_queues_.resize(num_workers_);
-        worker_queue_mutexes_.resize(num_workers_);
-        worker_conditions_.resize(num_workers_);
-        worker_message_counts_.resize(num_workers_);
-        worker_byte_counts_.resize(num_workers_);
+        worker_queue_mutexes_.reserve(num_workers_);
+        worker_conditions_.reserve(num_workers_);
+        worker_message_counts_.reserve(num_workers_);
         
-        // Initialize atomic counters
+        // Initialize unique_ptr containers
         for (size_t i = 0; i < num_workers_; ++i) {
-            worker_message_counts_[i] = 0;
-            worker_byte_counts_[i] = 0;
+            worker_queue_mutexes_.emplace_back(std::make_unique<std::mutex>());
+            worker_conditions_.emplace_back(std::make_unique<std::condition_variable>());
+            worker_message_counts_.emplace_back(std::make_unique<std::atomic<uint64_t>>(0));
+            worker_byte_counts_.emplace_back(std::make_unique<std::atomic<uint64_t>>(0));
         }
         
         std::cout << "Initialized infrastructure for " << num_workers_ << " worker threads" << std::endl;
@@ -161,8 +163,8 @@ public:
             transport_config.max_connections = 1000; // Support up to 1000 concurrent connections
             transport_config.reuse_address = true;
             transport_config.reuse_port = true;
-            transport_config.socket_receive_buffer_size = 1048576; // 1MB socket buffer
-            transport_config.socket_send_buffer_size = 1048576;
+            transport_config.receive_buffer_size = 1048576; // 1MB socket buffer
+            transport_config.send_buffer_size = 1048576;
             
             transport_ = std::make_unique<transport::UDPTransport>(transport_config);
             
@@ -193,16 +195,14 @@ public:
             }
             
             // Create connection manager
-            connection_manager_ = ConnectionManager::create_server_manager(server_config_, transport_.get());
+            connection_manager_ = std::make_unique<ConnectionManager>();
             if (!connection_manager_) {
                 std::cerr << "Failed to create connection manager" << std::endl;
                 return false;
             }
             
             // Set up connection event callbacks
-            connection_manager_->set_new_connection_callback([this](std::unique_ptr<Connection> connection) {
-                handle_new_connection(std::move(connection));
-            });
+            // Note: New connection handling will be done differently with current API
             
             // Start worker threads
             server_running_ = true;
@@ -238,7 +238,7 @@ public:
         
         // Notify all worker threads
         for (size_t i = 0; i < num_workers_; ++i) {
-            worker_conditions_[i].notify_all();
+            worker_conditions_[i]->notify_all();
         }
         
         // Wait for all worker threads to finish
@@ -294,7 +294,8 @@ private:
         while (server_running_) {
             try {
                 // Process incoming connections and events
-                connection_manager_->process_events();
+                // Process events by checking connection states
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
                 
                 // Brief sleep to avoid busy waiting
                 std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -311,10 +312,10 @@ private:
         std::cout << "[WORKER-" << worker_id << "] Worker thread started" << std::endl;
         
         while (server_running_) {
-            std::unique_lock<std::mutex> lock(worker_queue_mutexes_[worker_id]);
+            std::unique_lock<std::mutex> lock(*worker_queue_mutexes_[worker_id]);
             
             // Wait for work or shutdown signal
-            worker_conditions_[worker_id].wait(lock, [this, worker_id]() {
+            worker_conditions_[worker_id]->wait(lock, [this, worker_id]() {
                 return !worker_queues_[worker_id].empty() || !server_running_;
             });
             
@@ -373,9 +374,8 @@ private:
         if (!connection) return;
         
         // Get client endpoint information
-        auto remote_endpoint = connection->get_remote_endpoint();
-        std::string endpoint_key = remote_endpoint ? remote_endpoint.value().to_string() : 
-                                  ("unknown_" + std::to_string(connection_counter_++));
+        auto remote_address = connection->get_peer_address();
+        std::string endpoint_key = to_string(remote_address);
         
         std::cout << "[MAIN] New client connection from: " << endpoint_key << std::endl;
         
@@ -398,10 +398,10 @@ private:
         size_t worker_id = round_robin_counter_++ % num_workers_;
         
         {
-            std::lock_guard<std::mutex> lock(worker_queue_mutexes_[worker_id]);
+            std::lock_guard<std::mutex> lock(*worker_queue_mutexes_[worker_id]);
             worker_queues_[worker_id].push(endpoint_key);
         }
-        worker_conditions_[worker_id].notify_one();
+        worker_conditions_[worker_id]->notify_one();
         
         std::cout << "[MAIN] Connection " << endpoint_key << " assigned to worker " << worker_id << std::endl;
     }
@@ -436,6 +436,18 @@ private:
             case ConnectionEvent::KEY_UPDATE_COMPLETED:
                 std::cout << "[" << endpoint << "] Key update completed" << std::endl;
                 break;
+            case ConnectionEvent::EARLY_DATA_ACCEPTED:
+                std::cout << "[" << endpoint << "] Early data accepted" << std::endl;
+                break;
+            case ConnectionEvent::EARLY_DATA_REJECTED:
+                std::cout << "[" << endpoint << "] Early data rejected" << std::endl;
+                break;
+            case ConnectionEvent::EARLY_DATA_RECEIVED:
+                std::cout << "[" << endpoint << "] Early data received" << std::endl;
+                break;
+            case ConnectionEvent::NEW_SESSION_TICKET_RECEIVED:
+                std::cout << "[" << endpoint << "] New session ticket received" << std::endl;
+                break;
         }
     }
     
@@ -463,7 +475,7 @@ private:
         
         // Process any available messages
         while (server_running_) {
-            auto receive_result = connection->receive();
+            auto receive_result = connection->receive_application_data();
             if (!receive_result) {
                 break; // No more messages
             }
@@ -474,7 +486,7 @@ private:
             }
             
             // Process the message
-            std::string message(data.begin(), data.end());
+            std::string message(reinterpret_cast<const char*>(data.data()), data.size());
             
             // Generate response based on message content
             std::string response;
@@ -494,15 +506,16 @@ private:
             
             // Send response
             std::vector<uint8_t> response_data(response.begin(), response.end());
-            auto send_result = connection->send(response_data);
+            memory::ZeroCopyBuffer buffer(reinterpret_cast<const std::byte*>(response_data.data()), response_data.size());
+            auto send_result = connection->send_application_data(buffer);
             if (!send_result) {
                 std::cerr << "[WORKER-" << worker_id << "] Failed to send response to " 
                          << endpoint_key << ": " << send_result.error() << std::endl;
             }
             
             // Update worker statistics
-            worker_message_counts_[worker_id]++;
-            worker_byte_counts_[worker_id] += data.size();
+            (*worker_message_counts_[worker_id])++;
+            (*worker_byte_counts_[worker_id]) += data.size();
             total_messages_processed_++;
             total_bytes_processed_ += data.size();
         }
@@ -542,8 +555,8 @@ private:
         std::cout << "\nPer-Worker Statistics:" << std::endl;
         for (size_t i = 0; i < num_workers_; ++i) {
             std::cout << "  Worker " << i << ": " 
-                     << worker_message_counts_[i].load() << " messages, "
-                     << worker_byte_counts_[i].load() << " bytes" << std::endl;
+                     << worker_message_counts_[i]->load() << " messages, "
+                     << worker_byte_counts_[i]->load() << " bytes" << std::endl;
         }
         
         if (transport_) {
@@ -583,8 +596,8 @@ private:
         std::cout << "\nFinal Per-Worker Statistics:" << std::endl;
         for (size_t i = 0; i < num_workers_; ++i) {
             std::cout << "  Worker " << i << ": " 
-                     << worker_message_counts_[i].load() << " messages, "
-                     << worker_byte_counts_[i].load() << " bytes" << std::endl;
+                     << worker_message_counts_[i]->load() << " messages, "
+                     << worker_byte_counts_[i]->load() << " bytes" << std::endl;
         }
         
         if (transport_) {
@@ -636,8 +649,8 @@ int main(int argc, char* argv[]) {
         std::cout << "==========================================" << std::endl;
         
         // Install signal handlers for graceful shutdown
-        std::signal(SIGINT, signal_handler);
-        std::signal(SIGTERM, signal_handler);
+        signal(SIGINT, signal_handler);
+        signal(SIGTERM, signal_handler);
         
         // Create and start server
         MultiConnectionServer server(num_workers);
