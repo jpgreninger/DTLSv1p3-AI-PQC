@@ -377,11 +377,6 @@ private:
 };
 
 /**
- * Connection Manager for handling multiple connections
- */
-class DTLS_API ConnectionManager {
-
-/**
  * Simple Context wrapper for DTLS connections
  * 
  * Provides a simplified interface for testing and basic usage.
@@ -423,6 +418,11 @@ private:
     
     std::unique_ptr<Connection> connection_;
 };
+
+/**
+ * Connection Manager for handling multiple connections
+ */
+class DTLS_API ConnectionManager {
 public:
     ConnectionManager() = default;
     ~ConnectionManager() = default;

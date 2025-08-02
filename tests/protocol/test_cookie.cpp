@@ -2,12 +2,14 @@
 #include <dtls/protocol/cookie.h>
 #include <dtls/protocol/handshake.h>
 #include <dtls/memory/buffer.h>
+#include <dtls/error.h>
 #include <vector>
 #include <chrono>
 #include <thread>
 
 using namespace dtls::v13::protocol;
 using namespace dtls::v13::memory;
+using namespace dtls::v13;
 
 class CookieTest : public ::testing::Test {
 protected:
@@ -15,7 +17,7 @@ protected:
         // Create test secret key
         test_secret_key = Buffer(32);
         test_secret_key.resize(32);
-        uint8_t* key_data = test_secret_key.mutable_data();
+        uint8_t* key_data = reinterpret_cast<uint8_t*>(test_secret_key.mutable_data());
         for (size_t i = 0; i < 32; ++i) {
             key_data[i] = static_cast<uint8_t>(i);
         }
@@ -75,19 +77,19 @@ TEST_F(CookieTest, CookieGeneration) {
     auto cookie_result = cookie_manager->generate_cookie(test_client_info);
     ASSERT_TRUE(cookie_result.is_success());
     
-    Buffer cookie = cookie_result.value();
+    Buffer cookie = std::move(cookie_result.value());
     EXPECT_GT(cookie.size(), 16); // Should be reasonably sized
     EXPECT_LE(cookie.size(), 255); // Should not exceed maximum
     
     // Cookie should be valid format
-    EXPECT_TRUE(is_valid_cookie_format(cookie));
+    EXPECT_TRUE(dtls::v13::protocol::is_valid_cookie_format(cookie));
 }
 
 TEST_F(CookieTest, CookieValidation) {
     // Generate cookie
     auto cookie_result = cookie_manager->generate_cookie(test_client_info);
     ASSERT_TRUE(cookie_result.is_success());
-    Buffer cookie = cookie_result.value();
+    Buffer cookie = std::move(cookie_result.value());
     
     // Validate with correct client info
     auto validation_result = cookie_manager->validate_cookie(cookie, test_client_info);
@@ -103,7 +105,7 @@ TEST_F(CookieTest, CookieConsumption) {
     // Generate and validate cookie
     auto cookie_result = cookie_manager->generate_cookie(test_client_info);
     ASSERT_TRUE(cookie_result.is_success());
-    Buffer cookie = cookie_result.value();
+    Buffer cookie = std::move(cookie_result.value());
     
     // First validation should succeed
     auto validation_result = cookie_manager->validate_cookie(cookie, test_client_info);
@@ -128,7 +130,7 @@ TEST_F(CookieTest, CookieExpiration) {
     // Generate cookie
     auto cookie_result = short_expire_manager.generate_cookie(test_client_info);
     ASSERT_TRUE(cookie_result.is_success());
-    Buffer cookie = cookie_result.value();
+    Buffer cookie = std::move(cookie_result.value());
     
     // Should be valid immediately
     auto validation_result = short_expire_manager.validate_cookie(cookie, test_client_info);
@@ -154,7 +156,7 @@ TEST_F(CookieTest, ClientNeedsCookie) {
     EXPECT_TRUE(cookie_manager->client_needs_cookie(test_client_info));
     
     // After validation, client should not need cookie
-    Buffer cookie = cookie_result.value();
+    Buffer cookie = std::move(cookie_result.value());
     auto validation_result = cookie_manager->validate_cookie(cookie, test_client_info);
     EXPECT_EQ(validation_result, CookieManager::CookieValidationResult::VALID);
     
@@ -175,7 +177,7 @@ TEST_F(CookieTest, MaxCookiesPerClient) {
     for (int i = 0; i < 3; ++i) {
         auto cookie_result = limited_manager.generate_cookie(test_client_info);
         ASSERT_TRUE(cookie_result.is_success());
-        cookies.push_back(cookie_result.value());
+        cookies.push_back(std::move(cookie_result.value()));
     }
     
     // Generating another cookie should succeed (oldest removed)
@@ -231,7 +233,7 @@ TEST_F(CookieTest, Statistics) {
     // Generate and validate cookie
     auto cookie_result = cookie_manager->generate_cookie(test_client_info);
     ASSERT_TRUE(cookie_result.is_success());
-    Buffer cookie = cookie_result.value();
+    Buffer cookie = std::move(cookie_result.value());
     
     auto validation_result = cookie_manager->validate_cookie(cookie, test_client_info);
     EXPECT_EQ(validation_result, CookieManager::CookieValidationResult::VALID);
@@ -300,21 +302,21 @@ TEST_F(CookieTest, CookieExtensionUtilities) {
     // Generate test cookie
     auto cookie_result = cookie_manager->generate_cookie(test_client_info);
     ASSERT_TRUE(cookie_result.is_success());
-    Buffer cookie = cookie_result.value();
+    Buffer cookie = std::move(cookie_result.value());
     
     // Create cookie extension
     auto ext_result = create_cookie_extension(cookie);
     ASSERT_TRUE(ext_result.is_success());
     
     Extension extension = ext_result.value();
-    EXPECT_EQ(extension.type, ExtensionType::COOKIE);
+    EXPECT_EQ(extension.type, dtls::v13::protocol::ExtensionType::COOKIE);
     EXPECT_EQ(extension.data.size(), 2 + cookie.size());
     
     // Extract cookie from extension
-    auto extracted_result = extract_cookie_from_extension(extension);
+    auto extracted_result = dtls::v13::protocol::extract_cookie_from_extension(extension);
     ASSERT_TRUE(extracted_result.is_success());
     
-    Buffer extracted_cookie = extracted_result.value();
+    Buffer extracted_cookie = std::move(extracted_result.value());
     EXPECT_EQ(extracted_cookie.size(), cookie.size());
     EXPECT_EQ(std::memcmp(extracted_cookie.data(), cookie.data(), cookie.size()), 0);
 }
@@ -322,19 +324,19 @@ TEST_F(CookieTest, CookieExtensionUtilities) {
 TEST_F(CookieTest, InvalidCookieExtraction) {
     // Create non-cookie extension
     Extension wrong_extension;
-    wrong_extension.type = ExtensionType::SERVER_NAME;
+    wrong_extension.type = dtls::v13::protocol::ExtensionType::SERVER_NAME;
     wrong_extension.data.resize(10);
     
-    auto result = extract_cookie_from_extension(wrong_extension);
+    auto result = dtls::v13::protocol::extract_cookie_from_extension(wrong_extension);
     EXPECT_FALSE(result.is_success());
     EXPECT_EQ(result.error(), DTLSError::INVALID_PARAMETER);
     
     // Create malformed cookie extension
     Extension malformed_extension;
-    malformed_extension.type = ExtensionType::COOKIE;
+    malformed_extension.type = dtls::v13::protocol::ExtensionType::COOKIE;
     malformed_extension.data.resize(1); // Too short
     
-    result = extract_cookie_from_extension(malformed_extension);
+    result = dtls::v13::protocol::extract_cookie_from_extension(malformed_extension);
     EXPECT_FALSE(result.is_success());
     EXPECT_EQ(result.error(), DTLSError::INVALID_MESSAGE_FORMAT);
 }
@@ -343,48 +345,52 @@ TEST_F(CookieTest, CookieFormatValidation) {
     // Valid cookie
     auto cookie_result = cookie_manager->generate_cookie(test_client_info);
     ASSERT_TRUE(cookie_result.is_success());
-    Buffer valid_cookie = cookie_result.value();
+    Buffer valid_cookie = std::move(cookie_result.value());
     
-    EXPECT_TRUE(is_valid_cookie_format(valid_cookie));
+    EXPECT_TRUE(dtls::v13::protocol::is_valid_cookie_format(valid_cookie));
     
     // Too small cookie
     Buffer small_cookie(4);
     small_cookie.resize(4);
-    EXPECT_FALSE(is_valid_cookie_format(small_cookie));
+    EXPECT_FALSE(dtls::v13::protocol::is_valid_cookie_format(small_cookie));
     
     // Too large cookie
     Buffer large_cookie(300);
     large_cookie.resize(300);
-    EXPECT_FALSE(is_valid_cookie_format(large_cookie));
+    EXPECT_FALSE(dtls::v13::protocol::is_valid_cookie_format(large_cookie));
     
     // Wrong magic number
-    Buffer wrong_magic = valid_cookie;
-    uint8_t* data = wrong_magic.mutable_data();
+    Buffer wrong_magic(valid_cookie.size());
+    wrong_magic.resize(valid_cookie.size());
+    std::memcpy(wrong_magic.mutable_data(), valid_cookie.data(), valid_cookie.size());
+    uint8_t* data = reinterpret_cast<uint8_t*>(wrong_magic.mutable_data());
     data[0] = 0xFF; // Change magic number
-    EXPECT_FALSE(is_valid_cookie_format(wrong_magic));
+    EXPECT_FALSE(dtls::v13::protocol::is_valid_cookie_format(wrong_magic));
     
     // Wrong version
-    Buffer wrong_version = valid_cookie;
-    data = wrong_version.mutable_data();
+    Buffer wrong_version(valid_cookie.size());
+    wrong_version.resize(valid_cookie.size());
+    std::memcpy(wrong_version.mutable_data(), valid_cookie.data(), valid_cookie.size());
+    data = reinterpret_cast<uint8_t*>(wrong_version.mutable_data());
     data[4] = 0xFF; // Change version
-    EXPECT_FALSE(is_valid_cookie_format(wrong_version));
+    EXPECT_FALSE(dtls::v13::protocol::is_valid_cookie_format(wrong_version));
 }
 
 TEST_F(CookieTest, TestCookieGeneration) {
     // Test with default size
-    Buffer test_cookie = generate_test_cookie();
+    Buffer test_cookie = dtls::v13::protocol::generate_test_cookie();
     EXPECT_EQ(test_cookie.size(), 32);
     
     // Test with custom size
-    test_cookie = generate_test_cookie(16);
+    test_cookie = dtls::v13::protocol::generate_test_cookie(16);
     EXPECT_EQ(test_cookie.size(), 16);
     
     // Test with too small size (should use minimum)
-    test_cookie = generate_test_cookie(4);
+    test_cookie = dtls::v13::protocol::generate_test_cookie(4);
     EXPECT_EQ(test_cookie.size(), 8); // MIN_COOKIE_SIZE
     
     // Test with too large size (should use maximum)
-    test_cookie = generate_test_cookie(300);
+    test_cookie = dtls::v13::protocol::generate_test_cookie(300);
     EXPECT_EQ(test_cookie.size(), 255); // MAX_COOKIE_SIZE
 }
 
@@ -442,7 +448,7 @@ TEST_F(CookieTest, CookieValidationPerformance) {
     // Generate cookie once
     auto cookie_result = cookie_manager->generate_cookie(test_client_info);
     ASSERT_TRUE(cookie_result.is_success());
-    Buffer cookie = cookie_result.value();
+    Buffer cookie = std::move(cookie_result.value());
     
     auto start = std::chrono::high_resolution_clock::now();
     
@@ -473,7 +479,7 @@ TEST_F(CookieTest, EmptyCookieHandling) {
     EXPECT_EQ(validation_result, CookieManager::CookieValidationResult::INVALID);
     
     // Should fail format validation
-    EXPECT_FALSE(is_valid_cookie_format(empty_cookie));
+    EXPECT_FALSE(dtls::v13::protocol::is_valid_cookie_format(empty_cookie));
     
     // Should fail extension creation
     auto ext_result = create_cookie_extension(empty_cookie);

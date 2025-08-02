@@ -128,7 +128,7 @@ public:
             auto connection_result = Connection::create_client(
                 config_, 
                 std::move(crypto_provider), 
-                NetworkAddress{server_address, server_port, NetworkAddress::Family::IPv4},
+                NetworkAddress::from_ipv4(0x7F000001, server_port),  // 127.0.0.1
                 [this](ConnectionEvent event, const std::vector<uint8_t>& data) {
                     handle_connection_event(event, data);
                 }
@@ -297,8 +297,7 @@ private:
     void display_connection_info() {
         if (!connection_) return;
         
-        std::cout << "
-=== Connection Information ===" << std::endl;
+        std::cout << "\n=== Connection Information ===" << std::endl;
         
         // Display connection state
         std::cout << "Connection State: ";

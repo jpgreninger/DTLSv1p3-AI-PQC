@@ -128,6 +128,7 @@ enum class DTLSError : int {
     PORT_UNREACHABLE = 139,
     NETWORK_DOWN = 140,
     MTU_EXCEEDED = 141,
+    TRANSPORT_ERROR = 142,
     
     // Security errors (152-171)
     REPLAY_ATTACK_DETECTED = 152,

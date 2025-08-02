@@ -20,6 +20,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <csignal>
 #include <map>
 #include <mutex>
 #include <atomic>
@@ -258,7 +259,7 @@ private:
                     auto connection_result = Connection::create_server(
                         config_,
                         std::move(crypto_provider_result.value()),
-                        NetworkAddress{endpoint.address, endpoint.port},
+                        NetworkAddress::from_ipv4(0x7F000001, endpoint.port),  // TODO: Parse endpoint.address properly
                         [this, endpoint_key](ConnectionEvent event, const std::vector<uint8_t>& data) {
                             handle_connection_event(endpoint_key, event, data);
                         }
@@ -279,7 +280,7 @@ private:
                     }
                     
                     // Process the incoming data
-                    memory::ZeroCopyBuffer buffer(data);
+                    memory::ZeroCopyBuffer buffer(reinterpret_cast<const std::byte*>(data.data()), data.size());
                     auto process_result = connection->process_incoming_data(buffer);
                     if (!process_result) {
                         std::cerr << "Failed to process incoming data: " << process_result.error() << std::endl;
@@ -294,7 +295,7 @@ private:
                     std::cout << "[SERVER] New client connection from: " << endpoint_key << std::endl;
                 } else {
                     // Existing connection - process data
-                    memory::ZeroCopyBuffer buffer(data);
+                    memory::ZeroCopyBuffer buffer(reinterpret_cast<const std::byte*>(data.data()), data.size());
                     auto process_result = it->second->process_incoming_data(buffer);
                     if (!process_result) {
                         std::cerr << "Failed to process data for " << endpoint_key << ": " << process_result.error() << std::endl;
@@ -347,7 +348,7 @@ private:
         // Echo the message back to the client
         std::string echo_response = "Echo: " + message;
         std::vector<uint8_t> response_data(echo_response.begin(), echo_response.end());
-        memory::ZeroCopyBuffer response_buffer(response_data);
+        memory::ZeroCopyBuffer response_buffer(reinterpret_cast<const std::byte*>(response_data.data()), response_data.size());
         
         // Find and send response through the connection
         {
@@ -377,7 +378,7 @@ private:
                 // This could include checking for incoming data, handling retransmissions, etc.
                 
                 // For this simple example, we just ensure the connection is healthy
-                if (connection->get_state() == ConnectionState::FAILED) {
+                if (connection->get_state() == ConnectionState::CLOSED) {
                     std::cout << "[" << endpoint << "] Connection has failed, will be cleaned up" << std::endl;
                 }
             }
@@ -406,24 +407,32 @@ private:
         
         auto& connection = it->second;
         
-        std::cout << "
-=== Connection Information [" << endpoint << "] ===" << std::endl;
+        std::cout << "\n=== Connection Information [" << endpoint << "] ===" << std::endl;
         
         // Display connection state
         std::cout << "Connection State: ";
         switch (connection->get_state()) {
-            case ConnectionState::IDLE: std::cout << "IDLE"; break;
-            case ConnectionState::CONNECTING: std::cout << "CONNECTING"; break;
+            case ConnectionState::INITIAL: std::cout << "INITIAL"; break;
+            case ConnectionState::WAIT_SERVER_HELLO: std::cout << "WAIT_SERVER_HELLO"; break;
+            case ConnectionState::WAIT_ENCRYPTED_EXTENSIONS: std::cout << "WAIT_ENCRYPTED_EXTENSIONS"; break;
+            case ConnectionState::WAIT_CERTIFICATE_OR_CERT_REQUEST: std::cout << "WAIT_CERTIFICATE_OR_CERT_REQUEST"; break;
+            case ConnectionState::WAIT_CERTIFICATE_VERIFY: std::cout << "WAIT_CERTIFICATE_VERIFY"; break;
+            case ConnectionState::WAIT_SERVER_FINISHED: std::cout << "WAIT_SERVER_FINISHED"; break;
+            case ConnectionState::WAIT_CLIENT_CERTIFICATE: std::cout << "WAIT_CLIENT_CERTIFICATE"; break;
+            case ConnectionState::WAIT_CLIENT_CERTIFICATE_VERIFY: std::cout << "WAIT_CLIENT_CERTIFICATE_VERIFY"; break;
+            case ConnectionState::WAIT_CLIENT_FINISHED: std::cout << "WAIT_CLIENT_FINISHED"; break;
             case ConnectionState::CONNECTED: std::cout << "CONNECTED"; break;
-            case ConnectionState::CLOSING: std::cout << "CLOSING"; break;
             case ConnectionState::CLOSED: std::cout << "CLOSED"; break;
-            case ConnectionState::FAILED: std::cout << "FAILED"; break;
+            case ConnectionState::EARLY_DATA: std::cout << "EARLY_DATA"; break;
+            case ConnectionState::WAIT_END_OF_EARLY_DATA: std::cout << "WAIT_END_OF_EARLY_DATA"; break;
+            case ConnectionState::EARLY_DATA_REJECTED: std::cout << "EARLY_DATA_REJECTED"; break;
             default: std::cout << "UNKNOWN"; break;
         }
         std::cout << std::endl;
         
         // Display peer address
-        std::cout << "Peer Address: " << connection->get_peer_address().to_string() << std::endl;
+        // Note: NetworkAddress doesn't have to_string method yet
+        std::cout << "Peer Address: [address info not available]" << std::endl;
         std::cout << "Server Mode: " << (connection->is_server() ? "Yes" : "No") << std::endl;
         
         // Try to get connection IDs if available
@@ -517,8 +526,8 @@ int main(int argc, char* argv[]) {
         std::cout << "========================" << std::endl;
         
         // Install signal handlers for graceful shutdown
-        std::signal(SIGINT, signal_handler);
-        std::signal(SIGTERM, signal_handler);
+        signal(SIGINT, signal_handler);
+        signal(SIGTERM, signal_handler);
         
         // Create and start server
         DTLSServer server;
