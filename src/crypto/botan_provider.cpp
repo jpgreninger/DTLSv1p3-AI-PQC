@@ -485,6 +485,12 @@ Result<bool> BotanProvider::verify_signature(const SignatureParams& params, cons
     return Result<bool>(DTLSError::OPERATION_NOT_SUPPORTED);
 }
 
+Result<bool> BotanProvider::verify_dtls_certificate_signature(
+    const DTLSCertificateVerifyParams& params,
+    const std::vector<uint8_t>& signature) {
+    return Result<bool>(DTLSError::OPERATION_NOT_SUPPORTED);
+}
+
 Result<std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>> 
 BotanProvider::generate_key_pair(NamedGroup group) {
     if (!pimpl_->initialized_) {

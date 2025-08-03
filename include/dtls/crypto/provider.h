@@ -118,6 +118,17 @@ struct HMACParams {
     HashAlgorithm algorithm{HashAlgorithm::SHA256};
 };
 
+// DTLS v1.3 Certificate Verify parameters (RFC 9147 Section 4.2.3)
+struct DTLSCertificateVerifyParams {
+    std::vector<uint8_t> transcript_hash;        // The handshake transcript hash
+    SignatureScheme scheme{SignatureScheme::RSA_PKCS1_SHA256};
+    const PublicKey* public_key{nullptr};
+    bool is_server_context{true};                // true for server cert, false for client cert
+    
+    // Optional certificate information for enhanced validation
+    std::vector<uint8_t> certificate_der;       // DER-encoded certificate for compatibility checking
+};
+
 /**
  * Abstract base class for cryptographic providers
  * 
@@ -164,6 +175,11 @@ public:
     virtual Result<std::vector<uint8_t>> sign_data(const SignatureParams& params) = 0;
     virtual Result<bool> verify_signature(
         const SignatureParams& params,
+        const std::vector<uint8_t>& signature) = 0;
+    
+    // DTLS v1.3 Certificate Verify (RFC 9147 Section 4.2.3)
+    virtual Result<bool> verify_dtls_certificate_signature(
+        const DTLSCertificateVerifyParams& params,
         const std::vector<uint8_t>& signature) = 0;
     
     // Key exchange

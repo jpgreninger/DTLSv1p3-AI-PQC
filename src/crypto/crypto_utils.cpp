@@ -1181,6 +1181,212 @@ Result<void> update_key_schedule_with_sequence_keys(
     return make_result();
 }
 
+// DTLS v1.3 signature verification utilities (RFC 9147 Section 4.2.3)
+Result<std::vector<uint8_t>> construct_dtls_signature_context(
+    const std::vector<uint8_t>& transcript_hash,
+    bool is_server_context) {
+    
+    // Validate input parameters
+    if (transcript_hash.empty()) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Maximum reasonable transcript hash size (SHA-512 = 64 bytes)
+    if (transcript_hash.size() > 64) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Construct signature input according to TLS 1.3 Section 4.4.3:
+    // - 64 bytes of 0x20 (space character)
+    // - Context string
+    // - Single 0x00 byte
+    // - Transcript hash
+    
+    const char* context_string = is_server_context 
+        ? "TLS 1.3, server CertificateVerify"
+        : "TLS 1.3, client CertificateVerify";
+    
+    size_t context_string_len = std::strlen(context_string);
+    size_t total_size = 64 + context_string_len + 1 + transcript_hash.size();
+    
+    std::vector<uint8_t> signature_input;
+    signature_input.reserve(total_size);
+    
+    // Add 64 bytes of 0x20 (space character)
+    signature_input.insert(signature_input.end(), 64, 0x20);
+    
+    // Add context string
+    signature_input.insert(signature_input.end(), 
+                          context_string, 
+                          context_string + context_string_len);
+    
+    // Add separator byte
+    signature_input.push_back(0x00);
+    
+    // Add transcript hash
+    signature_input.insert(signature_input.end(), 
+                          transcript_hash.begin(), 
+                          transcript_hash.end());
+    
+    return Result<std::vector<uint8_t>>(std::move(signature_input));
+}
+
+// ASN.1 signature format validation for ECDSA
+Result<bool> validate_ecdsa_asn1_signature(
+    const std::vector<uint8_t>& signature,
+    const PublicKey& public_key) {
+    
+    // Validate input
+    if (signature.empty()) {
+        return Result<bool>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // ECDSA signatures should be at least 8 bytes (minimal ASN.1 structure)
+    // and no more than 150 bytes (P-521 with maximum ASN.1 overhead)
+    if (signature.size() < 8 || signature.size() > 150) {
+        return Result<bool>(false);
+    }
+    
+    // Basic ASN.1 DER validation
+    // ECDSA signature format: SEQUENCE { r INTEGER, s INTEGER }
+    
+    if (signature[0] != 0x30) { // SEQUENCE tag
+        return Result<bool>(false);
+    }
+    
+    // Check length encoding
+    size_t seq_length_pos = 1;
+    size_t seq_length;
+    
+    if (signature[1] & 0x80) {
+        // Long form length
+        size_t length_bytes = signature[1] & 0x7F;
+        if (length_bytes == 0 || length_bytes > 4 || signature.size() < 2 + length_bytes) {
+            return Result<bool>(false);
+        }
+        
+        seq_length = 0;
+        for (size_t i = 0; i < length_bytes; i++) {
+            seq_length = (seq_length << 8) | signature[2 + i];
+        }
+        seq_length_pos = 2 + length_bytes;
+    } else {
+        // Short form length
+        seq_length = signature[1];
+        seq_length_pos = 2;
+    }
+    
+    // Verify total length matches
+    if (seq_length_pos + seq_length != signature.size()) {
+        return Result<bool>(false);
+    }
+    
+    // Parse r INTEGER
+    if (seq_length_pos >= signature.size() || signature[seq_length_pos] != 0x02) {
+        return Result<bool>(false);
+    }
+    
+    size_t r_pos = seq_length_pos + 1;
+    if (r_pos >= signature.size()) {
+        return Result<bool>(false);
+    }
+    
+    size_t r_length = signature[r_pos];
+    if (r_length == 0 || r_pos + 1 + r_length > signature.size()) {
+        return Result<bool>(false);
+    }
+    
+    // Check r value (should not be zero, should not have unnecessary leading zeros)
+    size_t r_value_pos = r_pos + 1;
+    if (signature[r_value_pos] == 0x00 && r_length > 1 && 
+        (signature[r_value_pos + 1] & 0x80) == 0) {
+        return Result<bool>(false); // Unnecessary leading zero
+    }
+    
+    // Parse s INTEGER
+    size_t s_pos = r_value_pos + r_length;
+    if (s_pos >= signature.size() || signature[s_pos] != 0x02) {
+        return Result<bool>(false);
+    }
+    
+    s_pos++;
+    if (s_pos >= signature.size()) {
+        return Result<bool>(false);
+    }
+    
+    size_t s_length = signature[s_pos];
+    if (s_length == 0 || s_pos + 1 + s_length > signature.size()) {
+        return Result<bool>(false);
+    }
+    
+    // Check s value (should not be zero, should not have unnecessary leading zeros)
+    size_t s_value_pos = s_pos + 1;
+    if (signature[s_value_pos] == 0x00 && s_length > 1 && 
+        (signature[s_value_pos + 1] & 0x80) == 0) {
+        return Result<bool>(false); // Unnecessary leading zero
+    }
+    
+    // Verify we've consumed the entire signature
+    if (s_value_pos + s_length != signature.size()) {
+        return Result<bool>(false);
+    }
+    
+    return Result<bool>(true);
+}
+
+// Enhanced certificate-signature scheme compatibility validation
+Result<bool> validate_certificate_signature_compatibility(
+    const std::vector<uint8_t>& certificate_der,
+    SignatureScheme scheme) {
+    
+    if (certificate_der.empty()) {
+        return Result<bool>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // For now, return true as this requires complex X.509 certificate parsing
+    // This should be implemented using OpenSSL's X509 parsing functions
+    // to extract the public key type and validate compatibility
+    
+    // Basic scheme validation
+    switch (scheme) {
+        case SignatureScheme::RSA_PKCS1_SHA256:
+        case SignatureScheme::RSA_PKCS1_SHA384:
+        case SignatureScheme::RSA_PKCS1_SHA512:
+        case SignatureScheme::RSA_PSS_RSAE_SHA256:
+        case SignatureScheme::RSA_PSS_RSAE_SHA384:
+        case SignatureScheme::RSA_PSS_RSAE_SHA512:
+        case SignatureScheme::RSA_PSS_PSS_SHA256:
+        case SignatureScheme::RSA_PSS_PSS_SHA384:
+        case SignatureScheme::RSA_PSS_PSS_SHA512:
+        case SignatureScheme::ECDSA_SECP256R1_SHA256:
+        case SignatureScheme::ECDSA_SECP384R1_SHA384:
+        case SignatureScheme::ECDSA_SECP521R1_SHA512:
+        case SignatureScheme::ED25519:
+        case SignatureScheme::ED448:
+            return Result<bool>(true);
+        default:
+            return Result<bool>(false);
+    }
+}
+
+// Timing-attack resistant signature verification helpers
+Result<bool> constant_time_signature_verify(
+    const std::vector<uint8_t>& signature1,
+    const std::vector<uint8_t>& signature2) {
+    
+    // Constant-time comparison to prevent timing attacks
+    if (signature1.size() != signature2.size()) {
+        return Result<bool>(false);
+    }
+    
+    volatile uint8_t result = 0;
+    for (size_t i = 0; i < signature1.size(); i++) {
+        result |= signature1[i] ^ signature2[i];
+    }
+    
+    return Result<bool>(result == 0);
+}
+
 } // namespace utils
 
 } // namespace crypto

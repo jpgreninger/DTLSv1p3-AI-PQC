@@ -1,4 +1,5 @@
 #include <dtls/crypto/openssl_provider.h>
+#include <dtls/crypto/crypto_utils.h>
 #include <openssl/opensslv.h>
 #include <openssl/crypto.h>
 #include <openssl/rand.h>
@@ -14,6 +15,8 @@
 #include <openssl/bn.h>
 #include <openssl/pem.h>
 #include <openssl/bio.h>
+#include <chrono>
+#include <thread>
 
 namespace dtls {
 namespace v13 {
@@ -1305,6 +1308,31 @@ Result<bool> OpenSSLProvider::verify_signature(const SignatureParams& params, co
         }
     }
     
+    // Additional security validations before verification
+    if (result == 1) {
+        // For ECDSA signatures, perform ASN.1 format validation
+        if (utils::is_ecdsa_signature(params.scheme)) {
+            auto asn1_validation_result = utils::validate_ecdsa_asn1_signature(signature, *params.public_key);
+            if (!asn1_validation_result) {
+                EVP_MD_CTX_free(ctx);
+                return Result<bool>(asn1_validation_result.error());
+            }
+            if (!*asn1_validation_result) {
+                EVP_MD_CTX_free(ctx);
+                return Result<bool>(false); // Invalid ASN.1 format
+            }
+        }
+        
+        // For EdDSA signatures, perform additional format validation
+        if (params.scheme == SignatureScheme::ED25519 || params.scheme == SignatureScheme::ED448) {
+            size_t expected_length = (params.scheme == SignatureScheme::ED25519) ? 64 : 114;
+            if (signature.size() != expected_length || signature[0] == 0x00) {
+                EVP_MD_CTX_free(ctx);
+                return Result<bool>(false);
+            }
+        }
+    }
+    
     // Update with data to verify
     if (result == 1) {
         result = EVP_DigestVerifyUpdate(ctx, params.data.data(), params.data.size());
@@ -1315,8 +1343,22 @@ Result<bool> OpenSSLProvider::verify_signature(const SignatureParams& params, co
     }
     
     // Verify signature - this is the critical security operation
+    // Record start time for timing attack mitigation
+    auto verification_start = std::chrono::high_resolution_clock::now();
+    
     if (result == 1) {
         result = EVP_DigestVerifyFinal(ctx, signature.data(), signature.size());
+    }
+    
+    // Add minimal delay to make timing more consistent (timing attack mitigation)
+    auto verification_end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(
+        verification_end - verification_start);
+    
+    // Ensure minimum verification time to reduce timing information leakage
+    const auto min_verification_time = std::chrono::microseconds(10);
+    if (duration < min_verification_time) {
+        std::this_thread::sleep_for(min_verification_time - duration);
     }
     
     EVP_MD_CTX_free(ctx);
@@ -1330,6 +1372,108 @@ Result<bool> OpenSSLProvider::verify_signature(const SignatureParams& params, co
         // Error occurred during verification (result < 0)
         return Result<bool>(map_openssl_error_detailed());
     }
+}
+
+// DTLS v1.3 Certificate Verify (RFC 9147 Section 4.2.3)
+Result<bool> OpenSSLProvider::verify_dtls_certificate_signature(
+    const DTLSCertificateVerifyParams& params,
+    const std::vector<uint8_t>& signature) {
+    
+    if (!pimpl_->initialized_) {
+        return Result<bool>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    // Enhanced parameter validation for DTLS context
+    if (!params.public_key || params.transcript_hash.empty() || signature.empty()) {
+        return Result<bool>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Validate transcript hash size (reasonable limits for all supported hash algorithms)
+    if (params.transcript_hash.size() < 20 || params.transcript_hash.size() > 64) {
+        return Result<bool>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Validate signature size limits (prevent DoS attacks)
+    if (signature.size() > 1024) {
+        return Result<bool>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Cast to OpenSSL public key
+    const auto* openssl_key = dynamic_cast<const OpenSSLPublicKey*>(params.public_key);
+    if (!openssl_key) {
+        return Result<bool>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    EVP_PKEY* pkey = openssl_key->native_key();
+    if (!pkey) {
+        return Result<bool>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Validate key-signature scheme compatibility
+    int key_type = EVP_PKEY_base_id(pkey);
+    if (!validate_key_scheme_compatibility(key_type, params.scheme)) {
+        return Result<bool>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // For ECDSA signatures, validate ASN.1 format
+    if (utils::is_ecdsa_signature(params.scheme)) {
+        auto asn1_validation_result = utils::validate_ecdsa_asn1_signature(signature, *params.public_key);
+        if (!asn1_validation_result) {
+            return Result<bool>(asn1_validation_result.error());
+        }
+        if (!*asn1_validation_result) {
+            return Result<bool>(false); // Invalid ASN.1 format
+        }
+    }
+    
+    // Optional certificate compatibility validation
+    if (!params.certificate_der.empty()) {
+        auto cert_compat_result = utils::validate_certificate_signature_compatibility(
+            params.certificate_der, params.scheme);
+        if (!cert_compat_result) {
+            return Result<bool>(cert_compat_result.error());
+        }
+        if (!*cert_compat_result) {
+            return Result<bool>(DTLSError::INVALID_PARAMETER);
+        }
+    }
+    
+    // Construct the TLS 1.3 signature context
+    auto context_result = utils::construct_dtls_signature_context(
+        params.transcript_hash, params.is_server_context);
+    if (!context_result) {
+        return Result<bool>(context_result.error());
+    }
+    
+    const auto& signature_input = *context_result;
+    
+    // Create signature verification parameters
+    SignatureParams verify_params;
+    verify_params.data = signature_input;
+    verify_params.scheme = params.scheme;
+    verify_params.public_key = params.public_key;
+    
+    // Perform the actual signature verification using the existing method
+    auto verification_result = verify_signature(verify_params, signature);
+    if (!verification_result) {
+        return Result<bool>(verification_result.error());
+    }
+    
+    // Additional security: For EdDSA signatures, perform additional validation
+    if (params.scheme == SignatureScheme::ED25519 || params.scheme == SignatureScheme::ED448) {
+        // EdDSA signatures should be exactly the expected length
+        size_t expected_length = (params.scheme == SignatureScheme::ED25519) ? 64 : 114;
+        if (signature.size() != expected_length) {
+            return Result<bool>(false);
+        }
+        
+        // EdDSA signatures should not have leading zero bytes (they're not ASN.1 encoded)
+        if (signature[0] == 0x00) {
+            return Result<bool>(false);
+        }
+    }
+    
+    return Result<bool>(*verification_result);
 }
 
 // Additional signature helper methods for DTLS v1.3

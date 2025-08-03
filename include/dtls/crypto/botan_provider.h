@@ -66,6 +66,11 @@ public:
         const SignatureParams& params,
         const std::vector<uint8_t>& signature) override;
     
+    // DTLS v1.3 Certificate Verify (RFC 9147 Section 4.2.3)
+    Result<bool> verify_dtls_certificate_signature(
+        const DTLSCertificateVerifyParams& params,
+        const std::vector<uint8_t>& signature) override;
+    
     // Key exchange
     Result<std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>> 
         generate_key_pair(NamedGroup group) override;

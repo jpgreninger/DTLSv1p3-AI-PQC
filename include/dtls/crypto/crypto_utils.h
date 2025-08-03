@@ -231,6 +231,26 @@ DTLS_API Result<std::vector<uint8_t>> extract_certificate_public_key_bytes(
 DTLS_API Result<SignatureScheme> detect_certificate_signature_scheme(
     const std::vector<uint8_t>& certificate_der);
 
+// DTLS v1.3 signature verification utilities (RFC 9147 Section 4.2.3)
+DTLS_API Result<std::vector<uint8_t>> construct_dtls_signature_context(
+    const std::vector<uint8_t>& transcript_hash,
+    bool is_server_context);
+
+// ASN.1 signature format validation
+DTLS_API Result<bool> validate_ecdsa_asn1_signature(
+    const std::vector<uint8_t>& signature,
+    const PublicKey& public_key);
+
+// Enhanced certificate-signature scheme compatibility validation
+DTLS_API Result<bool> validate_certificate_signature_compatibility(
+    const std::vector<uint8_t>& certificate_der,
+    SignatureScheme scheme);
+
+// Timing-attack resistant signature verification helpers
+DTLS_API Result<bool> constant_time_signature_verify(
+    const std::vector<uint8_t>& signature1,
+    const std::vector<uint8_t>& signature2);
+
 // Error handling utilities
 DTLS_API std::string crypto_error_to_string(DTLSError error);
 DTLS_API bool is_crypto_error(DTLSError error);

@@ -88,6 +88,21 @@ set_tests_properties(DTLSProtocolTest PROPERTIES
     LABELS "protocol"
 )
 
+# Crypto Unit Tests
+add_executable(dtls_crypto_test
+    crypto/test_hkdf_expand_label.cpp
+    crypto/test_signature_verification.cpp
+)
+
+target_link_libraries(dtls_crypto_test PRIVATE ${DTLS_TEST_LIBRARIES})
+target_compile_options(dtls_crypto_test PRIVATE ${DTLS_TEST_COMPILE_OPTIONS})
+
+add_test(NAME DTLSCryptoTest COMMAND dtls_crypto_test)
+set_tests_properties(DTLSCryptoTest PROPERTIES
+    TIMEOUT 300
+    LABELS "crypto"
+)
+
 # Integration Tests
 add_executable(dtls_integration_test
     integration/dtls_integration_test.cpp
@@ -208,6 +223,7 @@ add_custom_target(run_all_tests
     COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure --parallel 4
     DEPENDS 
         dtls_protocol_test
+        dtls_crypto_test
         dtls_integration_test
         dtls_performance_test
         dtls_security_test
@@ -221,6 +237,12 @@ add_custom_target(run_protocol_tests
     COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure -L protocol
     DEPENDS dtls_protocol_test
     COMMENT "Running protocol unit tests"
+)
+
+add_custom_target(run_crypto_tests
+    COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure -L crypto
+    DEPENDS dtls_crypto_test
+    COMMENT "Running crypto unit tests"
 )
 
 add_custom_target(run_integration_tests
@@ -279,6 +301,7 @@ if(GCOV_PATH AND LCOV_PATH AND GENHTML_PATH)
         COMMAND ${CMAKE_COMMAND} -E remove coverage.info coverage.info.cleaned
         
         DEPENDS 
+            dtls_crypto_test
             dtls_integration_test
             dtls_performance_test
             dtls_security_test
@@ -303,6 +326,7 @@ if(VALGRIND_PATH)
             --overwrite MemoryCheckCommandOptions="--leak-check=full --show-leak-kinds=all --track-origins=yes --error-exitcode=1"
         
         DEPENDS 
+            dtls_crypto_test
             dtls_integration_test
             dtls_security_test
             dtls_reliability_test
@@ -323,6 +347,7 @@ add_custom_target(test_tsan
             ${CMAKE_CTEST_COMMAND} --output-on-failure
     
     DEPENDS 
+        dtls_crypto_test
         dtls_integration_test
         dtls_performance_test
         dtls_reliability_test
@@ -338,6 +363,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
                 ${CMAKE_CTEST_COMMAND} --output-on-failure
         
         DEPENDS 
+            dtls_crypto_test
             dtls_integration_test
             dtls_security_test
             dtls_reliability_test
@@ -444,6 +470,8 @@ message(STATUS "  Install tests: ${DTLS_INSTALL_TESTS}")
 message(STATUS "")
 message(STATUS "Available test targets:")
 message(STATUS "  make run_all_tests              - Run all test suites")
+message(STATUS "  make run_protocol_tests         - Run protocol unit tests only")
+message(STATUS "  make run_crypto_tests           - Run crypto unit tests only")
 message(STATUS "  make run_integration_tests      - Run integration tests only")
 message(STATUS "  make run_performance_tests      - Run performance tests only")
 message(STATUS "  make run_security_tests         - Run security tests only")
