@@ -78,8 +78,7 @@ target_include_directories(dtls_interop_framework PRIVATE
 )
 
 target_link_libraries(dtls_interop_framework PRIVATE
-    dtls_protocol
-    dtls_crypto
+    dtls_core
     dtls_test_infrastructure
     OpenSSL::SSL
     OpenSSL::Crypto
@@ -113,8 +112,7 @@ target_include_directories(dtls_interop_tests PRIVATE
 
 target_link_libraries(dtls_interop_tests PRIVATE
     dtls_interop_framework
-    dtls_protocol
-    dtls_crypto
+    dtls_core
     dtls_test_infrastructure
     gtest
     gtest_main

@@ -16,6 +16,11 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <fcntl.h>
+
+// Define DTLS1_3_VERSION if not available in OpenSSL headers
+#ifndef DTLS1_3_VERSION
+#define DTLS1_3_VERSION 0xfefc
+#endif
 #endif
 
 namespace dtls::v13::test::interop {
@@ -578,7 +583,7 @@ InteropTestConfig OpenSSLTestScenarios::create_basic_handshake_config(TestRole o
     config.our_role = our_role;
     config.cipher_suites = {0x1301, 0x1302, 0x1303}; // Standard cipher suites
     config.test_description = "OpenSSL Basic Handshake - " + 
-                            (our_role == TestRole::CLIENT ? "Client" : "Server");
+                            std::string(our_role == TestRole::CLIENT ? "Client" : "Server");
     apply_common_settings(config);
     return config;
 }
@@ -591,7 +596,7 @@ InteropTestConfig OpenSSLTestScenarios::create_ecdh_key_exchange_config(TestRole
     config.cipher_suites = {0x1301}; // AES-128-GCM with ECDHE
     config.named_groups = {23, 24, 29}; // P-256, P-384, X25519
     config.test_description = "OpenSSL ECDH Key Exchange - " +
-                            (our_role == TestRole::CLIENT ? "Client" : "Server");
+                            std::string(our_role == TestRole::CLIENT ? "Client" : "Server");
     apply_common_settings(config);
     return config;
 }
@@ -604,7 +609,7 @@ InteropTestConfig OpenSSLTestScenarios::create_rsa_signature_config(TestRole our
     config.cipher_suites = {0x1301};
     config.verify_certificates = true; // Enable certificate verification for RSA
     config.test_description = "OpenSSL RSA Signature - " +
-                            (our_role == TestRole::CLIENT ? "Client" : "Server");
+                            std::string(our_role == TestRole::CLIENT ? "Client" : "Server");
     apply_common_settings(config);
     return config;
 }

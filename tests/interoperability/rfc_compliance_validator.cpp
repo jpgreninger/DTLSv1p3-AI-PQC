@@ -62,9 +62,10 @@ bool RFC9147ComplianceValidator::validate_handshake_messages(const std::vector<u
     try {
         // Parse handshake header
         protocol::HandshakeHeader header;
-        auto parse_result = header.deserialize(handshake_data, 0);
+        memory::ZeroCopyBuffer buffer(reinterpret_cast<const std::byte*>(handshake_data.data()), handshake_data.size());
+        auto parse_result = header.deserialize(buffer, 0);
         
-        if (!parse_result.is_success()) {
+        if (!parse_result.is_ok()) {
             pimpl_->add_issue(category, "Failed to parse handshake header");
             return false;
         }

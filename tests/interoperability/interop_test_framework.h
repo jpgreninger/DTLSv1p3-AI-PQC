@@ -71,6 +71,7 @@ enum class TestMode {
  */
 struct InteropTestResult {
     bool success;
+    std::string test_description;
     std::string error_message;
     std::chrono::milliseconds duration;
     size_t bytes_transferred;
@@ -167,6 +168,26 @@ public:
 private:
     struct Impl;
     std::unique_ptr<Impl> pimpl_;
+    
+    // Private test execution methods
+    bool run_as_client(const InteropTestConfig& config,
+                      ExternalImplementationRunner* runner,
+                      uint16_t port);
+    bool run_as_server(const InteropTestConfig& config,
+                      ExternalImplementationRunner* runner,
+                      uint16_t port);
+    bool execute_test_scenario(const InteropTestConfig& config,
+                              Connection* connection,
+                              ExternalImplementationRunner* runner);
+    bool test_large_data_transfer(const InteropTestConfig& config,
+                                 Connection* connection,
+                                 ExternalImplementationRunner* runner);
+    bool test_key_update(const InteropTestConfig& config,
+                        Connection* connection,
+                        ExternalImplementationRunner* runner);
+    bool test_cipher_suite_negotiation(const InteropTestConfig& config,
+                                      Connection* connection,
+                                      ExternalImplementationRunner* runner);
 };
 
 /**

@@ -10,6 +10,7 @@
 #include <iostream>
 #include <memory>
 #include <vector>
+#include <numeric>
 
 using namespace dtls::v13::test::interop;
 
@@ -296,9 +297,9 @@ TEST_F(DTLSInteroperabilityTestSuite, RFC9147ComplianceValidation) {
     
     // Test protocol version negotiation
     bool version_negotiation_ok = validator.validate_version_negotiation(
-        protocol::ProtocolVersion::DTLS_1_3,
-        protocol::ProtocolVersion::DTLS_1_2,
-        protocol::ProtocolVersion::DTLS_1_3);
+        dtls::v13::protocol::ProtocolVersion::DTLS_1_3,
+        dtls::v13::protocol::ProtocolVersion::DTLS_1_2,
+        dtls::v13::protocol::ProtocolVersion::DTLS_1_3);
     
     EXPECT_TRUE(version_negotiation_ok) << "Version negotiation compliance failed";
     

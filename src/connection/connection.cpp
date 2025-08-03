@@ -1042,5 +1042,111 @@ void Connection::clear_session_tickets() {
     early_data_context_.reset();
 }
 
+// Context class implementations
+
+Result<std::unique_ptr<Context>> Context::create_client() {
+    // Create default client configuration
+    ConnectionConfig config;
+    config.supported_cipher_suites = {
+        CipherSuite::TLS_AES_128_GCM_SHA256,
+        CipherSuite::TLS_AES_256_GCM_SHA384,
+        CipherSuite::TLS_CHACHA20_POLY1305_SHA256
+    };
+    config.supported_groups = {
+        NamedGroup::X25519,
+        NamedGroup::SECP256R1,
+        NamedGroup::SECP384R1
+    };
+    config.supported_signatures = {
+        SignatureScheme::RSA_PSS_RSAE_SHA256,
+        SignatureScheme::ECDSA_SECP256R1_SHA256,
+        SignatureScheme::ED25519
+    };
+    
+    // Create default crypto provider
+    auto crypto_provider = std::make_unique<crypto::OpenSSLProvider>();
+    if (!crypto_provider) {
+        return make_error<std::unique_ptr<Context>>(DTLSError::OUT_OF_MEMORY);
+    }
+    
+    auto init_result = crypto_provider->initialize();
+    if (!init_result.is_ok()) {
+        return make_error<std::unique_ptr<Context>>(DTLSError::INITIALIZATION_FAILED);
+    }
+    
+    // Create connection with dummy address (will be set when actually connecting)
+    NetworkAddress dummy_address;
+    dummy_address.family = NetworkAddress::Family::IPv4;
+    // Set IPv4 address 127.0.0.1
+    dummy_address.address[0] = 127;
+    dummy_address.address[1] = 0;
+    dummy_address.address[2] = 0;
+    dummy_address.address[3] = 1;
+    dummy_address.port = 4433;
+    
+    auto connection_result = Connection::create_client(config, std::move(crypto_provider), dummy_address);
+    if (!connection_result.is_ok()) {
+        return make_error<std::unique_ptr<Context>>(connection_result.error());
+    }
+    
+    return make_result(std::unique_ptr<Context>(new Context(std::move(connection_result.value()))));
+}
+
+Result<std::unique_ptr<Context>> Context::create_server() {
+    // Create default server configuration
+    ConnectionConfig config;
+    config.supported_cipher_suites = {
+        CipherSuite::TLS_AES_128_GCM_SHA256,
+        CipherSuite::TLS_AES_256_GCM_SHA384,
+        CipherSuite::TLS_CHACHA20_POLY1305_SHA256
+    };
+    config.supported_groups = {
+        NamedGroup::X25519,
+        NamedGroup::SECP256R1,
+        NamedGroup::SECP384R1
+    };
+    config.supported_signatures = {
+        SignatureScheme::RSA_PSS_RSAE_SHA256,
+        SignatureScheme::ECDSA_SECP256R1_SHA256,
+        SignatureScheme::ED25519
+    };
+    
+    // Create default crypto provider
+    auto crypto_provider = std::make_unique<crypto::OpenSSLProvider>();
+    if (!crypto_provider) {
+        return make_error<std::unique_ptr<Context>>(DTLSError::OUT_OF_MEMORY);
+    }
+    
+    auto init_result = crypto_provider->initialize();
+    if (!init_result.is_ok()) {
+        return make_error<std::unique_ptr<Context>>(DTLSError::INITIALIZATION_FAILED);
+    }
+    
+    // Create connection with dummy address (will be set when actually accepting)
+    NetworkAddress dummy_address;
+    dummy_address.family = NetworkAddress::Family::IPv4;
+    // Set IPv4 address 0.0.0.0
+    dummy_address.address[0] = 0;
+    dummy_address.address[1] = 0;
+    dummy_address.address[2] = 0;
+    dummy_address.address[3] = 0;
+    dummy_address.port = 4433;
+    
+    auto connection_result = Connection::create_server(config, std::move(crypto_provider), dummy_address);
+    if (!connection_result.is_ok()) {
+        return make_error<std::unique_ptr<Context>>(connection_result.error());
+    }
+    
+    return make_result(std::unique_ptr<Context>(new Context(std::move(connection_result.value()))));
+}
+
+Result<void> Context::initialize() {
+    if (!connection_) {
+        return make_error<void>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    return connection_->initialize();
+}
+
 }  // namespace v13
 }  // namespace dtls
