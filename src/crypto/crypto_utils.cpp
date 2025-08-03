@@ -733,6 +733,66 @@ void secure_zero(uint8_t* data, size_t length) {
     }
 }
 
+// Enhanced MAC validation utilities for DTLS v1.3
+Result<bool> verify_record_mac(
+    CryptoProvider& provider,
+    const std::vector<uint8_t>& mac_key,
+    const std::vector<uint8_t>& record_data,
+    const std::vector<uint8_t>& expected_mac,
+    HashAlgorithm algorithm) {
+    
+    DTLS_CRYPTO_TIMER("verify_record_mac");
+    
+    MACValidationParams params;
+    params.key = mac_key;
+    params.data = record_data;
+    params.expected_mac = expected_mac;
+    params.algorithm = algorithm;
+    params.constant_time_required = true;
+    
+    return provider.verify_hmac(params);
+}
+
+Result<bool> verify_handshake_mac(
+    CryptoProvider& provider,
+    const std::vector<uint8_t>& mac_key,
+    const std::vector<uint8_t>& transcript_hash,
+    const std::vector<uint8_t>& expected_mac,
+    HashAlgorithm algorithm) {
+    
+    DTLS_CRYPTO_TIMER("verify_handshake_mac");
+    
+    MACValidationParams params;
+    params.key = mac_key;
+    params.data = transcript_hash;
+    params.expected_mac = expected_mac;
+    params.algorithm = algorithm;
+    params.constant_time_required = true;
+    params.dtls_context.content_type = ContentType::HANDSHAKE;
+    
+    return provider.verify_hmac(params);
+}
+
+Result<bool> verify_cookie_mac(
+    CryptoProvider& provider,
+    const std::vector<uint8_t>& cookie_secret,
+    const std::vector<uint8_t>& client_info,
+    const std::vector<uint8_t>& expected_mac,
+    HashAlgorithm algorithm) {
+    
+    DTLS_CRYPTO_TIMER("verify_cookie_mac");
+    
+    MACValidationParams params;
+    params.key = cookie_secret;
+    params.data = client_info;
+    params.expected_mac = expected_mac;
+    params.algorithm = algorithm;
+    params.constant_time_required = true;
+    params.max_data_length = 1024; // Reasonable limit for client info
+    
+    return provider.verify_hmac(params);
+}
+
 // Cipher suite utility functions
 bool is_aead_cipher_suite(CipherSuite suite) {
     // All DTLS 1.3 cipher suites are AEAD

@@ -118,6 +118,38 @@ struct HMACParams {
     HashAlgorithm algorithm{HashAlgorithm::SHA256};
 };
 
+// MAC validation parameters for timing-attack resistant verification
+struct MACValidationParams {
+    std::vector<uint8_t> key;                    // HMAC key
+    std::vector<uint8_t> data;                   // Data to authenticate
+    std::vector<uint8_t> expected_mac;           // Expected MAC value
+    HashAlgorithm algorithm{HashAlgorithm::SHA256}; // Hash algorithm
+    bool constant_time_required{true};          // Require constant-time operation
+    size_t max_data_length{0};                  // Maximum expected data length (0 = no limit)
+    
+    // DTLS v1.3 specific validation context
+    struct DTLSContext {
+        ContentType content_type{ContentType::APPLICATION_DATA};
+        ProtocolVersion protocol_version{DTLS_V13};
+        Epoch epoch{0};
+        SequenceNumber sequence_number{0};
+        bool is_inner_plaintext{false};         // For DTLSInnerPlaintext validation
+    } dtls_context;
+};
+
+// Record MAC validation parameters for DTLS v1.3
+struct RecordMACParams {
+    std::vector<uint8_t> mac_key;               // Record MAC key
+    std::vector<uint8_t> sequence_number_key;   // Sequence number encryption key
+    std::vector<uint8_t> record_header;         // DTLS record header
+    std::vector<uint8_t> plaintext;             // Record plaintext
+    std::vector<uint8_t> expected_mac;          // Expected MAC from record
+    HashAlgorithm mac_algorithm{HashAlgorithm::SHA256};
+    ContentType content_type{ContentType::APPLICATION_DATA};
+    Epoch epoch{0};
+    SequenceNumber sequence_number{0};
+};
+
 // DTLS v1.3 Certificate Verify parameters (RFC 9147 Section 4.2.3)
 struct DTLSCertificateVerifyParams {
     std::vector<uint8_t> transcript_hash;        // The handshake transcript hash
@@ -170,6 +202,19 @@ public:
     // Hash functions
     virtual Result<std::vector<uint8_t>> compute_hash(const HashParams& params) = 0;
     virtual Result<std::vector<uint8_t>> compute_hmac(const HMACParams& params) = 0;
+    
+    // MAC validation with timing-attack resistance (RFC 9147 Section 5.2)
+    virtual Result<bool> verify_hmac(const MACValidationParams& params) = 0;
+    
+    // DTLS v1.3 record MAC validation (RFC 9147 Section 4.2.1)
+    virtual Result<bool> validate_record_mac(const RecordMACParams& params) = 0;
+    
+    // Legacy MAC verification for backward compatibility
+    virtual Result<bool> verify_hmac_legacy(
+        const std::vector<uint8_t>& key,
+        const std::vector<uint8_t>& data,
+        const std::vector<uint8_t>& expected_mac,
+        HashAlgorithm algorithm = HashAlgorithm::SHA256) = 0;
     
     // Digital signatures
     virtual Result<std::vector<uint8_t>> sign_data(const SignatureParams& params) = 0;

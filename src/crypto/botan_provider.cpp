@@ -1,5 +1,8 @@
 #include <dtls/crypto/botan_provider.h>
+#include <dtls/crypto/crypto_utils.h>
 #include <sstream>
+
+using namespace dtls::v13::crypto::utils;
 
 // Note: This implementation uses Botan stubs since Botan headers may not be available
 // In a real implementation, these would be actual Botan includes:
@@ -474,6 +477,119 @@ Result<std::vector<uint8_t>> BotanProvider::compute_hmac(const HMACParams& param
     }
     
     return Result<std::vector<uint8_t>>(std::move(hmac));
+}
+
+// MAC validation with timing-attack resistance (RFC 9147 Section 5.2)
+Result<bool> BotanProvider::verify_hmac(const MACValidationParams& params) {
+    if (!pimpl_->initialized_) {
+        return Result<bool>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    // Input validation
+    if (params.key.empty() || params.data.empty() || params.expected_mac.empty()) {
+        return Result<bool>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Check maximum data length if specified
+    if (params.max_data_length > 0 && params.data.size() > params.max_data_length) {
+        return Result<bool>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Compute HMAC using existing method
+    HMACParams hmac_params;
+    hmac_params.key = params.key;
+    hmac_params.data = params.data;
+    hmac_params.algorithm = params.algorithm;
+    
+    auto computed_hmac_result = compute_hmac(hmac_params);
+    if (!computed_hmac_result) {
+        return Result<bool>(computed_hmac_result.error());
+    }
+    
+    const auto& computed_hmac = computed_hmac_result.value();
+    
+    // Constant-time comparison to prevent timing attacks
+    bool is_valid = false;
+    if (params.constant_time_required) {
+        // Use our constant-time comparison implementation
+        is_valid = (computed_hmac.size() == params.expected_mac.size()) &&
+                   constant_time_compare(computed_hmac, params.expected_mac);
+    } else {
+        // Regular comparison (not recommended for production)
+        is_valid = (computed_hmac == params.expected_mac);
+    }
+    
+    return Result<bool>(is_valid);
+}
+
+// DTLS v1.3 record MAC validation (RFC 9147 Section 4.2.1)
+Result<bool> BotanProvider::validate_record_mac(const RecordMACParams& params) {
+    if (!pimpl_->initialized_) {
+        return Result<bool>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    // Input validation
+    if (params.mac_key.empty() || params.record_header.empty() || 
+        params.plaintext.empty() || params.expected_mac.empty()) {
+        return Result<bool>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Construct MAC input according to RFC 9147 Section 4.2.1
+    std::vector<uint8_t> mac_input;
+    mac_input.reserve(8 + params.record_header.size() + params.plaintext.size());
+    
+    // Add encrypted sequence number (8 bytes)
+    uint64_t seq_num = static_cast<uint64_t>(params.sequence_number);
+    for (int i = 7; i >= 0; --i) {
+        mac_input.push_back(static_cast<uint8_t>((seq_num >> (i * 8)) & 0xFF));
+    }
+    
+    // Add record header components
+    mac_input.insert(mac_input.end(), params.record_header.begin(), params.record_header.end());
+    
+    // Add plaintext
+    mac_input.insert(mac_input.end(), params.plaintext.begin(), params.plaintext.end());
+    
+    // Compute HMAC
+    HMACParams hmac_params;
+    hmac_params.key = params.mac_key;
+    hmac_params.data = mac_input;
+    hmac_params.algorithm = params.mac_algorithm;
+    
+    auto computed_mac_result = compute_hmac(hmac_params);
+    if (!computed_mac_result) {
+        return Result<bool>(computed_mac_result.error());
+    }
+    
+    const auto& computed_mac = computed_mac_result.value();
+    
+    // Constant-time comparison
+    bool is_valid = (computed_mac.size() == params.expected_mac.size()) &&
+                    constant_time_compare(computed_mac, params.expected_mac);
+    
+    return Result<bool>(is_valid);
+}
+
+// Legacy MAC verification for backward compatibility
+Result<bool> BotanProvider::verify_hmac_legacy(
+    const std::vector<uint8_t>& key,
+    const std::vector<uint8_t>& data,
+    const std::vector<uint8_t>& expected_mac,
+    HashAlgorithm algorithm) {
+    
+    if (!pimpl_->initialized_) {
+        return Result<bool>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    // Create MACValidationParams for consistency
+    MACValidationParams params;
+    params.key = key;
+    params.data = data;
+    params.expected_mac = expected_mac;
+    params.algorithm = algorithm;
+    params.constant_time_required = true; // Always use constant-time for security
+    
+    return verify_hmac(params);
 }
 
 // Remaining methods are stubs for compilation

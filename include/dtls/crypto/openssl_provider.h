@@ -69,6 +69,19 @@ public:
     Result<std::vector<uint8_t>> compute_hash(const HashParams& params) override;
     Result<std::vector<uint8_t>> compute_hmac(const HMACParams& params) override;
     
+    // MAC validation with timing-attack resistance (RFC 9147 Section 5.2)
+    Result<bool> verify_hmac(const MACValidationParams& params) override;
+    
+    // DTLS v1.3 record MAC validation (RFC 9147 Section 4.2.1)
+    Result<bool> validate_record_mac(const RecordMACParams& params) override;
+    
+    // Legacy MAC verification for backward compatibility
+    Result<bool> verify_hmac_legacy(
+        const std::vector<uint8_t>& key,
+        const std::vector<uint8_t>& data,
+        const std::vector<uint8_t>& expected_mac,
+        HashAlgorithm algorithm = HashAlgorithm::SHA256) override;
+    
     // Digital signatures
     Result<std::vector<uint8_t>> sign_data(const SignatureParams& params) override;
     Result<bool> verify_signature(

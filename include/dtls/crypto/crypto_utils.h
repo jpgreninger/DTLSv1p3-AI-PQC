@@ -195,6 +195,28 @@ DTLS_API bool constant_time_compare(
     const std::vector<uint8_t>& a,
     const std::vector<uint8_t>& b);
 
+// Enhanced MAC validation utilities for DTLS v1.3
+DTLS_API Result<bool> verify_record_mac(
+    CryptoProvider& provider,
+    const std::vector<uint8_t>& mac_key,
+    const std::vector<uint8_t>& record_data,
+    const std::vector<uint8_t>& expected_mac,
+    HashAlgorithm algorithm = HashAlgorithm::SHA256);
+
+DTLS_API Result<bool> verify_handshake_mac(
+    CryptoProvider& provider,
+    const std::vector<uint8_t>& mac_key,
+    const std::vector<uint8_t>& transcript_hash,
+    const std::vector<uint8_t>& expected_mac,
+    HashAlgorithm algorithm = HashAlgorithm::SHA256);
+
+DTLS_API Result<bool> verify_cookie_mac(
+    CryptoProvider& provider,
+    const std::vector<uint8_t>& cookie_secret,
+    const std::vector<uint8_t>& client_info,
+    const std::vector<uint8_t>& expected_mac,
+    HashAlgorithm algorithm = HashAlgorithm::SHA256);
+
 // Secure memory utilities
 DTLS_API void secure_zero(std::vector<uint8_t>& data);
 DTLS_API void secure_zero(uint8_t* data, size_t length);
