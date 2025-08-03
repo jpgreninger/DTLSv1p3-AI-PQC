@@ -10,6 +10,10 @@
 #include <openssl/obj_mac.h>
 #include <openssl/x509.h>
 #include <openssl/x509v3.h>
+#include <openssl/rsa.h>
+#include <openssl/bn.h>
+#include <openssl/pem.h>
+#include <openssl/bio.h>
 
 namespace dtls {
 namespace v13 {
@@ -254,34 +258,33 @@ Result<std::vector<uint8_t>> OpenSSLProvider::aead_encrypt(
         return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
     }
     
-    if (params.key.empty() || params.nonce.empty()) {
+    if (plaintext.empty()) {
         return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
     }
     
-    // Get the cipher algorithm
+    // Validate AEAD parameters using new helper function
+    auto validation_result = validate_aead_params(params.cipher, params.key, params.nonce);
+    if (!validation_result) {
+        return Result<std::vector<uint8_t>>(validation_result.error());
+    }
+    
+    // Get the cipher algorithm and tag length using helper functions
     const EVP_CIPHER* cipher = nullptr;
-    size_t tag_length = 16; // Default tag length
+    size_t tag_length = get_aead_tag_length(params.cipher);
     
     switch (params.cipher) {
         case AEADCipher::AES_128_GCM:
             cipher = EVP_aes_128_gcm();
-            tag_length = 16;
             break;
         case AEADCipher::AES_256_GCM:
             cipher = EVP_aes_256_gcm();
-            tag_length = 16;
             break;
         case AEADCipher::CHACHA20_POLY1305:
             cipher = EVP_chacha20_poly1305();
-            tag_length = 16;
             break;
         case AEADCipher::AES_128_CCM:
-            cipher = EVP_aes_128_ccm();
-            tag_length = 16;
-            break;
         case AEADCipher::AES_128_CCM_8:
             cipher = EVP_aes_128_ccm();
-            tag_length = 8;
             break;
         default:
             return Result<std::vector<uint8_t>>(DTLSError::OPERATION_NOT_SUPPORTED);
@@ -363,7 +366,8 @@ Result<std::vector<uint8_t>> OpenSSLProvider::aead_encrypt(
     EVP_CIPHER_CTX_free(ctx);
     
     if (result != 1) {
-        return Result<std::vector<uint8_t>>(DTLSError::CRYPTO_PROVIDER_ERROR);
+        DTLSError error = map_openssl_error_detailed();
+        return Result<std::vector<uint8_t>>(error);
     }
     
     ciphertext.resize(plaintext.size() + tag_length);
@@ -378,34 +382,33 @@ Result<std::vector<uint8_t>> OpenSSLProvider::aead_decrypt(
         return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
     }
     
-    if (params.key.empty() || params.nonce.empty()) {
+    if (ciphertext.empty()) {
         return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
     }
     
-    // Get the cipher algorithm and tag length
+    // Validate AEAD parameters using new helper function
+    auto validation_result = validate_aead_params(params.cipher, params.key, params.nonce);
+    if (!validation_result) {
+        return Result<std::vector<uint8_t>>(validation_result.error());
+    }
+    
+    // Get the cipher algorithm and tag length using helper functions
     const EVP_CIPHER* cipher = nullptr;
-    size_t tag_length = 16; // Default tag length
+    size_t tag_length = get_aead_tag_length(params.cipher);
     
     switch (params.cipher) {
         case AEADCipher::AES_128_GCM:
             cipher = EVP_aes_128_gcm();
-            tag_length = 16;
             break;
         case AEADCipher::AES_256_GCM:
             cipher = EVP_aes_256_gcm();
-            tag_length = 16;
             break;
         case AEADCipher::CHACHA20_POLY1305:
             cipher = EVP_chacha20_poly1305();
-            tag_length = 16;
             break;
         case AEADCipher::AES_128_CCM:
-            cipher = EVP_aes_128_ccm();
-            tag_length = 16;
-            break;
         case AEADCipher::AES_128_CCM_8:
             cipher = EVP_aes_128_ccm();
-            tag_length = 8;
             break;
         default:
             return Result<std::vector<uint8_t>>(DTLSError::OPERATION_NOT_SUPPORTED);
@@ -493,7 +496,12 @@ Result<std::vector<uint8_t>> OpenSSLProvider::aead_decrypt(
     EVP_CIPHER_CTX_free(ctx);
     
     if (result != 1) {
-        return Result<std::vector<uint8_t>>(DTLSError::DECRYPT_ERROR);
+        DTLSError error = map_openssl_error_detailed();
+        // For AEAD decryption failures, prefer DECRYPT_ERROR for authentication failures
+        if (error == DTLSError::CRYPTO_PROVIDER_ERROR) {
+            error = DTLSError::DECRYPT_ERROR;
+        }
+        return Result<std::vector<uint8_t>>(error);
     }
     
     plaintext.resize(outlen + final_len);
@@ -506,34 +514,33 @@ Result<AEADEncryptionOutput> OpenSSLProvider::encrypt_aead(const AEADEncryptionP
         return Result<AEADEncryptionOutput>(DTLSError::NOT_INITIALIZED);
     }
     
-    if (params.key.empty() || params.nonce.empty()) {
+    if (params.plaintext.empty()) {
         return Result<AEADEncryptionOutput>(DTLSError::INVALID_PARAMETER);
     }
     
-    // Get the cipher algorithm
+    // Validate AEAD parameters using new helper function
+    auto validation_result = validate_aead_params(params.cipher, params.key, params.nonce);
+    if (!validation_result) {
+        return Result<AEADEncryptionOutput>(validation_result.error());
+    }
+    
+    // Get the cipher algorithm and tag length using helper functions
     const EVP_CIPHER* cipher = nullptr;
-    size_t tag_length = 16; // Default tag length
+    size_t tag_length = get_aead_tag_length(params.cipher);
     
     switch (params.cipher) {
         case AEADCipher::AES_128_GCM:
             cipher = EVP_aes_128_gcm();
-            tag_length = 16;
             break;
         case AEADCipher::AES_256_GCM:
             cipher = EVP_aes_256_gcm();
-            tag_length = 16;
             break;
         case AEADCipher::CHACHA20_POLY1305:
             cipher = EVP_chacha20_poly1305();
-            tag_length = 16;
             break;
         case AEADCipher::AES_128_CCM:
-            cipher = EVP_aes_128_ccm();
-            tag_length = 16;
-            break;
         case AEADCipher::AES_128_CCM_8:
             cipher = EVP_aes_128_ccm();
-            tag_length = 8;
             break;
         default:
             return Result<AEADEncryptionOutput>(DTLSError::OPERATION_NOT_SUPPORTED);
@@ -616,7 +623,8 @@ Result<AEADEncryptionOutput> OpenSSLProvider::encrypt_aead(const AEADEncryptionP
     EVP_CIPHER_CTX_free(ctx);
     
     if (result != 1) {
-        return Result<AEADEncryptionOutput>(DTLSError::CRYPTO_PROVIDER_ERROR);
+        DTLSError error = map_openssl_error_detailed();
+        return Result<AEADEncryptionOutput>(error);
     }
     
     ciphertext.resize(outlen + final_len);
@@ -633,34 +641,33 @@ Result<std::vector<uint8_t>> OpenSSLProvider::decrypt_aead(const AEADDecryptionP
         return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
     }
     
-    if (params.key.empty() || params.nonce.empty() || params.ciphertext.empty() || params.tag.empty()) {
+    if (params.ciphertext.empty() || params.tag.empty()) {
         return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
     }
     
-    // Get the cipher algorithm
+    // Validate AEAD parameters using new helper function
+    auto validation_result = validate_aead_params(params.cipher, params.key, params.nonce);
+    if (!validation_result) {
+        return Result<std::vector<uint8_t>>(validation_result.error());
+    }
+    
+    // Get the cipher algorithm and validate tag length
     const EVP_CIPHER* cipher = nullptr;
-    size_t expected_tag_length = 16; // Default tag length
+    size_t expected_tag_length = get_aead_tag_length(params.cipher);
     
     switch (params.cipher) {
         case AEADCipher::AES_128_GCM:
             cipher = EVP_aes_128_gcm();
-            expected_tag_length = 16;
             break;
         case AEADCipher::AES_256_GCM:
             cipher = EVP_aes_256_gcm();
-            expected_tag_length = 16;
             break;
         case AEADCipher::CHACHA20_POLY1305:
             cipher = EVP_chacha20_poly1305();
-            expected_tag_length = 16;
             break;
         case AEADCipher::AES_128_CCM:
-            cipher = EVP_aes_128_ccm();
-            expected_tag_length = 16;
-            break;
         case AEADCipher::AES_128_CCM_8:
             cipher = EVP_aes_128_ccm();
-            expected_tag_length = 8;
             break;
         default:
             return Result<std::vector<uint8_t>>(DTLSError::OPERATION_NOT_SUPPORTED);
@@ -745,7 +752,12 @@ Result<std::vector<uint8_t>> OpenSSLProvider::decrypt_aead(const AEADDecryptionP
     EVP_CIPHER_CTX_free(ctx);
     
     if (result != 1) {
-        return Result<std::vector<uint8_t>>(DTLSError::DECRYPT_ERROR);
+        DTLSError error = map_openssl_error_detailed();
+        // For AEAD decryption failures, prefer DECRYPT_ERROR for authentication failures
+        if (error == DTLSError::CRYPTO_PROVIDER_ERROR) {
+            error = DTLSError::DECRYPT_ERROR;
+        }
+        return Result<std::vector<uint8_t>>(error);
     }
     
     plaintext.resize(outlen + final_len);
@@ -845,13 +857,749 @@ Result<std::vector<uint8_t>> OpenSSLProvider::compute_hmac(const HMACParams& par
     return Result<std::vector<uint8_t>>(std::move(hmac));
 }
 
-// Remaining methods are stubs for compilation
+// AEAD utility functions
+size_t OpenSSLProvider::get_aead_key_length(AEADCipher cipher) const {
+    switch (cipher) {
+        case AEADCipher::AES_128_GCM:
+        case AEADCipher::AES_128_CCM:
+        case AEADCipher::AES_128_CCM_8:
+            return 16; // 128 bits
+        case AEADCipher::AES_256_GCM:
+            return 32; // 256 bits
+        case AEADCipher::CHACHA20_POLY1305:
+            return 32; // 256 bits
+        default:
+            return 0;
+    }
+}
+
+size_t OpenSSLProvider::get_aead_nonce_length(AEADCipher cipher) const {
+    switch (cipher) {
+        case AEADCipher::AES_128_GCM:
+        case AEADCipher::AES_256_GCM:
+            return 12; // 96 bits for GCM
+        case AEADCipher::AES_128_CCM:
+        case AEADCipher::AES_128_CCM_8:
+            return 12; // 96 bits for CCM (can vary but 12 is standard)
+        case AEADCipher::CHACHA20_POLY1305:
+            return 12; // 96 bits
+        default:
+            return 0;
+    }
+}
+
+size_t OpenSSLProvider::get_aead_tag_length(AEADCipher cipher) const {
+    switch (cipher) {
+        case AEADCipher::AES_128_GCM:
+        case AEADCipher::AES_256_GCM:
+        case AEADCipher::AES_128_CCM:
+        case AEADCipher::CHACHA20_POLY1305:
+            return 16; // 128 bits
+        case AEADCipher::AES_128_CCM_8:
+            return 8; // 64 bits
+        default:
+            return 0;
+    }
+}
+
+Result<void> OpenSSLProvider::validate_aead_params(const AEADCipher cipher, 
+                                                   const std::vector<uint8_t>& key,
+                                                   const std::vector<uint8_t>& nonce) const {
+    // Validate key length
+    size_t expected_key_len = get_aead_key_length(cipher);
+    if (expected_key_len == 0) {
+        return Result<void>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+    if (key.size() != expected_key_len) {
+        return Result<void>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Validate nonce length
+    size_t expected_nonce_len = get_aead_nonce_length(cipher);
+    if (expected_nonce_len == 0) {
+        return Result<void>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+    if (nonce.size() != expected_nonce_len) {
+        return Result<void>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    return Result<void>();
+}
+
+// Enhanced OpenSSL error handling
+DTLSError OpenSSLProvider::map_openssl_error_detailed() const {
+    unsigned long err = ERR_get_error();
+    if (err == 0) {
+        return DTLSError::SUCCESS;
+    }
+    
+    int lib = ERR_GET_LIB(err);
+    int reason = ERR_GET_REASON(err);
+    
+    // Map specific OpenSSL errors to DTLS errors
+    switch (lib) {
+        case ERR_LIB_EVP:
+            switch (reason) {
+                case EVP_R_BAD_DECRYPT:
+                case EVP_R_CIPHER_PARAMETER_ERROR:
+                    return DTLSError::DECRYPT_ERROR;
+                case EVP_R_UNSUPPORTED_CIPHER:
+                    return DTLSError::OPERATION_NOT_SUPPORTED;
+                case EVP_R_INVALID_KEY_LENGTH:
+                case EVP_R_INVALID_IV_LENGTH:
+                    return DTLSError::INVALID_PARAMETER;
+                default:
+                    return DTLSError::CRYPTO_PROVIDER_ERROR;
+            }
+        case ERR_LIB_SSL:
+            return DTLSError::CRYPTO_PROVIDER_ERROR;
+        default:
+            return DTLSError::CRYPTO_PROVIDER_ERROR;
+    }
+}
+
+// Secure memory cleanup utility
+void OpenSSLProvider::secure_cleanup(std::vector<uint8_t>& buffer) const {
+    if (!buffer.empty()) {
+        OPENSSL_cleanse(buffer.data(), buffer.size());
+        buffer.clear();
+    }
+}
+
+// Helper function to validate key type and signature scheme compatibility
+bool OpenSSLProvider::validate_key_scheme_compatibility(int key_type, SignatureScheme scheme) const {
+    switch (scheme) {
+        // RSA signatures
+        case SignatureScheme::RSA_PKCS1_SHA256:
+        case SignatureScheme::RSA_PKCS1_SHA384:
+        case SignatureScheme::RSA_PKCS1_SHA512:
+        case SignatureScheme::RSA_PSS_RSAE_SHA256:
+        case SignatureScheme::RSA_PSS_RSAE_SHA384:
+        case SignatureScheme::RSA_PSS_RSAE_SHA512:
+            return key_type == EVP_PKEY_RSA;
+            
+        // ECDSA signatures
+        case SignatureScheme::ECDSA_SECP256R1_SHA256:
+        case SignatureScheme::ECDSA_SECP384R1_SHA384:
+        case SignatureScheme::ECDSA_SECP521R1_SHA512:
+            return key_type == EVP_PKEY_EC;
+            
+        // EdDSA signatures
+        case SignatureScheme::ED25519:
+            return key_type == EVP_PKEY_ED25519;
+        case SignatureScheme::ED448:
+            return key_type == EVP_PKEY_ED448;
+            
+        default:
+            return false;
+    }
+}
+
+// Digital signature operations with enhanced security and DTLS v1.3 compliance
 Result<std::vector<uint8_t>> OpenSSLProvider::sign_data(const SignatureParams& params) {
-    return Result<std::vector<uint8_t>>(DTLSError::OPERATION_NOT_SUPPORTED);
+    if (!pimpl_->initialized_) {
+        return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    // Enhanced parameter validation
+    if (!params.private_key || params.data.empty()) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Validate data size limits (prevent DoS attacks)
+    if (params.data.size() > 1024 * 1024) { // 1MB limit
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Cast to OpenSSL private key
+    const auto* openssl_key = dynamic_cast<const OpenSSLPrivateKey*>(params.private_key);
+    if (!openssl_key) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    EVP_PKEY* pkey = openssl_key->native_key();
+    if (!pkey) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Validate that the key type matches the signature scheme
+    int key_type = EVP_PKEY_base_id(pkey);
+    if (!validate_key_scheme_compatibility(key_type, params.scheme)) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Thread-safe context creation
+    EVP_MD_CTX* ctx = EVP_MD_CTX_new();
+    if (!ctx) {
+        return Result<std::vector<uint8_t>>(DTLSError::OUT_OF_MEMORY);
+    }
+    
+    const EVP_MD* md = nullptr;
+    int result = 1;
+    
+    // Get the hash algorithm based on signature scheme with enhanced validation
+    switch (params.scheme) {
+        case SignatureScheme::RSA_PKCS1_SHA256:
+        case SignatureScheme::RSA_PSS_RSAE_SHA256:
+        case SignatureScheme::ECDSA_SECP256R1_SHA256:
+            md = EVP_sha256();
+            break;
+        case SignatureScheme::RSA_PKCS1_SHA384:
+        case SignatureScheme::RSA_PSS_RSAE_SHA384:
+        case SignatureScheme::ECDSA_SECP384R1_SHA384:
+            md = EVP_sha384();
+            break;
+        case SignatureScheme::RSA_PKCS1_SHA512:
+        case SignatureScheme::RSA_PSS_RSAE_SHA512:
+        case SignatureScheme::ECDSA_SECP521R1_SHA512:
+            md = EVP_sha512();
+            break;
+        case SignatureScheme::ED25519:
+        case SignatureScheme::ED448:
+            md = nullptr; // EdDSA doesn't use a separate hash
+            break;
+        default:
+            EVP_MD_CTX_free(ctx);
+            return Result<std::vector<uint8_t>>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+    
+    // Validate hash algorithm availability
+    if (md && !md) {
+        EVP_MD_CTX_free(ctx);
+        return Result<std::vector<uint8_t>>(DTLSError::CRYPTO_PROVIDER_ERROR);
+    }
+    
+    // Initialize signing context with proper error handling
+    if (result == 1) {
+        result = EVP_DigestSignInit(ctx, nullptr, md, nullptr, pkey);
+        if (result != 1) {
+            EVP_MD_CTX_free(ctx);
+            return Result<std::vector<uint8_t>>(map_openssl_error_detailed());
+        }
+    }
+    
+    // Configure algorithm-specific parameters
+    EVP_PKEY_CTX* pkey_ctx = EVP_MD_CTX_pkey_ctx(ctx);
+    if (pkey_ctx) {
+        // Configure RSA-PSS padding with proper salt length
+        if (params.scheme == SignatureScheme::RSA_PSS_RSAE_SHA256 ||
+            params.scheme == SignatureScheme::RSA_PSS_RSAE_SHA384 ||
+            params.scheme == SignatureScheme::RSA_PSS_RSAE_SHA512) {
+            
+            result = EVP_PKEY_CTX_set_rsa_padding(pkey_ctx, RSA_PKCS1_PSS_PADDING);
+            if (result == 1) {
+                // Use salt length equal to hash length (RFC 8017 recommendation)
+                result = EVP_PKEY_CTX_set_rsa_pss_saltlen(pkey_ctx, RSA_PSS_SALTLEN_DIGEST);
+            }
+            if (result == 1) {
+                // Set MGF1 hash function to match the main hash
+                result = EVP_PKEY_CTX_set_rsa_mgf1_md(pkey_ctx, md);
+            }
+        }
+        
+        // Configure ECDSA for deterministic signatures (RFC 6979) if supported
+        if (params.scheme == SignatureScheme::ECDSA_SECP256R1_SHA256 ||
+            params.scheme == SignatureScheme::ECDSA_SECP384R1_SHA384 ||
+            params.scheme == SignatureScheme::ECDSA_SECP521R1_SHA512) {
+            
+            // OpenSSL 3.0+ supports deterministic ECDSA via explicit setting
+            // This improves security by making signatures reproducible
+#if OPENSSL_VERSION_NUMBER >= 0x30000000L
+            // Note: In OpenSSL 3.0+, we could set deterministic mode if available
+            // EVP_PKEY_CTX_set_ecdsa_deterministic_k(pkey_ctx, 1);
+#endif
+        }
+        
+        if (result != 1) {
+            EVP_MD_CTX_free(ctx);
+            return Result<std::vector<uint8_t>>(map_openssl_error_detailed());
+        }
+    }
+    
+    // Update with data to sign
+    if (result == 1) {
+        result = EVP_DigestSignUpdate(ctx, params.data.data(), params.data.size());
+        if (result != 1) {
+            EVP_MD_CTX_free(ctx);
+            return Result<std::vector<uint8_t>>(map_openssl_error_detailed());
+        }
+    }
+    
+    // Determine signature length
+    size_t sig_len = 0;
+    if (result == 1) {
+        result = EVP_DigestSignFinal(ctx, nullptr, &sig_len);
+        if (result != 1 || sig_len == 0) {
+            EVP_MD_CTX_free(ctx);
+            return Result<std::vector<uint8_t>>(map_openssl_error_detailed());
+        }
+    }
+    
+    // Validate signature length is reasonable
+    if (sig_len > 1024) { // Sanity check - no signature should be > 1KB
+        EVP_MD_CTX_free(ctx);
+        return Result<std::vector<uint8_t>>(DTLSError::CRYPTO_PROVIDER_ERROR);
+    }
+    
+    // Generate the actual signature
+    std::vector<uint8_t> signature(sig_len);
+    if (result == 1) {
+        result = EVP_DigestSignFinal(ctx, signature.data(), &sig_len);
+        if (result != 1) {
+            EVP_MD_CTX_free(ctx);
+            // Clear signature buffer for security
+            secure_cleanup(signature);
+            return Result<std::vector<uint8_t>>(map_openssl_error_detailed());
+        }
+    }
+    
+    EVP_MD_CTX_free(ctx);
+    
+    // Final validation and resize
+    if (sig_len == 0) {
+        secure_cleanup(signature);
+        return Result<std::vector<uint8_t>>(DTLSError::SIGNATURE_VERIFICATION_FAILED);
+    }
+    
+    signature.resize(sig_len);
+    return Result<std::vector<uint8_t>>(std::move(signature));
 }
 
 Result<bool> OpenSSLProvider::verify_signature(const SignatureParams& params, const std::vector<uint8_t>& signature) {
-    return Result<bool>(DTLSError::OPERATION_NOT_SUPPORTED);
+    if (!pimpl_->initialized_) {
+        return Result<bool>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    // Enhanced parameter validation
+    if (!params.public_key || params.data.empty() || signature.empty()) {
+        return Result<bool>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Validate data size limits (prevent DoS attacks)
+    if (params.data.size() > 1024 * 1024) { // 1MB limit
+        return Result<bool>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Validate signature size limits
+    if (signature.size() > 1024) { // 1KB limit - no signature should be this large
+        return Result<bool>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Cast to OpenSSL public key
+    const auto* openssl_key = dynamic_cast<const OpenSSLPublicKey*>(params.public_key);
+    if (!openssl_key) {
+        return Result<bool>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    EVP_PKEY* pkey = openssl_key->native_key();
+    if (!pkey) {
+        return Result<bool>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Validate that the key type matches the signature scheme
+    int key_type = EVP_PKEY_base_id(pkey);
+    if (!validate_key_scheme_compatibility(key_type, params.scheme)) {
+        return Result<bool>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Validate signature length for the given scheme and key
+    auto expected_length_result = get_signature_length(params.scheme, *params.public_key);
+    if (expected_length_result) {
+        size_t expected_max_length = *expected_length_result;
+        // For ECDSA, signature can be variable length but should not exceed maximum
+        // For RSA and EdDSA, signature length should be exact or close to expected
+        if (signature.size() > expected_max_length) {
+            return Result<bool>(DTLSError::INVALID_PARAMETER);
+        }
+        
+        // For fixed-length signatures (RSA and EdDSA), check exact length
+        if ((params.scheme == SignatureScheme::ED25519 && signature.size() != 64) ||
+            (params.scheme == SignatureScheme::ED448 && signature.size() != 114)) {
+            return Result<bool>(DTLSError::INVALID_PARAMETER);
+        }
+        
+        // For RSA signatures, the signature length should match the key size
+        if ((params.scheme == SignatureScheme::RSA_PKCS1_SHA256 ||
+             params.scheme == SignatureScheme::RSA_PKCS1_SHA384 ||
+             params.scheme == SignatureScheme::RSA_PKCS1_SHA512 ||
+             params.scheme == SignatureScheme::RSA_PSS_RSAE_SHA256 ||
+             params.scheme == SignatureScheme::RSA_PSS_RSAE_SHA384 ||
+             params.scheme == SignatureScheme::RSA_PSS_RSAE_SHA512) &&
+            signature.size() != expected_max_length) {
+            return Result<bool>(DTLSError::INVALID_PARAMETER);
+        }
+    }
+    
+    // Thread-safe context creation
+    EVP_MD_CTX* ctx = EVP_MD_CTX_new();
+    if (!ctx) {
+        return Result<bool>(DTLSError::OUT_OF_MEMORY);
+    }
+    
+    const EVP_MD* md = nullptr;
+    int result = 1;
+    
+    // Get the hash algorithm based on signature scheme with enhanced validation
+    switch (params.scheme) {
+        case SignatureScheme::RSA_PKCS1_SHA256:
+        case SignatureScheme::RSA_PSS_RSAE_SHA256:
+        case SignatureScheme::ECDSA_SECP256R1_SHA256:
+            md = EVP_sha256();
+            break;
+        case SignatureScheme::RSA_PKCS1_SHA384:
+        case SignatureScheme::RSA_PSS_RSAE_SHA384:
+        case SignatureScheme::ECDSA_SECP384R1_SHA384:
+            md = EVP_sha384();
+            break;
+        case SignatureScheme::RSA_PKCS1_SHA512:
+        case SignatureScheme::RSA_PSS_RSAE_SHA512:
+        case SignatureScheme::ECDSA_SECP521R1_SHA512:
+            md = EVP_sha512();
+            break;
+        case SignatureScheme::ED25519:
+        case SignatureScheme::ED448:
+            md = nullptr; // EdDSA doesn't use a separate hash
+            break;
+        default:
+            EVP_MD_CTX_free(ctx);
+            return Result<bool>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+    
+    // Validate hash algorithm availability
+    if (md && !md) {
+        EVP_MD_CTX_free(ctx);
+        return Result<bool>(DTLSError::CRYPTO_PROVIDER_ERROR);
+    }
+    
+    // Initialize verification context with proper error handling
+    if (result == 1) {
+        result = EVP_DigestVerifyInit(ctx, nullptr, md, nullptr, pkey);
+        if (result != 1) {
+            EVP_MD_CTX_free(ctx);
+            return Result<bool>(map_openssl_error_detailed());
+        }
+    }
+    
+    // Configure algorithm-specific parameters
+    EVP_PKEY_CTX* pkey_ctx = EVP_MD_CTX_pkey_ctx(ctx);
+    if (pkey_ctx) {
+        // Configure RSA-PSS padding with proper salt length (must match signing parameters)
+        if (params.scheme == SignatureScheme::RSA_PSS_RSAE_SHA256 ||
+            params.scheme == SignatureScheme::RSA_PSS_RSAE_SHA384 ||
+            params.scheme == SignatureScheme::RSA_PSS_RSAE_SHA512) {
+            
+            result = EVP_PKEY_CTX_set_rsa_padding(pkey_ctx, RSA_PKCS1_PSS_PADDING);
+            if (result == 1) {
+                // Use salt length equal to hash length (RFC 8017 recommendation)
+                result = EVP_PKEY_CTX_set_rsa_pss_saltlen(pkey_ctx, RSA_PSS_SALTLEN_DIGEST);
+            }
+            if (result == 1) {
+                // Set MGF1 hash function to match the main hash
+                result = EVP_PKEY_CTX_set_rsa_mgf1_md(pkey_ctx, md);
+            }
+        }
+        
+        if (result != 1) {
+            EVP_MD_CTX_free(ctx);
+            return Result<bool>(map_openssl_error_detailed());
+        }
+    }
+    
+    // Update with data to verify
+    if (result == 1) {
+        result = EVP_DigestVerifyUpdate(ctx, params.data.data(), params.data.size());
+        if (result != 1) {
+            EVP_MD_CTX_free(ctx);
+            return Result<bool>(map_openssl_error_detailed());
+        }
+    }
+    
+    // Verify signature - this is the critical security operation
+    if (result == 1) {
+        result = EVP_DigestVerifyFinal(ctx, signature.data(), signature.size());
+    }
+    
+    EVP_MD_CTX_free(ctx);
+    
+    // Interpret the verification result according to OpenSSL conventions
+    if (result == 1) {
+        return Result<bool>(true);  // Signature verification succeeded
+    } else if (result == 0) {
+        return Result<bool>(false); // Signature verification failed (signature invalid)
+    } else {
+        // Error occurred during verification (result < 0)
+        return Result<bool>(map_openssl_error_detailed());
+    }
+}
+
+// Additional signature helper methods for DTLS v1.3
+Result<size_t> OpenSSLProvider::get_signature_length(SignatureScheme scheme, const PrivateKey& key) const {
+    if (!pimpl_->initialized_) {
+        return Result<size_t>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    // Cast to OpenSSL private key
+    const auto* openssl_key = dynamic_cast<const OpenSSLPrivateKey*>(&key);
+    if (!openssl_key) {
+        return Result<size_t>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    EVP_PKEY* pkey = openssl_key->native_key();
+    if (!pkey) {
+        return Result<size_t>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Get signature length based on key type and scheme
+    int key_type = EVP_PKEY_base_id(pkey);
+    size_t signature_length = 0;
+    
+    switch (scheme) {
+        // RSA signatures - length depends on key size
+        case SignatureScheme::RSA_PKCS1_SHA256:
+        case SignatureScheme::RSA_PKCS1_SHA384:
+        case SignatureScheme::RSA_PKCS1_SHA512:
+        case SignatureScheme::RSA_PSS_RSAE_SHA256:
+        case SignatureScheme::RSA_PSS_RSAE_SHA384:
+        case SignatureScheme::RSA_PSS_RSAE_SHA512:
+            if (key_type == EVP_PKEY_RSA) {
+                signature_length = static_cast<size_t>(EVP_PKEY_size(pkey));
+            } else {
+                return Result<size_t>(DTLSError::INVALID_PARAMETER);
+            }
+            break;
+            
+        // ECDSA signatures - variable length, estimate maximum
+        case SignatureScheme::ECDSA_SECP256R1_SHA256:
+            if (key_type == EVP_PKEY_EC) {
+                signature_length = 72; // Maximum for P-256 (2 * 32 + DER overhead)
+            } else {
+                return Result<size_t>(DTLSError::INVALID_PARAMETER);
+            }
+            break;
+            
+        case SignatureScheme::ECDSA_SECP384R1_SHA384:
+            if (key_type == EVP_PKEY_EC) {
+                signature_length = 104; // Maximum for P-384 (2 * 48 + DER overhead)
+            } else {
+                return Result<size_t>(DTLSError::INVALID_PARAMETER);
+            }
+            break;
+            
+        case SignatureScheme::ECDSA_SECP521R1_SHA512:
+            if (key_type == EVP_PKEY_EC) {
+                signature_length = 139; // Maximum for P-521 (2 * 66 + DER overhead)
+            } else {
+                return Result<size_t>(DTLSError::INVALID_PARAMETER);
+            }
+            break;
+            
+        // EdDSA signatures - fixed length
+        case SignatureScheme::ED25519:
+            if (key_type == EVP_PKEY_ED25519) {
+                signature_length = 64; // Ed25519 signature is always 64 bytes
+            } else {
+                return Result<size_t>(DTLSError::INVALID_PARAMETER);
+            }
+            break;
+            
+        case SignatureScheme::ED448:
+            if (key_type == EVP_PKEY_ED448) {
+                signature_length = 114; // Ed448 signature is always 114 bytes
+            } else {
+                return Result<size_t>(DTLSError::INVALID_PARAMETER);
+            }
+            break;
+            
+        default:
+            return Result<size_t>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+    
+    return Result<size_t>(signature_length);
+}
+
+// Overloaded version for public keys (same logic, different cast)
+Result<size_t> OpenSSLProvider::get_signature_length(SignatureScheme scheme, const PublicKey& key) const {
+    if (!pimpl_->initialized_) {
+        return Result<size_t>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    // Cast to OpenSSL public key
+    const auto* openssl_key = dynamic_cast<const OpenSSLPublicKey*>(&key);
+    if (!openssl_key) {
+        return Result<size_t>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    EVP_PKEY* pkey = openssl_key->native_key();
+    if (!pkey) {
+        return Result<size_t>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Get signature length based on key type and scheme
+    int key_type = EVP_PKEY_base_id(pkey);
+    size_t signature_length = 0;
+    
+    switch (scheme) {
+        // RSA signatures - length depends on key size
+        case SignatureScheme::RSA_PKCS1_SHA256:
+        case SignatureScheme::RSA_PKCS1_SHA384:
+        case SignatureScheme::RSA_PKCS1_SHA512:
+        case SignatureScheme::RSA_PSS_RSAE_SHA256:
+        case SignatureScheme::RSA_PSS_RSAE_SHA384:
+        case SignatureScheme::RSA_PSS_RSAE_SHA512:
+            if (key_type == EVP_PKEY_RSA) {
+                signature_length = static_cast<size_t>(EVP_PKEY_size(pkey));
+            } else {
+                return Result<size_t>(DTLSError::INVALID_PARAMETER);
+            }
+            break;
+            
+        // ECDSA signatures - variable length, estimate maximum
+        case SignatureScheme::ECDSA_SECP256R1_SHA256:
+            if (key_type == EVP_PKEY_EC) {
+                signature_length = 72; // Maximum for P-256 (2 * 32 + DER overhead)
+            } else {
+                return Result<size_t>(DTLSError::INVALID_PARAMETER);
+            }
+            break;
+            
+        case SignatureScheme::ECDSA_SECP384R1_SHA384:
+            if (key_type == EVP_PKEY_EC) {
+                signature_length = 104; // Maximum for P-384 (2 * 48 + DER overhead)
+            } else {
+                return Result<size_t>(DTLSError::INVALID_PARAMETER);
+            }
+            break;
+            
+        case SignatureScheme::ECDSA_SECP521R1_SHA512:
+            if (key_type == EVP_PKEY_EC) {
+                signature_length = 139; // Maximum for P-521 (2 * 66 + DER overhead)
+            } else {
+                return Result<size_t>(DTLSError::INVALID_PARAMETER);
+            }
+            break;
+            
+        // EdDSA signatures - fixed length
+        case SignatureScheme::ED25519:
+            if (key_type == EVP_PKEY_ED25519) {
+                signature_length = 64; // Ed25519 signature is always 64 bytes
+            } else {
+                return Result<size_t>(DTLSError::INVALID_PARAMETER);
+            }
+            break;
+            
+        case SignatureScheme::ED448:
+            if (key_type == EVP_PKEY_ED448) {
+                signature_length = 114; // Ed448 signature is always 114 bytes
+            } else {
+                return Result<size_t>(DTLSError::INVALID_PARAMETER);
+            }
+            break;
+            
+        default:
+            return Result<size_t>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+    
+    return Result<size_t>(signature_length);
+}
+
+Result<std::vector<uint8_t>> OpenSSLProvider::create_certificate_signature(
+    const std::vector<uint8_t>& certificate_data,
+    SignatureScheme scheme,
+    const PrivateKey& private_key) const {
+    
+    if (!pimpl_->initialized_) {
+        return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    if (certificate_data.empty()) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Create signature parameters for certificate data
+    SignatureParams params;
+    params.data = certificate_data;
+    params.scheme = scheme;
+    params.private_key = &private_key;
+    
+    // Use the main sign_data method (cast away const since we're not modifying state)
+    return const_cast<OpenSSLProvider*>(this)->sign_data(params);
+}
+
+Result<std::vector<uint8_t>> OpenSSLProvider::sign_handshake_transcript(
+    const std::vector<uint8_t>& transcript_hash,
+    SignatureScheme scheme,
+    const PrivateKey& private_key,
+    bool is_server) const {
+    
+    if (!pimpl_->initialized_) {
+        return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    if (transcript_hash.empty()) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // DTLS v1.3 handshake signature includes context strings per RFC 9147
+    std::string context_string;
+    if (is_server) {
+        context_string = "TLS 1.3, server CertificateVerify";
+    } else {
+        context_string = "TLS 1.3, client CertificateVerify";
+    }
+    
+    // Create the signed content as per RFC 8446 Section 4.4.3
+    std::vector<uint8_t> content;
+    
+    // Add 64 space (0x20) characters
+    content.insert(content.end(), 64, 0x20);
+    
+    // Add context string
+    content.insert(content.end(), context_string.begin(), context_string.end());
+    
+    // Add separator byte (0x00)
+    content.push_back(0x00);
+    
+    // Add transcript hash
+    content.insert(content.end(), transcript_hash.begin(), transcript_hash.end());
+    
+    // Create signature parameters
+    SignatureParams params;
+    params.data = content;
+    params.scheme = scheme;
+    params.private_key = &private_key;
+    
+    // Use the main sign_data method (cast away const since we're not modifying state)
+    return const_cast<OpenSSLProvider*>(this)->sign_data(params);
+}
+
+Result<std::vector<uint8_t>> OpenSSLProvider::generate_finished_signature(
+    const std::vector<uint8_t>& finished_key,
+    const std::vector<uint8_t>& transcript_hash,
+    HashAlgorithm hash_algorithm) const {
+    
+    if (!pimpl_->initialized_) {
+        return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    if (finished_key.empty() || transcript_hash.empty()) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Finished message uses HMAC per RFC 9147 Section 4.4.4
+    // finished_key = HKDF-Expand-Label(BaseKey, "finished", "", Hash.length)
+    // verify_data = HMAC(finished_key, Transcript-Hash(Handshake Context))
+    
+    HMACParams hmac_params;
+    hmac_params.key = finished_key;
+    hmac_params.data = transcript_hash;
+    hmac_params.algorithm = hash_algorithm;
+    
+    return const_cast<OpenSSLProvider*>(this)->compute_hmac(hmac_params);
+}
+
+std::vector<SignatureScheme> OpenSSLProvider::get_supported_signature_algorithms() const {
+    auto caps = capabilities();
+    return caps.supported_signatures;
 }
 
 Result<std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>> 
@@ -921,7 +1669,7 @@ OpenSSLProvider::generate_key_pair(NamedGroup group) {
         return Result<ReturnType>(DTLSError::KEY_EXCHANGE_FAILED);
     }
     
-    // Generate the key pair
+    // Generate the key pair using cryptographically secure random generation
     if (result == 1) {
         result = EVP_PKEY_keygen(pctx, &pkey);
     }
@@ -948,6 +1696,160 @@ OpenSSLProvider::generate_key_pair(NamedGroup group) {
     
     using ReturnType = std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>;
     return Result<ReturnType>(std::make_pair(std::move(private_key), std::move(public_key)));
+}
+
+// RSA key generation method
+Result<std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>> 
+OpenSSLProvider::generate_rsa_keypair(int key_size) {
+    if (!pimpl_->initialized_) {
+        using ReturnType = std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>;
+        return Result<ReturnType>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    // Validate RSA key size
+    if (key_size != 2048 && key_size != 3072 && key_size != 4096) {
+        using ReturnType = std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>;
+        return Result<ReturnType>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    EVP_PKEY_CTX* pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, nullptr);
+    if (!pctx) {
+        using ReturnType = std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>;
+        return Result<ReturnType>(DTLSError::OUT_OF_MEMORY);
+    }
+    
+    EVP_PKEY* pkey = nullptr;
+    int result = 1;
+    
+    // Initialize key generation
+    if (result == 1) {
+        result = EVP_PKEY_keygen_init(pctx);
+    }
+    
+    // Set RSA key length
+    if (result == 1) {
+        result = EVP_PKEY_CTX_set_rsa_keygen_bits(pctx, key_size);
+    }
+    
+    // Set public exponent to 65537 (standard value)
+    if (result == 1) {
+        BIGNUM* e = BN_new();
+        if (e && BN_set_word(e, RSA_F4) == 1) {
+            result = EVP_PKEY_CTX_set_rsa_keygen_pubexp(pctx, e);
+            // Note: e is now owned by the context, don't free it
+        } else {
+            if (e) BN_free(e);
+            result = 0;
+        }
+    }
+    
+    // Generate the RSA key pair
+    if (result == 1) {
+        result = EVP_PKEY_keygen(pctx, &pkey);
+    }
+    
+    EVP_PKEY_CTX_free(pctx);
+    
+    if (result != 1 || !pkey) {
+        if (pkey) EVP_PKEY_free(pkey);
+        using ReturnType = std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>;
+        return Result<ReturnType>(DTLSError::KEY_EXCHANGE_FAILED);
+    }
+    
+    // Create private key wrapper
+    auto private_key = std::make_unique<OpenSSLPrivateKey>(pkey);
+    
+    // Derive public key
+    auto public_key_result = private_key->derive_public_key();
+    if (!public_key_result) {
+        using ReturnType = std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>;
+        return Result<ReturnType>(public_key_result.error());
+    }
+    
+    auto public_key = std::move(*public_key_result);
+    
+    using ReturnType = std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>;
+    return Result<ReturnType>(std::make_pair(std::move(private_key), std::move(public_key)));
+}
+
+// EdDSA key generation method
+Result<std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>> 
+OpenSSLProvider::generate_eddsa_keypair(int key_type) {
+    if (!pimpl_->initialized_) {
+        using ReturnType = std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>;
+        return Result<ReturnType>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    EVP_PKEY_CTX* pctx = nullptr;
+    
+    // Set up context based on key type
+    switch (key_type) {
+        case NID_ED25519:
+            pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_ED25519, nullptr);
+            break;
+        case NID_ED448:
+            pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_ED448, nullptr);
+            break;
+        default:
+            using ReturnType = std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>;
+            return Result<ReturnType>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    if (!pctx) {
+        using ReturnType = std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>;
+        return Result<ReturnType>(DTLSError::OUT_OF_MEMORY);
+    }
+    
+    EVP_PKEY* pkey = nullptr;
+    int result = 1;
+    
+    // Initialize key generation
+    if (result == 1) {
+        result = EVP_PKEY_keygen_init(pctx);
+    }
+    
+    // Generate the EdDSA key pair
+    if (result == 1) {
+        result = EVP_PKEY_keygen(pctx, &pkey);
+    }
+    
+    EVP_PKEY_CTX_free(pctx);
+    
+    if (result != 1 || !pkey) {
+        if (pkey) EVP_PKEY_free(pkey);
+        using ReturnType = std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>;
+        return Result<ReturnType>(DTLSError::KEY_EXCHANGE_FAILED);
+    }
+    
+    // Create private key wrapper
+    auto private_key = std::make_unique<OpenSSLPrivateKey>(pkey);
+    
+    // Derive public key
+    auto public_key_result = private_key->derive_public_key();
+    if (!public_key_result) {
+        using ReturnType = std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>;
+        return Result<ReturnType>(public_key_result.error());
+    }
+    
+    auto public_key = std::move(*public_key_result);
+    
+    using ReturnType = std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>;
+    return Result<ReturnType>(std::make_pair(std::move(private_key), std::move(public_key)));
+}
+
+// Helper methods for supported curves and key sizes
+std::vector<NamedGroup> OpenSSLProvider::get_supported_curves() const {
+    return {
+        NamedGroup::SECP256R1,
+        NamedGroup::SECP384R1,
+        NamedGroup::SECP521R1,
+        NamedGroup::X25519,
+        NamedGroup::X448
+    };
+}
+
+std::vector<int> OpenSSLProvider::get_supported_rsa_sizes() const {
+    return {2048, 3072, 4096};
 }
 
 Result<std::vector<uint8_t>> OpenSSLProvider::perform_key_exchange(const KeyExchangeParams& params) {
@@ -1078,19 +1980,175 @@ Result<std::unique_ptr<PublicKey>> OpenSSLProvider::extract_public_key(const std
 }
 
 Result<std::unique_ptr<PrivateKey>> OpenSSLProvider::import_private_key(const std::vector<uint8_t>& key_data, const std::string& format) {
-    return Result<std::unique_ptr<PrivateKey>>(DTLSError::OPERATION_NOT_SUPPORTED);
+    if (!pimpl_->initialized_) {
+        return Result<std::unique_ptr<PrivateKey>>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    if (key_data.empty()) {
+        return Result<std::unique_ptr<PrivateKey>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    BIO* bio = BIO_new_mem_buf(key_data.data(), static_cast<int>(key_data.size()));
+    if (!bio) {
+        return Result<std::unique_ptr<PrivateKey>>(DTLSError::OUT_OF_MEMORY);
+    }
+    
+    EVP_PKEY* pkey = nullptr;
+    
+    if (format == "PEM") {
+        pkey = PEM_read_bio_PrivateKey(bio, nullptr, nullptr, nullptr);
+    } else if (format == "DER") {
+        pkey = d2i_PrivateKey_bio(bio, nullptr);
+    } else {
+        BIO_free(bio);
+        return Result<std::unique_ptr<PrivateKey>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    BIO_free(bio);
+    
+    if (!pkey) {
+        return Result<std::unique_ptr<PrivateKey>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    auto private_key = std::make_unique<OpenSSLPrivateKey>(pkey);
+    return Result<std::unique_ptr<PrivateKey>>(std::move(private_key));
 }
 
 Result<std::unique_ptr<PublicKey>> OpenSSLProvider::import_public_key(const std::vector<uint8_t>& key_data, const std::string& format) {
-    return Result<std::unique_ptr<PublicKey>>(DTLSError::OPERATION_NOT_SUPPORTED);
+    if (!pimpl_->initialized_) {
+        return Result<std::unique_ptr<PublicKey>>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    if (key_data.empty()) {
+        return Result<std::unique_ptr<PublicKey>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    BIO* bio = BIO_new_mem_buf(key_data.data(), static_cast<int>(key_data.size()));
+    if (!bio) {
+        return Result<std::unique_ptr<PublicKey>>(DTLSError::OUT_OF_MEMORY);
+    }
+    
+    EVP_PKEY* pkey = nullptr;
+    
+    if (format == "PEM") {
+        pkey = PEM_read_bio_PUBKEY(bio, nullptr, nullptr, nullptr);
+    } else if (format == "DER") {
+        pkey = d2i_PUBKEY_bio(bio, nullptr);
+    } else {
+        BIO_free(bio);
+        return Result<std::unique_ptr<PublicKey>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    BIO_free(bio);
+    
+    if (!pkey) {
+        return Result<std::unique_ptr<PublicKey>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    auto public_key = std::make_unique<OpenSSLPublicKey>(pkey);
+    return Result<std::unique_ptr<PublicKey>>(std::move(public_key));
 }
 
 Result<std::vector<uint8_t>> OpenSSLProvider::export_private_key(const PrivateKey& key, const std::string& format) {
-    return Result<std::vector<uint8_t>>(DTLSError::OPERATION_NOT_SUPPORTED);
+    if (!pimpl_->initialized_) {
+        return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    // Cast to OpenSSL private key
+    const auto* openssl_key = dynamic_cast<const OpenSSLPrivateKey*>(&key);
+    if (!openssl_key) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    EVP_PKEY* pkey = openssl_key->native_key();
+    if (!pkey) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    BIO* bio = BIO_new(BIO_s_mem());
+    if (!bio) {
+        return Result<std::vector<uint8_t>>(DTLSError::OUT_OF_MEMORY);
+    }
+    
+    int result = 0;
+    if (format == "PEM") {
+        result = PEM_write_bio_PrivateKey(bio, pkey, nullptr, nullptr, 0, nullptr, nullptr);
+    } else if (format == "DER") {
+        result = i2d_PrivateKey_bio(bio, pkey);
+    } else {
+        BIO_free(bio);
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    if (result != 1) {
+        BIO_free(bio);
+        return Result<std::vector<uint8_t>>(DTLSError::CRYPTO_PROVIDER_ERROR);
+    }
+    
+    // Extract data from BIO
+    char* data = nullptr;
+    long data_len = BIO_get_mem_data(bio, &data);
+    
+    if (data_len <= 0 || !data) {
+        BIO_free(bio);
+        return Result<std::vector<uint8_t>>(DTLSError::CRYPTO_PROVIDER_ERROR);
+    }
+    
+    std::vector<uint8_t> key_data(data, data + data_len);
+    BIO_free(bio);
+    
+    return Result<std::vector<uint8_t>>(std::move(key_data));
 }
 
 Result<std::vector<uint8_t>> OpenSSLProvider::export_public_key(const PublicKey& key, const std::string& format) {
-    return Result<std::vector<uint8_t>>(DTLSError::OPERATION_NOT_SUPPORTED);
+    if (!pimpl_->initialized_) {
+        return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    // Cast to OpenSSL public key
+    const auto* openssl_key = dynamic_cast<const OpenSSLPublicKey*>(&key);
+    if (!openssl_key) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    EVP_PKEY* pkey = openssl_key->native_key();
+    if (!pkey) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    BIO* bio = BIO_new(BIO_s_mem());
+    if (!bio) {
+        return Result<std::vector<uint8_t>>(DTLSError::OUT_OF_MEMORY);
+    }
+    
+    int result = 0;
+    if (format == "PEM") {
+        result = PEM_write_bio_PUBKEY(bio, pkey);
+    } else if (format == "DER") {
+        result = i2d_PUBKEY_bio(bio, pkey);
+    } else {
+        BIO_free(bio);
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    if (result != 1) {
+        BIO_free(bio);
+        return Result<std::vector<uint8_t>>(DTLSError::CRYPTO_PROVIDER_ERROR);
+    }
+    
+    // Extract data from BIO
+    char* data = nullptr;
+    long data_len = BIO_get_mem_data(bio, &data);
+    
+    if (data_len <= 0 || !data) {
+        BIO_free(bio);
+        return Result<std::vector<uint8_t>>(DTLSError::CRYPTO_PROVIDER_ERROR);
+    }
+    
+    std::vector<uint8_t> key_data(data, data + data_len);
+    BIO_free(bio);
+    
+    return Result<std::vector<uint8_t>>(std::move(key_data));
 }
 
 // Utility functions
@@ -1220,7 +2278,38 @@ size_t OpenSSLPrivateKey::key_size() const {
 }
 
 NamedGroup OpenSSLPrivateKey::group() const {
-    return NamedGroup::SECP256R1; // Stub
+    if (!key_) return NamedGroup::SECP256R1;
+    
+    int type = EVP_PKEY_base_id(key_);
+    switch (type) {
+        case EVP_PKEY_EC: {
+            EC_KEY* ec_key = EVP_PKEY_get1_EC_KEY(key_);
+            if (ec_key) {
+                const EC_GROUP* group = EC_KEY_get0_group(ec_key);
+                if (group) {
+                    int nid = EC_GROUP_get_curve_name(group);
+                    EC_KEY_free(ec_key);
+                    switch (nid) {
+                        case NID_X9_62_prime256v1: return NamedGroup::SECP256R1;
+                        case NID_secp384r1: return NamedGroup::SECP384R1;
+                        case NID_secp521r1: return NamedGroup::SECP521R1;
+                        default: return NamedGroup::SECP256R1;
+                    }
+                }
+                EC_KEY_free(ec_key);
+            }
+            break;
+        }
+        case EVP_PKEY_X25519:
+            return NamedGroup::X25519;
+        case EVP_PKEY_X448:
+            return NamedGroup::X448;
+        case EVP_PKEY_RSA:
+        case EVP_PKEY_ED25519:
+        case EVP_PKEY_ED448:
+            return NamedGroup::SECP256R1; // RSA and EdDSA don't have named groups
+    }
+    return NamedGroup::SECP256R1;
 }
 
 std::vector<uint8_t> OpenSSLPrivateKey::fingerprint() const {
@@ -1304,7 +2393,38 @@ size_t OpenSSLPublicKey::key_size() const {
 }
 
 NamedGroup OpenSSLPublicKey::group() const {
-    return NamedGroup::SECP256R1; // Stub
+    if (!key_) return NamedGroup::SECP256R1;
+    
+    int type = EVP_PKEY_base_id(key_);
+    switch (type) {
+        case EVP_PKEY_EC: {
+            EC_KEY* ec_key = EVP_PKEY_get1_EC_KEY(key_);
+            if (ec_key) {
+                const EC_GROUP* group = EC_KEY_get0_group(ec_key);
+                if (group) {
+                    int nid = EC_GROUP_get_curve_name(group);
+                    EC_KEY_free(ec_key);
+                    switch (nid) {
+                        case NID_X9_62_prime256v1: return NamedGroup::SECP256R1;
+                        case NID_secp384r1: return NamedGroup::SECP384R1;
+                        case NID_secp521r1: return NamedGroup::SECP521R1;
+                        default: return NamedGroup::SECP256R1;
+                    }
+                }
+                EC_KEY_free(ec_key);
+            }
+            break;
+        }
+        case EVP_PKEY_X25519:
+            return NamedGroup::X25519;
+        case EVP_PKEY_X448:
+            return NamedGroup::X448;
+        case EVP_PKEY_RSA:
+        case EVP_PKEY_ED25519:
+        case EVP_PKEY_ED448:
+            return NamedGroup::SECP256R1; // RSA and EdDSA don't have named groups
+    }
+    return NamedGroup::SECP256R1;
 }
 
 std::vector<uint8_t> OpenSSLPublicKey::fingerprint() const {

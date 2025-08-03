@@ -75,11 +75,40 @@ public:
         const SignatureParams& params,
         const std::vector<uint8_t>& signature) override;
     
+    // Additional signature helper methods for DTLS v1.3
+    Result<size_t> get_signature_length(SignatureScheme scheme, const PrivateKey& key) const;
+    Result<size_t> get_signature_length(SignatureScheme scheme, const PublicKey& key) const;
+    Result<std::vector<uint8_t>> create_certificate_signature(
+        const std::vector<uint8_t>& certificate_data,
+        SignatureScheme scheme,
+        const PrivateKey& private_key) const;
+    Result<std::vector<uint8_t>> sign_handshake_transcript(
+        const std::vector<uint8_t>& transcript_hash,
+        SignatureScheme scheme,
+        const PrivateKey& private_key,
+        bool is_server = false) const;
+    Result<std::vector<uint8_t>> generate_finished_signature(
+        const std::vector<uint8_t>& finished_key,
+        const std::vector<uint8_t>& transcript_hash,
+        HashAlgorithm hash_algorithm) const;
+    std::vector<SignatureScheme> get_supported_signature_algorithms() const;
+    
     // Key exchange
     Result<std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>> 
         generate_key_pair(NamedGroup group) override;
     
     Result<std::vector<uint8_t>> perform_key_exchange(const KeyExchangeParams& params) override;
+    
+    // Additional key generation methods for specific algorithms
+    Result<std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>> 
+        generate_rsa_keypair(int key_size);
+    
+    Result<std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>> 
+        generate_eddsa_keypair(int key_type);
+    
+    // Helper methods for supported curves and key sizes
+    std::vector<NamedGroup> get_supported_curves() const;
+    std::vector<int> get_supported_rsa_sizes() const;
     
     // Certificate operations
     Result<bool> validate_certificate_chain(const CertValidationParams& params) override;
@@ -114,10 +143,23 @@ public:
     bool is_fips_compliant() const override;
     SecurityLevel security_level() const override;
     Result<void> set_security_level(SecurityLevel level) override;
+    
+    // AEAD utility functions
+    size_t get_aead_key_length(AEADCipher cipher) const;
+    size_t get_aead_nonce_length(AEADCipher cipher) const;
+    size_t get_aead_tag_length(AEADCipher cipher) const;
 
 private:
     class Impl;
     std::unique_ptr<Impl> pimpl_;
+    
+    // Private helper methods
+    Result<void> validate_aead_params(AEADCipher cipher, 
+                                     const std::vector<uint8_t>& key,
+                                     const std::vector<uint8_t>& nonce) const;
+    DTLSError map_openssl_error_detailed() const;
+    void secure_cleanup(std::vector<uint8_t>& buffer) const;
+    bool validate_key_scheme_compatibility(int key_type, SignatureScheme scheme) const;
 };
 
 /**
