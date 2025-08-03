@@ -39,7 +39,20 @@ public:
     };
     
     /**
-     * Transport statistics
+     * Transport statistics (returned by value)
+     */
+    struct TransportStatsSnapshot {
+        uint64_t packets_sent = 0;
+        uint64_t packets_received = 0;
+        uint64_t packets_lost = 0;
+        uint64_t packets_corrupted = 0;
+        uint64_t bytes_sent = 0;
+        uint64_t bytes_received = 0;
+        uint64_t errors_encountered = 0;
+    };
+    
+    /**
+     * Internal atomic transport statistics
      */
     struct TransportStats {
         std::atomic<uint64_t> packets_sent{0};
@@ -50,12 +63,12 @@ public:
         std::atomic<uint64_t> bytes_received{0};
         std::atomic<uint64_t> errors_encountered{0};
         
-        // Disable copy constructor and assignment due to atomics
+        // Disable copy and move constructor and assignment due to atomics
         TransportStats() = default;
         TransportStats(const TransportStats&) = delete;
         TransportStats& operator=(const TransportStats&) = delete;
-        TransportStats(TransportStats&&) = default;
-        TransportStats& operator=(TransportStats&&) = default;
+        TransportStats(TransportStats&&) = delete;
+        TransportStats& operator=(TransportStats&&) = delete;
     };
     
     MockTransport(const std::string& local_addr, uint16_t local_port);
@@ -80,7 +93,7 @@ public:
     void set_peer_transport(MockTransport* peer);
     void disconnect_peer();
     
-    TransportStats get_statistics() const;
+    TransportStatsSnapshot get_statistics() const;
     void reset_statistics();
     
     // Error injection
@@ -102,6 +115,21 @@ public:
     void pause_transmission(bool pause);
     void set_mtu(size_t mtu);
     size_t get_mtu() const;
+    
+    // Legacy interface compatibility methods (for performance tests)
+    void set_packet_loss_rate(double rate);
+    void set_network_delay(std::chrono::microseconds delay);
+    void set_bandwidth_limit(uint32_t bandwidth_kbps);
+    void reset();
+    void process_pending_messages();
+    
+    // Mock endpoint creation (simplified interface)
+    struct MockEndpoint {
+        std::string name;
+        MockTransport* transport;
+    };
+    std::unique_ptr<MockEndpoint> create_endpoint(const std::string& name);
+    void connect_endpoints(std::unique_ptr<MockEndpoint>& client, std::unique_ptr<MockEndpoint>& server);
     
 private:
     struct PendingPacket {
@@ -223,5 +251,14 @@ public:
 
 } // namespace test
 } // namespace dtls
+
+// Namespace aliases for compatibility with performance tests
+namespace test {
+namespace infrastructure {
+    using MockTransport = dtls::test::MockTransport;
+    using MockTransportFactory = dtls::test::MockTransportFactory;
+    // Note: TestCertificates alias should be added in test_certificates.h
+}
+}
 
 #endif // DTLS_MOCK_TRANSPORT_H

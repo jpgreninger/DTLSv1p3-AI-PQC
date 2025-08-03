@@ -859,7 +859,7 @@ MessageOperationChannel::MessageOperationType MessageOperationChannel::determine
         return MessageOperationType::FRAGMENTATION; // Default
     }
     
-    switch (ext->operation_type) {
+    switch (ext->operation) {
         case message_extension::FRAGMENT_MESSAGE:
             return MessageOperationType::FRAGMENTATION;
         case message_extension::REASSEMBLE_MESSAGE:
@@ -884,7 +884,7 @@ void MessageOperationChannel::update_operation_statistics(const message_transact
     stats_.messages_processed++;
     stats_.total_processing_time += ext->processing_time;
     
-    switch (ext->operation_type) {
+    switch (ext->operation) {
         case message_extension::FRAGMENT_MESSAGE:
             stats_.fragmentation_operations++;
             break;

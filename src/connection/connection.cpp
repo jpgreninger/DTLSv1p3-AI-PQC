@@ -866,5 +866,181 @@ void ConnectionManager::cleanup_closed_connections() {
         connections_.end());
 }
 
+// Early Data Support Implementation (RFC 9147)
+
+Result<void> Connection::send_early_data(const memory::ZeroCopyBuffer& data) {
+    std::lock_guard<std::mutex> lock(early_data_mutex_);
+    
+    if (force_closed_ || is_closing_) {
+        return make_error<void>(DTLSError::CONNECTION_CLOSED);
+    }
+    
+    if (!is_client_) {
+        return make_error<void>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+    
+    if (!config_.enable_early_data) {
+        return make_error<void>(DTLSError::FEATURE_NOT_ENABLED);
+    }
+    
+    // Check if we can send early data
+    if (!can_send_early_data()) {
+        return make_error<void>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+    
+    // Validate data size against configured limits
+    if (data.size() > config_.max_early_data_size) {
+        return make_error<void>(DTLSError::MESSAGE_TOO_LARGE);
+    }
+    
+    // Check if we exceed the per-session early data limit
+    if (early_data_context_.bytes_sent + data.size() > early_data_context_.max_allowed) {
+        return make_error<void>(DTLSError::QUOTA_EXCEEDED);
+    }
+    
+    // Update early data context
+    early_data_context_.state = protocol::EarlyDataState::SENDING;
+    early_data_context_.bytes_sent += data.size();
+    
+    // Buffer the early data
+    early_data_context_.early_data_buffer.insert(
+        early_data_context_.early_data_buffer.end(),
+        reinterpret_cast<const uint8_t*>(data.data()),
+        reinterpret_cast<const uint8_t*>(data.data()) + data.size()
+    );
+    
+    // TODO: When record layer is properly implemented, protect early data with early traffic keys
+    // For now, simulate sending early data through transport layer
+    
+    // Update statistics
+    stats_.bytes_sent += data.size();
+    update_last_activity();
+    
+    // Fire event for early data sent
+    fire_event(ConnectionEvent::EARLY_DATA_RECEIVED, std::vector<uint8_t>(
+        reinterpret_cast<const uint8_t*>(data.data()),
+        reinterpret_cast<const uint8_t*>(data.data()) + data.size()
+    ));
+    
+    return make_result();
+}
+
+bool Connection::can_send_early_data() const {
+    std::lock_guard<std::mutex> lock(early_data_mutex_);
+    
+    if (!is_client_ || !config_.enable_early_data) {
+        return false;
+    }
+    
+    // Check if we have a valid session ticket for early data
+    if (!early_data_context_.ticket.has_value()) {
+        return false;
+    }
+    
+    // Verify the ticket is still valid
+    if (!early_data_context_.ticket->is_valid()) {
+        return false;
+    }
+    
+    // Check if early data is within allowed limits
+    return early_data_context_.can_send_early_data();
+}
+
+bool Connection::is_early_data_accepted() const {
+    std::lock_guard<std::mutex> lock(early_data_mutex_);
+    return early_data_context_.is_early_data_accepted();
+}
+
+bool Connection::is_early_data_rejected() const {
+    std::lock_guard<std::mutex> lock(early_data_mutex_);
+    return early_data_context_.is_early_data_rejected();
+}
+
+Connection::EarlyDataStats Connection::get_early_data_stats() const {
+    std::lock_guard<std::mutex> lock(early_data_mutex_);
+    
+    EarlyDataStats stats;
+    stats.bytes_sent = early_data_context_.bytes_sent;
+    stats.was_attempted = (early_data_context_.state != protocol::EarlyDataState::NOT_ATTEMPTED);
+    
+    if (early_data_context_.state == protocol::EarlyDataState::ACCEPTED) {
+        stats.bytes_accepted = early_data_context_.bytes_sent;
+        stats.bytes_rejected = 0;
+    } else if (early_data_context_.state == protocol::EarlyDataState::REJECTED) {
+        stats.bytes_accepted = 0;
+        stats.bytes_rejected = early_data_context_.bytes_sent;
+    }
+    
+    // Calculate response time if early data phase has started
+    if (stats.was_attempted && early_data_context_.start_time != std::chrono::steady_clock::time_point{}) {
+        auto now = std::chrono::steady_clock::now();
+        stats.response_time = std::chrono::duration_cast<std::chrono::milliseconds>(
+            now - early_data_context_.start_time
+        );
+    }
+    
+    return stats;
+}
+
+Result<void> Connection::store_session_ticket(const protocol::NewSessionTicket& ticket) {
+    if (!session_ticket_manager_) {
+        return make_error<void>(DTLSError::FEATURE_NOT_ENABLED);
+    }
+    
+    // Extract early data information from ticket
+    auto max_early_data_result = protocol::extract_max_early_data_from_ticket(ticket);
+    if (!max_early_data_result) {
+        return make_error<void>(DTLSError::ILLEGAL_PARAMETER);
+    }
+    
+    std::lock_guard<std::mutex> lock(early_data_mutex_);
+    
+    // Store the ticket for future early data use
+    protocol::SessionTicket session_ticket;
+    session_ticket.ticket_data = ticket.ticket();
+    session_ticket.ticket_nonce = ticket.ticket_nonce();
+    session_ticket.ticket_lifetime = ticket.ticket_lifetime();
+    session_ticket.ticket_age_add = ticket.ticket_age_add();
+    session_ticket.max_early_data_size = max_early_data_result.value();
+    session_ticket.issued_time = std::chrono::steady_clock::now();
+    session_ticket.cipher_suite = CipherSuite::TLS_AES_128_GCM_SHA256; // TODO: Get from current session
+    
+    // Store the session ticket
+    std::string ticket_identity = "ticket_" + std::to_string(std::hash<std::string>{}(
+        std::string(reinterpret_cast<const char*>(ticket.ticket().data()), ticket.ticket().size())
+    ));
+    
+    if (!session_ticket_manager_->store_ticket(ticket_identity, session_ticket)) {
+        return make_error<void>(DTLSError::INTERNAL_ERROR);
+    }
+    
+    // Set up early data context if early data is enabled
+    if (config_.enable_early_data && max_early_data_result.value() > 0) {
+        early_data_context_.ticket = session_ticket;
+        early_data_context_.max_allowed = max_early_data_result.value();
+        early_data_context_.state = protocol::EarlyDataState::NOT_ATTEMPTED;
+    }
+    
+    return make_result();
+}
+
+std::vector<std::string> Connection::get_available_session_tickets() const {
+    if (!session_ticket_manager_) {
+        return {};
+    }
+    
+    // TODO: Implement when SessionTicketManager provides enumeration API
+    return {};
+}
+
+void Connection::clear_session_tickets() {
+    if (session_ticket_manager_) {
+        session_ticket_manager_->clear_all_tickets();
+    }
+    
+    std::lock_guard<std::mutex> lock(early_data_mutex_);
+    early_data_context_.reset();
+}
+
 }  // namespace v13
 }  // namespace dtls

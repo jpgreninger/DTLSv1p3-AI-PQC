@@ -9,7 +9,7 @@ namespace v13 {
 namespace systemc_tlm {
 
 // Record Layer Module Implementation
-SC_MODULE_EXPORT(record_layer_module);
+// SC_MODULE_EXPORT not needed - handled by CMake
 
 record_layer_module::record_layer_module(sc_module_name name)
     : sc_module(name)
@@ -181,7 +181,17 @@ void record_layer_module::b_transport(tlm::tlm_generic_payload& trans, sc_time& 
     
     // Create DTLS transaction wrapper
     auto dtls_trans = std::make_unique<dtls_transaction>();
-    dtls_trans->get_payload() = trans;
+    
+    // Copy TLM payload fields (assignment operator is private)
+    auto& payload = dtls_trans->get_payload();
+    payload.set_command(trans.get_command());
+    payload.set_address(trans.get_address());
+    payload.set_data_ptr(trans.get_data_ptr());
+    payload.set_data_length(trans.get_data_length());
+    payload.set_streaming_width(trans.get_streaming_width());
+    payload.set_response_status(trans.get_response_status());
+    
+    // Copy extension
     dtls_trans->get_extension() = *ext;
     dtls_trans->set_delay(delay);
     
@@ -447,7 +457,7 @@ void record_layer_module::reset_statistics() {
 }
 
 // Handshake Engine Module Implementation
-SC_MODULE_EXPORT(handshake_engine_module);
+// SC_MODULE_EXPORT not needed - handled by CMake
 
 handshake_engine_module::handshake_engine_module(sc_module_name name)
     : sc_module(name)
@@ -540,13 +550,13 @@ void handshake_engine_module::timeout_monitoring_thread() {
         
         std::lock_guard<std::mutex> lock(handshake_mutex);
         
-        auto it = active_handshakes.begin();
-        while (it != active_handshakes.end()) {
+        auto it = active_handshake_contexts.begin();
+        while (it != active_handshake_contexts.end()) {
             HandshakeContext& context = *it->second;
             
             if (current_time - context.last_activity > timeout_threshold) {
                 handle_handshake_timeout(it->first);
-                it = active_handshakes.erase(it);
+                it = active_handshake_contexts.erase(it);
                 
                 std::lock_guard<std::mutex> stats_lock(stats_mutex);
                 stats.timeout_handshakes++;
@@ -565,7 +575,7 @@ void handshake_engine_module::performance_analysis_thread() {
         
         // Update output ports
         std::lock_guard<std::mutex> lock(handshake_mutex);
-        active_handshakes.write(active_handshakes.size());
+        active_handshakes.write(active_handshake_contexts.size());
         
         std::lock_guard<std::mutex> stats_lock(stats_mutex);
         completed_handshakes.write(stats.successful_handshakes);
@@ -617,7 +627,16 @@ void handshake_engine_module::b_transport(tlm::tlm_generic_payload& trans, sc_ti
     
     // Create DTLS transaction wrapper
     dtls_transaction dtls_trans;
-    dtls_trans.get_payload() = trans;
+    
+    // Copy TLM payload fields (assignment operator is private)
+    auto& payload = dtls_trans.get_payload();
+    payload.set_command(trans.get_command());
+    payload.set_address(trans.get_address());
+    payload.set_data_ptr(trans.get_data_ptr());
+    payload.set_data_length(trans.get_data_length());
+    payload.set_streaming_width(trans.get_streaming_width());
+    payload.set_response_status(trans.get_response_status());
+    
     dtls_trans.get_extension() = *ext;
     dtls_trans.set_delay(delay);
     
@@ -650,8 +669,8 @@ bool handshake_engine_module::process_handshake_message(dtls_transaction& trans)
     // Get or create handshake context
     std::lock_guard<std::mutex> lock(handshake_mutex);
     
-    auto it = active_handshakes.find(connection_id);
-    if (it == active_handshakes.end()) {
+    auto it = active_handshake_contexts.find(connection_id);
+    if (it == active_handshake_contexts.end()) {
         // Create new handshake context
         auto context = std::make_unique<HandshakeContext>();
         context->connection_id = connection_id;
@@ -659,8 +678,8 @@ bool handshake_engine_module::process_handshake_message(dtls_transaction& trans)
         context->last_activity = sc_time_stamp();
         context->state = HandshakeState::IDLE;
         
-        active_handshakes[connection_id] = std::move(context);
-        it = active_handshakes.find(connection_id);
+        active_handshake_contexts[connection_id] = std::move(context);
+        it = active_handshake_contexts.find(connection_id);
         
         std::lock_guard<std::mutex> stats_lock(stats_mutex);
         stats.total_handshakes_initiated++;
@@ -809,8 +828,8 @@ bool handshake_engine_module::process_finished(HandshakeContext& context, const 
 }
 
 bool handshake_engine_module::advance_handshake_state(uint32_t connection_id, const dtls_transaction& trans) {
-    auto it = active_handshakes.find(connection_id);
-    if (it == active_handshakes.end()) {
+    auto it = active_handshake_contexts.find(connection_id);
+    if (it == active_handshake_contexts.end()) {
         return false;
     }
     
@@ -874,8 +893,8 @@ void handshake_engine_module::handle_handshake_timeout(uint32_t connection_id) {
 void handshake_engine_module::handle_handshake_failure(uint32_t connection_id, const std::string& reason) {
     log_handshake_event(connection_id, "Handshake failed: " + reason);
     
-    auto it = active_handshakes.find(connection_id);
-    if (it != active_handshakes.end()) {
+    auto it = active_handshake_contexts.find(connection_id);
+    if (it != active_handshake_contexts.end()) {
         it->second->state = HandshakeState::HANDSHAKE_FAILED;
     }
     
@@ -885,8 +904,8 @@ void handshake_engine_module::handle_handshake_failure(uint32_t connection_id, c
 void handshake_engine_module::cleanup_completed_handshakes() {
     std::lock_guard<std::mutex> lock(handshake_mutex);
     
-    auto it = active_handshakes.begin();
-    while (it != active_handshakes.end()) {
+    auto it = active_handshake_contexts.begin();
+    while (it != active_handshake_contexts.end()) {
         const HandshakeContext& context = *it->second;
         
         if (context.is_complete() || context.has_failed()) {
@@ -905,7 +924,7 @@ void handshake_engine_module::cleanup_completed_handshakes() {
                 }
             }
             
-            it = active_handshakes.erase(it);
+            it = active_handshake_contexts.erase(it);
         } else {
             ++it;
         }
@@ -917,8 +936,8 @@ void handshake_engine_module::update_performance_metrics() {
     
     // Update peak statistics
     std::lock_guard<std::mutex> handshake_lock(handshake_mutex);
-    if (active_handshakes.size() > stats.peak_active_handshakes) {
-        stats.peak_active_handshakes = active_handshakes.size();
+    if (active_handshake_contexts.size() > stats.peak_active_handshakes) {
+        stats.peak_active_handshakes = active_handshake_contexts.size();
     }
     
     // Calculate average handshake time
@@ -942,7 +961,7 @@ double handshake_engine_module::calculate_cpu_utilization() {
     std::lock_guard<std::mutex> handshake_lock(handshake_mutex);
     std::lock_guard<std::mutex> stats_lock(stats_mutex);
     
-    double utilization = (active_handshakes.size() * 10.0); // 10% per active handshake
+    double utilization = (active_handshake_contexts.size() * 10.0); // 10% per active handshake
     return std::min(100.0, utilization);
 }
 
@@ -962,7 +981,7 @@ void handshake_engine_module::reset_statistics() {
 }
 
 // Key Manager Module Implementation  
-SC_MODULE_EXPORT(key_manager_module);
+// SC_MODULE_EXPORT not needed - handled by CMake
 
 key_manager_module::key_manager_module(sc_module_name name) 
     : sc_module(name)

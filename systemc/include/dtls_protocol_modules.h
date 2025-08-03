@@ -121,7 +121,7 @@ private:
     
     // Statistics and state
     RecordLayerStats stats;
-    std::mutex stats_mutex;
+    mutable std::mutex stats_mutex;
     std::map<uint32_t, uint16_t> connection_epochs;
     
     // Configuration
@@ -337,7 +337,7 @@ public:
 
 private:
     // Handshake contexts
-    std::map<uint32_t, std::unique_ptr<HandshakeContext>> active_handshakes;
+    std::map<uint32_t, std::unique_ptr<HandshakeContext>> active_handshake_contexts;
     std::mutex handshake_mutex;
     
     // Message processing
@@ -348,7 +348,7 @@ private:
     
     // Statistics and monitoring
     HandshakeEngineStats stats;
-    std::mutex stats_mutex;
+    mutable std::mutex stats_mutex;
     
     // Configuration
     bool processing_enabled{true};
@@ -394,7 +394,7 @@ public:
     
     // Configuration methods
     void set_handshake_timeout(uint32_t timeout_ms);
-    void enable_early_data(bool enabled);
+    void set_early_data_enabled(bool enabled);
     void set_max_fragment_size(uint16_t size);
     
     // Statistics methods

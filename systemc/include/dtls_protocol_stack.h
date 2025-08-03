@@ -200,8 +200,8 @@ public:
     
     // Configuration methods
     void configure_stack(uint32_t max_conn, bool hw_accel, uint16_t mtu);
-    void enable_stack(bool enable);
-    void reset_stack();
+    void set_stack_enabled(bool enable);
+    void perform_stack_reset();
     
     // Connection management methods
     uint32_t create_connection();
@@ -260,7 +260,7 @@ namespace utils {
     /**
      * Convert protocol stack result to TLM transaction
      */
-    void convert_result_to_transaction(const ProtocolStackStats& stats,
+    void convert_result_to_transaction(const dtls_protocol_stack::ProtocolStackStats& stats,
                                      tlm::tlm_generic_payload& trans);
     
     /**

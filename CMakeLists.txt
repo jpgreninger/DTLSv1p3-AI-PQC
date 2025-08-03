@@ -40,19 +40,19 @@ find_package(OpenSSL REQUIRED)
 #     set(OPENSSL_CRYPTO_LIBRARY "/home/jgreninger/Work/openssl/lib/libcrypto.a")
 #     set(OPENSSL_SSL_LIBRARY "/home/jgreninger/Work/openssl/lib/libssl.a")
 #     message(STATUS "Using custom OpenSSL at ${OPENSSL_ROOT_DIR}")
-#     
+#
 #     # Create OpenSSL targets manually for custom installation
 #     add_library(OpenSSL::Crypto STATIC IMPORTED)
 #     set_target_properties(OpenSSL::Crypto PROPERTIES
 #         IMPORTED_LOCATION "${OPENSSL_CRYPTO_LIBRARY}"
 #         INTERFACE_INCLUDE_DIRECTORIES "${OPENSSL_INCLUDE_DIR}")
-#         
+#
 #     add_library(OpenSSL::SSL STATIC IMPORTED)
 #     set_target_properties(OpenSSL::SSL PROPERTIES
 #         IMPORTED_LOCATION "${OPENSSL_SSL_LIBRARY}"
 #         INTERFACE_INCLUDE_DIRECTORIES "${OPENSSL_INCLUDE_DIR}"
 #         INTERFACE_LINK_LIBRARIES "OpenSSL::Crypto")
-#     
+#
 #     set(OPENSSL_FOUND TRUE)
 #     set(OPENSSL_VERSION "3.6.0")
 # else()
@@ -141,7 +141,7 @@ endif()
 # Installation
 include(GNUInstallDirs)
 
-install(DIRECTORY include/ 
+install(DIRECTORY include/
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp"
 )

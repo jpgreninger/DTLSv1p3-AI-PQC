@@ -53,10 +53,10 @@ public:
                 size_t current_memory = get_current_memory_usage();
                 double current_cpu = get_current_cpu_usage();
                 
-                peak_memory_ = std::max(peak_memory_, current_memory);
+                peak_memory_ = std::max(peak_memory_.load(), current_memory);
                 total_memory_ += current_memory;
                 
-                peak_cpu_ = std::max(peak_cpu_, current_cpu);
+                peak_cpu_ = std::max(peak_cpu_.load(), current_cpu);
                 total_cpu_ += current_cpu;
                 
                 sample_count_++;
@@ -272,6 +272,7 @@ public:
     BenchmarkResult run_single_benchmark(const RegisteredBenchmark& benchmark) {
         BenchmarkResult result;
         result.name = benchmark.name;
+        result.iterations = config_.iterations;
         result.timestamp = std::chrono::system_clock::now();
         
         StatisticalAccumulator timer_stats;
@@ -510,6 +511,42 @@ void BenchmarkRunner::generate_report(const std::vector<BenchmarkResult>& result
 void BenchmarkRunner::generate_json_report(const std::vector<BenchmarkResult>& results,
                                           const std::string& filename) {
     pimpl_->save_results_json(results, filename);
+}
+
+void BenchmarkRunner::generate_csv_report(const std::vector<BenchmarkResult>& results,
+                                         const std::string& filename) {
+    std::ofstream file(filename);
+    if (!file.is_open()) {
+        throw std::runtime_error("Failed to open CSV file for writing: " + filename);
+    }
+    
+    // CSV header
+    file << "Name,Iterations,MeanTime(ms),MinTime(ms),MaxTime(ms),StdDev(ms),"
+         << "OpsPerSec,PeakMemory(KB),AvgCPU(%),ThroughputMbps,ErrorRate(%),Status\n";
+    
+    // CSV data rows
+    for (const auto& result : results) {
+        std::string status = "PASS";
+        if (!result.meets_latency_requirement) status = "FAIL_LATENCY";
+        else if (!result.meets_memory_requirement) status = "FAIL_MEMORY";
+        else if (!result.meets_cpu_requirement) status = "FAIL_CPU";
+        else if (result.error_rate >= 0.01) status = "FAIL_ERRORS";
+        
+        file << result.name << ","
+             << result.iterations << ","
+             << std::fixed << std::setprecision(3) << result.mean_time_ms << ","
+             << std::fixed << std::setprecision(3) << result.min_time_ms << ","
+             << std::fixed << std::setprecision(3) << result.max_time_ms << ","
+             << std::fixed << std::setprecision(3) << result.std_deviation_ms << ","
+             << std::fixed << std::setprecision(1) << result.operations_per_second << ","
+             << (result.peak_memory_bytes / 1024) << ","
+             << std::fixed << std::setprecision(1) << result.avg_cpu_percent << ","
+             << std::fixed << std::setprecision(2) << result.throughput_mbps << ","
+             << std::fixed << std::setprecision(2) << (result.error_rate * 100) << ","
+             << status << "\n";
+    }
+    
+    file.close();
 }
 
 // ============================================================================

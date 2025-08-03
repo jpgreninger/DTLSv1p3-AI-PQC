@@ -164,7 +164,9 @@ public:
         REASSEMBLE_MESSAGE,
         SEND_FLIGHT,
         RECEIVE_FRAGMENT,
-        RETRANSMIT_FLIGHT
+        RETRANSMIT_FLIGHT,
+        MANAGE_FLIGHT,
+        RETRANSMIT_MESSAGE
     };
     
     operation_type operation{FRAGMENT_MESSAGE};

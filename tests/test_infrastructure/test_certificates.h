@@ -74,4 +74,11 @@ public:
 } // namespace test
 } // namespace dtls
 
+// Namespace alias for compatibility with performance tests
+namespace test {
+namespace infrastructure {
+    using TestCertificates = dtls::test::TestCertificates;
+}
+}
+
 #endif // DTLS_TEST_CERTIFICATES_H

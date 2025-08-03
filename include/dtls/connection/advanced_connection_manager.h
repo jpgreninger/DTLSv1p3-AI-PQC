@@ -345,6 +345,16 @@ public:
 };
 
 /**
+ * @brief Migration statistics structure
+ */
+struct DTLS_API MigrationStats {
+    uint64_t successful_migrations = 0;
+    uint64_t failed_migrations = 0;
+    std::chrono::microseconds average_migration_time{0};
+    uint64_t total_migrations = 0;
+};
+
+/**
  * @brief Connection migration manager
  */
 class DTLS_API MigrationManager {
@@ -367,12 +377,7 @@ public:
     /**
      * @brief Get migration statistics
      */
-    virtual struct MigrationStats {
-        uint64_t successful_migrations = 0;
-        uint64_t failed_migrations = 0;
-        std::chrono::microseconds average_migration_time{0};
-        uint64_t total_migrations = 0;
-    } get_migration_statistics() const = 0;
+    virtual MigrationStats get_migration_statistics() const = 0;
 };
 
 /**

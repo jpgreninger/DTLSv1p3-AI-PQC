@@ -59,7 +59,7 @@ public:
 private:
     std::map<std::string, CipherTiming> cipher_timings;
     LoadAdjustment load_adjustment;
-    std::mutex timing_mutex;
+    mutable std::mutex timing_mutex;
     
     // Performance tracking
     uint64_t total_operations{0};
@@ -148,7 +148,7 @@ public:
 private:
     NetworkConditions conditions;
     CongestionWindow congestion_window;
-    std::mutex network_mutex;
+    mutable std::mutex network_mutex;
     
     // Statistics
     uint64_t total_packets_sent{0};
