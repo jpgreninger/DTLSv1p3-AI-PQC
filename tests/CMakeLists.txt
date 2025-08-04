@@ -51,7 +51,7 @@ target_link_libraries(dtls_test_infrastructure PRIVATE OpenSSL::SSL OpenSSL::Cry
 
 # Common test libraries and dependencies
 set(DTLS_TEST_LIBRARIES
-    dtls_core
+    dtlsv13
     dtls_test_infrastructure
     GTest::gtest
     GTest::gtest_main

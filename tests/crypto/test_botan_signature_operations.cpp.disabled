@@ -1,0 +1,454 @@
+/**
+ * @file test_botan_signature_operations.cpp
+ * @brief Comprehensive tests for Botan signature operations
+ * 
+ * Tests all signature schemes supported by the Botan provider according to DTLS v1.3 RFC 9147.
+ */
+
+#include <gtest/gtest.h>
+#include <dtls/crypto/botan_provider.h>
+#include <dtls/types.h>
+#include <vector>
+#include <memory>
+#include <chrono>
+#include <random>
+#include <string>
+
+using namespace dtls::v13;
+using namespace dtls::v13::crypto;
+
+class BotanSignatureOperationsTest : public ::testing::Test {
+protected:
+    void SetUp() override {
+        provider_ = std::make_unique<BotanProvider>();
+        
+        // Initialize the provider
+        auto init_result = provider_->initialize();
+        ASSERT_TRUE(init_result) << "Failed to initialize Botan provider";
+        
+        // Create test data of various sizes
+        createTestData();
+    }
+    
+    void TearDown() override {
+        if (provider_) {
+            provider_->cleanup();
+        }
+    }
+    
+    void createTestData() {
+        // Small data (16 bytes)
+        small_data_ = {
+            0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x20, 0x57, 0x6f,
+            0x72, 0x6c, 0x64, 0x21, 0x20, 0x44, 0x54, 0x4c
+        };
+        
+        // Medium data (256 bytes)
+        medium_data_.resize(256);
+        std::iota(medium_data_.begin(), medium_data_.end(), 0);
+        
+        // Large data (4KB)
+        large_data_.resize(4096);
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> dis(0, 255);
+        for (auto& byte : large_data_) {
+            byte = static_cast<uint8_t>(dis(gen));
+        }
+        
+        // DTLS transcript hash for certificate verification
+        transcript_sha256_.resize(32);
+        std::fill(transcript_sha256_.begin(), transcript_sha256_.end(), 0x42);
+    }
+    
+    // Helper to create mock BotanPrivateKey for testing
+    std::unique_ptr<BotanPrivateKey> createMockPrivateKey() {
+        // For testing purposes, create a mock key as std::vector<uint8_t>*
+        // The BotanProvider destructor expects this in simulation mode
+        auto mock_key_data = new std::vector<uint8_t>(32, 0x42);
+        std::unique_ptr<void> mock_key(static_cast<void*>(mock_key_data));
+        
+        return std::make_unique<BotanPrivateKey>(std::move(mock_key), NamedGroup::SECP256R1);
+    }
+    
+    // Helper to create mock BotanPublicKey for testing
+    std::unique_ptr<BotanPublicKey> createMockPublicKey() {
+        // For testing purposes, create a mock key as std::vector<uint8_t>*
+        // The BotanProvider destructor expects this in simulation mode
+        auto mock_key_data = new std::vector<uint8_t>(32, 0x43);
+        std::unique_ptr<void> mock_key(static_cast<void*>(mock_key_data));
+        
+        return std::make_unique<BotanPublicKey>(std::move(mock_key), NamedGroup::SECP256R1);
+    }
+    
+    std::unique_ptr<BotanProvider> provider_;
+    
+    // Test data of various sizes
+    std::vector<uint8_t> small_data_;
+    std::vector<uint8_t> medium_data_;
+    std::vector<uint8_t> large_data_;
+    std::vector<uint8_t> transcript_sha256_;
+};
+
+// ============================================================================
+// BASIC SIGNATURE OPERATIONS TESTS
+// ============================================================================
+
+TEST_F(BotanSignatureOperationsTest, SignData_BasicOperation) {
+    auto private_key = createMockPrivateKey();
+    
+    SignatureParams params;
+    params.data = small_data_;
+    params.scheme = SignatureScheme::RSA_PKCS1_SHA256;
+    params.private_key = private_key.get();
+    
+    auto result = provider_->sign_data(params);
+    
+    // In simulation mode, this should return a mock signature
+    EXPECT_TRUE(result) << "Basic signature operation should succeed";
+    
+    if (result) {
+        const auto& signature = result.value();
+        EXPECT_FALSE(signature.empty()) << "Signature should not be empty";
+    }
+}
+
+TEST_F(BotanSignatureOperationsTest, VerifySignature_BasicOperation) {
+    auto public_key = createMockPublicKey();
+    std::vector<uint8_t> mock_signature(256, 0x42); // Mock RSA signature
+    
+    SignatureParams params;
+    params.data = small_data_;
+    params.scheme = SignatureScheme::RSA_PKCS1_SHA256;
+    params.public_key = public_key.get();
+    
+    auto result = provider_->verify_signature(params, mock_signature);
+    
+    // Should not fail due to parameter validation errors
+    EXPECT_TRUE(result) << "Basic signature verification should not error";
+}
+
+TEST_F(BotanSignatureOperationsTest, SignData_ParameterValidation) {
+    auto private_key = createMockPrivateKey();
+    
+    // Test with null private key
+    {
+        SignatureParams params;
+        params.data = small_data_;
+        params.scheme = SignatureScheme::RSA_PKCS1_SHA256;
+        params.private_key = nullptr;
+        
+        auto result = provider_->sign_data(params);
+        EXPECT_FALSE(result);
+        EXPECT_EQ(result.error(), DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Test with empty data
+    {
+        SignatureParams params;
+        params.data.clear();
+        params.scheme = SignatureScheme::RSA_PKCS1_SHA256;
+        params.private_key = private_key.get();
+        
+        auto result = provider_->sign_data(params);
+        EXPECT_FALSE(result);
+        EXPECT_EQ(result.error(), DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Test with oversized data (DoS protection - 1MB + 1 byte)
+    {
+        std::vector<uint8_t> oversized_data(1024 * 1024 + 1, 0xAA);
+        
+        SignatureParams params;
+        params.data = oversized_data;
+        params.scheme = SignatureScheme::RSA_PKCS1_SHA256;
+        params.private_key = private_key.get();
+        
+        auto result = provider_->sign_data(params);
+        EXPECT_FALSE(result);
+        EXPECT_EQ(result.error(), DTLSError::INVALID_PARAMETER);
+    }
+}
+
+TEST_F(BotanSignatureOperationsTest, VerifySignature_ParameterValidation) {
+    auto public_key = createMockPublicKey();
+    std::vector<uint8_t> valid_signature(256, 0x42);
+    
+    // Test with null public key
+    {
+        SignatureParams params;
+        params.data = small_data_;
+        params.scheme = SignatureScheme::RSA_PKCS1_SHA256;
+        params.public_key = nullptr;
+        
+        auto result = provider_->verify_signature(params, valid_signature);
+        EXPECT_FALSE(result);
+        EXPECT_EQ(result.error(), DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Test with empty data
+    {
+        SignatureParams params;
+        params.data.clear();
+        params.scheme = SignatureScheme::RSA_PKCS1_SHA256;
+        params.public_key = public_key.get();
+        
+        auto result = provider_->verify_signature(params, valid_signature);
+        EXPECT_FALSE(result);
+        EXPECT_EQ(result.error(), DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Test with empty signature
+    {
+        SignatureParams params;
+        params.data = small_data_;
+        params.scheme = SignatureScheme::RSA_PKCS1_SHA256;
+        params.public_key = public_key.get();
+        
+        std::vector<uint8_t> empty_signature;
+        auto result = provider_->verify_signature(params, empty_signature);
+        EXPECT_FALSE(result);
+        EXPECT_EQ(result.error(), DTLSError::INVALID_PARAMETER);
+    }
+}
+
+TEST_F(BotanSignatureOperationsTest, VerifyDTLSCertificateSignature_BasicOperation) {
+    auto public_key = createMockPublicKey();
+    std::vector<uint8_t> signature(256, 0x42);
+    
+    DTLSCertificateVerifyParams params;
+    params.transcript_hash = transcript_sha256_;
+    params.scheme = SignatureScheme::RSA_PKCS1_SHA256;
+    params.public_key = public_key.get();
+    params.is_server_context = true;
+    
+    auto result = provider_->verify_dtls_certificate_signature(params, signature);
+    EXPECT_TRUE(result) << "DTLS certificate signature verification should not error";
+}
+
+TEST_F(BotanSignatureOperationsTest, VerifyDTLSCertificateSignature_ParameterValidation) {
+    auto public_key = createMockPublicKey();
+    std::vector<uint8_t> signature(256, 0x42);
+    
+    // Test with null public key
+    {
+        DTLSCertificateVerifyParams params;
+        params.transcript_hash = transcript_sha256_;
+        params.scheme = SignatureScheme::RSA_PKCS1_SHA256;
+        params.public_key = nullptr;
+        params.is_server_context = true;
+        
+        auto result = provider_->verify_dtls_certificate_signature(params, signature);
+        EXPECT_FALSE(result);
+        EXPECT_EQ(result.error(), DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Test with empty transcript hash
+    {
+        DTLSCertificateVerifyParams params;
+        params.transcript_hash.clear();
+        params.scheme = SignatureScheme::RSA_PKCS1_SHA256;
+        params.public_key = public_key.get();
+        params.is_server_context = true;
+        
+        auto result = provider_->verify_dtls_certificate_signature(params, signature);
+        EXPECT_FALSE(result);
+        EXPECT_EQ(result.error(), DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Test with invalid transcript hash size (too small)
+    {
+        DTLSCertificateVerifyParams params;
+        params.transcript_hash = {0x01, 0x02, 0x03}; // Too small (< 20 bytes)
+        params.scheme = SignatureScheme::RSA_PKCS1_SHA256;
+        params.public_key = public_key.get();
+        params.is_server_context = true;
+        
+        auto result = provider_->verify_dtls_certificate_signature(params, signature);
+        EXPECT_FALSE(result);
+        EXPECT_EQ(result.error(), DTLSError::INVALID_PARAMETER);
+    }
+}
+
+TEST_F(BotanSignatureOperationsTest, UnsupportedSignatureScheme) {
+    auto private_key = createMockPrivateKey();
+    
+    SignatureParams params;
+    params.data = small_data_;
+    params.scheme = static_cast<SignatureScheme>(0xFFFF); // Unsupported scheme
+    params.private_key = private_key.get();
+    
+    auto result = provider_->sign_data(params);
+    EXPECT_FALSE(result);
+    EXPECT_EQ(result.error(), DTLSError::OPERATION_NOT_SUPPORTED);
+}
+
+TEST_F(BotanSignatureOperationsTest, ProviderNotInitialized) {
+    // Create uninitialized provider
+    auto uninitialized_provider = std::make_unique<BotanProvider>();
+    auto private_key = createMockPrivateKey();
+    
+    SignatureParams params;
+    params.data = small_data_;
+    params.scheme = SignatureScheme::RSA_PKCS1_SHA256;
+    params.private_key = private_key.get();
+    
+    auto result = uninitialized_provider->sign_data(params);
+    EXPECT_FALSE(result);
+    EXPECT_EQ(result.error(), DTLSError::NOT_INITIALIZED);
+}
+
+// ============================================================================
+// SIGNATURE SCHEME SUPPORT TESTS
+// ============================================================================
+
+TEST_F(BotanSignatureOperationsTest, RSA_SignatureSchemes) {
+    auto private_key = createMockPrivateKey();
+    
+    const std::vector<SignatureScheme> rsa_schemes = {
+        SignatureScheme::RSA_PKCS1_SHA256,
+        SignatureScheme::RSA_PKCS1_SHA384,
+        SignatureScheme::RSA_PKCS1_SHA512,
+        SignatureScheme::RSA_PSS_RSAE_SHA256,
+        SignatureScheme::RSA_PSS_RSAE_SHA384,
+        SignatureScheme::RSA_PSS_RSAE_SHA512
+    };
+    
+    for (auto scheme : rsa_schemes) {
+        SCOPED_TRACE("Testing RSA scheme: " + std::to_string(static_cast<uint16_t>(scheme)));
+        
+        SignatureParams params;
+        params.data = small_data_;
+        params.scheme = scheme;
+        params.private_key = private_key.get();
+        
+        auto result = provider_->sign_data(params);
+        
+        // Should either succeed or return operation not supported (in simulation)
+        if (result) {
+            EXPECT_FALSE(result.value().empty());
+        } else {
+            // In simulation mode, some schemes might not be supported
+            EXPECT_TRUE(result.error() == DTLSError::OPERATION_NOT_SUPPORTED || 
+                       result.error() == DTLSError::INVALID_PARAMETER);
+        }
+    }
+}
+
+TEST_F(BotanSignatureOperationsTest, ECDSA_SignatureSchemes) {
+    auto private_key = createMockPrivateKey();
+    
+    const std::vector<SignatureScheme> ecdsa_schemes = {
+        SignatureScheme::ECDSA_SECP256R1_SHA256,
+        SignatureScheme::ECDSA_SECP384R1_SHA384,
+        SignatureScheme::ECDSA_SECP521R1_SHA512
+    };
+    
+    for (auto scheme : ecdsa_schemes) {
+        SCOPED_TRACE("Testing ECDSA scheme: " + std::to_string(static_cast<uint16_t>(scheme)));
+        
+        SignatureParams params;
+        params.data = small_data_;
+        params.scheme = scheme;
+        params.private_key = private_key.get();
+        
+        auto result = provider_->sign_data(params);
+        
+        // Should either succeed or return operation not supported
+        if (result) {
+            EXPECT_FALSE(result.value().empty());
+        } else {
+            EXPECT_TRUE(result.error() == DTLSError::OPERATION_NOT_SUPPORTED || 
+                       result.error() == DTLSError::INVALID_PARAMETER);
+        }
+    }
+}
+
+TEST_F(BotanSignatureOperationsTest, EdDSA_SignatureSchemes) {
+    auto private_key = createMockPrivateKey();
+    
+    const std::vector<SignatureScheme> eddsa_schemes = {
+        SignatureScheme::ED25519,
+        SignatureScheme::ED448
+    };
+    
+    for (auto scheme : eddsa_schemes) {
+        SCOPED_TRACE("Testing EdDSA scheme: " + std::to_string(static_cast<uint16_t>(scheme)));
+        
+        SignatureParams params;
+        params.data = small_data_;
+        params.scheme = scheme;
+        params.private_key = private_key.get();
+        
+        auto result = provider_->sign_data(params);
+        
+        // Should either succeed or return operation not supported
+        if (result) {
+            EXPECT_FALSE(result.value().empty());
+        } else {
+            EXPECT_TRUE(result.error() == DTLSError::OPERATION_NOT_SUPPORTED || 
+                       result.error() == DTLSError::INVALID_PARAMETER);
+        }
+    }
+}
+
+// ============================================================================
+// PERFORMANCE AND SECURITY TESTS
+// ============================================================================
+
+TEST_F(BotanSignatureOperationsTest, SignatureVerification_TimingAttackResistance) {
+    auto public_key = createMockPublicKey();
+    
+    SignatureParams params;
+    params.data = small_data_;
+    params.scheme = SignatureScheme::RSA_PKCS1_SHA256;
+    params.public_key = public_key.get();
+    
+    // Create several different invalid signatures
+    std::vector<std::vector<uint8_t>> invalid_signatures;
+    for (int i = 0; i < 5; ++i) {
+        std::vector<uint8_t> sig(256);
+        std::fill(sig.begin(), sig.end(), static_cast<uint8_t>(i + 1));
+        invalid_signatures.push_back(sig);
+    }
+    
+    // Measure verification times
+    std::vector<std::chrono::nanoseconds> times;
+    for (const auto& sig : invalid_signatures) {
+        auto start = std::chrono::high_resolution_clock::now();
+        auto result = provider_->verify_signature(params, sig);
+        auto end = std::chrono::high_resolution_clock::now();
+        
+        // Should not error out, but may return false
+        EXPECT_TRUE(result);
+        
+        times.push_back(std::chrono::duration_cast<std::chrono::nanoseconds>(end - start));
+    }
+    
+    // Check timing consistency (allow reasonable variation for simulation)
+    auto min_time = *std::min_element(times.begin(), times.end());
+    auto max_time = *std::max_element(times.begin(), times.end());
+    
+    // Allow generous timing variation in simulation environment
+    EXPECT_LT(max_time.count(), min_time.count() * 50)
+        << "Excessive timing variation may indicate side channel vulnerability";
+}
+
+TEST_F(BotanSignatureOperationsTest, LargeDataHandling) {
+    auto private_key = createMockPrivateKey();
+    
+    SignatureParams params;
+    params.data = large_data_; // 4KB
+    params.scheme = SignatureScheme::RSA_PKCS1_SHA256;
+    params.private_key = private_key.get();
+    
+    auto result = provider_->sign_data(params);
+    
+    // Should handle large data gracefully
+    if (result) {
+        EXPECT_FALSE(result.value().empty());
+    } else {
+        // Should not fail due to parameter validation for 4KB data
+        EXPECT_NE(result.error(), DTLSError::INVALID_PARAMETER);
+    }
+}
