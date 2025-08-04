@@ -124,9 +124,20 @@ public:
     SecurityLevel security_level() const override;
     Result<void> set_security_level(SecurityLevel level) override;
 
+    // AEAD helper functions
+    size_t get_aead_key_length(AEADCipher cipher) const;
+    size_t get_aead_nonce_length(AEADCipher cipher) const;
+    size_t get_aead_tag_length(AEADCipher cipher) const;
+
 private:
     class Impl;
     std::unique_ptr<Impl> pimpl_;
+    
+    // Private helper functions
+    Result<void> validate_aead_params(AEADCipher cipher, 
+                                     const std::vector<uint8_t>& key,
+                                     const std::vector<uint8_t>& nonce) const;
+    Result<std::string> aead_cipher_to_botan(AEADCipher cipher) const;
 };
 
 /**

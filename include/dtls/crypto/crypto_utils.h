@@ -190,6 +190,13 @@ DTLS_API Result<ConnectionID> generate_connection_id(
     CryptoProvider& provider, 
     size_t length = 8);
 
+// DTLS v1.3 specific random generation functions for RFC 9147 compliance
+DTLS_API Result<Random> generate_client_hello_random(CryptoProvider& provider);
+DTLS_API Result<Random> generate_server_hello_random(CryptoProvider& provider);
+DTLS_API Result<Random> generate_dtls_random_with_entropy(
+    CryptoProvider& provider,
+    const std::vector<uint8_t>& additional_entropy);
+
 // Timing-safe comparison
 DTLS_API bool constant_time_compare(
     const std::vector<uint8_t>& a,

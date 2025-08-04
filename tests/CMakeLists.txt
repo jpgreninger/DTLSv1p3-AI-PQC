@@ -93,6 +93,8 @@ add_executable(dtls_crypto_test
     crypto/test_hkdf_expand_label.cpp
     crypto/test_signature_verification.cpp
     crypto/test_mac_validation.cpp
+    crypto/test_random_generation.cpp
+    crypto/test_aead_operations.cpp
 )
 
 target_link_libraries(dtls_crypto_test PRIVATE ${DTLS_TEST_LIBRARIES})

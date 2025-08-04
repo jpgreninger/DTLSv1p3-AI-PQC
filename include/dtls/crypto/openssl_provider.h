@@ -178,6 +178,7 @@ private:
     DTLSError map_openssl_error_detailed() const;
     void secure_cleanup(std::vector<uint8_t>& buffer) const;
     bool validate_key_scheme_compatibility(int key_type, SignatureScheme scheme) const;
+    bool validate_random_entropy(const std::vector<uint8_t>& random_data) const;
 };
 
 /**

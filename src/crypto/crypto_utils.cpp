@@ -689,6 +689,74 @@ Result<std::vector<uint8_t>> generate_session_id(CryptoProvider& provider) {
     return provider.generate_random(params);
 }
 
+// DTLS v1.3 specific random generation functions for RFC 9147 compliance
+Result<Random> generate_client_hello_random(CryptoProvider& provider) {
+    RandomParams params;
+    params.length = RANDOM_LENGTH; // Always 32 bytes for DTLS v1.3
+    params.cryptographically_secure = true;
+    // ClientHello random must be cryptographically secure to prevent replay attacks
+    
+    auto random_bytes = provider.generate_random(params);
+    if (!random_bytes) {
+        return Result<Random>(random_bytes.error());
+    }
+    
+    if (random_bytes->size() != RANDOM_LENGTH) {
+        return Result<Random>(DTLSError::INTERNAL_ERROR);
+    }
+    
+    Random client_random;
+    std::copy(random_bytes->begin(), random_bytes->end(), client_random.begin());
+    
+    return Result<Random>(client_random);
+}
+
+Result<Random> generate_server_hello_random(CryptoProvider& provider) {
+    RandomParams params;
+    params.length = RANDOM_LENGTH; // Always 32 bytes for DTLS v1.3
+    params.cryptographically_secure = true;
+    // ServerHello random must be cryptographically secure for proper key derivation
+    
+    auto random_bytes = provider.generate_random(params);
+    if (!random_bytes) {
+        return Result<Random>(random_bytes.error());
+    }
+    
+    if (random_bytes->size() != RANDOM_LENGTH) {
+        return Result<Random>(DTLSError::INTERNAL_ERROR);
+    }
+    
+    Random server_random;
+    std::copy(random_bytes->begin(), random_bytes->end(), server_random.begin());
+    
+    return Result<Random>(server_random);
+}
+
+// Enhanced random generation with additional entropy for high-security contexts
+Result<Random> generate_dtls_random_with_entropy(
+    CryptoProvider& provider,
+    const std::vector<uint8_t>& additional_entropy) {
+    
+    RandomParams params;
+    params.length = RANDOM_LENGTH;
+    params.cryptographically_secure = true;
+    params.additional_entropy = additional_entropy;
+    
+    auto random_bytes = provider.generate_random(params);
+    if (!random_bytes) {
+        return Result<Random>(random_bytes.error());
+    }
+    
+    if (random_bytes->size() != RANDOM_LENGTH) {
+        return Result<Random>(DTLSError::INTERNAL_ERROR);
+    }
+    
+    Random enhanced_random;
+    std::copy(random_bytes->begin(), random_bytes->end(), enhanced_random.begin());
+    
+    return Result<Random>(enhanced_random);
+}
+
 Result<ConnectionID> generate_connection_id(CryptoProvider& provider, size_t length) {
     if (length > MAX_CONNECTION_ID_LENGTH) {
         return Result<ConnectionID>(DTLSError::INVALID_PARAMETER);
