@@ -138,6 +138,12 @@ private:
                                      const std::vector<uint8_t>& key,
                                      const std::vector<uint8_t>& nonce) const;
     Result<std::string> aead_cipher_to_botan(AEADCipher cipher) const;
+    
+    // Signature operation helper functions
+    bool validate_key_scheme_compatibility(const std::string& key_algorithm, SignatureScheme scheme) const;
+    bool validate_signature_length(const std::vector<uint8_t>& signature, SignatureScheme scheme, const PublicKey& key) const;
+    Result<std::vector<uint8_t>> construct_dtls_signature_context(
+        const std::vector<uint8_t>& transcript_hash, bool is_server_context) const;
 };
 
 /**
