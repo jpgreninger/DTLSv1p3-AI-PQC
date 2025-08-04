@@ -144,6 +144,15 @@ private:
     bool validate_signature_length(const std::vector<uint8_t>& signature, SignatureScheme scheme, const PublicKey& key) const;
     Result<std::vector<uint8_t>> construct_dtls_signature_context(
         const std::vector<uint8_t>& transcript_hash, bool is_server_context) const;
+    
+    // Enhanced validation functions for RFC 9147 compliance
+    bool validate_enhanced_key_scheme_compatibility(const CryptoKey& key, SignatureScheme scheme) const;
+    bool validate_ecdsa_curve_compatibility(NamedGroup key_curve, SignatureScheme scheme) const;
+    Result<bool> validate_asn1_ecdsa_signature(const std::vector<uint8_t>& signature) const;
+    
+    // Security policy validation
+    bool is_signature_scheme_allowed(SignatureScheme scheme) const;
+    bool is_signature_scheme_deprecated(SignatureScheme scheme) const;
 };
 
 /**
@@ -151,8 +160,15 @@ private:
  */
 class DTLS_API BotanPrivateKey : public PrivateKey {
 public:
-    explicit BotanPrivateKey(std::unique_ptr<void> key); // Will be Botan::Private_Key
-    BotanPrivateKey(std::unique_ptr<void> key, NamedGroup group); // Constructor with group
+    // Accept unique_ptr with custom deleter to handle both simulation and real Botan keys
+    template<typename Deleter>
+    explicit BotanPrivateKey(std::unique_ptr<void, Deleter> key) 
+        : key_(std::move(key)), group_(NamedGroup::SECP256R1) {}
+    
+    template<typename Deleter>
+    BotanPrivateKey(std::unique_ptr<void, Deleter> key, NamedGroup group) 
+        : key_(std::move(key)), group_(group) {}
+    
     ~BotanPrivateKey() override;
     
     // Non-copyable, movable
@@ -174,7 +190,7 @@ public:
     void* native_key() const { return key_.get(); }
 
 private:
-    std::unique_ptr<void> key_; // Actually Botan::Private_Key
+    std::unique_ptr<void, std::function<void(void*)>> key_; // Use function deleter for flexibility
     NamedGroup group_; // Elliptic curve group
 };
 
@@ -183,8 +199,15 @@ private:
  */
 class DTLS_API BotanPublicKey : public PublicKey {
 public:
-    explicit BotanPublicKey(std::unique_ptr<void> key); // Will be Botan::Public_Key
-    BotanPublicKey(std::unique_ptr<void> key, NamedGroup group); // Constructor with group
+    // Accept unique_ptr with custom deleter to handle both simulation and real Botan keys
+    template<typename Deleter>
+    explicit BotanPublicKey(std::unique_ptr<void, Deleter> key) 
+        : key_(std::move(key)), group_(NamedGroup::SECP256R1) {}
+    
+    template<typename Deleter>
+    BotanPublicKey(std::unique_ptr<void, Deleter> key, NamedGroup group) 
+        : key_(std::move(key)), group_(group) {}
+    
     ~BotanPublicKey() override;
     
     // Non-copyable, movable
@@ -206,7 +229,7 @@ public:
     void* native_key() const { return key_.get(); }
 
 private:
-    std::unique_ptr<void> key_; // Actually Botan::Public_Key
+    std::unique_ptr<void, std::function<void(void*)>> key_; // Use function deleter for flexibility
     NamedGroup group_; // Elliptic curve group
 };
 

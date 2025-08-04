@@ -13,6 +13,7 @@
 #include <chrono>
 #include <random>
 #include <string>
+#include <functional>
 
 using namespace dtls::v13;
 using namespace dtls::v13::crypto;
@@ -63,22 +64,30 @@ protected:
     
     // Helper to create mock BotanPrivateKey for testing
     std::unique_ptr<BotanPrivateKey> createMockPrivateKey() {
-        // For testing purposes, create a mock key as std::vector<uint8_t>*
-        // The BotanProvider destructor expects this in simulation mode
-        auto mock_key_data = new std::vector<uint8_t>(32, 0x42);
-        std::unique_ptr<void> mock_key(static_cast<void*>(mock_key_data));
+        // For testing purposes, create a mock key as std::vector<uint8_t>
+        // Using the provider's generate_key_pair method to create keys correctly
+        auto key_pair_result = provider_->generate_key_pair(NamedGroup::SECP256R1);
+        if (!key_pair_result) {
+            return nullptr;
+        }
         
-        return std::make_unique<BotanPrivateKey>(std::move(mock_key), NamedGroup::SECP256R1);
+        auto private_key = std::move(key_pair_result.value().first);
+        return std::unique_ptr<BotanPrivateKey>(
+            dynamic_cast<BotanPrivateKey*>(private_key.release()));
     }
     
     // Helper to create mock BotanPublicKey for testing
     std::unique_ptr<BotanPublicKey> createMockPublicKey() {
-        // For testing purposes, create a mock key as std::vector<uint8_t>*
-        // The BotanProvider destructor expects this in simulation mode
-        auto mock_key_data = new std::vector<uint8_t>(32, 0x43);
-        std::unique_ptr<void> mock_key(static_cast<void*>(mock_key_data));
+        // For testing purposes, create a mock key as std::vector<uint8_t>
+        // Using the provider's generate_key_pair method to create keys correctly
+        auto key_pair_result = provider_->generate_key_pair(NamedGroup::SECP256R1);
+        if (!key_pair_result) {
+            return nullptr;
+        }
         
-        return std::make_unique<BotanPublicKey>(std::move(mock_key), NamedGroup::SECP256R1);
+        auto public_key = std::move(key_pair_result.value().second);
+        return std::unique_ptr<BotanPublicKey>(
+            dynamic_cast<BotanPublicKey*>(public_key.release()));
     }
     
     std::unique_ptr<BotanProvider> provider_;
@@ -99,7 +108,7 @@ TEST_F(BotanSignatureOperationsTest, SignData_BasicOperation) {
     
     SignatureParams params;
     params.data = small_data_;
-    params.scheme = SignatureScheme::RSA_PKCS1_SHA256;
+    params.scheme = SignatureScheme::ECDSA_SECP256R1_SHA256;  // Match the SECP256R1 key type
     params.private_key = private_key.get();
     
     auto result = provider_->sign_data(params);
@@ -115,11 +124,11 @@ TEST_F(BotanSignatureOperationsTest, SignData_BasicOperation) {
 
 TEST_F(BotanSignatureOperationsTest, VerifySignature_BasicOperation) {
     auto public_key = createMockPublicKey();
-    std::vector<uint8_t> mock_signature(256, 0x42); // Mock RSA signature
+    std::vector<uint8_t> mock_signature(72, 0x42); // Mock ECDSA signature (smaller than RSA)
     
     SignatureParams params;
     params.data = small_data_;
-    params.scheme = SignatureScheme::RSA_PKCS1_SHA256;
+    params.scheme = SignatureScheme::ECDSA_SECP256R1_SHA256;  // Match the SECP256R1 key type
     params.public_key = public_key.get();
     
     auto result = provider_->verify_signature(params, mock_signature);
@@ -214,11 +223,11 @@ TEST_F(BotanSignatureOperationsTest, VerifySignature_ParameterValidation) {
 
 TEST_F(BotanSignatureOperationsTest, VerifyDTLSCertificateSignature_BasicOperation) {
     auto public_key = createMockPublicKey();
-    std::vector<uint8_t> signature(256, 0x42);
+    std::vector<uint8_t> signature(72, 0x42);  // ECDSA signature size
     
     DTLSCertificateVerifyParams params;
     params.transcript_hash = transcript_sha256_;
-    params.scheme = SignatureScheme::RSA_PKCS1_SHA256;
+    params.scheme = SignatureScheme::ECDSA_SECP256R1_SHA256;  // Match the SECP256R1 key type
     params.public_key = public_key.get();
     params.is_server_context = true;
     
@@ -401,13 +410,13 @@ TEST_F(BotanSignatureOperationsTest, SignatureVerification_TimingAttackResistanc
     
     SignatureParams params;
     params.data = small_data_;
-    params.scheme = SignatureScheme::RSA_PKCS1_SHA256;
+    params.scheme = SignatureScheme::ECDSA_SECP256R1_SHA256;  // Match the SECP256R1 key type
     params.public_key = public_key.get();
     
     // Create several different invalid signatures
     std::vector<std::vector<uint8_t>> invalid_signatures;
     for (int i = 0; i < 5; ++i) {
-        std::vector<uint8_t> sig(256);
+        std::vector<uint8_t> sig(72);  // ECDSA signature size
         std::fill(sig.begin(), sig.end(), static_cast<uint8_t>(i + 1));
         invalid_signatures.push_back(sig);
     }
@@ -439,7 +448,7 @@ TEST_F(BotanSignatureOperationsTest, LargeDataHandling) {
     
     SignatureParams params;
     params.data = large_data_; // 4KB
-    params.scheme = SignatureScheme::RSA_PKCS1_SHA256;
+    params.scheme = SignatureScheme::ECDSA_SECP256R1_SHA256;  // Match the SECP256R1 key type
     params.private_key = private_key.get();
     
     auto result = provider_->sign_data(params);

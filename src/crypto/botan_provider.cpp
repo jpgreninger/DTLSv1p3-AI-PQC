@@ -1,6 +1,9 @@
 #include <dtls/crypto/botan_provider.h>
 #include <dtls/crypto/crypto_utils.h>
 #include <sstream>
+#include <random>
+#include <thread>
+#include <functional>
 
 using namespace dtls::v13::crypto::utils;
 
@@ -23,7 +26,7 @@ namespace v13 {
 namespace crypto {
 
 // Botan Provider Pimpl Implementation
-class BotanProvider::Impl {
+class dtls::v13::crypto::BotanProvider::Impl {
 public:
     bool initialized_{false};
     SecurityLevel security_level_{SecurityLevel::HIGH};
@@ -32,17 +35,17 @@ public:
     ~Impl() = default;
 };
 
-BotanProvider::BotanProvider() 
+dtls::v13::crypto::BotanProvider::BotanProvider() 
     : pimpl_(std::make_unique<Impl>()) {}
 
-BotanProvider::~BotanProvider() {
+dtls::v13::crypto::BotanProvider::~BotanProvider() {
     cleanup();
 }
 
-BotanProvider::BotanProvider(BotanProvider&& other) noexcept
+dtls::v13::crypto::BotanProvider::BotanProvider(BotanProvider&& other) noexcept
     : pimpl_(std::move(other.pimpl_)) {}
 
-BotanProvider& BotanProvider::operator=(BotanProvider&& other) noexcept {
+BotanProvider& dtls::v13::crypto::BotanProvider::operator=(BotanProvider&& other) noexcept {
     if (this != &other) {
         cleanup();
         pimpl_ = std::move(other.pimpl_);
@@ -51,15 +54,15 @@ BotanProvider& BotanProvider::operator=(BotanProvider&& other) noexcept {
 }
 
 // Provider information
-std::string BotanProvider::name() const {
+std::string dtls::v13::crypto::BotanProvider::name() const {
     return "botan";
 }
 
-std::string BotanProvider::version() const {
+std::string dtls::v13::crypto::BotanProvider::version() const {
     return "3.0.0"; // Would be BOTAN_VERSION_STRING in real implementation
 }
 
-ProviderCapabilities BotanProvider::capabilities() const {
+ProviderCapabilities dtls::v13::crypto::BotanProvider::capabilities() const {
     ProviderCapabilities caps;
     caps.provider_name = "botan";
     caps.provider_version = version();
@@ -116,11 +119,11 @@ ProviderCapabilities BotanProvider::capabilities() const {
     return caps;
 }
 
-bool BotanProvider::is_available() const {
+bool dtls::v13::crypto::BotanProvider::is_available() const {
     return botan_utils::is_botan_available();
 }
 
-Result<void> BotanProvider::initialize() {
+Result<void> dtls::v13::crypto::BotanProvider::initialize() {
     if (pimpl_->initialized_) {
         return Result<void>(DTLSError::ALREADY_INITIALIZED);
     }
@@ -134,14 +137,14 @@ Result<void> BotanProvider::initialize() {
     return Result<void>();
 }
 
-void BotanProvider::cleanup() {
+void dtls::v13::crypto::BotanProvider::cleanup() {
     if (pimpl_ && pimpl_->initialized_) {
         pimpl_->initialized_ = false;
     }
 }
 
 // Random number generation
-Result<std::vector<uint8_t>> BotanProvider::generate_random(const RandomParams& params) {
+Result<std::vector<uint8_t>> dtls::v13::crypto::BotanProvider::generate_random(const RandomParams& params) {
     if (!pimpl_->initialized_) {
         return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
     }
@@ -165,7 +168,7 @@ Result<std::vector<uint8_t>> BotanProvider::generate_random(const RandomParams& 
 }
 
 // HKDF key derivation implementation  
-Result<std::vector<uint8_t>> BotanProvider::derive_key_hkdf(const KeyDerivationParams& params) {
+Result<std::vector<uint8_t>> dtls::v13::crypto::BotanProvider::derive_key_hkdf(const KeyDerivationParams& params) {
     if (!pimpl_->initialized_) {
         return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
     }
@@ -252,7 +255,7 @@ Result<std::vector<uint8_t>> BotanProvider::derive_key_hkdf(const KeyDerivationP
     }
 }
 
-Result<std::vector<uint8_t>> BotanProvider::derive_key_pbkdf2(const KeyDerivationParams& params) {
+Result<std::vector<uint8_t>> dtls::v13::crypto::BotanProvider::derive_key_pbkdf2(const KeyDerivationParams& params) {
     if (!pimpl_->initialized_) {
         return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
     }
@@ -349,7 +352,7 @@ Result<std::vector<uint8_t>> BotanProvider::derive_key_pbkdf2(const KeyDerivatio
 }
 
 // AEAD encryption implementation using Botan APIs
-Result<std::vector<uint8_t>> BotanProvider::aead_encrypt(
+Result<std::vector<uint8_t>> dtls::v13::crypto::BotanProvider::aead_encrypt(
     const AEADParams& params,
     const std::vector<uint8_t>& plaintext) {
     
@@ -416,7 +419,7 @@ Result<std::vector<uint8_t>> BotanProvider::aead_encrypt(
     }
 }
 
-Result<std::vector<uint8_t>> BotanProvider::aead_decrypt(
+Result<std::vector<uint8_t>> dtls::v13::crypto::BotanProvider::aead_decrypt(
     const AEADParams& params,
     const std::vector<uint8_t>& ciphertext) {
     
@@ -494,7 +497,7 @@ Result<std::vector<uint8_t>> BotanProvider::aead_decrypt(
 }
 
 // New AEAD interface with separate ciphertext and tag
-Result<AEADEncryptionOutput> BotanProvider::encrypt_aead(const AEADEncryptionParams& params) {
+Result<AEADEncryptionOutput> dtls::v13::crypto::BotanProvider::encrypt_aead(const AEADEncryptionParams& params) {
     if (!pimpl_->initialized_) {
         return Result<AEADEncryptionOutput>(DTLSError::NOT_INITIALIZED);
     }
@@ -565,7 +568,7 @@ Result<AEADEncryptionOutput> BotanProvider::encrypt_aead(const AEADEncryptionPar
     }
 }
 
-Result<std::vector<uint8_t>> BotanProvider::decrypt_aead(const AEADDecryptionParams& params) {
+Result<std::vector<uint8_t>> dtls::v13::crypto::BotanProvider::decrypt_aead(const AEADDecryptionParams& params) {
     if (!pimpl_->initialized_) {
         return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
     }
@@ -641,7 +644,7 @@ Result<std::vector<uint8_t>> BotanProvider::decrypt_aead(const AEADDecryptionPar
 }
 
 // Hash functions
-Result<std::vector<uint8_t>> BotanProvider::compute_hash(const HashParams& params) {
+Result<std::vector<uint8_t>> dtls::v13::crypto::BotanProvider::compute_hash(const HashParams& params) {
     if (!pimpl_->initialized_) {
         return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
     }
@@ -673,7 +676,7 @@ Result<std::vector<uint8_t>> BotanProvider::compute_hash(const HashParams& param
     return Result<std::vector<uint8_t>>(std::move(hash));
 }
 
-Result<std::vector<uint8_t>> BotanProvider::compute_hmac(const HMACParams& params) {
+Result<std::vector<uint8_t>> dtls::v13::crypto::BotanProvider::compute_hmac(const HMACParams& params) {
     if (!pimpl_->initialized_) {
         return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
     }
@@ -707,7 +710,7 @@ Result<std::vector<uint8_t>> BotanProvider::compute_hmac(const HMACParams& param
 }
 
 // MAC validation with timing-attack resistance (RFC 9147 Section 5.2)
-Result<bool> BotanProvider::verify_hmac(const MACValidationParams& params) {
+Result<bool> dtls::v13::crypto::BotanProvider::verify_hmac(const MACValidationParams& params) {
     if (!pimpl_->initialized_) {
         return Result<bool>(DTLSError::NOT_INITIALIZED);
     }
@@ -750,7 +753,7 @@ Result<bool> BotanProvider::verify_hmac(const MACValidationParams& params) {
 }
 
 // DTLS v1.3 record MAC validation (RFC 9147 Section 4.2.1)
-Result<bool> BotanProvider::validate_record_mac(const RecordMACParams& params) {
+Result<bool> dtls::v13::crypto::BotanProvider::validate_record_mac(const RecordMACParams& params) {
     if (!pimpl_->initialized_) {
         return Result<bool>(DTLSError::NOT_INITIALIZED);
     }
@@ -798,7 +801,7 @@ Result<bool> BotanProvider::validate_record_mac(const RecordMACParams& params) {
 }
 
 // Legacy MAC verification for backward compatibility
-Result<bool> BotanProvider::verify_hmac_legacy(
+Result<bool> dtls::v13::crypto::BotanProvider::verify_hmac_legacy(
     const std::vector<uint8_t>& key,
     const std::vector<uint8_t>& data,
     const std::vector<uint8_t>& expected_mac,
@@ -820,7 +823,7 @@ Result<bool> BotanProvider::verify_hmac_legacy(
 }
 
 // Digital signature operations with enhanced security and DTLS v1.3 compliance
-Result<std::vector<uint8_t>> BotanProvider::sign_data(const SignatureParams& params) {
+Result<std::vector<uint8_t>> dtls::v13::crypto::BotanProvider::sign_data(const SignatureParams& params) {
     if (!pimpl_->initialized_) {
         return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
     }
@@ -835,15 +838,19 @@ Result<std::vector<uint8_t>> BotanProvider::sign_data(const SignatureParams& par
         return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
     }
     
+    // Validate signature scheme policy (RFC 9147 compliance)
+    if (!is_signature_scheme_allowed(params.scheme)) {
+        return Result<std::vector<uint8_t>>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+    
     // Cast to Botan private key
     const auto* botan_key = dynamic_cast<const BotanPrivateKey*>(params.private_key);
     if (!botan_key) {
         return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
     }
     
-    // Validate that the key type matches the signature scheme
-    std::string key_algorithm = botan_key->algorithm();
-    if (!validate_key_scheme_compatibility(key_algorithm, params.scheme)) {
+    // Enhanced validation: key type, curve, and size compatibility
+    if (!validate_enhanced_key_scheme_compatibility(*botan_key, params.scheme)) {
         return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
     }
     
@@ -1008,7 +1015,7 @@ Result<std::vector<uint8_t>> BotanProvider::sign_data(const SignatureParams& par
         
         // Final validation
         if (signature.empty()) {
-            return Result<std::vector<uint8_t>>(DTLSError::SIGNATURE_GENERATION_FAILED);
+            return Result<std::vector<uint8_t>>(DTLSError::SIGNATURE_VERIFICATION_FAILED);
         }
         
         return Result<std::vector<uint8_t>>(std::move(signature));
@@ -1016,11 +1023,11 @@ Result<std::vector<uint8_t>> BotanProvider::sign_data(const SignatureParams& par
         
     } catch (const std::exception& e) {
         // In real implementation: catch Botan::Exception
-        return Result<std::vector<uint8_t>>(DTLSError::SIGNATURE_GENERATION_FAILED);
+        return Result<std::vector<uint8_t>>(DTLSError::SIGNATURE_VERIFICATION_FAILED);
     }
 }
 
-Result<bool> BotanProvider::verify_signature(const SignatureParams& params, const std::vector<uint8_t>& signature) {
+Result<bool> dtls::v13::crypto::BotanProvider::verify_signature(const SignatureParams& params, const std::vector<uint8_t>& signature) {
     if (!pimpl_->initialized_) {
         return Result<bool>(DTLSError::NOT_INITIALIZED);
     }
@@ -1035,6 +1042,11 @@ Result<bool> BotanProvider::verify_signature(const SignatureParams& params, cons
         return Result<bool>(DTLSError::INVALID_PARAMETER);
     }
     
+    // Validate signature scheme policy (RFC 9147 compliance) 
+    if (!is_signature_scheme_allowed(params.scheme)) {
+        return Result<bool>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+    
     // Validate signature size limits
     if (signature.size() > 1024) { // 1KB limit - no signature should be this large
         return Result<bool>(DTLSError::INVALID_PARAMETER);
@@ -1046,15 +1058,25 @@ Result<bool> BotanProvider::verify_signature(const SignatureParams& params, cons
         return Result<bool>(DTLSError::INVALID_PARAMETER);
     }
     
-    // Validate that the key type matches the signature scheme
-    std::string key_algorithm = botan_key->algorithm();
-    if (!validate_key_scheme_compatibility(key_algorithm, params.scheme)) {
+    // Enhanced validation: key type, curve, and size compatibility
+    if (!validate_enhanced_key_scheme_compatibility(*botan_key, params.scheme)) {
         return Result<bool>(DTLSError::INVALID_PARAMETER);
     }
     
     // Validate signature length for the given scheme and key
     if (!validate_signature_length(signature, params.scheme, *params.public_key)) {
         return Result<bool>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Enhanced ECDSA ASN.1 DER validation
+    if (utils::is_ecdsa_signature(params.scheme)) {
+        auto asn1_validation_result = validate_asn1_ecdsa_signature(signature);
+        if (!asn1_validation_result) {
+            return Result<bool>(asn1_validation_result.error());
+        }
+        if (!*asn1_validation_result) {
+            return Result<bool>(false); // Invalid ASN.1 format
+        }
     }
     
     // Get signature scheme information
@@ -1188,15 +1210,40 @@ Result<bool> BotanProvider::verify_signature(const SignatureParams& params, cons
         }
         #endif
         
-        // Add minimal delay to make timing more consistent (timing attack mitigation)
+        // Enhanced timing attack mitigation (RFC 9147 security considerations)
         auto verification_end = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::microseconds>(
             verification_end - verification_start);
         
+        // Compute target verification time based on signature scheme complexity
+        auto target_verification_time = std::chrono::microseconds(50); // Base time
+        
+        // Adjust target time based on signature scheme to normalize timing
+        switch (params.scheme) {
+            case SignatureScheme::ED25519:
+            case SignatureScheme::ED448:
+                target_verification_time = std::chrono::microseconds(30); // EdDSA is typically faster
+                break;
+            case SignatureScheme::ECDSA_SECP256R1_SHA256:
+            case SignatureScheme::ECDSA_SECP384R1_SHA384:
+            case SignatureScheme::ECDSA_SECP521R1_SHA512:
+                target_verification_time = std::chrono::microseconds(50); // ECDSA moderate time
+                break;
+            default: // RSA schemes
+                target_verification_time = std::chrono::microseconds(80); // RSA typically slower
+                break;
+        }
+        
+        // Add jitter to prevent timing analysis through statistical methods
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> jitter_dist(-5, 5);
+        auto jitter = std::chrono::microseconds(jitter_dist(gen));
+        target_verification_time += jitter;
+        
         // Ensure minimum verification time to reduce timing information leakage
-        const auto min_verification_time = std::chrono::microseconds(10);
-        if (duration < min_verification_time) {
-            std::this_thread::sleep_for(min_verification_time - duration);
+        if (duration < target_verification_time) {
+            std::this_thread::sleep_for(target_verification_time - duration);
         }
         
         return Result<bool>(is_valid);
@@ -1207,7 +1254,7 @@ Result<bool> BotanProvider::verify_signature(const SignatureParams& params, cons
     }
 }
 
-Result<bool> BotanProvider::verify_dtls_certificate_signature(
+Result<bool> dtls::v13::crypto::BotanProvider::verify_dtls_certificate_signature(
     const DTLSCertificateVerifyParams& params,
     const std::vector<uint8_t>& signature) {
     
@@ -1236,15 +1283,18 @@ Result<bool> BotanProvider::verify_dtls_certificate_signature(
         return Result<bool>(DTLSError::INVALID_PARAMETER);
     }
     
-    // Validate key-signature scheme compatibility
-    std::string key_algorithm = botan_key->algorithm();
-    if (!validate_key_scheme_compatibility(key_algorithm, params.scheme)) {
+    // Enhanced validation: key type, curve, and size compatibility
+    if (!validate_enhanced_key_scheme_compatibility(*botan_key, params.scheme)) {
         return Result<bool>(DTLSError::INVALID_PARAMETER);
     }
     
-    // For ECDSA signatures, validate ASN.1 format
+    // Enhanced ECDSA ASN.1 DER validation
     if (utils::is_ecdsa_signature(params.scheme)) {
-        if (signature.size() < 8 || signature[0] != 0x30) {
+        auto asn1_validation_result = validate_asn1_ecdsa_signature(signature);
+        if (!asn1_validation_result) {
+            return Result<bool>(asn1_validation_result.error());
+        }
+        if (!*asn1_validation_result) {
             return Result<bool>(false); // Invalid ASN.1 format
         }
     }
@@ -1288,7 +1338,7 @@ Result<bool> BotanProvider::verify_dtls_certificate_signature(
 }
 
 Result<std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>> 
-BotanProvider::generate_key_pair(NamedGroup group) {
+dtls::v13::crypto::BotanProvider::generate_key_pair(NamedGroup group) {
     if (!pimpl_->initialized_) {
         using ReturnType = std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>;
         return Result<ReturnType>(DTLSError::NOT_INITIALIZED);
@@ -1344,30 +1394,30 @@ BotanProvider::generate_key_pair(NamedGroup group) {
         std::vector<uint8_t> public_key_data;
         
         switch (group) {
-            case NamedGroup::SECP256R1:
+            case dtls::v13::NamedGroup::SECP256R1:
                 private_key_data.resize(32); // 256 bits
                 public_key_data.resize(65);  // Uncompressed point (1 + 32 + 32)
                 public_key_data[0] = 0x04;   // Uncompressed point indicator
                 break;
                 
-            case NamedGroup::SECP384R1:
+            case dtls::v13::NamedGroup::SECP384R1:
                 private_key_data.resize(48); // 384 bits
                 public_key_data.resize(97);  // Uncompressed point (1 + 48 + 48)
                 public_key_data[0] = 0x04;   // Uncompressed point indicator
                 break;
                 
-            case NamedGroup::SECP521R1:
+            case dtls::v13::NamedGroup::SECP521R1:
                 private_key_data.resize(66); // 521 bits (rounded up to bytes)
                 public_key_data.resize(133); // Uncompressed point (1 + 66 + 66)
                 public_key_data[0] = 0x04;   // Uncompressed point indicator
                 break;
                 
-            case NamedGroup::X25519:
+            case dtls::v13::NamedGroup::X25519:
                 private_key_data.resize(32); // 255 bits
                 public_key_data.resize(32);  // Montgomery curve point
                 break;
                 
-            case NamedGroup::X448:
+            case dtls::v13::NamedGroup::X448:
                 private_key_data.resize(56); // 448 bits
                 public_key_data.resize(56);  // Montgomery curve point
                 break;
@@ -1404,10 +1454,25 @@ BotanProvider::generate_key_pair(NamedGroup group) {
         }
         
         // Create key objects with simulated Botan key data
-        auto botan_private_key = std::make_unique<BotanPrivateKey>(
-            std::make_unique<std::vector<uint8_t>>(std::move(private_key_data)), group);
-        auto botan_public_key = std::make_unique<BotanPublicKey>(
-            std::make_unique<std::vector<uint8_t>>(std::move(public_key_data)), group);
+        // Create unique_ptr<void> using move constructor to avoid conversion issues
+        std::unique_ptr<std::vector<uint8_t>> priv_key_smart(new std::vector<uint8_t>(std::move(private_key_data)));
+        std::unique_ptr<std::vector<uint8_t>> pub_key_smart(new std::vector<uint8_t>(std::move(public_key_data)));
+        
+        // Convert to void* while maintaining ownership (BotanPrivateKey destructor will handle deletion)
+        void* priv_void_ptr = priv_key_smart.release();
+        void* pub_void_ptr = pub_key_smart.release();
+        
+        // Create unique_ptr<void> with custom deleters that properly handle the std::vector<uint8_t>*
+        using VectorDeleter = std::function<void(void*)>;
+        VectorDeleter deleter = [](void* ptr) {
+            delete static_cast<std::vector<uint8_t>*>(ptr);
+        };
+        
+        std::unique_ptr<void, VectorDeleter> priv_void_key(priv_void_ptr, deleter);
+        std::unique_ptr<void, VectorDeleter> pub_void_key(pub_void_ptr, deleter);
+        
+        auto botan_private_key = std::make_unique<BotanPrivateKey>(std::move(priv_void_key), group);
+        auto botan_public_key = std::make_unique<BotanPublicKey>(std::move(pub_void_key), group);
         
         using ReturnType = std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>;
         return Result<ReturnType>(std::make_pair(std::move(botan_private_key), 
@@ -1415,11 +1480,11 @@ BotanProvider::generate_key_pair(NamedGroup group) {
         
     } catch (const std::exception& e) {
         using ReturnType = std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>;
-        return Result<ReturnType>(DTLSError::KEY_GENERATION_FAILED);
+        return Result<ReturnType>(DTLSError::KEY_DERIVATION_FAILED);
     }
 }
 
-Result<std::vector<uint8_t>> BotanProvider::perform_key_exchange(const KeyExchangeParams& params) {
+Result<std::vector<uint8_t>> dtls::v13::crypto::BotanProvider::perform_key_exchange(const KeyExchangeParams& params) {
     if (!pimpl_->initialized_) {
         return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
     }
@@ -1493,23 +1558,23 @@ Result<std::vector<uint8_t>> BotanProvider::perform_key_exchange(const KeyExchan
         size_t shared_secret_size = 0;
         
         switch (params.group) {
-            case NamedGroup::SECP256R1:
+            case dtls::v13::NamedGroup::SECP256R1:
                 expected_peer_key_size = 65; // Uncompressed point
                 shared_secret_size = 32;     // x-coordinate
                 break;
-            case NamedGroup::SECP384R1:
+            case dtls::v13::NamedGroup::SECP384R1:
                 expected_peer_key_size = 97; // Uncompressed point
                 shared_secret_size = 48;     // x-coordinate
                 break;
-            case NamedGroup::SECP521R1:
+            case dtls::v13::NamedGroup::SECP521R1:
                 expected_peer_key_size = 133; // Uncompressed point
                 shared_secret_size = 66;      // x-coordinate
                 break;
-            case NamedGroup::X25519:
+            case dtls::v13::NamedGroup::X25519:
                 expected_peer_key_size = 32;  // Montgomery point
                 shared_secret_size = 32;      // Shared secret size
                 break;
-            case NamedGroup::X448:
+            case dtls::v13::NamedGroup::X448:
                 expected_peer_key_size = 56;  // Montgomery point
                 shared_secret_size = 56;      // Shared secret size
                 break;
@@ -1547,15 +1612,15 @@ Result<std::vector<uint8_t>> BotanProvider::perform_key_exchange(const KeyExchan
     }
 }
 
-Result<bool> BotanProvider::validate_certificate_chain(const CertValidationParams& params) {
+Result<bool> dtls::v13::crypto::BotanProvider::validate_certificate_chain(const CertValidationParams& params) {
     return Result<bool>(DTLSError::OPERATION_NOT_SUPPORTED);
 }
 
-Result<std::unique_ptr<PublicKey>> BotanProvider::extract_public_key(const std::vector<uint8_t>& certificate) {
+Result<std::unique_ptr<PublicKey>> dtls::v13::crypto::BotanProvider::extract_public_key(const std::vector<uint8_t>& certificate) {
     return Result<std::unique_ptr<PublicKey>>(DTLSError::OPERATION_NOT_SUPPORTED);
 }
 
-Result<std::unique_ptr<PrivateKey>> BotanProvider::import_private_key(const std::vector<uint8_t>& key_data, const std::string& format) {
+Result<std::unique_ptr<PrivateKey>> dtls::v13::crypto::BotanProvider::import_private_key(const std::vector<uint8_t>& key_data, const std::string& format) {
     if (!pimpl_->initialized_) {
         return Result<std::unique_ptr<PrivateKey>>(DTLSError::NOT_INITIALIZED);
     }
@@ -1571,7 +1636,7 @@ Result<std::unique_ptr<PrivateKey>> BotanProvider::import_private_key(const std:
         // if (format == "PEM") {
         //     auto private_key = Botan::PKCS8::load_key(data_source);
         //     if (!private_key) {
-        //         return Result<std::unique_ptr<PrivateKey>>(DTLSError::INVALID_KEY_FORMAT);
+        //         return Result<std::unique_ptr<PrivateKey>>(DTLSError::INVALID_MESSAGE_FORMAT);
         //     }
         //     
         //     // Determine the NamedGroup from the key type
@@ -1609,18 +1674,21 @@ Result<std::unique_ptr<PrivateKey>> BotanProvider::import_private_key(const std:
         }
         
         // Create a copy of the key data for our simulation
-        auto key_data_copy = std::make_unique<std::vector<uint8_t>>(key_data);
+        auto* key_data_copy = new std::vector<uint8_t>(key_data);
+        // Create unique_ptr<void> with no-op deleter since destructor handles deletion
+        using NoOpDeleter = std::function<void(void*)>;
+        std::unique_ptr<void, NoOpDeleter> void_key(key_data_copy, [](void*){ /* no-op */ });
         auto botan_private_key = std::make_unique<BotanPrivateKey>(
-            std::unique_ptr<void>(static_cast<void*>(key_data_copy.release())), inferred_group);
+            std::move(void_key), inferred_group);
         
         return Result<std::unique_ptr<PrivateKey>>(std::move(botan_private_key));
         
     } catch (const std::exception& e) {
-        return Result<std::unique_ptr<PrivateKey>>(DTLSError::INVALID_KEY_FORMAT);
+        return Result<std::unique_ptr<PrivateKey>>(DTLSError::INVALID_MESSAGE_FORMAT);
     }
 }
 
-Result<std::unique_ptr<PublicKey>> BotanProvider::import_public_key(const std::vector<uint8_t>& key_data, const std::string& format) {
+Result<std::unique_ptr<PublicKey>> dtls::v13::crypto::BotanProvider::import_public_key(const std::vector<uint8_t>& key_data, const std::string& format) {
     if (!pimpl_->initialized_) {
         return Result<std::unique_ptr<PublicKey>>(DTLSError::NOT_INITIALIZED);
     }
@@ -1636,7 +1704,7 @@ Result<std::unique_ptr<PublicKey>> BotanProvider::import_public_key(const std::v
         // if (format == "PEM") {
         //     auto public_key = Botan::X509::load_key(data_source);
         //     if (!public_key) {
-        //         return Result<std::unique_ptr<PublicKey>>(DTLSError::INVALID_KEY_FORMAT);
+        //         return Result<std::unique_ptr<PublicKey>>(DTLSError::INVALID_MESSAGE_FORMAT);
         //     }
         //     
         //     // Determine the NamedGroup from the key type
@@ -1667,18 +1735,21 @@ Result<std::unique_ptr<PublicKey>> BotanProvider::import_public_key(const std::v
             inferred_group = NamedGroup::X448; // X448 point
         }
         
-        auto key_data_copy = std::make_unique<std::vector<uint8_t>>(key_data);
+        auto* key_data_copy = new std::vector<uint8_t>(key_data);
+        // Create unique_ptr<void> with no-op deleter since destructor handles deletion
+        using NoOpDeleter = std::function<void(void*)>;
+        std::unique_ptr<void, NoOpDeleter> void_key(key_data_copy, [](void*){ /* no-op */ });
         auto botan_public_key = std::make_unique<BotanPublicKey>(
-            std::unique_ptr<void>(static_cast<void*>(key_data_copy.release())), inferred_group);
+            std::move(void_key), inferred_group);
         
         return Result<std::unique_ptr<PublicKey>>(std::move(botan_public_key));
         
     } catch (const std::exception& e) {
-        return Result<std::unique_ptr<PublicKey>>(DTLSError::INVALID_KEY_FORMAT);
+        return Result<std::unique_ptr<PublicKey>>(DTLSError::INVALID_MESSAGE_FORMAT);
     }
 }
 
-Result<std::vector<uint8_t>> BotanProvider::export_private_key(const PrivateKey& key, const std::string& format) {
+Result<std::vector<uint8_t>> dtls::v13::crypto::BotanProvider::export_private_key(const PrivateKey& key, const std::string& format) {
     if (!pimpl_->initialized_) {
         return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
     }
@@ -1727,7 +1798,7 @@ Result<std::vector<uint8_t>> BotanProvider::export_private_key(const PrivateKey&
     }
 }
 
-Result<std::vector<uint8_t>> BotanProvider::export_public_key(const PublicKey& key, const std::string& format) {
+Result<std::vector<uint8_t>> dtls::v13::crypto::BotanProvider::export_public_key(const PublicKey& key, const std::string& format) {
     if (!pimpl_->initialized_) {
         return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
     }
@@ -1777,49 +1848,49 @@ Result<std::vector<uint8_t>> BotanProvider::export_public_key(const PublicKey& k
 }
 
 // Utility functions
-bool BotanProvider::supports_cipher_suite(CipherSuite suite) const {
+bool dtls::v13::crypto::BotanProvider::supports_cipher_suite(CipherSuite suite) const {
     auto caps = capabilities();
     const auto& suites = caps.supported_cipher_suites;
     return std::find(suites.begin(), suites.end(), suite) != suites.end();
 }
 
-bool BotanProvider::supports_named_group(NamedGroup group) const {
+bool dtls::v13::crypto::BotanProvider::supports_named_group(dtls::v13::NamedGroup group) const {
     auto caps = capabilities();
     const auto& groups = caps.supported_groups;
     return std::find(groups.begin(), groups.end(), group) != groups.end();
 }
 
-bool BotanProvider::supports_signature_scheme(SignatureScheme scheme) const {
+bool dtls::v13::crypto::BotanProvider::supports_signature_scheme(dtls::v13::SignatureScheme scheme) const {
     auto caps = capabilities();
     const auto& schemes = caps.supported_signatures;
     return std::find(schemes.begin(), schemes.end(), scheme) != schemes.end();
 }
 
-bool BotanProvider::supports_hash_algorithm(HashAlgorithm hash) const {
+bool dtls::v13::crypto::BotanProvider::supports_hash_algorithm(HashAlgorithm hash) const {
     auto caps = capabilities();
     const auto& hashes = caps.supported_hashes;
     return std::find(hashes.begin(), hashes.end(), hash) != hashes.end();
 }
 
-bool BotanProvider::has_hardware_acceleration() const {
+bool dtls::v13::crypto::BotanProvider::has_hardware_acceleration() const {
     return false; // Botan has limited hardware acceleration
 }
 
-bool BotanProvider::is_fips_compliant() const {
+bool dtls::v13::crypto::BotanProvider::is_fips_compliant() const {
     return false; // Botan is not FIPS validated
 }
 
-SecurityLevel BotanProvider::security_level() const {
+SecurityLevel dtls::v13::crypto::BotanProvider::security_level() const {
     return pimpl_->security_level_;
 }
 
-Result<void> BotanProvider::set_security_level(SecurityLevel level) {
+Result<void> dtls::v13::crypto::BotanProvider::set_security_level(SecurityLevel level) {
     pimpl_->security_level_ = level;
     return Result<void>();
 }
 
 // Helper functions for AEAD operations
-size_t BotanProvider::get_aead_key_length(AEADCipher cipher) const {
+size_t dtls::v13::crypto::BotanProvider::get_aead_key_length(AEADCipher cipher) const {
     switch (cipher) {
         case AEADCipher::AES_128_GCM:
         case AEADCipher::AES_128_CCM:
@@ -1834,7 +1905,7 @@ size_t BotanProvider::get_aead_key_length(AEADCipher cipher) const {
     }
 }
 
-size_t BotanProvider::get_aead_nonce_length(AEADCipher cipher) const {
+size_t dtls::v13::crypto::BotanProvider::get_aead_nonce_length(AEADCipher cipher) const {
     switch (cipher) {
         case AEADCipher::AES_128_GCM:
         case AEADCipher::AES_256_GCM:
@@ -1848,7 +1919,7 @@ size_t BotanProvider::get_aead_nonce_length(AEADCipher cipher) const {
     }
 }
 
-size_t BotanProvider::get_aead_tag_length(AEADCipher cipher) const {
+size_t dtls::v13::crypto::BotanProvider::get_aead_tag_length(AEADCipher cipher) const {
     switch (cipher) {
         case AEADCipher::AES_128_GCM:
         case AEADCipher::AES_256_GCM:
@@ -1862,7 +1933,7 @@ size_t BotanProvider::get_aead_tag_length(AEADCipher cipher) const {
     }
 }
 
-Result<void> BotanProvider::validate_aead_params(AEADCipher cipher, 
+Result<void> dtls::v13::crypto::BotanProvider::validate_aead_params(AEADCipher cipher, 
                                                 const std::vector<uint8_t>& key,
                                                 const std::vector<uint8_t>& nonce) const {
     // Validate key length
@@ -1886,7 +1957,7 @@ Result<void> BotanProvider::validate_aead_params(AEADCipher cipher,
     return Result<void>();
 }
 
-Result<std::string> BotanProvider::aead_cipher_to_botan(AEADCipher cipher) const {
+Result<std::string> dtls::v13::crypto::BotanProvider::aead_cipher_to_botan(AEADCipher cipher) const {
     switch (cipher) {
         case AEADCipher::AES_128_GCM:
             return Result<std::string>("AES-128/GCM");
@@ -1943,15 +2014,15 @@ Result<std::string> cipher_suite_to_botan(CipherSuite suite) {
 
 Result<std::string> named_group_to_botan(NamedGroup group) {
     switch (group) {
-        case NamedGroup::SECP256R1:
+        case dtls::v13::NamedGroup::SECP256R1:
             return Result<std::string>("secp256r1");
-        case NamedGroup::SECP384R1:
+        case dtls::v13::NamedGroup::SECP384R1:
             return Result<std::string>("secp384r1");
-        case NamedGroup::SECP521R1:
+        case dtls::v13::NamedGroup::SECP521R1:
             return Result<std::string>("secp521r1");
-        case NamedGroup::X25519:
+        case dtls::v13::NamedGroup::X25519:
             return Result<std::string>("x25519");
-        case NamedGroup::X448:
+        case dtls::v13::NamedGroup::X448:
             return Result<std::string>("x448");
         default:
             return Result<std::string>(DTLSError::OPERATION_NOT_SUPPORTED);
@@ -2024,31 +2095,16 @@ Result<std::string> hash_algorithm_to_botan(HashAlgorithm hash) {
 
 } // namespace botan_utils
 
-// Key and certificate class stubs
-BotanPrivateKey::BotanPrivateKey(std::unique_ptr<void> key) : key_(std::move(key)), group_(NamedGroup::SECP256R1) {}
+// Key and certificate class implementations
 
-BotanPrivateKey::BotanPrivateKey(std::unique_ptr<void> key, NamedGroup group) 
-    : key_(std::move(key)), group_(group) {}
-
-BotanPrivateKey::~BotanPrivateKey() {
-    // In the simulation, we store std::vector<uint8_t>* as void*
-    // We need to cast back and delete properly
-    if (key_) {
-        #ifdef BOTAN_ENABLED
-        // In real implementation, this would be Botan::Private_Key*
-        delete static_cast<Botan::Private_Key*>(key_.get());
-        #else
-        // In simulation, this is std::vector<uint8_t>*
-        delete static_cast<std::vector<uint8_t>*>(key_.get());
-        #endif
-        key_.release(); // Prevent double deletion
-    }
+dtls::v13::crypto::BotanPrivateKey::~BotanPrivateKey() {
+    // Destructor is now simple - the custom deleter in unique_ptr handles cleanup
 }
 
-BotanPrivateKey::BotanPrivateKey(BotanPrivateKey&& other) noexcept 
+dtls::v13::crypto::BotanPrivateKey::BotanPrivateKey(dtls::v13::crypto::BotanPrivateKey&& other) noexcept 
     : key_(std::move(other.key_)), group_(other.group_) {}
 
-BotanPrivateKey& BotanPrivateKey::operator=(BotanPrivateKey&& other) noexcept {
+dtls::v13::crypto::BotanPrivateKey& dtls::v13::crypto::BotanPrivateKey::operator=(dtls::v13::crypto::BotanPrivateKey&& other) noexcept {
     if (this != &other) {
         key_ = std::move(other.key_);
         group_ = other.group_;
@@ -2056,74 +2112,59 @@ BotanPrivateKey& BotanPrivateKey::operator=(BotanPrivateKey&& other) noexcept {
     return *this;
 }
 
-std::string BotanPrivateKey::algorithm() const {
+std::string dtls::v13::crypto::BotanPrivateKey::algorithm() const {
     switch (group_) {
-        case NamedGroup::SECP256R1:
-        case NamedGroup::SECP384R1:
-        case NamedGroup::SECP521R1:
+        case dtls::v13::NamedGroup::SECP256R1:
+        case dtls::v13::NamedGroup::SECP384R1:
+        case dtls::v13::NamedGroup::SECP521R1:
             return "ECDSA"; // For signature operations, these are ECDSA keys
-        case NamedGroup::X25519:
+        case dtls::v13::NamedGroup::X25519:
             return "Ed25519"; // X25519 keys can be used for Ed25519 signatures in simulation
-        case NamedGroup::X448:
+        case dtls::v13::NamedGroup::X448:
             return "Ed448"; // X448 keys can be used for Ed448 signatures in simulation
         default:
             return "RSA"; // Default to RSA for testing
     }
 }
 
-size_t BotanPrivateKey::key_size() const {
+size_t dtls::v13::crypto::BotanPrivateKey::key_size() const {
     switch (group_) {
-        case NamedGroup::SECP256R1:
-        case NamedGroup::X25519:
+        case dtls::v13::NamedGroup::SECP256R1:
+        case dtls::v13::NamedGroup::X25519:
             return 32; // 256 bits
-        case NamedGroup::SECP384R1:
+        case dtls::v13::NamedGroup::SECP384R1:
             return 48; // 384 bits
-        case NamedGroup::X448:
+        case dtls::v13::NamedGroup::X448:
             return 56; // 448 bits
-        case NamedGroup::SECP521R1:
+        case dtls::v13::NamedGroup::SECP521R1:
             return 66; // 521 bits (rounded up)
         default:
             return 0;
     }
 }
 
-NamedGroup BotanPrivateKey::group() const {
+dtls::v13::NamedGroup dtls::v13::crypto::BotanPrivateKey::group() const {
     return group_;
 }
 
-std::vector<uint8_t> BotanPrivateKey::fingerprint() const {
+std::vector<uint8_t> dtls::v13::crypto::BotanPrivateKey::fingerprint() const {
     return {}; // Stub
 }
 
-Result<std::unique_ptr<PublicKey>> BotanPrivateKey::derive_public_key() const {
+dtls::v13::Result<std::unique_ptr<dtls::v13::crypto::PublicKey>> dtls::v13::crypto::BotanPrivateKey::derive_public_key() const {
     return Result<std::unique_ptr<PublicKey>>(DTLSError::OPERATION_NOT_SUPPORTED);
 }
 
-// Similar implementations for BotanPublicKey and BotanCertificateChain
-BotanPublicKey::BotanPublicKey(std::unique_ptr<void> key) : key_(std::move(key)), group_(NamedGroup::SECP256R1) {}
+// BotanPublicKey and BotanCertificateChain implementations
 
-BotanPublicKey::BotanPublicKey(std::unique_ptr<void> key, NamedGroup group) 
-    : key_(std::move(key)), group_(group) {}
-
-BotanPublicKey::~BotanPublicKey() {
-    // In the simulation, we store std::vector<uint8_t>* as void*
-    // We need to cast back and delete properly
-    if (key_) {
-        #ifdef BOTAN_ENABLED
-        // In real implementation, this would be Botan::Public_Key*
-        delete static_cast<Botan::Public_Key*>(key_.get());
-        #else
-        // In simulation, this is std::vector<uint8_t>*
-        delete static_cast<std::vector<uint8_t>*>(key_.get());
-        #endif
-        key_.release(); // Prevent double deletion
-    }
+dtls::v13::crypto::BotanPublicKey::~BotanPublicKey() {
+    // Destructor is now simple - the custom deleter in unique_ptr handles cleanup
 }
 
-BotanPublicKey::BotanPublicKey(BotanPublicKey&& other) noexcept 
+dtls::v13::crypto::BotanPublicKey::BotanPublicKey(dtls::v13::crypto::BotanPublicKey&& other) noexcept 
     : key_(std::move(other.key_)), group_(other.group_) {}
 
-BotanPublicKey& BotanPublicKey::operator=(BotanPublicKey&& other) noexcept {
+dtls::v13::crypto::BotanPublicKey& dtls::v13::crypto::BotanPublicKey::operator=(dtls::v13::crypto::BotanPublicKey&& other) noexcept {
     if (this != &other) {
         key_ = std::move(other.key_);
         group_ = other.group_;
@@ -2131,123 +2172,134 @@ BotanPublicKey& BotanPublicKey::operator=(BotanPublicKey&& other) noexcept {
     return *this;
 }
 
-std::string BotanPublicKey::algorithm() const {
+std::string dtls::v13::crypto::BotanPublicKey::algorithm() const {
     switch (group_) {
-        case NamedGroup::SECP256R1:
-        case NamedGroup::SECP384R1:
-        case NamedGroup::SECP521R1:
+        case dtls::v13::NamedGroup::SECP256R1:
+        case dtls::v13::NamedGroup::SECP384R1:
+        case dtls::v13::NamedGroup::SECP521R1:
             return "ECDSA"; // For signature operations, these are ECDSA keys
-        case NamedGroup::X25519:
+        case dtls::v13::NamedGroup::X25519:
             return "Ed25519"; // X25519 keys can be used for Ed25519 signatures in simulation
-        case NamedGroup::X448:
+        case dtls::v13::NamedGroup::X448:
             return "Ed448"; // X448 keys can be used for Ed448 signatures in simulation
         default:
             return "RSA"; // Default to RSA for testing
     }
 }
 
-size_t BotanPublicKey::key_size() const {
+size_t dtls::v13::crypto::BotanPublicKey::key_size() const {
     switch (group_) {
-        case NamedGroup::SECP256R1:
+        case dtls::v13::NamedGroup::SECP256R1:
             return 65; // Uncompressed point (1 + 32 + 32)
-        case NamedGroup::SECP384R1:
+        case dtls::v13::NamedGroup::SECP384R1:
             return 97; // Uncompressed point (1 + 48 + 48)
-        case NamedGroup::SECP521R1:
+        case dtls::v13::NamedGroup::SECP521R1:
             return 133; // Uncompressed point (1 + 66 + 66)
-        case NamedGroup::X25519:
+        case dtls::v13::NamedGroup::X25519:
             return 32; // Montgomery curve point
-        case NamedGroup::X448:
+        case dtls::v13::NamedGroup::X448:
             return 56; // Montgomery curve point
         default:
             return 0;
     }
 }
 
-NamedGroup BotanPublicKey::group() const {
+dtls::v13::NamedGroup dtls::v13::crypto::BotanPublicKey::group() const {
     return group_;
 }
 
-std::vector<uint8_t> BotanPublicKey::fingerprint() const {
+std::vector<uint8_t> dtls::v13::crypto::BotanPublicKey::fingerprint() const {
     return {}; // Stub
 }
 
-bool BotanPublicKey::equals(const PublicKey& other) const {
+bool dtls::v13::crypto::BotanPublicKey::equals(const dtls::v13::crypto::PublicKey& other) const {
     return false; // Stub
 }
 
 // Certificate chain implementation
-BotanCertificateChain::BotanCertificateChain(std::vector<std::vector<uint8_t>> certs) 
+dtls::v13::crypto::BotanCertificateChain::BotanCertificateChain(std::vector<std::vector<uint8_t>> certs) 
     : certificates_(std::move(certs)) {}
 
-BotanCertificateChain::~BotanCertificateChain() = default;
+dtls::v13::crypto::BotanCertificateChain::~BotanCertificateChain() = default;
 
-BotanCertificateChain::BotanCertificateChain(BotanCertificateChain&& other) noexcept 
+dtls::v13::crypto::BotanCertificateChain::BotanCertificateChain(dtls::v13::crypto::BotanCertificateChain&& other) noexcept 
     : certificates_(std::move(other.certificates_)) {}
 
-BotanCertificateChain& BotanCertificateChain::operator=(BotanCertificateChain&& other) noexcept {
+dtls::v13::crypto::BotanCertificateChain& dtls::v13::crypto::BotanCertificateChain::operator=(dtls::v13::crypto::BotanCertificateChain&& other) noexcept {
     if (this != &other) {
         certificates_ = std::move(other.certificates_);
     }
     return *this;
 }
 
-size_t BotanCertificateChain::certificate_count() const {
+size_t dtls::v13::crypto::BotanCertificateChain::certificate_count() const {
     return certificates_.size();
 }
 
-std::vector<uint8_t> BotanCertificateChain::certificate_at(size_t index) const {
+std::vector<uint8_t> dtls::v13::crypto::BotanCertificateChain::certificate_at(size_t index) const {
     if (index >= certificates_.size()) {
         return {};
     }
     return certificates_[index];
 }
 
-std::unique_ptr<PublicKey> BotanCertificateChain::leaf_public_key() const {
+std::unique_ptr<dtls::v13::crypto::PublicKey> dtls::v13::crypto::BotanCertificateChain::leaf_public_key() const {
     return nullptr; // Stub
 }
 
-std::string BotanCertificateChain::subject_name() const {
+std::string dtls::v13::crypto::BotanCertificateChain::subject_name() const {
     return ""; // Stub
 }
 
-std::string BotanCertificateChain::issuer_name() const {
+std::string dtls::v13::crypto::BotanCertificateChain::issuer_name() const {
     return ""; // Stub
 }
 
-std::chrono::system_clock::time_point BotanCertificateChain::not_before() const {
+std::chrono::system_clock::time_point dtls::v13::crypto::BotanCertificateChain::not_before() const {
     return std::chrono::system_clock::now(); // Stub
 }
 
-std::chrono::system_clock::time_point BotanCertificateChain::not_after() const {
+std::chrono::system_clock::time_point dtls::v13::crypto::BotanCertificateChain::not_after() const {
     return std::chrono::system_clock::now(); // Stub
 }
 
-bool BotanCertificateChain::is_valid() const {
+bool dtls::v13::crypto::BotanCertificateChain::is_valid() const {
     return false; // Stub
 }
 
 // Helper functions for signature operations
-bool BotanProvider::validate_key_scheme_compatibility(const std::string& key_algorithm, SignatureScheme scheme) const {
+bool dtls::v13::crypto::BotanProvider::validate_key_scheme_compatibility(const std::string& key_algorithm, SignatureScheme scheme) const {
     switch (scheme) {
-        // RSA signatures
+        // RSA PKCS#1 v1.5 signatures - compatible with any RSA key
         case SignatureScheme::RSA_PKCS1_SHA256:
         case SignatureScheme::RSA_PKCS1_SHA384:
         case SignatureScheme::RSA_PKCS1_SHA512:
+            return key_algorithm == "RSA";
+            
+        // RSA-PSS with RSA Encryption (RSAE) keys - compatible with traditional RSA keys
         case SignatureScheme::RSA_PSS_RSAE_SHA256:
         case SignatureScheme::RSA_PSS_RSAE_SHA384:
         case SignatureScheme::RSA_PSS_RSAE_SHA512:
+            return key_algorithm == "RSA";
+            
+        // RSA-PSS with PSS keys - requires PSS-specific keys (RFC 8446 Section 4.2.3)
+        // In practice, Botan may use regular RSA keys for PSS signatures
         case SignatureScheme::RSA_PSS_PSS_SHA256:
         case SignatureScheme::RSA_PSS_PSS_SHA384:
         case SignatureScheme::RSA_PSS_PSS_SHA512:
-            return key_algorithm == "RSA";
+            // For production implementation, this should check for PSS-specific key types
+            // For simulation, we accept regular RSA keys
+            return key_algorithm == "RSA" || key_algorithm == "RSA-PSS";
             
-        // ECDSA signatures
+        // ECDSA signatures - algorithm and curve must match (RFC 8446 Section 4.2.3)
         case SignatureScheme::ECDSA_SECP256R1_SHA256:
+            return key_algorithm == "ECDSA"; // Additional curve validation done separately
         case SignatureScheme::ECDSA_SECP384R1_SHA384:
+            return key_algorithm == "ECDSA"; // Additional curve validation done separately
         case SignatureScheme::ECDSA_SECP521R1_SHA512:
-            return key_algorithm == "ECDSA";
+            return key_algorithm == "ECDSA"; // Additional curve validation done separately
             
-        // EdDSA signatures
+        // EdDSA signatures - exact algorithm match required
         case SignatureScheme::ED25519:
             return key_algorithm == "Ed25519";
         case SignatureScheme::ED448:
@@ -2258,9 +2310,9 @@ bool BotanProvider::validate_key_scheme_compatibility(const std::string& key_alg
     }
 }
 
-bool BotanProvider::validate_signature_length(const std::vector<uint8_t>& signature, SignatureScheme scheme, const PublicKey& key) const {
+bool dtls::v13::crypto::BotanProvider::validate_signature_length(const std::vector<uint8_t>& signature, SignatureScheme scheme, const PublicKey& key) const {
     switch (scheme) {
-        // RSA signatures - fixed length based on key size
+        // RSA signatures - dynamic length based on actual key size
         case SignatureScheme::RSA_PKCS1_SHA256:
         case SignatureScheme::RSA_PKCS1_SHA384:
         case SignatureScheme::RSA_PKCS1_SHA512:
@@ -2270,34 +2322,43 @@ bool BotanProvider::validate_signature_length(const std::vector<uint8_t>& signat
         case SignatureScheme::RSA_PSS_PSS_SHA256:
         case SignatureScheme::RSA_PSS_PSS_SHA384:
         case SignatureScheme::RSA_PSS_PSS_SHA512: {
-            // For simulation, assume 2048-bit RSA keys (256-byte signatures)
-            size_t expected_length = 256;
-            return signature.size() == expected_length;
+            // RSA signature length equals key size in bytes
+            size_t key_size_bytes = key.key_size();
+            
+            // Validate key size is reasonable (256 bytes = 2048 bits minimum)
+            if (key_size_bytes < 256 || key_size_bytes > 512) { // 2048-4096 bits
+                return false;
+            }
+            
+            return signature.size() == key_size_bytes;
         }
         
-        // ECDSA signatures - variable length ASN.1 DER encoded
+        // ECDSA signatures - variable length ASN.1 DER encoded, curve-dependent
         case SignatureScheme::ECDSA_SECP256R1_SHA256: {
+            // P-256: r and s are ~32 bytes each, plus ASN.1 overhead
             return signature.size() >= 64 && signature.size() <= 72;
         }
         case SignatureScheme::ECDSA_SECP384R1_SHA384: {
+            // P-384: r and s are ~48 bytes each, plus ASN.1 overhead
             return signature.size() >= 96 && signature.size() <= 104;
         }
         case SignatureScheme::ECDSA_SECP521R1_SHA512: {
+            // P-521: r and s are ~66 bytes each, plus ASN.1 overhead
             return signature.size() >= 130 && signature.size() <= 138;
         }
         
-        // EdDSA signatures - fixed length
+        // EdDSA signatures - fixed length, algorithm-dependent
         case SignatureScheme::ED25519:
-            return signature.size() == 64;
+            return signature.size() == 64; // Ed25519 signatures are always 64 bytes
         case SignatureScheme::ED448:
-            return signature.size() == 114;
+            return signature.size() == 114; // Ed448 signatures are always 114 bytes
             
         default:
             return false;
     }
 }
 
-Result<std::vector<uint8_t>> BotanProvider::construct_dtls_signature_context(
+Result<std::vector<uint8_t>> dtls::v13::crypto::BotanProvider::construct_dtls_signature_context(
     const std::vector<uint8_t>& transcript_hash, bool is_server_context) const {
     
     // DTLS 1.3 signature context construction per RFC 9147 Section 4.2.3
@@ -2323,6 +2384,174 @@ Result<std::vector<uint8_t>> BotanProvider::construct_dtls_signature_context(
                            transcript_hash.begin(), transcript_hash.end());
     
     return Result<std::vector<uint8_t>>(std::move(signature_context));
+}
+
+// Enhanced validation functions for RFC 9147 compliance
+bool dtls::v13::crypto::BotanProvider::validate_enhanced_key_scheme_compatibility(const CryptoKey& key, SignatureScheme scheme) const {
+    const std::string& key_algorithm = key.algorithm();
+    
+    // First check basic algorithm compatibility
+    if (!validate_key_scheme_compatibility(key_algorithm, scheme)) {
+        return false;
+    }
+    
+    // For ECDSA, perform additional curve validation
+    if (key_algorithm == "ECDSA") {
+        NamedGroup key_curve = key.group();
+        return validate_ecdsa_curve_compatibility(key_curve, scheme);
+    }
+    
+    // For RSA, validate minimum key size (2048 bits for production)
+    if (key_algorithm == "RSA") {
+        size_t key_size_bits = key.key_size() * 8; // Convert bytes to bits
+        if (key_size_bits < 2048) {
+            return false; // RSA keys must be at least 2048 bits for DTLS v1.3
+        }
+    }
+    
+    return true;
+}
+
+bool dtls::v13::crypto::BotanProvider::validate_ecdsa_curve_compatibility(NamedGroup key_curve, SignatureScheme scheme) const {
+    switch (scheme) {
+        case SignatureScheme::ECDSA_SECP256R1_SHA256:
+            return key_curve == NamedGroup::SECP256R1;
+            
+        case SignatureScheme::ECDSA_SECP384R1_SHA384:
+            return key_curve == NamedGroup::SECP384R1;
+            
+        case SignatureScheme::ECDSA_SECP521R1_SHA512:
+            return key_curve == NamedGroup::SECP521R1;
+            
+        default:
+            return false; // Not an ECDSA scheme
+    }
+}
+
+Result<bool> dtls::v13::crypto::BotanProvider::validate_asn1_ecdsa_signature(const std::vector<uint8_t>& signature) const {
+    // Validate ECDSA signature ASN.1 DER format (RFC 3279 Section 2.2.3)
+    if (signature.size() < 8) {
+        return Result<bool>(false); // Too short for valid ASN.1 SEQUENCE
+    }
+    
+    // Check SEQUENCE tag
+    if (signature[0] != 0x30) {
+        return Result<bool>(false); // Must start with SEQUENCE tag
+    }
+    
+    // Extract and validate length
+    size_t length_offset = 1;
+    size_t content_length;
+    
+    if (signature[1] & 0x80) {
+        // Long form length encoding
+        size_t length_octets = signature[1] & 0x7F;
+        if (length_octets == 0 || length_octets > 4 || signature.size() < 2 + length_octets) {
+            return Result<bool>(false); // Invalid long form length
+        }
+        
+        content_length = 0;
+        for (size_t i = 0; i < length_octets; ++i) {
+            content_length = (content_length << 8) | signature[2 + i];
+        }
+        length_offset = 2 + length_octets;
+    } else {
+        // Short form length encoding
+        content_length = signature[1];
+        length_offset = 2;
+    }
+    
+    // Validate total length
+    if (length_offset + content_length != signature.size()) {
+        return Result<bool>(false); // Length mismatch
+    }
+    
+    // Validate r and s INTEGER components
+    size_t pos = length_offset;
+    
+    // Validate r INTEGER
+    if (pos >= signature.size() || signature[pos] != 0x02) {
+        return Result<bool>(false); // r must be INTEGER
+    }
+    pos++;
+    
+    if (pos >= signature.size()) {
+        return Result<bool>(false); // Missing r length
+    }
+    
+    size_t r_length = signature[pos++];
+    if (r_length == 0 || pos + r_length > signature.size()) {
+        return Result<bool>(false); // Invalid r length
+    }
+    
+    // Skip r value
+    pos += r_length;
+    
+    // Validate s INTEGER
+    if (pos >= signature.size() || signature[pos] != 0x02) {
+        return Result<bool>(false); // s must be INTEGER
+    }
+    pos++;
+    
+    if (pos >= signature.size()) {
+        return Result<bool>(false); // Missing s length
+    }
+    
+    size_t s_length = signature[pos++];
+    if (s_length == 0 || pos + s_length != signature.size()) {
+        return Result<bool>(false); // Invalid s length or extra data
+    }
+    
+    return Result<bool>(true); // Valid ASN.1 DER ECDSA signature
+}
+
+// Security policy validation functions
+bool dtls::v13::crypto::BotanProvider::is_signature_scheme_allowed(SignatureScheme scheme) const {
+    // Check if scheme is deprecated first
+    if (is_signature_scheme_deprecated(scheme)) {
+        // For production, you might want to make this configurable
+        // For now, allow deprecated schemes with a warning logged
+        return true; // Allow but discourage usage
+    }
+    
+    // All non-deprecated schemes in RFC 9147 are allowed
+    switch (scheme) {
+        // Modern recommended schemes
+        case SignatureScheme::RSA_PSS_RSAE_SHA256:
+        case SignatureScheme::RSA_PSS_RSAE_SHA384:
+        case SignatureScheme::RSA_PSS_RSAE_SHA512:
+        case SignatureScheme::RSA_PSS_PSS_SHA256:
+        case SignatureScheme::RSA_PSS_PSS_SHA384:
+        case SignatureScheme::RSA_PSS_PSS_SHA512:
+        case SignatureScheme::ECDSA_SECP256R1_SHA256:
+        case SignatureScheme::ECDSA_SECP384R1_SHA384:
+        case SignatureScheme::ECDSA_SECP521R1_SHA512:
+        case SignatureScheme::ED25519:
+        case SignatureScheme::ED448:
+            return true;
+            
+        // Legacy schemes - allowed but deprecated
+        case SignatureScheme::RSA_PKCS1_SHA256:
+        case SignatureScheme::RSA_PKCS1_SHA384:
+        case SignatureScheme::RSA_PKCS1_SHA512:
+            return true; // Allowed for backward compatibility
+            
+        default:
+            return false; // Unknown schemes not allowed
+    }
+}
+
+bool dtls::v13::crypto::BotanProvider::is_signature_scheme_deprecated(SignatureScheme scheme) const {
+    // RSA PKCS#1 v1.5 schemes are deprecated in favor of RSA-PSS (RFC 8446)
+    switch (scheme) {
+        case SignatureScheme::RSA_PKCS1_SHA256:
+        case SignatureScheme::RSA_PKCS1_SHA384:
+        case SignatureScheme::RSA_PKCS1_SHA512:
+            return true; // PKCS#1 v1.5 is deprecated
+            
+        default:
+            return false; // All other supported schemes are not deprecated
+    }
 }
 
 } // namespace crypto

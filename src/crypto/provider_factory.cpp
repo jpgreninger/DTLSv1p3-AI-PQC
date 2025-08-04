@@ -1,6 +1,6 @@
 #include <dtls/crypto/provider_factory.h>
 #include <dtls/crypto/openssl_provider.h>
-#ifdef DTLS_HAS_BOTAN
+#if defined(DTLS_HAS_BOTAN) || defined(DTLS_ENABLE_BOTAN_SIMULATION)
 #include <dtls/crypto/botan_provider.h>
 #endif
 #include <algorithm>
@@ -628,7 +628,7 @@ Result<void> register_all_providers() {
         return openssl_result;
     }
     
-#ifdef DTLS_HAS_BOTAN
+#if defined(DTLS_HAS_BOTAN) || defined(DTLS_ENABLE_BOTAN_SIMULATION)
     // Register Botan provider (only if available)
     auto botan_result = register_botan_provider();
     if (botan_result.is_error()) {
@@ -652,13 +652,19 @@ Result<void> register_openssl_provider() {
     );
 }
 
-#ifdef DTLS_HAS_BOTAN
+#if defined(DTLS_HAS_BOTAN) || defined(DTLS_ENABLE_BOTAN_SIMULATION)
 Result<void> register_botan_provider() {
     auto& factory = ProviderFactory::instance();
     
+#ifdef DTLS_ENABLE_BOTAN_SIMULATION
+    const char* provider_description = "Botan Cryptographic Provider (Simulation Mode)";
+#else
+    const char* provider_description = "Botan Cryptographic Provider";
+#endif
+    
     return factory.register_provider(
         "botan",
-        "Botan Cryptographic Provider",
+        provider_description,
         []() -> std::unique_ptr<CryptoProvider> {
             return std::make_unique<BotanProvider>();
         },

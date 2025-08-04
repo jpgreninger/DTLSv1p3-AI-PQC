@@ -48,6 +48,10 @@ set(DTLS_CONNECTION_SOURCES
 # Optional Botan provider
 if(DTLS_HAS_BOTAN)
     list(APPEND DTLS_CRYPTO_SOURCES crypto/botan_provider.cpp)
+else()
+    # Always include Botan provider for testing (simulation mode)
+    list(APPEND DTLS_CRYPTO_SOURCES crypto/botan_provider.cpp)
+    add_definitions(-DDTLS_ENABLE_BOTAN_SIMULATION)
 endif()
 
 # Additional modules - temporarily disabled due to compilation issues
