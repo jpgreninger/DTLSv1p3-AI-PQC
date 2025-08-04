@@ -146,6 +146,7 @@ private:
 class DTLS_API BotanPrivateKey : public PrivateKey {
 public:
     explicit BotanPrivateKey(std::unique_ptr<void> key); // Will be Botan::Private_Key
+    BotanPrivateKey(std::unique_ptr<void> key, NamedGroup group); // Constructor with group
     ~BotanPrivateKey() override;
     
     // Non-copyable, movable
@@ -168,6 +169,7 @@ public:
 
 private:
     std::unique_ptr<void> key_; // Actually Botan::Private_Key
+    NamedGroup group_; // Elliptic curve group
 };
 
 /**
@@ -176,6 +178,7 @@ private:
 class DTLS_API BotanPublicKey : public PublicKey {
 public:
     explicit BotanPublicKey(std::unique_ptr<void> key); // Will be Botan::Public_Key
+    BotanPublicKey(std::unique_ptr<void> key, NamedGroup group); // Constructor with group
     ~BotanPublicKey() override;
     
     // Non-copyable, movable
@@ -198,6 +201,7 @@ public:
 
 private:
     std::unique_ptr<void> key_; // Actually Botan::Public_Key
+    NamedGroup group_; // Elliptic curve group
 };
 
 /**
