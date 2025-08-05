@@ -72,12 +72,16 @@ DTLS_API Result<KeySchedule> update_traffic_keys(
 DTLS_API Result<uint64_t> encrypt_sequence_number(
     CryptoProvider& provider,
     uint64_t sequence_number,
-    const std::vector<uint8_t>& sequence_number_key);
+    const std::vector<uint8_t>& sequence_number_key,
+    const std::vector<uint8_t>& ciphertext,
+    AEADCipher cipher_type);
 
 DTLS_API Result<uint64_t> decrypt_sequence_number(
     CryptoProvider& provider,
     uint64_t encrypted_sequence_number,
-    const std::vector<uint8_t>& sequence_number_key);
+    const std::vector<uint8_t>& sequence_number_key,
+    const std::vector<uint8_t>& ciphertext,
+    AEADCipher cipher_type);
 
 DTLS_API Result<std::vector<uint8_t>> derive_sequence_number_mask(
     CryptoProvider& provider,

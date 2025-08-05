@@ -96,6 +96,10 @@ add_executable(dtls_crypto_test
     crypto/test_random_generation.cpp
     crypto/test_aead_operations.cpp
     crypto/test_botan_signature_operations.cpp
+    crypto/test_performance_validation_working.cpp
+    crypto/test_crypto_security_vectors.cpp
+    crypto/test_signature_security_vectors.cpp
+    crypto/test_sequence_number_encryption.cpp
 )
 
 target_link_libraries(dtls_crypto_test PRIVATE ${DTLS_TEST_LIBRARIES})

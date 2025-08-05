@@ -330,26 +330,8 @@ Result<DTLSCiphertext> RecordLayer::protect_record(const DTLSPlaintext& plaintex
     
     const auto& crypto_params = crypto_params_result.value();
     
-    // Encrypt sequence number using RFC 9147 Section 4.1.3
-    SequenceNumber48 encrypted_seq_num = plaintext.get_sequence_number();
-    if (current_epoch > 0 && !crypto_params.write_key.empty()) {
-        // Derive sequence number encryption key
-        auto seq_key_result = crypto::utils::derive_sequence_number_mask(
-            *crypto_provider_, crypto_params.write_key, "sn", 
-            crypto::utils::get_cipher_suite_hash(current_cipher_suite_));
-        if (!seq_key_result.is_success()) {
-            return Result<DTLSCiphertext>(seq_key_result.error());
-        }
-        
-        // Encrypt the sequence number
-        auto encrypted_seq_result = crypto::utils::encrypt_sequence_number(
-            *crypto_provider_, plaintext.get_sequence_number(), seq_key_result.value());
-        if (!encrypted_seq_result.is_success()) {
-            return Result<DTLSCiphertext>(encrypted_seq_result.error());
-        }
-        
-        encrypted_seq_num = SequenceNumber48(encrypted_seq_result.value());
-    }
+    // Initially use unencrypted sequence number - will encrypt after AEAD operation
+    SequenceNumber48 sequence_number = plaintext.get_sequence_number();
     
     // Epoch 0 uses null protection (no encryption)
     if (current_epoch == 0 || crypto_params.write_key.empty()) {
@@ -362,7 +344,7 @@ Result<DTLSCiphertext> RecordLayer::protect_record(const DTLSPlaintext& plaintex
         DTLSCiphertext ciphertext(ContentType::APPLICATION_DATA,
                                  plaintext.get_version(),
                                  plaintext.get_epoch(),
-                                 encrypted_seq_num,
+                                 sequence_number,
                                  std::move(encrypted_payload));
         
         update_stats_protected();
@@ -392,7 +374,7 @@ Result<DTLSCiphertext> RecordLayer::protect_record(const DTLSPlaintext& plaintex
         plaintext.get_type(),
         plaintext.get_version(),
         plaintext.get_epoch(),
-        static_cast<uint64_t>(encrypted_seq_num),
+        static_cast<uint64_t>(sequence_number),
         plaintext.get_length()
     };
     
@@ -427,10 +409,56 @@ Result<DTLSCiphertext> RecordLayer::protect_record(const DTLSPlaintext& plaintex
                 encrypt_output.tag.data(),
                 encrypt_output.tag.size());
     
+    // Now encrypt sequence number using first 16 bytes of ciphertext (RFC 9147 Section 4.2.3)
+    SequenceNumber48 encrypted_sequence_number = sequence_number;
+    if (encrypted_record.size() >= 16) {
+        // Derive sequence number encryption key
+        auto seq_key_result = crypto::utils::derive_sequence_number_mask(
+            *crypto_provider_, crypto_params.write_key, "sn", 
+            crypto::utils::get_cipher_suite_hash(current_cipher_suite_));
+        if (seq_key_result.is_success()) {
+            // Get cipher type from current cipher suite
+            AEADCipher cipher_type = AEADCipher::AES_128_GCM; // Default
+            switch (current_cipher_suite_) {
+                case CipherSuite::TLS_AES_128_GCM_SHA256:
+                    cipher_type = AEADCipher::AES_128_GCM;
+                    break;
+                case CipherSuite::TLS_AES_256_GCM_SHA384:
+                    cipher_type = AEADCipher::AES_256_GCM;
+                    break;
+                case CipherSuite::TLS_CHACHA20_POLY1305_SHA256:
+                    cipher_type = AEADCipher::CHACHA20_POLY1305;
+                    break;
+                case CipherSuite::TLS_AES_128_CCM_SHA256:
+                    cipher_type = AEADCipher::AES_128_CCM;
+                    break;
+                case CipherSuite::TLS_AES_128_CCM_8_SHA256:
+                    cipher_type = AEADCipher::AES_128_CCM_8;
+                    break;
+                default:
+                    cipher_type = AEADCipher::AES_128_GCM;
+                    break;
+            }
+            
+            // Encrypt sequence number using first 16 bytes of ciphertext
+            std::vector<uint8_t> ciphertext_prefix(16);
+            std::memcpy(ciphertext_prefix.data(), encrypted_record.data(), 16);
+            auto encrypted_seq_result = crypto::utils::encrypt_sequence_number(
+                *crypto_provider_, 
+                static_cast<uint64_t>(sequence_number), 
+                seq_key_result.value(),
+                ciphertext_prefix,
+                cipher_type);
+            if (encrypted_seq_result.is_success()) {
+                encrypted_sequence_number = SequenceNumber48(encrypted_seq_result.value());
+            }
+        }
+    }
+
     DTLSCiphertext ciphertext(ContentType::APPLICATION_DATA,
                              plaintext.get_version(),
                              plaintext.get_epoch(),
-                             encrypted_seq_num,
+                             encrypted_sequence_number,
                              std::move(encrypted_record));
     
     // Add connection ID if enabled
@@ -481,8 +509,42 @@ Result<DTLSPlaintext> RecordLayer::unprotect_record(const DTLSCiphertext& cipher
         }
         
         // Decrypt the sequence number
+        // Get cipher type from current cipher suite
+        AEADCipher cipher_type = AEADCipher::AES_128_GCM; // Default
+        switch (current_cipher_suite_) {
+            case CipherSuite::TLS_AES_128_GCM_SHA256:
+                cipher_type = AEADCipher::AES_128_GCM;
+                break;
+            case CipherSuite::TLS_AES_256_GCM_SHA384:
+                cipher_type = AEADCipher::AES_256_GCM;
+                break;
+            case CipherSuite::TLS_CHACHA20_POLY1305_SHA256:
+                cipher_type = AEADCipher::CHACHA20_POLY1305;
+                break;
+            case CipherSuite::TLS_AES_128_CCM_SHA256:
+                cipher_type = AEADCipher::AES_128_CCM;
+                break;
+            case CipherSuite::TLS_AES_128_CCM_8_SHA256:
+                cipher_type = AEADCipher::AES_128_CCM_8;
+                break;
+            default:
+                cipher_type = AEADCipher::AES_128_GCM;
+                break;
+        }
+        
+        // Extract first 16 bytes of encrypted record for sequence number decryption
+        const auto& encrypted_record = ciphertext.get_encrypted_record();
+        std::vector<uint8_t> ciphertext_prefix(16, 0);
+        if (encrypted_record.size() >= 16) {
+            std::memcpy(ciphertext_prefix.data(), encrypted_record.data(), 16);
+        } else {
+            // Fallback: pad to 16 bytes if ciphertext is shorter
+            std::memcpy(ciphertext_prefix.data(), encrypted_record.data(), encrypted_record.size());
+        }
+        
         auto decrypted_seq_result = crypto::utils::decrypt_sequence_number(
-            *crypto_provider_, ciphertext.get_encrypted_sequence_number(), seq_key_result.value());
+            *crypto_provider_, ciphertext.get_encrypted_sequence_number(), seq_key_result.value(),
+            ciphertext_prefix, cipher_type);
         if (!decrypted_seq_result.is_success()) {
             return Result<DTLSPlaintext>(decrypted_seq_result.error());
         }
@@ -625,8 +687,42 @@ Result<DTLSPlaintext> RecordLayer::process_incoming_record(const DTLSCiphertext&
                 crypto::utils::get_cipher_suite_hash(current_cipher_suite_));
             if (seq_key_result.is_success()) {
                 // Decrypt the sequence number for anti-replay check
+                // Get cipher type from current cipher suite
+                AEADCipher cipher_type = AEADCipher::AES_128_GCM; // Default
+                switch (current_cipher_suite_) {
+                    case CipherSuite::TLS_AES_128_GCM_SHA256:
+                        cipher_type = AEADCipher::AES_128_GCM;
+                        break;
+                    case CipherSuite::TLS_AES_256_GCM_SHA384:
+                        cipher_type = AEADCipher::AES_256_GCM;
+                        break;
+                    case CipherSuite::TLS_CHACHA20_POLY1305_SHA256:
+                        cipher_type = AEADCipher::CHACHA20_POLY1305;
+                        break;
+                    case CipherSuite::TLS_AES_128_CCM_SHA256:
+                        cipher_type = AEADCipher::AES_128_CCM;
+                        break;
+                    case CipherSuite::TLS_AES_128_CCM_8_SHA256:
+                        cipher_type = AEADCipher::AES_128_CCM_8;
+                        break;
+                    default:
+                        cipher_type = AEADCipher::AES_128_GCM;
+                        break;
+                }
+                
+                // Extract first 16 bytes of encrypted record for sequence number decryption
+        const auto& encrypted_record = ciphertext.get_encrypted_record();
+        std::vector<uint8_t> ciphertext_prefix(16, 0);
+        if (encrypted_record.size() >= 16) {
+            std::memcpy(ciphertext_prefix.data(), encrypted_record.data(), 16);
+        } else {
+            // Fallback: pad to 16 bytes if ciphertext is shorter
+            std::memcpy(ciphertext_prefix.data(), encrypted_record.data(), encrypted_record.size());
+        }
+                
                 auto decrypted_seq_result = crypto::utils::decrypt_sequence_number(
-                    *crypto_provider_, ciphertext.get_encrypted_sequence_number(), seq_key_result.value());
+                    *crypto_provider_, ciphertext.get_encrypted_sequence_number(), seq_key_result.value(),
+                    ciphertext_prefix, cipher_type);
                 if (decrypted_seq_result.is_success()) {
                     decrypted_seq_num = decrypted_seq_result.value();
                 }

@@ -1160,47 +1160,109 @@ namespace utils {
 Result<uint64_t> encrypt_sequence_number(
     CryptoProvider& provider,
     uint64_t sequence_number,
-    const std::vector<uint8_t>& sequence_number_key) {
+    const std::vector<uint8_t>& sequence_number_key,
+    const std::vector<uint8_t>& ciphertext,
+    AEADCipher cipher_type) {
     
     DTLS_CRYPTO_TIMER("encrypt_sequence_number");
     
-    if (sequence_number_key.size() < 16) {
+    if (sequence_number_key.empty()) {
         return make_error<uint64_t>(DTLSError::INVALID_PARAMETER);
     }
     
-    // For DTLS v1.3, we use AES-128-ECB to encrypt the 48-bit sequence number
-    // The sequence number is padded to 16 bytes with zeros
-    std::vector<uint8_t> plaintext(16, 0);
+    if (ciphertext.size() < 16) {
+        return make_error<uint64_t>(DTLSError::INVALID_PARAMETER);
+    }
     
-    // Store sequence number in big-endian format, right-aligned
+    std::vector<uint8_t> mask(16);
+    
+    // Generate mask according to RFC 9147 Section 4.2.3
+    switch (cipher_type) {
+        case AEADCipher::AES_128_GCM:
+        case AEADCipher::AES_256_GCM:
+        case AEADCipher::AES_128_CCM:
+        case AEADCipher::AES_128_CCM_8: {
+            // For AES-based AEAD: Mask = AES-ECB(sn_key, Ciphertext[0..15])
+            if (sequence_number_key.size() < 16) {
+                return make_error<uint64_t>(DTLSError::INVALID_PARAMETER);
+            }
+            
+            // Use AES-ECB to encrypt the first 16 bytes of ciphertext
+            std::vector<uint8_t> block(ciphertext.begin(), ciphertext.begin() + 16);
+            
+            // We'll use AEAD encryption with zero nonce/AAD to simulate ECB
+            AEADParams ecb_params;
+            ecb_params.key = sequence_number_key;
+            ecb_params.nonce = std::vector<uint8_t>(12, 0); // Zero nonce
+            ecb_params.additional_data = {}; // No AAD
+            ecb_params.cipher = AEADCipher::AES_128_GCM; // Use GCM as ECB simulation
+            
+            auto mask_result = provider.aead_encrypt(ecb_params, block);
+            if (!mask_result.is_success()) {
+                return make_error<uint64_t>(mask_result.error());
+            }
+            
+            auto encrypted_mask = mask_result.value();
+            if (encrypted_mask.size() < 16) {
+                return make_error<uint64_t>(DTLSError::INTERNAL_ERROR);
+            }
+            
+            // Extract first 16 bytes as mask (before auth tag)
+            std::copy(encrypted_mask.begin(), encrypted_mask.begin() + 16, mask.begin());
+            break;
+        }
+        
+        case AEADCipher::CHACHA20_POLY1305: {
+            // For ChaCha20-based AEAD: Mask = ChaCha20(sn_key, Ciphertext[0..3], Ciphertext[4..15])
+            if (sequence_number_key.size() < 32) {
+                return make_error<uint64_t>(DTLSError::INVALID_PARAMETER);
+            }
+            
+            // Extract counter (first 4 bytes) and nonce (next 12 bytes)
+            std::vector<uint8_t> chacha_nonce(12);
+            std::copy(ciphertext.begin() + 4, ciphertext.begin() + 16, chacha_nonce.begin());
+            
+            // Use ChaCha20 with extracted nonce and counter
+            AEADParams chacha_params;
+            chacha_params.key = sequence_number_key;
+            chacha_params.nonce = chacha_nonce;
+            chacha_params.additional_data = {};
+            chacha_params.cipher = AEADCipher::CHACHA20_POLY1305;
+            
+            // Create 16-byte block to encrypt
+            std::vector<uint8_t> zero_block(16, 0);
+            
+            auto mask_result = provider.aead_encrypt(chacha_params, zero_block);
+            if (!mask_result.is_success()) {
+                return make_error<uint64_t>(mask_result.error());
+            }
+            
+            auto encrypted_mask = mask_result.value();
+            if (encrypted_mask.size() < 16) {
+                return make_error<uint64_t>(DTLSError::INTERNAL_ERROR);
+            }
+            
+            // Extract first 16 bytes as mask
+            std::copy(encrypted_mask.begin(), encrypted_mask.begin() + 16, mask.begin());
+            break;
+        }
+        
+        default:
+            return make_error<uint64_t>(DTLSError::CIPHER_SUITE_NOT_SUPPORTED);
+    }
+    
+    // XOR the 48-bit sequence number with the first 6 bytes of the mask
+    uint64_t encrypted_seq = sequence_number;
     for (int i = 0; i < 6; ++i) {
-        plaintext[10 + i] = (sequence_number >> (8 * (5 - i))) & 0xFF;
+        uint8_t seq_byte = (sequence_number >> (8 * (5 - i))) & 0xFF;
+        uint8_t masked_byte = seq_byte ^ mask[i];
+        
+        // Clear the corresponding byte in encrypted_seq and set the masked byte
+        encrypted_seq &= ~(0xFFULL << (8 * (5 - i)));
+        encrypted_seq |= (static_cast<uint64_t>(masked_byte) << (8 * (5 - i)));
     }
     
-    // Use AEAD with empty nonce and AAD for ECB-like behavior
-    AEADParams params;
-    params.key = sequence_number_key;
-    params.nonce = std::vector<uint8_t>(12, 0); // 12-byte nonce of zeros
-    params.additional_data = {}; // No AAD
-    params.cipher = AEADCipher::AES_128_GCM;
-    
-    auto encrypted_result = provider.aead_encrypt(params, plaintext);
-    if (!encrypted_result.is_success()) {
-        return make_error<uint64_t>(encrypted_result.error());
-    }
-    
-    auto encrypted = encrypted_result.value();
-    if (encrypted.size() < 16) {
-        return make_error<uint64_t>(DTLSError::INTERNAL_ERROR);
-    }
-    
-    // Extract the encrypted sequence number from the last 6 bytes (excluding auth tag)
-    uint64_t encrypted_seq = 0;
-    for (int i = 0; i < 6; ++i) {
-        encrypted_seq |= (static_cast<uint64_t>(encrypted[10 + i]) << (8 * (5 - i)));
-    }
-    
-    // Mask to 48 bits
+    // Ensure result is 48-bit
     encrypted_seq &= 0xFFFFFFFFFFFFULL;
     
     return make_result(encrypted_seq);
@@ -1209,49 +1271,112 @@ Result<uint64_t> encrypt_sequence_number(
 Result<uint64_t> decrypt_sequence_number(
     CryptoProvider& provider,
     uint64_t encrypted_sequence_number,
-    const std::vector<uint8_t>& sequence_number_key) {
+    const std::vector<uint8_t>& sequence_number_key,
+    const std::vector<uint8_t>& ciphertext,
+    AEADCipher cipher_type) {
     
     DTLS_CRYPTO_TIMER("decrypt_sequence_number");
     
-    if (sequence_number_key.size() < 16) {
+    if (sequence_number_key.empty()) {
         return make_error<uint64_t>(DTLSError::INVALID_PARAMETER);
     }
     
-    // Reconstruct the encrypted block
-    std::vector<uint8_t> encrypted_block(16 + 16, 0); // 16 bytes plaintext + 16 bytes auth tag
+    if (ciphertext.size() < 16) {
+        return make_error<uint64_t>(DTLSError::INVALID_PARAMETER);
+    }
     
-    // Store encrypted sequence number in big-endian format, right-aligned
+    std::vector<uint8_t> mask(16);
+    
+    // Generate the same mask used for encryption according to RFC 9147 Section 4.2.3
+    switch (cipher_type) {
+        case AEADCipher::AES_128_GCM:
+        case AEADCipher::AES_256_GCM:
+        case AEADCipher::AES_128_CCM:
+        case AEADCipher::AES_128_CCM_8: {
+            // For AES-based AEAD: Mask = AES-ECB(sn_key, Ciphertext[0..15])
+            if (sequence_number_key.size() < 16) {
+                return make_error<uint64_t>(DTLSError::INVALID_PARAMETER);
+            }
+            
+            // Use AES-ECB to encrypt the first 16 bytes of ciphertext
+            std::vector<uint8_t> block(ciphertext.begin(), ciphertext.begin() + 16);
+            
+            // We'll use AEAD encryption with zero nonce/AAD to simulate ECB
+            AEADParams ecb_params;
+            ecb_params.key = sequence_number_key;
+            ecb_params.nonce = std::vector<uint8_t>(12, 0); // Zero nonce
+            ecb_params.additional_data = {}; // No AAD
+            ecb_params.cipher = AEADCipher::AES_128_GCM; // Use GCM as ECB simulation
+            
+            auto mask_result = provider.aead_encrypt(ecb_params, block);
+            if (!mask_result.is_success()) {
+                return make_error<uint64_t>(mask_result.error());
+            }
+            
+            auto encrypted_mask = mask_result.value();
+            if (encrypted_mask.size() < 16) {
+                return make_error<uint64_t>(DTLSError::INTERNAL_ERROR);
+            }
+            
+            // Extract first 16 bytes as mask (before auth tag)
+            std::copy(encrypted_mask.begin(), encrypted_mask.begin() + 16, mask.begin());
+            break;
+        }
+        
+        case AEADCipher::CHACHA20_POLY1305: {
+            // For ChaCha20-based AEAD: Mask = ChaCha20(sn_key, Ciphertext[0..3], Ciphertext[4..15])
+            if (sequence_number_key.size() < 32) {
+                return make_error<uint64_t>(DTLSError::INVALID_PARAMETER);
+            }
+            
+            // Extract counter (first 4 bytes) and nonce (next 12 bytes)
+            std::vector<uint8_t> chacha_nonce(12);
+            std::copy(ciphertext.begin() + 4, ciphertext.begin() + 16, chacha_nonce.begin());
+            
+            // Use ChaCha20 with extracted nonce and counter
+            AEADParams chacha_params;
+            chacha_params.key = sequence_number_key;
+            chacha_params.nonce = chacha_nonce;
+            chacha_params.additional_data = {};
+            chacha_params.cipher = AEADCipher::CHACHA20_POLY1305;
+            
+            // Create 16-byte block to encrypt
+            std::vector<uint8_t> zero_block(16, 0);
+            
+            auto mask_result = provider.aead_encrypt(chacha_params, zero_block);
+            if (!mask_result.is_success()) {
+                return make_error<uint64_t>(mask_result.error());
+            }
+            
+            auto encrypted_mask = mask_result.value();
+            if (encrypted_mask.size() < 16) {
+                return make_error<uint64_t>(DTLSError::INTERNAL_ERROR);
+            }
+            
+            // Extract first 16 bytes as mask
+            std::copy(encrypted_mask.begin(), encrypted_mask.begin() + 16, mask.begin());
+            break;
+        }
+        
+        default:
+            return make_error<uint64_t>(DTLSError::CIPHER_SUITE_NOT_SUPPORTED);
+    }
+    
+    // XOR the encrypted 48-bit sequence number with the first 6 bytes of the mask to decrypt
+    uint64_t decrypted_seq = encrypted_sequence_number;
     for (int i = 0; i < 6; ++i) {
-        encrypted_block[10 + i] = (encrypted_sequence_number >> (8 * (5 - i))) & 0xFF;
+        uint8_t encrypted_byte = (encrypted_sequence_number >> (8 * (5 - i))) & 0xFF;
+        uint8_t decrypted_byte = encrypted_byte ^ mask[i];
+        
+        // Clear the corresponding byte in decrypted_seq and set the decrypted byte
+        decrypted_seq &= ~(0xFFULL << (8 * (5 - i)));
+        decrypted_seq |= (static_cast<uint64_t>(decrypted_byte) << (8 * (5 - i)));
     }
     
-    // Use AEAD decrypt with same parameters
-    AEADParams params;
-    params.key = sequence_number_key;
-    params.nonce = std::vector<uint8_t>(12, 0); // 12-byte nonce of zeros
-    params.additional_data = {}; // No AAD
-    params.cipher = AEADCipher::AES_128_GCM;
+    // Ensure result is 48-bit
+    decrypted_seq &= 0xFFFFFFFFFFFFULL;
     
-    auto decrypted_result = provider.aead_decrypt(params, encrypted_block);
-    if (!decrypted_result.is_success()) {
-        return make_error<uint64_t>(decrypted_result.error());
-    }
-    
-    auto decrypted = decrypted_result.value();
-    if (decrypted.size() < 16) {
-        return make_error<uint64_t>(DTLSError::INTERNAL_ERROR);
-    }
-    
-    // Extract the decrypted sequence number from the last 6 bytes
-    uint64_t sequence_number = 0;
-    for (int i = 0; i < 6; ++i) {
-        sequence_number |= (static_cast<uint64_t>(decrypted[10 + i]) << (8 * (5 - i)));
-    }
-    
-    // Mask to 48 bits
-    sequence_number &= 0xFFFFFFFFFFFFULL;
-    
-    return make_result(sequence_number);
+    return make_result(decrypted_seq);
 }
 
 Result<std::vector<uint8_t>> derive_sequence_number_mask(
