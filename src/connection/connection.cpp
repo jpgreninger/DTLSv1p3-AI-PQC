@@ -27,10 +27,10 @@ Connection::Connection(const ConnectionConfig& config,
 }
 
 Connection::~Connection() {
-    // TODO: Clean up when incomplete types are properly defined
-    // if (!force_closed_) {
-    //     force_close();
-    // }
+    // Ensure connection is properly closed during destruction
+    if (!force_closed_.load()) {
+        force_close();
+    }
 }
 
 Result<std::unique_ptr<Connection>> Connection::create_client(
@@ -414,12 +414,12 @@ Result<void> Connection::handle_alert(AlertLevel level, AlertDescription descrip
 }
 
 Result<void> Connection::send_application_data(const memory::ZeroCopyBuffer& data) {
-    if (state_ != ConnectionState::CONNECTED) {
-        return make_error<void>(DTLSError::STATE_MACHINE_ERROR);
+    if (!is_connection_valid_for_operations()) {
+        return make_error<void>(DTLSError::CONNECTION_CLOSED);
     }
     
-    if (force_closed_ || is_closing_) {
-        return make_error<void>(DTLSError::CONNECTION_CLOSED);
+    if (state_ != ConnectionState::CONNECTED) {
+        return make_error<void>(DTLSError::STATE_MACHINE_ERROR);
     }
     
     // TODO: Create plaintext record and protect through record layer when properly initialized
@@ -458,34 +458,63 @@ Result<memory::ZeroCopyBuffer> Connection::receive_application_data() {
 }
 
 Result<void> Connection::close() {
-    if (force_closed_) {
+    if (force_closed_.load()) {
         return make_result();
     }
     
-    is_closing_ = true;
+    // Check if already closed under mutex protection
+    {
+        std::lock_guard<std::mutex> lock(state_mutex_);
+        if (state_ == ConnectionState::CLOSED) {
+            return make_result();
+        }
+    }
     
-    // Send close_notify alert (TODO: Implement alert sending)
+    // Set closing flag to prevent new operations
+    is_closing_.store(true);
+    
+    // Send close_notify alert if connection is established
+    if (state_ == ConnectionState::CONNECTED) {
+        auto alert_result = send_close_notify_alert();
+        if (!alert_result.is_success()) {
+            // Log error but continue with closure
+            // Note: In production, this might be logged via a logging system
+        }
+    }
     
     // Transition to closed state
-    auto result = transition_state(ConnectionState::CLOSED);
-    if (result) {
+    auto transition_result = transition_state(ConnectionState::CLOSED);
+    if (transition_result.is_success()) {
         fire_event(ConnectionEvent::CONNECTION_CLOSED);
     }
     
-    return cleanup_resources();
+    // Always attempt cleanup even if state transition fails
+    auto cleanup_result = cleanup_resources();
+    
+    // Return the first error encountered, if any
+    if (!transition_result.is_success()) {
+        return transition_result;
+    }
+    return cleanup_result;
 }
 
 void Connection::force_close() {
-    force_closed_ = true;
-    is_closing_ = true;
+    force_closed_.store(true);
+    is_closing_.store(true);
     
+    // Force state to closed without normal transition validation
     {
         std::lock_guard<std::mutex> lock(state_mutex_);
         state_ = ConnectionState::CLOSED;
     }
     
-    cleanup_resources();
+    // Cleanup all resources
+    auto cleanup_result = cleanup_resources();
+    
+    // Fire connection closed event
     fire_event(ConnectionEvent::CONNECTION_CLOSED);
+    
+    // Note: Ignoring cleanup errors in force close since this is emergency cleanup
 }
 
 bool Connection::is_connected() const {
@@ -530,6 +559,10 @@ Result<ConnectionID> Connection::get_peer_connection_id() const {
 }
 
 Result<void> Connection::update_keys() {
+    if (!is_connection_valid_for_operations()) {
+        return make_error<void>(DTLSError::CONNECTION_CLOSED);
+    }
+    
     if (state_ != ConnectionState::CONNECTED) {
         return make_error<void>(DTLSError::STATE_MACHINE_ERROR);
     }
@@ -880,22 +913,64 @@ void Connection::fire_state_transition_events(ConnectionState from, ConnectionSt
 }
 
 Result<void> Connection::cleanup_resources() {
-    // Clear receive queue
+    // Ensure cleanup is idempotent - can be called multiple times safely
+    if (state_ == ConnectionState::CLOSED && !crypto_provider_ && !transport_) {
+        return make_result(); // Already cleaned up
+    }
+    
+    // Clear application data buffers
     {
         std::lock_guard<std::mutex> lock(receive_queue_mutex_);
         receive_queue_.clear();
+        receive_queue_.shrink_to_fit(); // Release memory
     }
     
-    // Stop and cleanup transport
+    // Clear early data context and buffers
+    {
+        std::lock_guard<std::mutex> lock(early_data_mutex_);
+        early_data_context_ = protocol::EarlyDataContext{}; // Reset to default state
+    }
+    
+    // Stop and cleanup transport layer
     if (transport_) {
-        transport_->stop();
+        try {
+            transport_->stop();
+        } catch (...) {
+            // Ignore transport stop errors during cleanup
+        }
         transport_.reset();
     }
     
-    // Reset managers (they will clean up automatically via destructors)
-    handshake_manager_.reset();  // Now properly available
+    // Reset protocol layer managers (they will clean up automatically via destructors)
+    handshake_manager_.reset();
+    
+    // Reset early data management
+    session_ticket_manager_.reset();
+    replay_protection_.reset();
+    
+    // TODO: Reset record and message layers when available
     // message_layer_.reset();      // Commented out due to incomplete type
     // record_layer_.reset();       // Commented out due to incomplete type
+    
+    // Cleanup crypto provider resources
+    if (crypto_provider_) {
+        try {
+            crypto_provider_->cleanup();
+        } catch (...) {
+            // Ignore crypto cleanup errors during connection cleanup
+        }
+        crypto_provider_.reset();
+    }
+    
+    // Clear event callback to prevent callback during cleanup
+    event_callback_ = nullptr;
+    
+    // Reset connection statistics
+    stats_ = ConnectionStats{}; // Reset to default state
+    
+    // Reset atomic flags
+    next_handshake_sequence_.store(0);
+    is_closing_.store(true);
     
     return make_result();
 }
@@ -1143,6 +1218,47 @@ void Connection::update_last_activity() {
 
 uint32_t Connection::get_next_handshake_sequence() {
     return next_handshake_sequence_.fetch_add(1);
+}
+
+Result<void> Connection::send_close_notify_alert() {
+    // Create close_notify alert structure
+    struct Alert {
+        AlertLevel level;
+        AlertDescription description;
+    };
+    
+    Alert close_alert;
+    close_alert.level = AlertLevel::WARNING;
+    close_alert.description = AlertDescription::CLOSE_NOTIFY;
+    
+    // TODO: When record layer is available, implement proper alert sending
+    // For now, simulate the alert sending process
+    
+    // Serialize the alert (2 bytes: level + description)
+    memory::Buffer alert_buffer(2);
+    alert_buffer.mutable_data()[0] = static_cast<std::byte>(close_alert.level);
+    alert_buffer.mutable_data()[1] = static_cast<std::byte>(close_alert.description);
+    
+    // Create DTLS plaintext record for the alert
+    protocol::DTLSPlaintext alert_plaintext(
+        protocol::ContentType::ALERT,
+        protocol::ProtocolVersion::DTLS_1_3,
+        1, // Default epoch since record_layer_ is not initialized
+        protocol::SequenceNumber48(0), // Will be set by record layer
+        std::move(alert_buffer)
+    );
+    
+    // TODO: Send the alert through record layer when available
+    // For now, simulate alert sending success
+    
+    // Update statistics
+    update_last_activity();
+    
+    return make_result();
+}
+
+bool Connection::is_connection_valid_for_operations() const {
+    return !is_closing_.load() && !force_closed_.load() && state_ != ConnectionState::CLOSED;
 }
 
 void Connection::handle_transport_event(transport::TransportEvent event,

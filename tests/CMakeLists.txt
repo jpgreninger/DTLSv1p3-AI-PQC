@@ -115,6 +115,7 @@ set_tests_properties(DTLSCryptoTest PROPERTIES
 # Connection Unit Tests
 add_executable(dtls_connection_test
     connection/test_state_transitions.cpp
+    connection/test_connection_cleanup.cpp
 )
 
 target_link_libraries(dtls_connection_test PRIVATE ${DTLS_TEST_LIBRARIES})

@@ -364,6 +364,8 @@ private:
     Result<void> cleanup_resources();
     void update_last_activity();
     uint32_t get_next_handshake_sequence();
+    Result<void> send_close_notify_alert();
+    bool is_connection_valid_for_operations() const;
     
     // Member variables
     ConnectionConfig config_;
