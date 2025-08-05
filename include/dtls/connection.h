@@ -324,8 +324,24 @@ private:
     
     // Internal state management
     Result<void> transition_state(ConnectionState new_state);
+    bool is_valid_state_transition(ConnectionState from, ConnectionState to) const;
+    Result<void> perform_state_transition(ConnectionState from, ConnectionState to);
+    void fire_state_transition_events(ConnectionState from, ConnectionState to);
     void fire_event(ConnectionEvent event, const std::vector<uint8_t>& data = {});
     Result<void> handle_handshake_message(const protocol::HandshakeMessage& message);
+    
+    // Specific handshake message handlers  
+    Result<void> handle_client_hello_message(const protocol::HandshakeMessage& message);
+    Result<void> handle_server_hello_message(const protocol::HandshakeMessage& message);
+    Result<void> handle_hello_retry_request_message(const protocol::HandshakeMessage& message);
+    Result<void> handle_encrypted_extensions_message(const protocol::HandshakeMessage& message);
+    Result<void> handle_certificate_request_message(const protocol::HandshakeMessage& message);
+    Result<void> handle_certificate_message(const protocol::HandshakeMessage& message);
+    Result<void> handle_certificate_verify_message(const protocol::HandshakeMessage& message);
+    Result<void> handle_finished_message(const protocol::HandshakeMessage& message);
+    Result<void> handle_new_session_ticket_message(const protocol::HandshakeMessage& message);
+    Result<void> handle_key_update_message(const protocol::HandshakeMessage& message);
+    Result<void> handle_end_of_early_data_message(const protocol::HandshakeMessage& message);
     Result<void> handle_application_data(const memory::ZeroCopyBuffer& data);
     Result<void> handle_alert(AlertLevel level, AlertDescription description);
     Result<void> process_record(const protocol::PlaintextRecord& record);

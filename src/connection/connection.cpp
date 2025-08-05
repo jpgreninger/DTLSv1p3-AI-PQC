@@ -320,57 +320,41 @@ Result<void> Connection::handle_handshake_message(const protocol::HandshakeMessa
     // State machine processing for non-ACK messages
     switch (message.message_type()) {
         case HandshakeType::CLIENT_HELLO:
-            if (!is_client_ && state_ == ConnectionState::INITIAL) {
-                auto result = transition_state(ConnectionState::WAIT_SERVER_HELLO);
-                if (result && should_process_ack_for_state(state_)) {
-                    // ACK will be generated automatically by HandshakeManager
-                }
-                return result;
-            }
-            break;
+            return handle_client_hello_message(message);
             
         case HandshakeType::SERVER_HELLO:
-            if (is_client_ && state_ == ConnectionState::WAIT_SERVER_HELLO) {
-                auto result = transition_state(ConnectionState::WAIT_ENCRYPTED_EXTENSIONS);
-                if (result && should_process_ack_for_state(state_)) {
-                    // ACK will be generated automatically by HandshakeManager
-                }
-                return result;
-            }
-            break;
+            return handle_server_hello_message(message);
+            
+        case HandshakeType::HELLO_RETRY_REQUEST:
+            return handle_hello_retry_request_message(message);
+            
+        case HandshakeType::ENCRYPTED_EXTENSIONS:
+            return handle_encrypted_extensions_message(message);
+            
+        case HandshakeType::CERTIFICATE_REQUEST:
+            return handle_certificate_request_message(message);
             
         case HandshakeType::CERTIFICATE:
-            if (state_ == ConnectionState::WAIT_CERTIFICATE_OR_CERT_REQUEST) {
-                return transition_state(ConnectionState::WAIT_CERTIFICATE_VERIFY);
-            }
-            break;
+            return handle_certificate_message(message);
             
         case HandshakeType::CERTIFICATE_VERIFY:
-            if (state_ == ConnectionState::WAIT_CERTIFICATE_VERIFY) {
-                return transition_state(is_client_ ? 
-                    ConnectionState::WAIT_SERVER_FINISHED : 
-                    ConnectionState::WAIT_CLIENT_FINISHED);
-            }
-            break;
+            return handle_certificate_verify_message(message);
             
         case HandshakeType::FINISHED:
-            // Handshake completion logic
-            if (state_ == ConnectionState::WAIT_CLIENT_FINISHED || 
-                state_ == ConnectionState::WAIT_SERVER_FINISHED) {
-                auto result = transition_state(ConnectionState::CONNECTED);
-                if (result) {
-                    stats_.handshake_duration = std::chrono::duration_cast<std::chrono::milliseconds>(
-                        std::chrono::steady_clock::now() - stats_.connection_start
-                    );
-                    fire_event(ConnectionEvent::HANDSHAKE_COMPLETED);
-                }
-                return result;
-            }
-            break;
+            return handle_finished_message(message);
+            
+        case HandshakeType::NEW_SESSION_TICKET:
+            return handle_new_session_ticket_message(message);
+            
+        case HandshakeType::KEY_UPDATE:
+            return handle_key_update_message(message);
+            
+        case HandshakeType::END_OF_EARLY_DATA:
+            return handle_end_of_early_data_message(message);
             
         default:
-            // Handle other handshake message types
-            break;
+            // Unknown handshake message type
+            return make_error<void>(DTLSError::INVALID_MESSAGE_FORMAT);
     }
     
     return make_result();
@@ -608,14 +592,257 @@ Result<void> Connection::process_handshake_timeouts() {
 // Private helper methods
 
 Result<void> Connection::transition_state(ConnectionState new_state) {
-    // State transition validation could be added here
+    // Validate state transition according to RFC 9147
+    if (!is_valid_state_transition(state_, new_state)) {
+        return make_error<void>(DTLSError::STATE_MACHINE_ERROR);
+    }
+    
+    ConnectionState old_state = state_;
+    
+    // Perform state-specific transition logic
+    auto transition_result = perform_state_transition(old_state, new_state);
+    if (!transition_result) {
+        return transition_result;
+    }
+    
+    // Update state
     state_ = new_state;
+    
+    // Log state transition for debugging
+    // In production, this might be configurable logging
+    
+    // Fire state-specific events
+    fire_state_transition_events(old_state, new_state);
+    
     return make_result();
 }
 
 void Connection::fire_event(ConnectionEvent event, const std::vector<uint8_t>& data) {
     if (event_callback_) {
         event_callback_(event, data);
+    }
+}
+
+bool Connection::is_valid_state_transition(ConnectionState from, ConnectionState to) const {
+    // Define valid state transitions according to RFC 9147
+    switch (from) {
+        case ConnectionState::INITIAL:
+            return (to == ConnectionState::WAIT_SERVER_HELLO && is_client_) ||
+                   (to == ConnectionState::WAIT_CLIENT_CERTIFICATE && !is_client_) ||
+                   (to == ConnectionState::CLOSED);
+            
+        case ConnectionState::WAIT_SERVER_HELLO:
+            return (to == ConnectionState::WAIT_ENCRYPTED_EXTENSIONS) ||
+                   (to == ConnectionState::EARLY_DATA && is_client_) ||
+                   (to == ConnectionState::CLOSED);
+            
+        case ConnectionState::WAIT_ENCRYPTED_EXTENSIONS:
+            return (to == ConnectionState::WAIT_CERTIFICATE_OR_CERT_REQUEST) ||
+                   (to == ConnectionState::WAIT_SERVER_FINISHED) ||
+                   (to == ConnectionState::CLOSED);
+            
+        case ConnectionState::WAIT_CERTIFICATE_OR_CERT_REQUEST:
+            return (to == ConnectionState::WAIT_CERTIFICATE_VERIFY) ||
+                   (to == ConnectionState::WAIT_CLIENT_CERTIFICATE) ||
+                   (to == ConnectionState::CLOSED);
+            
+        case ConnectionState::WAIT_CERTIFICATE_VERIFY:
+            return (to == ConnectionState::WAIT_SERVER_FINISHED && is_client_) ||
+                   (to == ConnectionState::WAIT_CLIENT_FINISHED && !is_client_) ||
+                   (to == ConnectionState::CLOSED);
+            
+        case ConnectionState::WAIT_SERVER_FINISHED:
+            return (to == ConnectionState::CONNECTED) ||
+                   (to == ConnectionState::WAIT_CLIENT_CERTIFICATE) ||
+                   (to == ConnectionState::CLOSED);
+            
+        case ConnectionState::WAIT_CLIENT_CERTIFICATE:
+            return (to == ConnectionState::WAIT_CLIENT_CERTIFICATE_VERIFY) ||
+                   (to == ConnectionState::WAIT_CLIENT_FINISHED) ||
+                   (to == ConnectionState::CLOSED);
+            
+        case ConnectionState::WAIT_CLIENT_CERTIFICATE_VERIFY:
+            return (to == ConnectionState::WAIT_CLIENT_FINISHED) ||
+                   (to == ConnectionState::CLOSED);
+            
+        case ConnectionState::WAIT_CLIENT_FINISHED:
+            return (to == ConnectionState::CONNECTED) ||
+                   (to == ConnectionState::CLOSED);
+            
+        case ConnectionState::EARLY_DATA:
+            return (to == ConnectionState::WAIT_END_OF_EARLY_DATA) ||
+                   (to == ConnectionState::EARLY_DATA_REJECTED) ||
+                   (to == ConnectionState::WAIT_ENCRYPTED_EXTENSIONS) ||
+                   (to == ConnectionState::CLOSED);
+            
+        case ConnectionState::WAIT_END_OF_EARLY_DATA:
+            return (to == ConnectionState::WAIT_ENCRYPTED_EXTENSIONS) ||
+                   (to == ConnectionState::CLOSED);
+            
+        case ConnectionState::EARLY_DATA_REJECTED:
+            return (to == ConnectionState::WAIT_ENCRYPTED_EXTENSIONS) ||
+                   (to == ConnectionState::CLOSED);
+            
+        case ConnectionState::CONNECTED:
+            return (to == ConnectionState::CLOSED);
+            
+        case ConnectionState::CLOSED:
+            return false; // No transitions from closed state
+            
+        default:
+            return false; // Unknown state
+    }
+}
+
+Result<void> Connection::perform_state_transition(ConnectionState from, ConnectionState to) {
+    // Perform state-specific setup and validation
+    switch (to) {
+        case ConnectionState::WAIT_SERVER_HELLO:
+            if (is_client_) {
+                // Client transitioning to wait for ServerHello
+                // Update handshake timeout
+                update_last_activity();
+                return make_result();
+            }
+            break;
+            
+        case ConnectionState::WAIT_ENCRYPTED_EXTENSIONS:
+            // Prepare to receive EncryptedExtensions
+            if (is_client_) {
+                update_last_activity();
+            }
+            return make_result();
+            
+        case ConnectionState::WAIT_CERTIFICATE_OR_CERT_REQUEST:
+            // Prepare for certificate or certificate request
+            update_last_activity();
+            return make_result();
+            
+        case ConnectionState::WAIT_CERTIFICATE_VERIFY:
+            // Prepare for certificate verification
+            update_last_activity();
+            return make_result();
+            
+        case ConnectionState::WAIT_SERVER_FINISHED:
+            if (is_client_) {
+                // Client waiting for server's Finished message
+                update_last_activity();
+            }
+            return make_result();
+            
+        case ConnectionState::WAIT_CLIENT_CERTIFICATE:
+            if (!is_client_) {
+                // Server waiting for client certificate
+                update_last_activity();
+            }
+            return make_result();
+            
+        case ConnectionState::WAIT_CLIENT_CERTIFICATE_VERIFY:
+            if (!is_client_) {
+                // Server waiting for client certificate verification
+                update_last_activity();
+            }
+            return make_result();
+            
+        case ConnectionState::WAIT_CLIENT_FINISHED:
+            if (!is_client_) {
+                // Server waiting for client's Finished message
+                update_last_activity();
+            }
+            return make_result();
+            
+        case ConnectionState::EARLY_DATA:
+            if (is_client_ && config_.enable_early_data) {
+                // Client entering early data state
+                std::lock_guard<std::mutex> lock(early_data_mutex_);
+                early_data_context_.state = protocol::EarlyDataState::SENDING;
+                early_data_context_.start_time = std::chrono::steady_clock::now();
+                update_last_activity();
+                return make_result();
+            }
+            return make_error<void>(DTLSError::STATE_MACHINE_ERROR);
+            
+        case ConnectionState::WAIT_END_OF_EARLY_DATA:
+            if (!is_client_) {
+                // Server waiting for EndOfEarlyData message
+                update_last_activity();
+                return make_result();
+            }
+            return make_error<void>(DTLSError::STATE_MACHINE_ERROR);
+            
+        case ConnectionState::EARLY_DATA_REJECTED:
+            if (config_.enable_early_data) {
+                // Early data was rejected
+                std::lock_guard<std::mutex> lock(early_data_mutex_);
+                early_data_context_.state = protocol::EarlyDataState::REJECTED;
+                update_last_activity();
+                return make_result();
+            }
+            return make_result();
+            
+        case ConnectionState::CONNECTED:
+            // Handshake completed successfully
+            {
+                std::lock_guard<std::mutex> lock(early_data_mutex_);
+                if (early_data_context_.state == protocol::EarlyDataState::SENDING) {
+                    early_data_context_.state = protocol::EarlyDataState::ACCEPTED;
+                }
+            }
+            
+            // Calculate handshake duration
+            stats_.handshake_duration = std::chrono::duration_cast<std::chrono::milliseconds>(
+                std::chrono::steady_clock::now() - stats_.connection_start
+            );
+            
+            update_last_activity();
+            return make_result();
+            
+        case ConnectionState::CLOSED:
+            // Connection closed
+            // Cleanup will be handled by the calling code
+            return make_result();
+            
+        default:
+            return make_result();
+    }
+    
+    return make_result();
+}
+
+void Connection::fire_state_transition_events(ConnectionState from, ConnectionState to) {
+    // Fire events based on state transitions
+    switch (to) {
+        case ConnectionState::EARLY_DATA:
+            // No specific event - early data events are fired when data is sent/received
+            break;
+            
+        case ConnectionState::EARLY_DATA_REJECTED:
+            fire_event(ConnectionEvent::EARLY_DATA_REJECTED);
+            break;
+            
+        case ConnectionState::CONNECTED:
+            if (from != ConnectionState::CONNECTED) {
+                fire_event(ConnectionEvent::HANDSHAKE_COMPLETED);
+                
+                // Check if early data was accepted
+                {
+                    std::lock_guard<std::mutex> lock(early_data_mutex_);
+                    if (early_data_context_.state == protocol::EarlyDataState::ACCEPTED) {
+                        fire_event(ConnectionEvent::EARLY_DATA_ACCEPTED);
+                    }
+                }
+            }
+            break;
+            
+        case ConnectionState::CLOSED:
+            if (from != ConnectionState::CLOSED) {
+                fire_event(ConnectionEvent::CONNECTION_CLOSED);
+            }
+            break;
+            
+        default:
+            // No specific events for other state transitions
+            break;
     }
 }
 
@@ -638,6 +865,211 @@ Result<void> Connection::cleanup_resources() {
     // record_layer_.reset();       // Commented out due to incomplete type
     
     return make_result();
+}
+
+// Handshake message handlers
+
+Result<void> Connection::handle_client_hello_message(const protocol::HandshakeMessage& message) {
+    if (is_client_) {
+        // Client should not receive ClientHello
+        return make_error<void>(DTLSError::UNEXPECTED_MESSAGE);
+    }
+    
+    if (state_ != ConnectionState::INITIAL) {
+        return make_error<void>(DTLSError::STATE_MACHINE_ERROR);
+    }
+    
+    // Server processing ClientHello
+    auto result = transition_state(ConnectionState::WAIT_SERVER_HELLO);
+    if (result && should_process_ack_for_state(state_)) {
+        // ACK will be generated automatically by HandshakeManager
+    }
+    return result;
+}
+
+Result<void> Connection::handle_server_hello_message(const protocol::HandshakeMessage& message) {
+    if (!is_client_) {
+        // Server should not receive ServerHello
+        return make_error<void>(DTLSError::UNEXPECTED_MESSAGE);
+    }
+    
+    if (state_ != ConnectionState::WAIT_SERVER_HELLO) {
+        return make_error<void>(DTLSError::STATE_MACHINE_ERROR);
+    }
+    
+    // Client processing ServerHello
+    auto result = transition_state(ConnectionState::WAIT_ENCRYPTED_EXTENSIONS);
+    if (result && should_process_ack_for_state(state_)) {
+        // ACK will be generated automatically by HandshakeManager
+    }
+    return result;
+}
+
+Result<void> Connection::handle_hello_retry_request_message(const protocol::HandshakeMessage& message) {
+    if (!is_client_) {
+        // Server should not receive HelloRetryRequest
+        return make_error<void>(DTLSError::UNEXPECTED_MESSAGE);
+    }
+    
+    if (state_ != ConnectionState::WAIT_SERVER_HELLO) {
+        return make_error<void>(DTLSError::STATE_MACHINE_ERROR);
+    }
+    
+    // Client processing HelloRetryRequest - stay in same state but prepare for retry
+    update_last_activity();
+    return make_result();
+}
+
+Result<void> Connection::handle_encrypted_extensions_message(const protocol::HandshakeMessage& message) {
+    if (!is_client_) {
+        // Server should not receive EncryptedExtensions
+        return make_error<void>(DTLSError::UNEXPECTED_MESSAGE);
+    }
+    
+    if (state_ != ConnectionState::WAIT_ENCRYPTED_EXTENSIONS) {
+        return make_error<void>(DTLSError::STATE_MACHINE_ERROR);
+    }
+    
+    // Client processing EncryptedExtensions
+    // Determine next state based on server authentication requirements
+    return transition_state(ConnectionState::WAIT_CERTIFICATE_OR_CERT_REQUEST);
+}
+
+Result<void> Connection::handle_certificate_request_message(const protocol::HandshakeMessage& message) {
+    if (!is_client_) {
+        // Server should not receive CertificateRequest
+        return make_error<void>(DTLSError::UNEXPECTED_MESSAGE);
+    }
+    
+    if (state_ != ConnectionState::WAIT_CERTIFICATE_OR_CERT_REQUEST) {
+        return make_error<void>(DTLSError::STATE_MACHINE_ERROR);
+    }
+    
+    // Client processing CertificateRequest - prepare to send client certificate
+    return transition_state(ConnectionState::WAIT_CLIENT_CERTIFICATE);
+}
+
+Result<void> Connection::handle_certificate_message(const protocol::HandshakeMessage& message) {
+    switch (state_) {
+        case ConnectionState::WAIT_CERTIFICATE_OR_CERT_REQUEST:
+            // Client receiving server certificate
+            if (is_client_) {
+                return transition_state(ConnectionState::WAIT_CERTIFICATE_VERIFY);
+            }
+            break;
+            
+        case ConnectionState::WAIT_CLIENT_CERTIFICATE:
+            // Server receiving client certificate
+            if (!is_client_) {
+                return transition_state(ConnectionState::WAIT_CLIENT_CERTIFICATE_VERIFY);
+            }
+            break;
+            
+        default:
+            return make_error<void>(DTLSError::STATE_MACHINE_ERROR);
+    }
+    
+    return make_error<void>(DTLSError::STATE_MACHINE_ERROR);
+}
+
+Result<void> Connection::handle_certificate_verify_message(const protocol::HandshakeMessage& message) {
+    switch (state_) {
+        case ConnectionState::WAIT_CERTIFICATE_VERIFY:
+            // Client receiving server certificate verification
+            if (is_client_) {
+                return transition_state(ConnectionState::WAIT_SERVER_FINISHED);
+            }
+            break;
+            
+        case ConnectionState::WAIT_CLIENT_CERTIFICATE_VERIFY:
+            // Server receiving client certificate verification
+            if (!is_client_) {
+                return transition_state(ConnectionState::WAIT_CLIENT_FINISHED);
+            }
+            break;
+            
+        default:
+            return make_error<void>(DTLSError::STATE_MACHINE_ERROR);
+    }
+    
+    return make_error<void>(DTLSError::STATE_MACHINE_ERROR);
+}
+
+Result<void> Connection::handle_finished_message(const protocol::HandshakeMessage& message) {
+    switch (state_) {
+        case ConnectionState::WAIT_CLIENT_FINISHED:
+            // Server receiving client Finished
+            if (!is_client_) {
+                return transition_state(ConnectionState::CONNECTED);
+            }
+            break;
+            
+        case ConnectionState::WAIT_SERVER_FINISHED:
+            // Client receiving server Finished
+            if (is_client_) {
+                return transition_state(ConnectionState::CONNECTED);
+            }
+            break;
+            
+        default:
+            return make_error<void>(DTLSError::STATE_MACHINE_ERROR);
+    }
+    
+    return make_error<void>(DTLSError::STATE_MACHINE_ERROR);
+}
+
+Result<void> Connection::handle_new_session_ticket_message(const protocol::HandshakeMessage& message) {
+    if (!is_client_) {
+        // Server should not receive NewSessionTicket
+        return make_error<void>(DTLSError::UNEXPECTED_MESSAGE);
+    }
+    
+    if (state_ != ConnectionState::CONNECTED) {
+        return make_error<void>(DTLSError::STATE_MACHINE_ERROR);
+    }
+    
+    // Client processing NewSessionTicket for future session resumption
+    if (message.holds<protocol::NewSessionTicket>()) {
+        auto ticket = message.get<protocol::NewSessionTicket>();
+        auto store_result = store_session_ticket(ticket);
+        if (store_result) {
+            fire_event(ConnectionEvent::NEW_SESSION_TICKET_RECEIVED);
+        }
+        return store_result;
+    }
+    
+    return make_error<void>(DTLSError::INVALID_MESSAGE_FORMAT);
+}
+
+Result<void> Connection::handle_key_update_message(const protocol::HandshakeMessage& message) {
+    if (state_ != ConnectionState::CONNECTED) {
+        return make_error<void>(DTLSError::STATE_MACHINE_ERROR);
+    }
+    
+    // Process key update - both client and server can initiate
+    // TODO: Implement actual key update when record layer is available
+    update_last_activity();
+    fire_event(ConnectionEvent::KEY_UPDATE_COMPLETED);
+    return make_result();
+}
+
+Result<void> Connection::handle_end_of_early_data_message(const protocol::HandshakeMessage& message) {
+    if (!is_client_) {
+        // Server should not receive EndOfEarlyData
+        return make_error<void>(DTLSError::UNEXPECTED_MESSAGE);
+    }
+    
+    if (state_ != ConnectionState::WAIT_END_OF_EARLY_DATA) {
+        return make_error<void>(DTLSError::STATE_MACHINE_ERROR);
+    }
+    
+    // Client sending EndOfEarlyData - transition to normal handshake flow
+    {
+        std::lock_guard<std::mutex> lock(early_data_mutex_);
+        early_data_context_.state = protocol::EarlyDataState::COMPLETED;
+    }
+    
+    return transition_state(ConnectionState::WAIT_ENCRYPTED_EXTENSIONS);
 }
 
 void Connection::update_last_activity() {

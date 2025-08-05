@@ -111,6 +111,20 @@ set_tests_properties(DTLSCryptoTest PROPERTIES
     LABELS "crypto"
 )
 
+# Connection Unit Tests
+add_executable(dtls_connection_test
+    connection/test_state_transitions.cpp
+)
+
+target_link_libraries(dtls_connection_test PRIVATE ${DTLS_TEST_LIBRARIES})
+target_compile_options(dtls_connection_test PRIVATE ${DTLS_TEST_COMPILE_OPTIONS})
+
+add_test(NAME DTLSConnectionTest COMMAND dtls_connection_test)
+set_tests_properties(DTLSConnectionTest PROPERTIES
+    TIMEOUT 120
+    LABELS "connection"
+)
+
 # Integration Tests
 add_executable(dtls_integration_test
     integration/dtls_integration_test.cpp
@@ -232,6 +246,7 @@ add_custom_target(run_all_tests
     DEPENDS 
         dtls_protocol_test
         dtls_crypto_test
+        dtls_connection_test
         dtls_integration_test
         dtls_performance_test
         dtls_security_test
@@ -251,6 +266,12 @@ add_custom_target(run_crypto_tests
     COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure -L crypto
     DEPENDS dtls_crypto_test
     COMMENT "Running crypto unit tests"
+)
+
+add_custom_target(run_connection_tests
+    COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure -L connection
+    DEPENDS dtls_connection_test
+    COMMENT "Running connection unit tests"
 )
 
 add_custom_target(run_integration_tests
@@ -310,6 +331,7 @@ if(GCOV_PATH AND LCOV_PATH AND GENHTML_PATH)
         
         DEPENDS 
             dtls_crypto_test
+            dtls_connection_test
             dtls_integration_test
             dtls_performance_test
             dtls_security_test
@@ -335,6 +357,7 @@ if(VALGRIND_PATH)
         
         DEPENDS 
             dtls_crypto_test
+            dtls_connection_test
             dtls_integration_test
             dtls_security_test
             dtls_reliability_test
@@ -356,6 +379,7 @@ add_custom_target(test_tsan
     
     DEPENDS 
         dtls_crypto_test
+        dtls_connection_test
         dtls_integration_test
         dtls_performance_test
         dtls_reliability_test
@@ -372,6 +396,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         
         DEPENDS 
             dtls_crypto_test
+            dtls_connection_test
             dtls_integration_test
             dtls_security_test
             dtls_reliability_test
@@ -480,6 +505,7 @@ message(STATUS "Available test targets:")
 message(STATUS "  make run_all_tests              - Run all test suites")
 message(STATUS "  make run_protocol_tests         - Run protocol unit tests only")
 message(STATUS "  make run_crypto_tests           - Run crypto unit tests only")
+message(STATUS "  make run_connection_tests       - Run connection unit tests only")
 message(STATUS "  make run_integration_tests      - Run integration tests only")
 message(STATUS "  make run_performance_tests      - Run performance tests only")
 message(STATUS "  make run_security_tests         - Run security tests only")
