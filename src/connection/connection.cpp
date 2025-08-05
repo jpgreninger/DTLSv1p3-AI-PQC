@@ -415,10 +415,18 @@ Result<void> Connection::handle_alert(AlertLevel level, AlertDescription descrip
 
 Result<void> Connection::send_application_data(const memory::ZeroCopyBuffer& data) {
     if (!is_connection_valid_for_operations()) {
+        // Record error and potentially attempt recovery
+        if (config_.error_recovery.enable_automatic_recovery) {
+            recover_from_error(DTLSError::CONNECTION_CLOSED, "send_application_data: connection not valid");
+        }
         return make_error<void>(DTLSError::CONNECTION_CLOSED);
     }
     
     if (state_ != ConnectionState::CONNECTED) {
+        // Record error and potentially attempt recovery
+        if (config_.error_recovery.enable_automatic_recovery) {
+            recover_from_error(DTLSError::STATE_MACHINE_ERROR, "send_application_data: invalid state");
+        }
         return make_error<void>(DTLSError::STATE_MACHINE_ERROR);
     }
     
@@ -1261,6 +1269,390 @@ bool Connection::is_connection_valid_for_operations() const {
     return !is_closing_.load() && !force_closed_.load() && state_ != ConnectionState::CLOSED;
 }
 
+// Error Recovery Implementation
+
+ConnectionHealth Connection::get_health_status() const {
+    std::lock_guard<std::mutex> lock(recovery_mutex_);
+    return recovery_state_.health_status;
+}
+
+const ErrorRecoveryState& Connection::get_recovery_state() const {
+    std::lock_guard<std::mutex> lock(recovery_mutex_);
+    return recovery_state_;
+}
+
+Result<void> Connection::recover_from_error(DTLSError error, const std::string& context) {
+    std::lock_guard<std::mutex> lock(recovery_mutex_);
+    
+    // Record the error first
+    record_error(error, context);
+    
+    // Check if we should attempt recovery
+    if (!should_attempt_recovery()) {
+        return make_error<void>(DTLSError::RESOURCE_EXHAUSTED);
+    }
+    
+    // Determine recovery strategy
+    RecoveryStrategy strategy = determine_recovery_strategy(error);
+    
+    // Fire recovery started event
+    fire_event(ConnectionEvent::RECOVERY_STARTED);
+    
+    recovery_state_.recovery_in_progress = true;
+    recovery_state_.current_strategy = strategy;
+    recovery_state_.recovery_start_time = std::chrono::steady_clock::now();
+    recovery_state_.total_recovery_attempts++;
+    
+    // Execute the recovery strategy
+    auto result = execute_recovery_strategy(strategy, error);
+    
+    if (result.is_success()) {
+        recovery_state_.successful_recoveries++;
+        recovery_state_.consecutive_errors = 0;
+        recovery_state_.recovery_in_progress = false;
+        update_health_status();
+        fire_event(ConnectionEvent::RECOVERY_SUCCEEDED);
+    } else {
+        recovery_state_.failed_recoveries++;
+        recovery_state_.recovery_in_progress = false;
+        update_health_status();
+        fire_event(ConnectionEvent::RECOVERY_FAILED);
+    }
+    
+    return result;
+}
+
+void Connection::reset_recovery_state() {
+    std::lock_guard<std::mutex> lock(recovery_mutex_);
+    recovery_state_ = ErrorRecoveryState{};
+}
+
+bool Connection::is_in_degraded_mode() const {
+    std::lock_guard<std::mutex> lock(recovery_mutex_);
+    return recovery_state_.health_status == ConnectionHealth::DEGRADED;
+}
+
+double Connection::get_error_rate(std::chrono::seconds window) const {
+    std::lock_guard<std::mutex> lock(recovery_mutex_);
+    
+    auto now = std::chrono::steady_clock::now();
+    auto cutoff_time = now - window;
+    
+    // Count errors within the time window
+    uint32_t error_count = 0;
+    for (const auto& timestamp : recovery_state_.error_timestamps) {
+        if (timestamp >= cutoff_time) {
+            error_count++;
+        }
+    }
+    
+    // Calculate error rate (errors per second)
+    return static_cast<double>(error_count) / window.count();
+}
+
+Result<void> Connection::perform_health_check() {
+    std::lock_guard<std::mutex> lock(recovery_mutex_);
+    
+    // Clean up old error timestamps
+    cleanup_old_error_timestamps();
+    
+    // Update health status based on current conditions
+    update_health_status();
+    
+    // If in failed state, attempt recovery
+    if (recovery_state_.health_status == ConnectionHealth::FAILED && 
+        config_.error_recovery.enable_automatic_recovery) {
+        return recover_from_error(recovery_state_.last_error_code, "Automatic health check recovery");
+    }
+    
+    return make_result();
+}
+
+void Connection::record_error(DTLSError error, const std::string& context) {
+    // This method is called with recovery_mutex_ already locked
+    
+    auto now = std::chrono::steady_clock::now();
+    
+    // Record error timestamp
+    recovery_state_.error_timestamps.push_back(now);
+    recovery_state_.consecutive_errors++;
+    recovery_state_.last_error_code = error;
+    recovery_state_.last_error_message = context;
+    
+    // Update statistics
+    if (error >= DTLSError::PROTOCOL_VERSION_NOT_SUPPORTED && error <= DTLSError::STATE_MACHINE_ERROR) {
+        stats_.protocol_errors++;
+    }
+    
+    // Clean up old timestamps to maintain memory efficiency
+    cleanup_old_error_timestamps();
+    
+    // Update health status
+    update_health_status();
+}
+
+void Connection::update_health_status() {
+    // This method is called with recovery_mutex_ already locked
+    
+    double error_rate = get_error_rate(std::chrono::seconds{60});
+    uint32_t consecutive_errors = recovery_state_.consecutive_errors;
+    
+    ConnectionHealth old_health = recovery_state_.health_status;
+    ConnectionHealth new_health = ConnectionHealth::HEALTHY;
+    
+    // Determine health status based on error patterns
+    if (consecutive_errors >= config_.error_recovery.max_consecutive_errors) {
+        new_health = ConnectionHealth::FAILED;
+    } else if (error_rate >= config_.error_recovery.degraded_mode_threshold) {
+        new_health = ConnectionHealth::DEGRADED;
+    } else if (consecutive_errors >= 2 || error_rate > 0.1) {
+        new_health = ConnectionHealth::UNSTABLE;
+    } else if (consecutive_errors >= 1 || error_rate > 0.05) {
+        new_health = ConnectionHealth::HEALTHY;
+    }
+    
+    recovery_state_.health_status = new_health;
+    
+    // Fire events for health status changes
+    if (old_health != new_health) {
+        if (new_health == ConnectionHealth::DEGRADED) {
+            fire_event(ConnectionEvent::CONNECTION_DEGRADED);
+        } else if (old_health == ConnectionHealth::DEGRADED && new_health == ConnectionHealth::HEALTHY) {
+            fire_event(ConnectionEvent::CONNECTION_RESTORED);
+        }
+    }
+}
+
+RecoveryStrategy Connection::determine_recovery_strategy(DTLSError error) const {
+    // This method is called with recovery_mutex_ already locked
+    
+    // Map error types to recovery strategies based on configuration
+    if (error >= DTLSError::HANDSHAKE_FAILURE && error <= DTLSError::HANDSHAKE_TIMEOUT) {
+        return config_.error_recovery.handshake_error_strategy;
+    } else if (error >= DTLSError::DECRYPT_ERROR && error <= DTLSError::CRYPTO_HARDWARE_ERROR) {
+        return config_.error_recovery.crypto_error_strategy;
+    } else if (error >= DTLSError::NETWORK_ERROR && error <= DTLSError::TRANSPORT_ERROR) {
+        return config_.error_recovery.network_error_strategy;
+    } else if (error >= DTLSError::PROTOCOL_VERSION_NOT_SUPPORTED && error <= DTLSError::STATE_MACHINE_ERROR) {
+        return config_.error_recovery.protocol_error_strategy;
+    }
+    
+    // Default strategy based on error severity
+    if (is_retryable_error(error)) {
+        return RecoveryStrategy::RETRY_WITH_BACKOFF;
+    } else {
+        return RecoveryStrategy::GRACEFUL_DEGRADATION;
+    }
+}
+
+Result<void> Connection::execute_recovery_strategy(RecoveryStrategy strategy, DTLSError original_error) {
+    // This method is called with recovery_mutex_ already locked
+    
+    switch (strategy) {
+        case RecoveryStrategy::RETRY_IMMEDIATE:
+            // Immediate retry without delay
+            recovery_state_.retry_attempt = 0;
+            return make_result();
+            
+        case RecoveryStrategy::RETRY_WITH_BACKOFF:
+            return retry_with_backoff();
+            
+        case RecoveryStrategy::GRACEFUL_DEGRADATION:
+            return enter_degraded_mode();
+            
+        case RecoveryStrategy::RESET_CONNECTION:
+            return reset_connection_state();
+            
+        case RecoveryStrategy::FAILOVER:
+            // TODO: Implement provider failover when multiple providers are available
+            return make_error<void>(DTLSError::OPERATION_NOT_SUPPORTED);
+            
+        case RecoveryStrategy::ABORT_CONNECTION:
+            force_close();
+            return make_error<void>(DTLSError::CONNECTION_CLOSED);
+            
+        case RecoveryStrategy::NONE:
+        default:
+            return make_error<void>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+}
+
+Result<void> Connection::retry_with_backoff() {
+    // This method is called with recovery_mutex_ already locked
+    
+    if (recovery_state_.retry_attempt >= config_.error_recovery.max_retries) {
+        return make_error<void>(DTLSError::RESOURCE_EXHAUSTED);
+    }
+    
+    auto delay = calculate_retry_delay();
+    recovery_state_.retry_attempt++;
+    recovery_state_.last_retry_time = std::chrono::steady_clock::now() + delay;
+    
+    // In a real implementation, we would schedule the retry after the delay
+    // For now, we just record the intention to retry
+    
+    return make_result();
+}
+
+Result<void> Connection::reset_connection_state() {
+    // This method is called with recovery_mutex_ already locked
+    
+    // Reset connection to initial state while preserving essential configuration
+    {
+        std::lock_guard<std::mutex> state_lock(state_mutex_);
+        if (state_ != ConnectionState::CLOSED) {
+            state_ = ConnectionState::INITIAL;
+        }
+    }
+    
+    // Reset sequence numbers
+    next_handshake_sequence_.store(0);
+    
+    // Clear buffers
+    {
+        std::lock_guard<std::mutex> queue_lock(receive_queue_mutex_);
+        receive_queue_.clear();
+    }
+    
+    // Reset transport if available
+    if (transport_) {
+        auto stop_result = transport_->stop();
+        if (stop_result.is_success()) {
+            auto init_result = transport_->initialize();
+            if (!init_result.is_success()) {
+                return init_result;
+            }
+        }
+    }
+    
+    return make_result();
+}
+
+Result<void> Connection::enter_degraded_mode() {
+    // This method is called with recovery_mutex_ already locked
+    
+    recovery_state_.health_status = ConnectionHealth::DEGRADED;
+    
+    // In degraded mode, we might:
+    // - Disable non-essential features
+    // - Reduce encryption strength (if policy allows)
+    // - Use simplified protocol flows
+    // - Increase timeout values
+    
+    // For now, just record the state change
+    return make_result();
+}
+
+Result<void> Connection::exit_degraded_mode() {
+    std::lock_guard<std::mutex> lock(recovery_mutex_);
+    
+    if (recovery_state_.health_status == ConnectionHealth::DEGRADED) {
+        recovery_state_.health_status = ConnectionHealth::HEALTHY;
+        fire_event(ConnectionEvent::CONNECTION_RESTORED);
+    }
+    
+    return make_result();
+}
+
+bool Connection::should_attempt_recovery() const {
+    // This method is called with recovery_mutex_ already locked
+    
+    if (!config_.error_recovery.enable_automatic_recovery) {
+        return false;
+    }
+    
+    if (recovery_state_.recovery_in_progress) {
+        return false;
+    }
+    
+    if (recovery_state_.total_recovery_attempts >= config_.error_recovery.max_retries * 2) {
+        return false;
+    }
+    
+    if (recovery_state_.consecutive_errors >= config_.error_recovery.max_consecutive_errors) {
+        return false;
+    }
+    
+    return true;
+}
+
+std::chrono::milliseconds Connection::calculate_retry_delay() const {
+    // This method is called with recovery_mutex_ already locked
+    
+    auto base_delay = config_.error_recovery.initial_retry_delay;
+    auto max_delay = config_.error_recovery.max_retry_delay;
+    auto multiplier = config_.error_recovery.backoff_multiplier;
+    
+    // Calculate exponential backoff delay
+    auto delay = base_delay;
+    for (uint32_t i = 0; i < recovery_state_.retry_attempt; ++i) {
+        delay = std::chrono::milliseconds(static_cast<long long>(delay.count() * multiplier));
+        if (delay > max_delay) {
+            delay = max_delay;
+            break;
+        }
+    }
+    
+    return delay;
+}
+
+void Connection::cleanup_old_error_timestamps() {
+    // This method is called with recovery_mutex_ already locked
+    
+    auto now = std::chrono::steady_clock::now();
+    auto cutoff_time = now - config_.error_recovery.error_rate_window;
+    
+    // Remove timestamps older than the error rate window
+    recovery_state_.error_timestamps.erase(
+        std::remove_if(recovery_state_.error_timestamps.begin(),
+                      recovery_state_.error_timestamps.end(),
+                      [&cutoff_time](const auto& timestamp) {
+                          return timestamp < cutoff_time;
+                      }),
+        recovery_state_.error_timestamps.end()
+    );
+}
+
+bool Connection::is_retryable_error(DTLSError error) const {
+    // Determine if an error is transient and worth retrying
+    switch (error) {
+        // Network errors are usually transient
+        case DTLSError::NETWORK_ERROR:
+        case DTLSError::TIMEOUT:
+        case DTLSError::SEND_ERROR:
+        case DTLSError::RECEIVE_ERROR:
+        case DTLSError::NETWORK_UNREACHABLE:
+        case DTLSError::HOST_UNREACHABLE:
+        case DTLSError::CONNECTION_TIMEOUT:
+            return true;
+            
+        // Some handshake errors can be retried
+        case DTLSError::HANDSHAKE_TIMEOUT:
+        case DTLSError::FRAGMENTATION_ERROR:
+            return true;
+            
+        // Resource errors might be temporary
+        case DTLSError::RESOURCE_UNAVAILABLE:
+        case DTLSError::INSUFFICIENT_BUFFER:
+        case DTLSError::OUT_OF_MEMORY:
+            return true;
+            
+        // These errors are typically permanent
+        case DTLSError::INVALID_PARAMETER:
+        case DTLSError::CERTIFICATE_VERIFY_FAILED:
+        case DTLSError::CERTIFICATE_EXPIRED:
+        case DTLSError::CERTIFICATE_REVOKED:
+        case DTLSError::ACCESS_DENIED:
+        case DTLSError::AUTHENTICATION_FAILED:
+        case DTLSError::AUTHORIZATION_FAILED:
+            return false;
+            
+        default:
+            // Conservative approach: don't retry unknown errors
+            return false;
+    }
+}
+
 void Connection::handle_transport_event(transport::TransportEvent event,
                                        const transport::NetworkEndpoint& endpoint,
                                        const std::vector<uint8_t>& data) {
@@ -1296,10 +1688,16 @@ void Connection::handle_transport_event(transport::TransportEvent event,
             stats_.protocol_errors++;
             fire_event(ConnectionEvent::ERROR_OCCURRED);
             // Consider closing connection on socket errors
+            if (config_.error_recovery.enable_automatic_recovery) {
+                recover_from_error(DTLSError::SOCKET_ERROR, "transport event: socket error");
+            }
             break;
             
         case transport::TransportEvent::CONNECTION_TIMEOUT:
             // Handle connection timeout
+            if (config_.error_recovery.enable_automatic_recovery) {
+                recover_from_error(DTLSError::CONNECTION_TIMEOUT, "transport event: connection timeout");
+            }
             if (state_ != ConnectionState::CONNECTED) {
                 fire_event(ConnectionEvent::HANDSHAKE_FAILED);
             }

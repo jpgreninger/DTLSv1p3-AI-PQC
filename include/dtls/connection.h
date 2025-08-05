@@ -28,6 +28,90 @@ namespace protocol {
 }
 
 /**
+ * Error recovery strategy types
+ */
+enum class RecoveryStrategy : uint8_t {
+    NONE = 0,              // No recovery attempted
+    RETRY_IMMEDIATE,       // Immediate retry without delay
+    RETRY_WITH_BACKOFF,    // Retry with exponential backoff
+    GRACEFUL_DEGRADATION,  // Continue with reduced functionality
+    RESET_CONNECTION,      // Reset connection state and retry
+    FAILOVER,              // Switch to alternative provider/configuration
+    ABORT_CONNECTION       // Terminate connection gracefully
+};
+
+/**
+ * Connection health status
+ */
+enum class ConnectionHealth : uint8_t {
+    HEALTHY = 0,           // Connection operating normally
+    DEGRADED,              // Connection operating with reduced functionality
+    UNSTABLE,              // Connection experiencing intermittent issues
+    FAILING,               // Connection experiencing frequent failures
+    FAILED                 // Connection has failed and needs recovery
+};
+
+/**
+ * Error recovery configuration
+ */
+struct ErrorRecoveryConfig {
+    // Retry configuration
+    uint32_t max_retries = 3;
+    std::chrono::milliseconds initial_retry_delay{100};
+    std::chrono::milliseconds max_retry_delay{30000};
+    double backoff_multiplier = 2.0;
+    
+    // Error thresholds
+    uint32_t max_consecutive_errors = 5;
+    uint32_t max_errors_per_minute = 20;
+    double degraded_mode_threshold = 0.5;  // 50% error rate triggers degraded mode
+    
+    // Recovery strategies for different error types
+    RecoveryStrategy handshake_error_strategy = RecoveryStrategy::RETRY_WITH_BACKOFF;
+    RecoveryStrategy crypto_error_strategy = RecoveryStrategy::RESET_CONNECTION;
+    RecoveryStrategy network_error_strategy = RecoveryStrategy::RETRY_WITH_BACKOFF;
+    RecoveryStrategy protocol_error_strategy = RecoveryStrategy::GRACEFUL_DEGRADATION;
+    
+    // Health monitoring
+    std::chrono::seconds health_check_interval{30};
+    std::chrono::seconds error_rate_window{60};
+    bool enable_automatic_recovery = true;
+    
+    ErrorRecoveryConfig() = default;
+};
+
+/**
+ * Error recovery state
+ */
+struct ErrorRecoveryState {
+    // Current recovery status
+    bool recovery_in_progress = false;
+    RecoveryStrategy current_strategy = RecoveryStrategy::NONE;
+    uint32_t retry_attempt = 0;
+    std::chrono::steady_clock::time_point last_retry_time;
+    std::chrono::steady_clock::time_point recovery_start_time;
+    
+    // Error tracking
+    uint32_t consecutive_errors = 0;
+    uint32_t total_recovery_attempts = 0;
+    uint32_t successful_recoveries = 0;
+    uint32_t failed_recoveries = 0;
+    
+    // Error rate tracking (for the last minute)
+    std::vector<std::chrono::steady_clock::time_point> error_timestamps;
+    
+    // Health status
+    ConnectionHealth health_status = ConnectionHealth::HEALTHY;
+    std::string last_error_message;
+    DTLSError last_error_code = DTLSError::SUCCESS;
+    
+    ErrorRecoveryState() {
+        last_retry_time = std::chrono::steady_clock::now();
+        recovery_start_time = last_retry_time;
+    }
+};
+
+/**
  * Connection configuration parameters
  */
 struct ConnectionConfig {
@@ -60,6 +144,9 @@ struct ConnectionConfig {
     // Performance tuning
     size_t receive_buffer_size = 65536;  // 64KB
     size_t send_buffer_size = 65536;     // 64KB
+    
+    // Error recovery configuration
+    ErrorRecoveryConfig error_recovery;
     
     ConnectionConfig() = default;
 };
@@ -112,7 +199,13 @@ enum class ConnectionEvent : uint8_t {
     EARLY_DATA_ACCEPTED,      // Server accepted early data
     EARLY_DATA_REJECTED,      // Server rejected early data
     EARLY_DATA_RECEIVED,      // Data received during early data phase
-    NEW_SESSION_TICKET_RECEIVED // New session ticket for future 0-RTT
+    NEW_SESSION_TICKET_RECEIVED, // New session ticket for future 0-RTT
+    // Error recovery events
+    RECOVERY_STARTED,         // Error recovery process initiated
+    RECOVERY_SUCCEEDED,       // Error recovery completed successfully
+    RECOVERY_FAILED,          // Error recovery failed
+    CONNECTION_DEGRADED,      // Connection operating in degraded mode
+    CONNECTION_RESTORED       // Connection restored from degraded mode
 };
 
 /**
@@ -317,6 +410,45 @@ public:
      */
     void clear_session_tickets();
     
+    /**
+     * Error Recovery Methods
+     */
+    
+    /**
+     * Get current connection health status
+     */
+    ConnectionHealth get_health_status() const;
+    
+    /**
+     * Get current error recovery state
+     */
+    const ErrorRecoveryState& get_recovery_state() const;
+    
+    /**
+     * Manually trigger error recovery
+     */
+    Result<void> recover_from_error(DTLSError error, const std::string& context = "");
+    
+    /**
+     * Reset error recovery state (use with caution)
+     */
+    void reset_recovery_state();
+    
+    /**
+     * Check if connection is in degraded mode
+     */
+    bool is_in_degraded_mode() const;
+    
+    /**
+     * Get error rate for the specified time window
+     */
+    double get_error_rate(std::chrono::seconds window = std::chrono::seconds{60}) const;
+    
+    /**
+     * Perform connection health check
+     */
+    Result<void> perform_health_check();
+    
 private:
     // Private constructor - use factory methods
     Connection(const ConnectionConfig& config,
@@ -367,6 +499,20 @@ private:
     Result<void> send_close_notify_alert();
     bool is_connection_valid_for_operations() const;
     
+    // Error recovery methods
+    void record_error(DTLSError error, const std::string& context = "");
+    void update_health_status();
+    RecoveryStrategy determine_recovery_strategy(DTLSError error) const;
+    Result<void> execute_recovery_strategy(RecoveryStrategy strategy, DTLSError original_error);
+    Result<void> retry_with_backoff();
+    Result<void> reset_connection_state();
+    Result<void> enter_degraded_mode();
+    Result<void> exit_degraded_mode();
+    bool should_attempt_recovery() const;
+    std::chrono::milliseconds calculate_retry_delay() const;
+    void cleanup_old_error_timestamps();
+    bool is_retryable_error(DTLSError error) const;
+    
     // Member variables
     ConnectionConfig config_;
     std::unique_ptr<crypto::CryptoProvider> crypto_provider_;
@@ -397,6 +543,10 @@ private:
     std::unique_ptr<protocol::EarlyDataReplayProtection> replay_protection_;
     protocol::EarlyDataContext early_data_context_;
     mutable std::mutex early_data_mutex_;
+    
+    // Error recovery state
+    ErrorRecoveryState recovery_state_;
+    mutable std::mutex recovery_mutex_;
 };
 
 /**
