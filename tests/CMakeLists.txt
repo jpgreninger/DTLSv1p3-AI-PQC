@@ -78,6 +78,7 @@ add_executable(dtls_protocol_test
     protocol/test_hello_retry_request.cpp
     protocol/test_cookie.cpp
     protocol/test_key_update_simple.cpp
+    protocol/test_fragment_reassembler.cpp
 )
 
 target_link_libraries(dtls_protocol_test PRIVATE ${DTLS_TEST_LIBRARIES})
