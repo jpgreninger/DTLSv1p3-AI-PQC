@@ -481,6 +481,9 @@ private:
     Result<void> handle_alert(AlertLevel level, AlertDescription description);
     Result<void> process_record(const protocol::PlaintextRecord& record);
     Result<void> process_record_data(const memory::ZeroCopyBuffer& record_data);
+    Result<void> process_dtls_plaintext_record(const protocol::DTLSPlaintext& record);
+    Result<protocol::DTLSCiphertext> convert_legacy_to_dtls_ciphertext(const protocol::CiphertextRecord& legacy_record);
+    Result<protocol::PlaintextRecord> convert_dtls_to_legacy_plaintext(const protocol::DTLSPlaintext& dtls_record);
     Result<void> handle_handshake_data(const memory::ZeroCopyBuffer& data);
     Result<void> handle_alert_data(const memory::ZeroCopyBuffer& data);
     
@@ -516,8 +519,7 @@ private:
     // Member variables
     ConnectionConfig config_;
     std::unique_ptr<crypto::CryptoProvider> crypto_provider_;
-    // TODO: Enable when incomplete types are properly implemented
-    // std::unique_ptr<protocol::RecordLayer> record_layer_;
+    std::unique_ptr<protocol::RecordLayer> record_layer_;
     std::unique_ptr<protocol::HandshakeManager> handshake_manager_;
     // std::unique_ptr<protocol::MessageLayer> message_layer_;
     std::unique_ptr<transport::UDPTransport> transport_;

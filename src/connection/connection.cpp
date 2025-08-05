@@ -118,6 +118,13 @@ Result<void> Connection::initialize() {
     
     handshake_manager_ = std::make_unique<protocol::HandshakeManager>(handshake_config);
     
+    // Initialize record layer with its own crypto provider instance
+    auto record_crypto_result = crypto::ProviderFactory::instance().create_default_provider();
+    if (!record_crypto_result) {
+        return make_error<void>(DTLSError::CRYPTO_PROVIDER_ERROR, "Failed to create crypto provider for record layer");
+    }
+    record_layer_ = std::make_unique<protocol::RecordLayer>(std::move(record_crypto_result.value()));
+    
     // Setup handshake manager callbacks
     auto send_callback = [this](const protocol::HandshakeMessage& message) -> Result<void> {
         return send_handshake_message(message);
@@ -144,6 +151,12 @@ Result<void> Connection::initialize() {
     auto init_result = handshake_manager_->initialize(send_callback, event_callback);
     if (!init_result) {
         return init_result;
+    }
+    
+    // Initialize record layer
+    auto record_init_result = record_layer_->initialize();
+    if (!record_init_result) {
+        return record_init_result;
     }
     
     // Update statistics
@@ -237,7 +250,20 @@ Result<void> Connection::process_incoming_data(const memory::ZeroCopyBuffer& dat
 }
 
 Result<void> Connection::process_record_data(const memory::ZeroCopyBuffer& record_data) {
-    // Deserialize ciphertext record
+    // Try deserializing as DTLSCiphertext first (new format)
+    auto dtls_ciphertext_result = protocol::DTLSCiphertext::deserialize(record_data, 0);
+    if (dtls_ciphertext_result) {
+        // Process through record layer
+        auto plaintext_result = record_layer_->process_incoming_record(dtls_ciphertext_result.value());
+        if (!plaintext_result) {
+            stats_.decrypt_errors++;
+            return make_error<void>(plaintext_result.error());
+        }
+        
+        return process_dtls_plaintext_record(plaintext_result.value());
+    }
+    
+    // Fallback to legacy CiphertextRecord format
     auto ciphertext_result = protocol::CiphertextRecord::deserialize(record_data, 0);
     if (!ciphertext_result) {
         return make_error<void>(DTLSError::INVALID_CIPHERTEXT_RECORD);
@@ -245,17 +271,19 @@ Result<void> Connection::process_record_data(const memory::ZeroCopyBuffer& recor
     
     auto ciphertext = std::move(ciphertext_result.value());
     
-    // TODO: Process through record layer when properly initialized
-    // auto plaintext_result = record_layer_->process_incoming_record(ciphertext);
-    // if (!plaintext_result) {
-    //     stats_.decrypt_errors++;
-    //     return plaintext_result.error();
-    // }
-    // 
-    // return process_record(plaintext_result.value());
+    // Convert legacy format to DTLSCiphertext and process
+    auto converted_result = convert_legacy_to_dtls_ciphertext(ciphertext);
+    if (!converted_result) {
+        return converted_result.error();
+    }
     
-    // For now, just acknowledge receipt
-    return make_result();
+    auto plaintext_result = record_layer_->process_incoming_record(converted_result.value());
+    if (!plaintext_result) {
+        stats_.decrypt_errors++;
+        return make_error<void>(plaintext_result.error());
+    }
+    
+    return process_dtls_plaintext_record(plaintext_result.value());
 }
 
 Result<void> Connection::process_record(const protocol::PlaintextRecord& record) {
@@ -278,6 +306,66 @@ Result<void> Connection::process_record(const protocol::PlaintextRecord& record)
         default:
             return make_error<void>(DTLSError::INVALID_CONTENT_TYPE);
     }
+}
+
+Result<void> Connection::process_dtls_plaintext_record(const protocol::DTLSPlaintext& record) {
+    switch (record.get_type()) {
+        case protocol::ContentType::HANDSHAKE:
+            return handle_handshake_data(record.get_fragment());
+            
+        case protocol::ContentType::APPLICATION_DATA:
+            return handle_application_data(record.get_fragment());
+            
+        case protocol::ContentType::ALERT:
+            return handle_alert_data(record.get_fragment());
+            
+        case protocol::ContentType::CHANGE_CIPHER_SPEC:
+            // Deprecated in DTLS v1.3, ignore
+            return make_result();
+            
+        default:
+            return make_error<void>(DTLSError::INVALID_CONTENT_TYPE);
+    }
+}
+
+Result<protocol::DTLSCiphertext> Connection::convert_legacy_to_dtls_ciphertext(const protocol::CiphertextRecord& legacy_record) {
+    const auto& header = legacy_record.header();
+    
+    // Convert sequence number to SequenceNumber48
+    protocol::SequenceNumber48 encrypted_seq_num(header.sequence_number);
+    
+    // Create ZeroCopyBuffer from encrypted payload
+    memory::ZeroCopyBuffer encrypted_payload(
+        legacy_record.encrypted_payload().data(), 
+        legacy_record.encrypted_payload().size()
+    );
+    
+    // Create DTLSCiphertext from legacy record
+    protocol::DTLSCiphertext dtls_ciphertext(
+        header.content_type,
+        header.version,
+        header.epoch,
+        encrypted_seq_num,
+        std::move(encrypted_payload)
+    );
+    
+    return make_result(std::move(dtls_ciphertext));
+}
+
+Result<protocol::PlaintextRecord> Connection::convert_dtls_to_legacy_plaintext(const protocol::DTLSPlaintext& dtls_record) {
+    // Create a copy of the fragment buffer
+    memory::Buffer fragment_copy(dtls_record.get_fragment().data(), dtls_record.get_fragment().size());
+    
+    // Create legacy plaintext record using constructor parameters
+    protocol::PlaintextRecord legacy_record(
+        dtls_record.get_type(),
+        dtls_record.get_version(),
+        dtls_record.get_epoch(),
+        dtls_record.get_sequence_number(),
+        std::move(fragment_copy)
+    );
+    
+    return make_result(std::move(legacy_record));
 }
 
 Result<void> Connection::handle_handshake_data(const memory::ZeroCopyBuffer& data) {
@@ -430,16 +518,38 @@ Result<void> Connection::send_application_data(const memory::ZeroCopyBuffer& dat
         return make_error<void>(DTLSError::STATE_MACHINE_ERROR);
     }
     
-    // TODO: Create plaintext record and protect through record layer when properly initialized
-    // For now, send data directly through transport (insecure but allows compilation)
-    memory::ZeroCopyBuffer send_buffer(data.data(), data.size());
+    // Create DTLSPlaintext record for application data
+    memory::Buffer fragment_buffer(data.data(), data.size());
+    protocol::DTLSPlaintext plaintext_record(
+        protocol::ContentType::APPLICATION_DATA,
+        protocol::ProtocolVersion::DTLS_1_3,
+        1, // Current epoch - should come from record layer
+        protocol::SequenceNumber48(0), // Will be set by record layer
+        std::move(fragment_buffer)
+    );
+    
+    // Protect the record through the record layer
+    auto protected_result = record_layer_->prepare_outgoing_record(plaintext_record);
+    if (!protected_result) {
+        return make_error<void>(protected_result.error());
+    }
+    
+    // Serialize the protected record
+    memory::Buffer send_buffer(protected_result.value().total_size());
+    auto serialize_result = protected_result.value().serialize(send_buffer);
+    if (!serialize_result) {
+        return make_error<void>(serialize_result.error());
+    }
+    
+    // Convert to ZeroCopyBuffer for transport
+    memory::ZeroCopyBuffer transport_buffer(send_buffer.data(), serialize_result.value());
     
     // TODO: Convert peer address to transport endpoint properly
     // For now, use a placeholder endpoint 
     transport::NetworkEndpoint peer_endpoint("127.0.0.1", 12345);
     
     // Send through transport layer
-    auto send_result = transport_->send_packet(peer_endpoint, send_buffer);
+    auto send_result = transport_->send_packet(peer_endpoint, transport_buffer);
     if (!send_result) {
         return send_result;
     }
@@ -597,11 +707,26 @@ Result<void> Connection::update_keys() {
         std::move(message_buffer)
     );
     
-    // TODO: Send the KeyUpdate message through record layer when available
-    // For now, simulate the key update process
+    // Send the KeyUpdate message through record layer
+    auto protected_result = record_layer_->prepare_outgoing_record(plaintext);
+    if (!protected_result) {
+        return make_error<void>(protected_result.error());
+    }
     
-    // TODO: Update our traffic keys using record layer when available
-    // For now, simulate key update success
+    // Serialize and send the protected record
+    memory::Buffer send_buffer(protected_result.value().total_size());
+    auto protected_serialize_result = protected_result.value().serialize(send_buffer);
+    if (!protected_serialize_result) {
+        return make_error<void>(protected_serialize_result.error());
+    }
+    
+    // TODO: Send through transport layer (similar to send_application_data)
+    
+    // Update our traffic keys using record layer
+    auto key_update_result = record_layer_->update_traffic_keys();
+    if (!key_update_result) {
+        return key_update_result;
+    }
     
     // Update connection statistics
     stats_.key_updates_performed++;
@@ -956,9 +1081,9 @@ Result<void> Connection::cleanup_resources() {
     session_ticket_manager_.reset();
     replay_protection_.reset();
     
-    // TODO: Reset record and message layers when available
-    // message_layer_.reset();      // Commented out due to incomplete type
-    // record_layer_.reset();       // Commented out due to incomplete type
+    // Reset record and message layers
+    record_layer_.reset();
+    // message_layer_.reset();      // Still commented out due to incomplete type
     
     // Cleanup crypto provider resources
     if (crypto_provider_) {
