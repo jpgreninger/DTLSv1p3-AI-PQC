@@ -83,6 +83,9 @@ struct ConnectionStats {
     uint32_t sequence_errors = 0;
     uint32_t protocol_errors = 0;
     
+    // Key update metrics
+    uint32_t key_updates_performed = 0;
+    
     // Connection timing
     std::chrono::steady_clock::time_point connection_start;
     std::chrono::steady_clock::time_point last_activity;
@@ -360,6 +363,7 @@ private:
     // Connection lifecycle management
     Result<void> cleanup_resources();
     void update_last_activity();
+    uint32_t get_next_handshake_sequence();
     
     // Member variables
     ConnectionConfig config_;
@@ -382,6 +386,7 @@ private:
     
     // Connection management
     mutable std::mutex state_mutex_;
+    std::atomic<uint32_t> next_handshake_sequence_{0};
     std::atomic<bool> is_closing_{false};
     std::atomic<bool> force_closed_{false};
     
