@@ -5,6 +5,7 @@ cmake_minimum_required(VERSION 3.16)
 set(SECURITY_TEST_SOURCES
     dtls_security_test.cpp
     test_dos_protection.cpp
+    test_rate_limiter.cpp
     security_validation_suite.cpp
     comprehensive_security_tests.cpp
     security_assessment_report_generator.cpp
@@ -18,6 +19,9 @@ set(SECURITY_TEST_HEADERS
 # Create security test executable
 add_executable(dtls_security_tests ${SECURITY_TEST_SOURCES})
 
+# Create dedicated rate limiter test executable
+add_executable(dtls_rate_limiter_tests test_rate_limiter.cpp)
+
 # Link required libraries
 target_link_libraries(dtls_security_tests
     PRIVATE
@@ -27,8 +31,25 @@ target_link_libraries(dtls_security_tests
         ${CMAKE_THREAD_LIBS_INIT}
 )
 
+# Link required libraries for rate limiter tests
+target_link_libraries(dtls_rate_limiter_tests
+    PRIVATE
+        dtls_v13
+        gtest
+        gtest_main
+        ${CMAKE_THREAD_LIBS_INIT}
+)
+
 # Include directories
 target_include_directories(dtls_security_tests
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}/tests/test_infrastructure
+)
+
+# Include directories for rate limiter tests
+target_include_directories(dtls_rate_limiter_tests
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_SOURCE_DIR}/include
@@ -49,8 +70,29 @@ target_compile_options(dtls_security_tests
         -fstack-protector-strong
 )
 
+# Compiler flags for rate limiter testing
+target_compile_options(dtls_rate_limiter_tests
+    PRIVATE
+        -Wall
+        -Wextra
+        -Werror
+        -pedantic
+        -O2
+        -g
+        -fsanitize=address
+        -fsanitize=undefined
+        -fstack-protector-strong
+)
+
 # Linker flags for security testing
 target_link_options(dtls_security_tests
+    PRIVATE
+        -fsanitize=address
+        -fsanitize=undefined
+)
+
+# Linker flags for rate limiter testing
+target_link_options(dtls_rate_limiter_tests
     PRIVATE
         -fsanitize=address
         -fsanitize=undefined
@@ -111,12 +153,19 @@ target_include_directories(security_report_generator
 # Test discovery
 include(GoogleTest)
 gtest_discover_tests(dtls_security_tests)
+gtest_discover_tests(dtls_rate_limiter_tests)
 gtest_discover_tests(comprehensive_security_validation)
 
 # Custom test targets for different security test types
 add_custom_target(security_tests_basic
     COMMAND dtls_security_tests
     COMMENT "Running basic security tests"
+    VERBATIM
+)
+
+add_custom_target(rate_limiter_tests
+    COMMAND dtls_rate_limiter_tests
+    COMMENT "Running rate limiter tests"
     VERBATIM
 )
 
@@ -194,6 +243,7 @@ enable_testing()
 
 # Add tests to CTest
 add_test(NAME SecurityTests_Basic COMMAND dtls_security_tests)
+add_test(NAME RateLimiterTests COMMAND dtls_rate_limiter_tests)
 add_test(NAME SecurityTests_Comprehensive COMMAND comprehensive_security_validation)
 
 # Set test properties
@@ -202,13 +252,18 @@ set_tests_properties(SecurityTests_Basic PROPERTIES
     LABELS "security;basic"
 )
 
+set_tests_properties(RateLimiterTests PROPERTIES
+    TIMEOUT 300  # 5 minutes
+    LABELS "security;rate_limiting"
+)
+
 set_tests_properties(SecurityTests_Comprehensive PROPERTIES
     TIMEOUT 1800  # 30 minutes
     LABELS "security;comprehensive"
 )
 
 # Install security test executables and reports
-install(TARGETS dtls_security_tests comprehensive_security_validation security_report_generator
+install(TARGETS dtls_security_tests dtls_rate_limiter_tests comprehensive_security_validation security_report_generator
     RUNTIME DESTINATION bin/security_tests
 )
 
@@ -227,6 +282,7 @@ message(STATUS "Security validation suite configured")
 message(STATUS "Security report output directory: ${SECURITY_REPORT_DIR}")
 message(STATUS "Available security test targets:")
 message(STATUS "  - security_tests_basic: Basic security tests")
+message(STATUS "  - rate_limiter_tests: Dedicated rate limiter tests")
 message(STATUS "  - security_tests_comprehensive: Full security validation")
 message(STATUS "  - security_tests_quick: Quick security checks")
 message(STATUS "  - security_tests_attack_simulation: Attack simulation tests")
