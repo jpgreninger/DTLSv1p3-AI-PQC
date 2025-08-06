@@ -183,6 +183,8 @@ add_executable(security_report_generator security_assessment_report_generator.cp
 target_link_libraries(security_report_generator
     PRIVATE
         dtlsv13
+        gtest
+        gtest_main
         ${CMAKE_THREAD_LIBS_INIT}
 )
 

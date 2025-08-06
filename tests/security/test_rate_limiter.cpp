@@ -38,7 +38,7 @@ TEST_F(RateLimiterTest, BasicConnectionAttempts) {
     RateLimiter limiter(test_config_);
     
     // First few attempts should be allowed
-    for (int i = 0; i < test_config_.max_tokens; ++i) {
+    for (size_t i = 0; i < test_config_.max_tokens; ++i) {
         EXPECT_EQ(RateLimitResult::ALLOWED, 
                   limiter.check_connection_attempt(test_address1_));
     }
@@ -52,7 +52,7 @@ TEST_F(RateLimiterTest, TokenBucketRefill) {
     RateLimiter limiter(test_config_);
     
     // Exhaust tokens
-    for (int i = 0; i < test_config_.max_tokens; ++i) {
+    for (size_t i = 0; i < test_config_.max_tokens; ++i) {
         EXPECT_EQ(RateLimitResult::ALLOWED, 
                   limiter.check_connection_attempt(test_address1_));
     }
@@ -82,7 +82,7 @@ TEST_F(RateLimiterTest, BurstDetection) {
     
     // Make burst attempts
     std::vector<RateLimitResult> results;
-    for (int i = 0; i < test_config_.max_burst_count + 2; ++i) {
+    for (size_t i = 0; i < test_config_.max_burst_count + 2; ++i) {
         results.push_back(limiter.check_connection_attempt(test_address1_));
     }
     
@@ -103,7 +103,7 @@ TEST_F(RateLimiterTest, ConcurrentConnectionLimits) {
     RateLimiter limiter(test_config_);
     
     // Establish connections up to limit
-    for (int i = 0; i < test_config_.max_concurrent_connections; ++i) {
+    for (size_t i = 0; i < test_config_.max_concurrent_connections; ++i) {
         EXPECT_EQ(RateLimitResult::ALLOWED, 
                   limiter.check_connection_attempt(test_address1_));
         limiter.record_connection_established(test_address1_);
@@ -125,7 +125,7 @@ TEST_F(RateLimiterTest, HandshakeRateLimiting) {
     RateLimiter limiter(test_config_);
     
     // Handshake attempts should be allowed initially
-    for (int i = 0; i < test_config_.max_handshakes_per_minute; ++i) {
+    for (size_t i = 0; i < test_config_.max_handshakes_per_minute; ++i) {
         EXPECT_EQ(RateLimitResult::ALLOWED, 
                   limiter.check_handshake_attempt(test_address1_));
     }
@@ -145,7 +145,7 @@ TEST_F(RateLimiterTest, WhitelistFunctionality) {
     EXPECT_FALSE(limiter.is_whitelisted(test_address2_));
     
     // Whitelisted source should always be allowed
-    for (int i = 0; i < test_config_.max_tokens * 2; ++i) {
+    for (size_t i = 0; i < test_config_.max_tokens * 2; ++i) {
         EXPECT_EQ(RateLimitResult::ALLOWED, 
                   limiter.check_connection_attempt(test_address1_));
     }
@@ -155,7 +155,7 @@ TEST_F(RateLimiterTest, WhitelistFunctionality) {
     EXPECT_FALSE(limiter.is_whitelisted(test_address1_));
     
     // Should now be subject to rate limiting
-    for (int i = 0; i < test_config_.max_tokens; ++i) {
+    for (size_t i = 0; i < test_config_.max_tokens; ++i) {
         EXPECT_EQ(RateLimitResult::ALLOWED, 
                   limiter.check_connection_attempt(test_address1_));
     }
@@ -191,7 +191,7 @@ TEST_F(RateLimiterTest, AutomaticBlacklisting) {
     RateLimiter limiter(test_config_);
     
     // Generate violations to trigger automatic blacklisting
-    for (int i = 0; i < test_config_.max_violations_per_hour; ++i) {
+    for (size_t i = 0; i < test_config_.max_violations_per_hour; ++i) {
         limiter.record_violation(test_address1_, "test_violation");
     }
     
@@ -220,7 +220,7 @@ TEST_F(RateLimiterTest, SourceStatistics) {
               limiter.check_connection_attempt(test_address1_));
     
     // Exhaust tokens to trigger rate limiting
-    for (int i = 0; i < test_config_.max_tokens; ++i) {
+    for (size_t i = 0; i < test_config_.max_tokens; ++i) {
         limiter.check_connection_attempt(test_address1_);
     }
     
@@ -256,7 +256,7 @@ TEST_F(RateLimiterTest, MultipleSourcesIsolation) {
     RateLimiter limiter(test_config_);
     
     // Exhaust tokens for address1
-    for (int i = 0; i < test_config_.max_tokens; ++i) {
+    for (size_t i = 0; i < test_config_.max_tokens; ++i) {
         EXPECT_EQ(RateLimitResult::ALLOWED, 
                   limiter.check_connection_attempt(test_address1_));
     }
@@ -264,7 +264,7 @@ TEST_F(RateLimiterTest, MultipleSourcesIsolation) {
               limiter.check_connection_attempt(test_address1_));
     
     // address2 should still be allowed (independent token buckets)
-    for (int i = 0; i < test_config_.max_tokens; ++i) {
+    for (size_t i = 0; i < test_config_.max_tokens; ++i) {
         EXPECT_EQ(RateLimitResult::ALLOWED, 
                   limiter.check_connection_attempt(test_address2_));
     }

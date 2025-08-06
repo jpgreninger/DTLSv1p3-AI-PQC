@@ -85,11 +85,15 @@ void SecurityValidationSuite::setup_test_environment() {
     std::uniform_int_distribution<uint16_t> port_dist(20000, 30000);
     uint16_t server_port = port_dist(rng_);
     
-    client_transport_ = std::make_unique<transport::UDPTransport>("127.0.0.1", 0);
-    server_transport_ = std::make_unique<transport::UDPTransport>("127.0.0.1", server_port);
+    transport::TransportConfig client_config;
+    transport::TransportConfig server_config;
+    client_transport_ = std::make_unique<transport::UDPTransport>(client_config);
+    server_transport_ = std::make_unique<transport::UDPTransport>(server_config);
     
-    ASSERT_TRUE(client_transport_->bind().is_ok());
-    ASSERT_TRUE(server_transport_->bind().is_ok());
+    transport::NetworkEndpoint client_endpoint("127.0.0.1", 0);
+    transport::NetworkEndpoint server_endpoint("127.0.0.1", server_port);
+    ASSERT_TRUE(client_transport_->bind(client_endpoint).is_ok());
+    ASSERT_TRUE(server_transport_->bind(server_endpoint).is_ok());
 }
 
 void SecurityValidationSuite::setup_attack_scenarios() {

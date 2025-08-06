@@ -270,14 +270,23 @@ struct NetworkAddress {
     bool operator!=(const NetworkAddress& other) const noexcept;
     bool operator<(const NetworkAddress& other) const noexcept;
     
+    // Constructors
+    NetworkAddress() = default;
+    NetworkAddress(const std::string& ip, uint16_t port_num);
+    
     // Factory methods
     static NetworkAddress from_ipv4(uint32_t ipv4_addr, uint16_t port_num);
     static NetworkAddress from_ipv6(const std::array<uint8_t, 16>& ipv6_addr, uint16_t port_num);
+    static Result<NetworkAddress> from_string(const std::string& address_with_port);
     
     // Conversion methods
     uint32_t to_ipv4() const;
     std::array<uint8_t, 16> to_ipv6() const;
-};;
+    
+    // Accessors for rate limiting compatibility
+    std::string get_ip() const;
+    uint16_t get_port() const { return port; }
+};
 
 // Utility functions
 DTLS_API std::string to_string(ContentType type);

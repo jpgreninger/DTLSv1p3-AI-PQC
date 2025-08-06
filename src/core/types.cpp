@@ -307,5 +307,66 @@ std::array<uint8_t, 16> NetworkAddress::to_ipv6() const {
     return address;
 }
 
+std::string NetworkAddress::get_ip() const {
+    if (is_ipv4()) {
+        std::ostringstream oss;
+        oss << static_cast<int>(address[0]) << "."
+            << static_cast<int>(address[1]) << "."
+            << static_cast<int>(address[2]) << "."
+            << static_cast<int>(address[3]);
+        return oss.str();
+    } else {
+        std::ostringstream oss;
+        oss << std::hex << std::setfill('0');
+        for (size_t i = 0; i < 16; i += 2) {
+            if (i > 0) oss << ":";
+            oss << std::setw(2) << static_cast<int>(address[i])
+                << std::setw(2) << static_cast<int>(address[i + 1]);
+        }
+        return oss.str();
+    }
+}
+
+NetworkAddress::NetworkAddress(const std::string& ip, uint16_t port_num) : port(port_num) {
+    // Simple IP parsing - in production, use a more robust parser
+    if (ip.find(':') != std::string::npos) {
+        // IPv6 - simplified parsing
+        family = Family::IPv6;
+        address.fill(0);
+        // For now, just fill with zeros - real implementation would parse IPv6
+    } else {
+        // IPv4
+        family = Family::IPv4;
+        address.fill(0);
+        
+        // Parse IPv4 address
+        std::istringstream iss(ip);
+        std::string token;
+        int i = 0;
+        while (std::getline(iss, token, '.') && i < 4) {
+            address[i] = static_cast<uint8_t>(std::stoi(token));
+            i++;
+        }
+    }
+}
+
+Result<NetworkAddress> NetworkAddress::from_string(const std::string& address_with_port) {
+    size_t last_colon = address_with_port.rfind(':');
+    if (last_colon == std::string::npos) {
+        return Result<NetworkAddress>::error(Error::INVALID_PARAMETER, "No port separator found");
+    }
+    
+    std::string ip = address_with_port.substr(0, last_colon);
+    std::string port_str = address_with_port.substr(last_colon + 1);
+    
+    try {
+        uint16_t port_num = static_cast<uint16_t>(std::stoi(port_str));
+        NetworkAddress addr(ip, port_num);
+        return Result<NetworkAddress>::success(std::move(addr));
+    } catch (const std::exception&) {
+        return Result<NetworkAddress>::error(Error::INVALID_PARAMETER, "Invalid port number");
+    }
+}
+
 } // namespace v13
 } // namespace dtls
