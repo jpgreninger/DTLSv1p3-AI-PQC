@@ -2,6 +2,7 @@
 
 #include <dtls/security/rate_limiter.h>
 #include <dtls/security/resource_manager.h>
+#include <dtls/protocol/cookie.h>
 #include <dtls/result.h>
 #include <dtls/types.h>
 #include <dtls/error.h>
@@ -22,6 +23,13 @@ namespace security {
 struct DoSProtectionConfig {
     RateLimitConfig rate_limit_config;
     ResourceConfig resource_config;
+    protocol::CookieConfig cookie_config;
+    
+    // Cookie validation settings
+    bool enable_cookie_validation = true;              // Enable cookie-based DoS protection
+    bool require_cookie_on_overload = true;            // Require cookies when under attack
+    double cookie_trigger_cpu_threshold = 0.7;         // CPU threshold to trigger cookie requirements
+    size_t cookie_trigger_connection_count = 100;      // Connection count to trigger cookie requirements
     
     // Computational DoS protection
     bool enable_cpu_monitoring = true;
@@ -62,7 +70,10 @@ enum class DoSProtectionResult : uint8_t {
     AMPLIFICATION_BLOCKED,     // Amplification attack blocked
     PROOF_OF_WORK_REQUIRED,    // Proof-of-work challenge needed
     GEOBLOCKED,                // Geographic blocking
-    SOURCE_VALIDATION_FAILED   // Source validation failed
+    SOURCE_VALIDATION_FAILED,  // Source validation failed
+    COOKIE_REQUIRED,           // Client must provide valid cookie
+    COOKIE_INVALID,            // Provided cookie is invalid
+    COOKIE_EXPIRED             // Provided cookie has expired
 };
 
 /**
@@ -109,6 +120,7 @@ struct ProofOfWorkChallenge {
     uint8_t difficulty;                 // Required difficulty (bits)
     std::chrono::steady_clock::time_point expiry; // Challenge expiry time
     
+    ProofOfWorkChallenge() = default;
     ProofOfWorkChallenge(uint8_t diff, std::chrono::seconds validity);
     
     /**
@@ -368,6 +380,48 @@ public:
     void enable_proof_of_work(bool enabled);
     void enable_geoblocking(bool enabled);
     void enable_source_validation(bool enabled);
+    void enable_cookie_validation(bool enabled);
+    
+    /**
+     * Cookie validation methods
+     */
+    
+    /**
+     * Check if client should provide cookie
+     * @param source_address Client's network address
+     * @param client_hello_data ClientHello message data
+     * @return true if cookie is required
+     */
+    bool should_require_cookie(const NetworkAddress& source_address,
+                              const std::vector<uint8_t>& client_hello_data = {}) const;
+    
+    /**
+     * Generate cookie for client
+     * @param source_address Client's network address
+     * @param client_hello_data ClientHello message data
+     * @return Generated cookie or error
+     */
+    Result<memory::Buffer> generate_client_cookie(const NetworkAddress& source_address,
+                                                 const std::vector<uint8_t>& client_hello_data);
+    
+    /**
+     * Validate client cookie
+     * @param cookie Cookie to validate
+     * @param source_address Client's network address
+     * @param client_hello_data ClientHello message data
+     * @return DoS protection result
+     */
+    DoSProtectionResult validate_client_cookie(const memory::Buffer& cookie,
+                                              const NetworkAddress& source_address,
+                                              const std::vector<uint8_t>& client_hello_data);
+    
+    /**
+     * Consume validated cookie (prevent replay)
+     * @param cookie Cookie to mark as used
+     * @param source_address Client's network address
+     */
+    void consume_client_cookie(const memory::Buffer& cookie,
+                              const NetworkAddress& source_address);
 
 private:
     // Helper methods
@@ -385,6 +439,7 @@ private:
     std::unique_ptr<RateLimiter> rate_limiter_;
     std::unique_ptr<ResourceManager> resource_manager_;
     std::unique_ptr<CPUMonitor> cpu_monitor_;
+    std::unique_ptr<protocol::CookieManager> cookie_manager_;
     
     // Statistics
     mutable DoSProtectionStats stats_;

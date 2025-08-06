@@ -342,6 +342,136 @@ void SecurityValidationSuite::setup_crypto_compliance_tests() {
         },
         true
     });
+    
+    // RFC Test Vector Validation
+    crypto_tests_.push_back({
+        "RFC Test Vector Validation",
+        "Validate crypto implementations against RFC 8446/8439/5869 test vectors",
+        [this]() {
+            auto provider = std::make_unique<crypto::OpenSSLProvider>();
+            provider->initialize();
+            
+            // RFC 8446 AES-128-GCM test vector
+            std::vector<uint8_t> key = {
+                0xfe, 0xff, 0xe9, 0x92, 0x86, 0x65, 0x73, 0x1c,
+                0x6d, 0x6a, 0x8f, 0x94, 0x67, 0x30, 0x83, 0x08
+            };
+            
+            std::vector<uint8_t> iv = {
+                0xca, 0xfe, 0xba, 0xbe, 0xfa, 0xce, 0xdb, 0xad,
+                0xde, 0xca, 0xf8, 0x88
+            };
+            
+            std::vector<uint8_t> plaintext = {
+                0xd9, 0x31, 0x32, 0x25, 0xf8, 0x84, 0x06, 0xe5,
+                0xa5, 0x59, 0x09, 0xc5, 0xaf, 0xf5, 0x26, 0x9a
+            };
+            
+            std::vector<uint8_t> aad = {
+                0xfe, 0xed, 0xfa, 0xce, 0xde, 0xad, 0xbe, 0xef,
+                0xfe, 0xed, 0xfa, 0xce, 0xde, 0xad, 0xbe, 0xef,
+                0xab, 0xad, 0xda, 0xd2
+            };
+            
+            std::vector<uint8_t> expected_ciphertext = {
+                0x42, 0x83, 0x1e, 0xc2, 0x21, 0x77, 0x74, 0x24,
+                0x4b, 0x72, 0x21, 0xb7, 0x84, 0xd0, 0xd4, 0x9c
+            };
+            
+            std::vector<uint8_t> expected_tag = {
+                0x5b, 0xc9, 0x4f, 0xbc, 0x32, 0x21, 0xa5, 0xdb,
+                0x94, 0xfa, 0xe9, 0x5a, 0xe7, 0x12, 0x1a, 0x47
+            };
+            
+            // Test AES-GCM encryption with known test vector
+            AEADEncryptionParams params{};
+            params.key = key;
+            params.nonce = iv;
+            params.additional_data = aad;
+            params.plaintext = plaintext;
+            params.cipher = AEADCipher::AES_128_GCM;
+            
+            auto encrypt_result = provider->encrypt_aead(params);
+            if (!encrypt_result.is_success()) return false;
+            
+            auto output = encrypt_result.value();
+            bool ciphertext_matches = (output.ciphertext == expected_ciphertext);
+            bool tag_matches = (output.tag == expected_tag);
+            
+            return ciphertext_matches && tag_matches;
+        },
+        true
+    });
+    
+    // HKDF Compliance Test
+    crypto_tests_.push_back({
+        "HKDF RFC 5869 Compliance", 
+        "Validate HKDF implementation against RFC 5869 test vectors",
+        [this]() {
+            auto provider = std::make_unique<crypto::OpenSSLProvider>();
+            provider->initialize();
+            
+            // RFC 5869 Test Case 1
+            std::vector<uint8_t> ikm = {
+                0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b,
+                0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b,
+                0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b
+            };
+            
+            std::vector<uint8_t> expected_prk = {
+                0x07, 0x77, 0x09, 0x36, 0x2c, 0x2e, 0x32, 0xdf,
+                0x0d, 0xdc, 0x3f, 0x0d, 0xc4, 0x7b, 0xba, 0x63,
+                0x90, 0xb6, 0xc7, 0x3b, 0xb5, 0x0f, 0x9c, 0x31,
+                0x22, 0xec, 0x84, 0x4a, 0xd7, 0xc2, 0xb3, 0xe5
+            };
+            
+            std::vector<uint8_t> salt = {
+                0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+                0x08, 0x09, 0x0a, 0x0b, 0x0c
+            };
+            
+            auto prk_result = utils::hkdf_extract(*provider, HashAlgorithm::SHA256, ikm, salt);
+            if (!prk_result.is_success()) return false;
+            
+            return prk_result.value() == expected_prk;
+        },
+        true
+    });
+    
+    // Signature Algorithm Compliance
+    crypto_tests_.push_back({
+        "Digital Signature Compliance",
+        "Validate signature operations meet RFC 9147 requirements",
+        [this]() {
+            auto provider = std::make_unique<crypto::OpenSSLProvider>();
+            provider->initialize();
+            
+            // Test ECDSA P-256 signature generation and verification
+            auto key_pair = provider->generate_key_pair(NamedGroup::SECP256R1);
+            if (!key_pair.is_success()) return false;
+            
+            std::vector<uint8_t> test_data = {0x48, 0x65, 0x6c, 0x6c, 0x6f}; // "Hello"
+            
+            SignatureParams sign_params{};
+            sign_params.data = test_data;
+            sign_params.scheme = SignatureScheme::ECDSA_SECP256R1_SHA256;
+            sign_params.private_key = key_pair.value().first.get();
+            
+            auto signature = provider->sign_data(sign_params);
+            if (!signature.is_success()) return false;
+            
+            SignatureParams verify_params{};
+            verify_params.data = test_data;
+            verify_params.scheme = SignatureScheme::ECDSA_SECP256R1_SHA256;
+            verify_params.public_key = key_pair.value().second.get();
+            
+            auto verify_result = provider->verify_signature(verify_params, signature.value());
+            if (!verify_result.is_success()) return false;
+            
+            return verify_result.value();
+        },
+        true
+    });
 }
 
 void SecurityValidationSuite::setup_security_requirements() {

@@ -170,6 +170,24 @@ DoSProtection::DoSProtection(const DoSProtectionConfig& config)
     if (config_.enable_cpu_monitoring) {
         cpu_monitor_->start_monitoring();
     }
+    
+    // Initialize cookie manager if cookie validation is enabled
+    if (config_.enable_cookie_validation) {
+        cookie_manager_ = std::make_unique<protocol::CookieManager>(config.cookie_config);
+        // Initialize with a default secret key (in production, use proper key management)
+        memory::Buffer secret_key(32);
+        secret_key.resize(32);
+        // Generate a simple secret key for now (in production, use proper key derivation)
+        uint8_t* key_data = reinterpret_cast<uint8_t*>(secret_key.mutable_data());
+        for (size_t i = 0; i < 32; ++i) {
+            key_data[i] = static_cast<uint8_t>((i * 7 + 13) & 0xFF); // Simple deterministic pattern
+        }
+        auto init_result = cookie_manager_->initialize(secret_key);
+        if (!init_result.is_success()) {
+            // Log error but continue - cookie validation will be disabled
+            cookie_manager_.reset();
+        }
+    }
 }
 
 DoSProtection::~DoSProtection() = default;
@@ -343,8 +361,7 @@ Result<ProofOfWorkChallenge> DoSProtection::generate_proof_of_work_challenge(
     const NetworkAddress& source_address) {
     
     if (!config_.enable_proof_of_work) {
-        return Result<ProofOfWorkChallenge>::error(
-            ErrorCode::OPERATION_NOT_SUPPORTED, "Proof-of-work not enabled");
+        return make_error<ProofOfWorkChallenge>(DTLSError::OPERATION_NOT_SUPPORTED, "Proof-of-work not enabled");
     }
     
     std::string source_key = source_address.get_ip() + ":" + std::to_string(source_address.get_port());
@@ -353,7 +370,7 @@ Result<ProofOfWorkChallenge> DoSProtection::generate_proof_of_work_challenge(
     std::lock_guard<std::mutex> lock(challenges_mutex_);
     active_challenges_[source_key] = challenge;
     
-    return Result<ProofOfWorkChallenge>::success(challenge);
+    return make_result(challenge);
 }
 
 bool DoSProtection::verify_proof_of_work_solution(
@@ -482,7 +499,7 @@ Result<void> DoSProtection::update_config(const DoSProtectionConfig& new_config)
         cpu_monitor_->stop_monitoring();
     }
     
-    return Result<void>::success();
+    return make_result();
 }
 
 void DoSProtection::reset() {
@@ -519,6 +536,147 @@ void DoSProtection::enable_geoblocking(bool enabled) {
 
 void DoSProtection::enable_source_validation(bool enabled) {
     config_.enable_source_validation = enabled;
+}
+
+void DoSProtection::enable_cookie_validation(bool enabled) {
+    config_.enable_cookie_validation = enabled;
+    
+    if (enabled && !cookie_manager_) {
+        // Initialize cookie manager if not already done
+        cookie_manager_ = std::make_unique<protocol::CookieManager>(config_.cookie_config);
+        // Initialize with a default secret key (in production, use proper key management)
+        memory::Buffer secret_key(32);
+        secret_key.resize(32);
+        uint8_t* key_data = reinterpret_cast<uint8_t*>(secret_key.mutable_data());
+        for (size_t i = 0; i < 32; ++i) {
+            key_data[i] = static_cast<uint8_t>((i * 7 + 13) & 0xFF);
+        }
+        auto init_result = cookie_manager_->initialize(secret_key);
+        if (!init_result.is_success()) {
+            cookie_manager_.reset();
+        }
+    } else if (!enabled) {
+        cookie_manager_.reset();
+    }
+}
+
+// Cookie validation methods
+bool DoSProtection::should_require_cookie(const NetworkAddress& source_address,
+                                         const std::vector<uint8_t>& client_hello_data) const {
+    if (!config_.enable_cookie_validation || !cookie_manager_) {
+        return false;
+    }
+    
+    // Always require cookie if explicitly configured
+    if (config_.require_cookie_on_overload) {
+        // Check system load conditions
+        auto system_health = get_system_health();
+        
+        // Require cookie if CPU usage is above threshold
+        if (system_health.cpu_usage > config_.cookie_trigger_cpu_threshold) {
+            return true;
+        }
+        
+        // Require cookie if connection count is above threshold
+        if (stats_.current_active_connections > config_.cookie_trigger_connection_count) {
+            return true;
+        }
+        
+        // Require cookie if system is under high resource pressure
+        if (system_health.resource_pressure >= PressureLevel::WARNING) {
+            return true;
+        }
+    }
+    
+    // Check if client already has valid cookies
+    protocol::CookieManager::ClientInfo client_info(
+        source_address.get_ip(), 
+        source_address.get_port(), 
+        client_hello_data
+    );
+    
+    return cookie_manager_->client_needs_cookie(client_info);
+}
+
+Result<memory::Buffer> DoSProtection::generate_client_cookie(const NetworkAddress& source_address,
+                                                            const std::vector<uint8_t>& client_hello_data) {
+    if (!config_.enable_cookie_validation || !cookie_manager_) {
+        return make_error<memory::Buffer>(DTLSError::OPERATION_NOT_SUPPORTED, "Cookie validation not enabled");
+    }
+    
+    protocol::CookieManager::ClientInfo client_info(
+        source_address.get_ip(), 
+        source_address.get_port(), 
+        client_hello_data
+    );
+    
+    auto cookie_result = cookie_manager_->generate_cookie(client_info);
+    if (!cookie_result.is_success()) {
+        record_security_violation(source_address, "cookie_generation_failed", "medium");
+        return cookie_result;
+    }
+    
+    // Record successful cookie generation for statistics
+    {
+        std::lock_guard<std::mutex> lock(stats_mutex_);
+        // Could add cookie-specific statistics here if needed
+    }
+    
+    return cookie_result;
+}
+
+DoSProtectionResult DoSProtection::validate_client_cookie(const memory::Buffer& cookie,
+                                                         const NetworkAddress& source_address,
+                                                         const std::vector<uint8_t>& client_hello_data) {
+    if (!config_.enable_cookie_validation || !cookie_manager_) {
+        return DoSProtectionResult::ALLOWED; // No cookie validation required
+    }
+    
+    protocol::CookieManager::ClientInfo client_info(
+        source_address.get_ip(), 
+        source_address.get_port(), 
+        client_hello_data
+    );
+    
+    auto validation_result = cookie_manager_->validate_cookie(cookie, client_info);
+    
+    switch (validation_result) {
+        case protocol::CookieManager::CookieValidationResult::VALID:
+            return DoSProtectionResult::ALLOWED;
+            
+        case protocol::CookieManager::CookieValidationResult::EXPIRED:
+            record_security_violation(source_address, "cookie_expired", "low");
+            return DoSProtectionResult::COOKIE_EXPIRED;
+            
+        case protocol::CookieManager::CookieValidationResult::INVALID:
+        case protocol::CookieManager::CookieValidationResult::CLIENT_MISMATCH:
+        case protocol::CookieManager::CookieValidationResult::NOT_FOUND:
+            record_security_violation(source_address, "cookie_invalid", "medium");
+            return DoSProtectionResult::COOKIE_INVALID;
+            
+        case protocol::CookieManager::CookieValidationResult::REPLAY_DETECTED:
+            record_security_violation(source_address, "cookie_replay", "high");
+            return DoSProtectionResult::COOKIE_INVALID;
+            
+        default:
+            record_security_violation(source_address, "cookie_validation_error", "medium");
+            return DoSProtectionResult::COOKIE_INVALID;
+    }
+}
+
+void DoSProtection::consume_client_cookie(const memory::Buffer& cookie,
+                                         const NetworkAddress& source_address) {
+    if (!config_.enable_cookie_validation || !cookie_manager_) {
+        return;
+    }
+    
+    protocol::CookieManager::ClientInfo client_info(
+        source_address.get_ip(), 
+        source_address.get_port(), 
+        {} // ClientHello data not needed for consumption
+    );
+    
+    cookie_manager_->consume_cookie(cookie, client_info);
 }
 
 // Private helper methods
@@ -637,14 +795,26 @@ void DoSProtection::update_statistics(DoSProtectionResult result) {
             stats_.blocked_requests++;
             stats_.source_validation_failed++;
             break;
+        case DoSProtectionResult::COOKIE_REQUIRED:
+            stats_.blocked_requests++;
+            // Could add cookie-specific statistics here
+            break;
+        case DoSProtectionResult::COOKIE_INVALID:
+            stats_.blocked_requests++;
+            // Could add cookie-specific statistics here
+            break;
+        case DoSProtectionResult::COOKIE_EXPIRED:
+            stats_.blocked_requests++;
+            // Could add cookie-specific statistics here
+            break;
     }
 }
 
 // Factory implementations
 std::unique_ptr<DoSProtection> DoSProtectionFactory::create_development() {
     DoSProtectionConfig config;
-    config.rate_limit_config = *RateLimiterFactory::create_development()->get_config();
-    config.resource_config = *ResourceManagerFactory::create_development()->get_config();
+    config.rate_limit_config = RateLimiterFactory::create_development()->get_config();
+    config.resource_config = ResourceManagerFactory::create_development()->get_config();
     
     // More permissive settings for development
     config.enable_cpu_monitoring = false;
@@ -652,13 +822,19 @@ std::unique_ptr<DoSProtection> DoSProtectionFactory::create_development() {
     config.enable_geoblocking = false;
     config.amplification_ratio_limit = 10.0;
     
+    // Cookie validation settings for development (lenient)
+    config.enable_cookie_validation = false;  // Disabled for easier development
+    config.require_cookie_on_overload = false;
+    config.cookie_trigger_cpu_threshold = 0.9;
+    config.cookie_trigger_connection_count = 1000;
+    
     return std::make_unique<DoSProtection>(config);
 }
 
 std::unique_ptr<DoSProtection> DoSProtectionFactory::create_production() {
     DoSProtectionConfig config;
-    config.rate_limit_config = *RateLimiterFactory::create_production()->get_config();
-    config.resource_config = *ResourceManagerFactory::create_production()->get_config();
+    config.rate_limit_config = RateLimiterFactory::create_production()->get_config();
+    config.resource_config = ResourceManagerFactory::create_production()->get_config();
     
     // Balanced settings for production
     config.enable_cpu_monitoring = true;
@@ -667,13 +843,19 @@ std::unique_ptr<DoSProtection> DoSProtectionFactory::create_production() {
     config.enable_geoblocking = false;    // Start without geoblocking
     config.amplification_ratio_limit = 3.0;
     
+    // Cookie validation settings for production (balanced protection)
+    config.enable_cookie_validation = true;
+    config.require_cookie_on_overload = true;
+    config.cookie_trigger_cpu_threshold = 0.7;      // Require cookies at 70% CPU
+    config.cookie_trigger_connection_count = 100;   // Require cookies at 100 connections
+    
     return std::make_unique<DoSProtection>(config);
 }
 
 std::unique_ptr<DoSProtection> DoSProtectionFactory::create_high_security() {
     DoSProtectionConfig config;
-    config.rate_limit_config = *RateLimiterFactory::create_high_security()->get_config();
-    config.resource_config = *ResourceManagerFactory::create_production()->get_config();
+    config.rate_limit_config = RateLimiterFactory::create_high_security()->get_config();
+    config.resource_config = ResourceManagerFactory::create_production()->get_config();
     
     // Strict settings for high security
     config.enable_cpu_monitoring = true;
@@ -685,19 +867,31 @@ std::unique_ptr<DoSProtection> DoSProtectionFactory::create_high_security() {
     config.amplification_ratio_limit = 2.0;
     config.max_response_size_unverified = 512;
     
+    // Cookie validation settings for high security (strict protection)
+    config.enable_cookie_validation = true;
+    config.require_cookie_on_overload = true;
+    config.cookie_trigger_cpu_threshold = 0.5;      // Require cookies at 50% CPU
+    config.cookie_trigger_connection_count = 50;    // Require cookies at 50 connections
+    
     return std::make_unique<DoSProtection>(config);
 }
 
 std::unique_ptr<DoSProtection> DoSProtectionFactory::create_embedded() {
     DoSProtectionConfig config;
-    config.rate_limit_config = *RateLimiterFactory::create_production()->get_config();
-    config.resource_config = *ResourceManagerFactory::create_embedded()->get_config();
+    config.rate_limit_config = RateLimiterFactory::create_production()->get_config();
+    config.resource_config = ResourceManagerFactory::create_embedded()->get_config();
     
     // Resource-constrained settings
     config.enable_cpu_monitoring = false;  // Save CPU cycles
     config.enable_proof_of_work = false;   // Too expensive for embedded
     config.enable_geoblocking = false;     // Save memory
     config.amplification_ratio_limit = 2.0;
+    
+    // Cookie validation settings for embedded (lightweight protection)
+    config.enable_cookie_validation = true;  // Keep for basic protection
+    config.require_cookie_on_overload = true;
+    config.cookie_trigger_cpu_threshold = 0.8;      // Higher threshold to save resources
+    config.cookie_trigger_connection_count = 200;   // Higher threshold to save resources
     
     return std::make_unique<DoSProtection>(config);
 }

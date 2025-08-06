@@ -6,6 +6,7 @@ set(SECURITY_TEST_SOURCES
     dtls_security_test.cpp
     test_dos_protection.cpp
     test_rate_limiter.cpp
+    test_attack_resilience.cpp
     security_validation_suite.cpp
     comprehensive_security_tests.cpp
     security_assessment_report_generator.cpp
@@ -22,10 +23,13 @@ add_executable(dtls_security_tests ${SECURITY_TEST_SOURCES})
 # Create dedicated rate limiter test executable
 add_executable(dtls_rate_limiter_tests test_rate_limiter.cpp)
 
+# Create dedicated attack resilience test executable
+add_executable(dtls_attack_resilience_tests test_attack_resilience.cpp)
+
 # Link required libraries
 target_link_libraries(dtls_security_tests
     PRIVATE
-        dtls_v13
+        dtlsv13
         gtest
         gtest_main
         ${CMAKE_THREAD_LIBS_INIT}
@@ -34,7 +38,16 @@ target_link_libraries(dtls_security_tests
 # Link required libraries for rate limiter tests
 target_link_libraries(dtls_rate_limiter_tests
     PRIVATE
-        dtls_v13
+        dtlsv13
+        gtest
+        gtest_main
+        ${CMAKE_THREAD_LIBS_INIT}
+)
+
+# Link required libraries for attack resilience tests
+target_link_libraries(dtls_attack_resilience_tests
+    PRIVATE
+        dtlsv13
         gtest
         gtest_main
         ${CMAKE_THREAD_LIBS_INIT}
@@ -50,6 +63,14 @@ target_include_directories(dtls_security_tests
 
 # Include directories for rate limiter tests
 target_include_directories(dtls_rate_limiter_tests
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}/tests/test_infrastructure
+)
+
+# Include directories for attack resilience tests
+target_include_directories(dtls_attack_resilience_tests
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_SOURCE_DIR}/include
@@ -84,6 +105,20 @@ target_compile_options(dtls_rate_limiter_tests
         -fstack-protector-strong
 )
 
+# Compiler flags for attack resilience testing
+target_compile_options(dtls_attack_resilience_tests
+    PRIVATE
+        -Wall
+        -Wextra
+        -Werror
+        -pedantic
+        -O2
+        -g
+        -fsanitize=address
+        -fsanitize=undefined
+        -fstack-protector-strong
+)
+
 # Linker flags for security testing
 target_link_options(dtls_security_tests
     PRIVATE
@@ -98,12 +133,19 @@ target_link_options(dtls_rate_limiter_tests
         -fsanitize=undefined
 )
 
+# Linker flags for attack resilience testing
+target_link_options(dtls_attack_resilience_tests
+    PRIVATE
+        -fsanitize=address
+        -fsanitize=undefined
+)
+
 # Create comprehensive security validation test
 add_executable(comprehensive_security_validation comprehensive_security_tests.cpp security_validation_suite.cpp security_assessment_report_generator.cpp)
 
 target_link_libraries(comprehensive_security_validation
     PRIVATE
-        dtls_v13
+        dtlsv13
         gtest
         gtest_main
         ${CMAKE_THREAD_LIBS_INIT}
@@ -140,7 +182,7 @@ add_executable(security_report_generator security_assessment_report_generator.cp
 
 target_link_libraries(security_report_generator
     PRIVATE
-        dtls_v13
+        dtlsv13
         ${CMAKE_THREAD_LIBS_INIT}
 )
 
@@ -154,6 +196,7 @@ target_include_directories(security_report_generator
 include(GoogleTest)
 gtest_discover_tests(dtls_security_tests)
 gtest_discover_tests(dtls_rate_limiter_tests)
+gtest_discover_tests(dtls_attack_resilience_tests)
 gtest_discover_tests(comprehensive_security_validation)
 
 # Custom test targets for different security test types
@@ -166,6 +209,12 @@ add_custom_target(security_tests_basic
 add_custom_target(rate_limiter_tests
     COMMAND dtls_rate_limiter_tests
     COMMENT "Running rate limiter tests"
+    VERBATIM
+)
+
+add_custom_target(attack_resilience_tests
+    COMMAND dtls_attack_resilience_tests
+    COMMENT "Running comprehensive DoS attack resilience tests"
     VERBATIM
 )
 
@@ -244,6 +293,7 @@ enable_testing()
 # Add tests to CTest
 add_test(NAME SecurityTests_Basic COMMAND dtls_security_tests)
 add_test(NAME RateLimiterTests COMMAND dtls_rate_limiter_tests)
+add_test(NAME AttackResilienceTests COMMAND dtls_attack_resilience_tests)
 add_test(NAME SecurityTests_Comprehensive COMMAND comprehensive_security_validation)
 
 # Set test properties
@@ -257,13 +307,18 @@ set_tests_properties(RateLimiterTests PROPERTIES
     LABELS "security;rate_limiting"
 )
 
+set_tests_properties(AttackResilienceTests PROPERTIES
+    TIMEOUT 3600  # 60 minutes (extended time for comprehensive attack simulation)
+    LABELS "security;attack_resilience;dos_protection"
+)
+
 set_tests_properties(SecurityTests_Comprehensive PROPERTIES
     TIMEOUT 1800  # 30 minutes
     LABELS "security;comprehensive"
 )
 
 # Install security test executables and reports
-install(TARGETS dtls_security_tests dtls_rate_limiter_tests comprehensive_security_validation security_report_generator
+install(TARGETS dtls_security_tests dtls_rate_limiter_tests dtls_attack_resilience_tests comprehensive_security_validation security_report_generator
     RUNTIME DESTINATION bin/security_tests
 )
 
@@ -283,6 +338,7 @@ message(STATUS "Security report output directory: ${SECURITY_REPORT_DIR}")
 message(STATUS "Available security test targets:")
 message(STATUS "  - security_tests_basic: Basic security tests")
 message(STATUS "  - rate_limiter_tests: Dedicated rate limiter tests")
+message(STATUS "  - attack_resilience_tests: Comprehensive DoS attack resilience tests")
 message(STATUS "  - security_tests_comprehensive: Full security validation")
 message(STATUS "  - security_tests_quick: Quick security checks")
 message(STATUS "  - security_tests_attack_simulation: Attack simulation tests")

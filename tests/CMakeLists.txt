@@ -231,7 +231,6 @@ if(DTLS_BUILD_INTEROP_TESTS)
     add_executable(dtls_interop_test
         interoperability/dtls_interop_test.cpp
     )
-    
     target_link_libraries(dtls_interop_test PRIVATE ${DTLS_TEST_LIBRARIES})
     target_compile_options(dtls_interop_test PRIVATE ${DTLS_TEST_COMPILE_OPTIONS})
     
@@ -243,6 +242,9 @@ if(DTLS_BUILD_INTEROP_TESTS)
 else()
     message(STATUS "Interoperability tests disabled")
 endif()
+
+# Add comprehensive security test subdirectory
+add_subdirectory(security)
 
 # Comprehensive Test Suite Target
 add_custom_target(run_all_tests
