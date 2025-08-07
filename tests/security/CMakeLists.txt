@@ -49,6 +49,15 @@ add_executable(dtls_simple_side_channel_tests test_side_channel_simple.cpp secur
 # Create basic side-channel resistance test executable (minimal dependencies)
 add_executable(dtls_basic_side_channel_tests test_side_channel_basic.cpp)
 
+# Create protocol message fuzzing test executable
+add_executable(dtls_protocol_fuzzing_tests test_protocol_fuzzing.cpp security_validation_suite.cpp)
+
+# Create advanced protocol fuzzing test executable
+add_executable(dtls_advanced_fuzzing_tests test_advanced_fuzzing.cpp security_validation_suite.cpp)
+
+# Create comprehensive protocol message fuzzing test executable
+add_executable(dtls_message_fuzzing_tests test_message_fuzzing.cpp security_validation_suite.cpp)
+
 # Link required libraries
 target_link_libraries(dtls_security_tests
     PRIVATE
@@ -138,6 +147,33 @@ target_link_libraries(dtls_basic_side_channel_tests
         ${CMAKE_THREAD_LIBS_INIT}
 )
 
+# Link required libraries for protocol fuzzing tests
+target_link_libraries(dtls_protocol_fuzzing_tests
+    PRIVATE
+        dtlsv13
+        gtest
+        gtest_main
+        ${CMAKE_THREAD_LIBS_INIT}
+)
+
+# Link required libraries for advanced fuzzing tests
+target_link_libraries(dtls_advanced_fuzzing_tests
+    PRIVATE
+        dtlsv13
+        gtest
+        gtest_main
+        ${CMAKE_THREAD_LIBS_INIT}
+)
+
+# Link required libraries for comprehensive message fuzzing tests
+target_link_libraries(dtls_message_fuzzing_tests
+    PRIVATE
+        dtlsv13
+        gtest
+        gtest_main
+        ${CMAKE_THREAD_LIBS_INIT}
+)
+
 # Include directories
 target_include_directories(dtls_security_tests
     PRIVATE
@@ -204,6 +240,30 @@ target_include_directories(dtls_simple_side_channel_tests
 
 # Include directories for basic side-channel tests
 target_include_directories(dtls_basic_side_channel_tests
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}/tests/test_infrastructure
+)
+
+# Include directories for protocol fuzzing tests
+target_include_directories(dtls_protocol_fuzzing_tests
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}/tests/test_infrastructure
+)
+
+# Include directories for advanced fuzzing tests
+target_include_directories(dtls_advanced_fuzzing_tests
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}/tests/test_infrastructure
+)
+
+# Include directories for comprehensive message fuzzing tests
+target_include_directories(dtls_message_fuzzing_tests
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_SOURCE_DIR}/include
@@ -336,6 +396,48 @@ target_compile_options(dtls_basic_side_channel_tests
         -mtune=native
 )
 
+# Compiler flags for protocol fuzzing testing
+target_compile_options(dtls_protocol_fuzzing_tests
+    PRIVATE
+        -Wall
+        -Wextra
+        -Werror
+        -pedantic
+        -O2
+        -g
+        -fstack-protector-strong
+        -fsanitize=address
+        -fsanitize=undefined
+)
+
+# Compiler flags for advanced fuzzing testing
+target_compile_options(dtls_advanced_fuzzing_tests
+    PRIVATE
+        -Wall
+        -Wextra
+        -Werror
+        -pedantic
+        -O2
+        -g
+        -fstack-protector-strong
+        -fsanitize=address
+        -fsanitize=undefined
+)
+
+# Compiler flags for comprehensive message fuzzing testing
+target_compile_options(dtls_message_fuzzing_tests
+    PRIVATE
+        -Wall
+        -Wextra
+        -Werror
+        -pedantic
+        -O2
+        -g
+        -fstack-protector-strong
+        -fsanitize=address
+        -fsanitize=undefined
+)
+
 # Linker flags for security testing
 target_link_options(dtls_security_tests
     PRIVATE
@@ -375,6 +477,27 @@ target_link_options(dtls_enhanced_side_channel_tests
 # Linker flags for basic side-channel testing
 target_link_options(dtls_basic_side_channel_tests
     PRIVATE
+)
+
+# Linker flags for protocol fuzzing testing
+target_link_options(dtls_protocol_fuzzing_tests
+    PRIVATE
+        -fsanitize=address
+        -fsanitize=undefined
+)
+
+# Linker flags for advanced fuzzing testing
+target_link_options(dtls_advanced_fuzzing_tests
+    PRIVATE
+        -fsanitize=address
+        -fsanitize=undefined
+)
+
+# Linker flags for comprehensive message fuzzing testing
+target_link_options(dtls_message_fuzzing_tests
+    PRIVATE
+        -fsanitize=address
+        -fsanitize=undefined
 )
 
 # Create comprehensive security validation test
@@ -440,6 +563,9 @@ gtest_discover_tests(dtls_timing_attack_tests)
 gtest_discover_tests(dtls_side_channel_tests)
 gtest_discover_tests(dtls_enhanced_side_channel_tests)
 gtest_discover_tests(dtls_basic_side_channel_tests)
+gtest_discover_tests(dtls_protocol_fuzzing_tests)
+gtest_discover_tests(dtls_advanced_fuzzing_tests)
+gtest_discover_tests(dtls_message_fuzzing_tests)
 gtest_discover_tests(comprehensive_security_validation)
 
 # Custom test targets for different security test types
@@ -485,6 +611,24 @@ add_custom_target(basic_side_channel_tests
     VERBATIM
 )
 
+add_custom_target(protocol_fuzzing_tests
+    COMMAND dtls_protocol_fuzzing_tests
+    COMMENT "Running protocol message fuzzing tests"
+    VERBATIM
+)
+
+add_custom_target(advanced_fuzzing_tests
+    COMMAND dtls_advanced_fuzzing_tests
+    COMMENT "Running advanced protocol fuzzing tests"
+    VERBATIM
+)
+
+add_custom_target(message_fuzzing_tests
+    COMMAND dtls_message_fuzzing_tests
+    COMMENT "Running comprehensive protocol message fuzzing tests"
+    VERBATIM
+)
+
 add_custom_target(security_tests_comprehensive
     COMMAND comprehensive_security_validation
     COMMENT "Running comprehensive security validation suite"
@@ -504,8 +648,11 @@ add_custom_target(security_tests_attack_simulation
 )
 
 add_custom_target(security_tests_fuzzing
+    COMMAND dtls_protocol_fuzzing_tests
+    COMMAND dtls_advanced_fuzzing_tests
+    COMMAND dtls_message_fuzzing_tests
     COMMAND comprehensive_security_validation --gtest_filter="*Fuzzing*"
-    COMMENT "Running fuzzing tests"
+    COMMENT "Running comprehensive protocol fuzzing tests"
     VERBATIM
 )
 
@@ -565,6 +712,9 @@ add_test(NAME TimingAttackTests COMMAND dtls_timing_attack_tests)
 add_test(NAME SideChannelTests COMMAND dtls_side_channel_tests)
 add_test(NAME EnhancedSideChannelTests COMMAND dtls_enhanced_side_channel_tests)
 add_test(NAME BasicSideChannelTests COMMAND dtls_basic_side_channel_tests)
+add_test(NAME ProtocolFuzzingTests COMMAND dtls_protocol_fuzzing_tests)
+add_test(NAME AdvancedFuzzingTests COMMAND dtls_advanced_fuzzing_tests)
+add_test(NAME MessageFuzzingTests COMMAND dtls_message_fuzzing_tests)
 add_test(NAME SecurityTests_Comprehensive COMMAND comprehensive_security_validation)
 
 # Set test properties
@@ -603,13 +753,28 @@ set_tests_properties(BasicSideChannelTests PROPERTIES
     LABELS "security;side_channels;basic_tests"
 )
 
+set_tests_properties(ProtocolFuzzingTests PROPERTIES
+    TIMEOUT 1800  # 30 minutes (protocol fuzzing tests)
+    LABELS "security;fuzzing;protocol_messages;malformed_input"
+)
+
+set_tests_properties(AdvancedFuzzingTests PROPERTIES
+    TIMEOUT 2400  # 40 minutes (advanced fuzzing with state machine and concurrency)
+    LABELS "security;fuzzing;advanced;state_machine;concurrent"
+)
+
+set_tests_properties(MessageFuzzingTests PROPERTIES
+    TIMEOUT 3600  # 60 minutes (comprehensive message fuzzing with structure-aware mutations)
+    LABELS "security;fuzzing;message_parsing;structure_aware;vulnerability_detection"
+)
+
 set_tests_properties(SecurityTests_Comprehensive PROPERTIES
     TIMEOUT 1800  # 30 minutes
     LABELS "security;comprehensive"
 )
 
 # Install security test executables and reports
-install(TARGETS dtls_security_tests dtls_rate_limiter_tests dtls_attack_resilience_tests dtls_timing_attack_tests dtls_side_channel_tests dtls_enhanced_side_channel_tests dtls_basic_side_channel_tests comprehensive_security_validation security_report_generator
+install(TARGETS dtls_security_tests dtls_rate_limiter_tests dtls_attack_resilience_tests dtls_timing_attack_tests dtls_side_channel_tests dtls_enhanced_side_channel_tests dtls_basic_side_channel_tests dtls_protocol_fuzzing_tests dtls_advanced_fuzzing_tests dtls_message_fuzzing_tests comprehensive_security_validation security_report_generator
     RUNTIME DESTINATION bin/security_tests
 )
 
@@ -633,6 +798,9 @@ message(STATUS "  - attack_resilience_tests: Comprehensive DoS attack resilience
 message(STATUS "  - timing_attack_tests: Dedicated timing attack resistance validation")
 message(STATUS "  - side_channel_tests: Comprehensive side-channel resistance testing")
 message(STATUS "  - enhanced_side_channel_tests: Advanced statistical side-channel analysis")
+message(STATUS "  - protocol_fuzzing_tests: Protocol message fuzzing tests")
+message(STATUS "  - advanced_fuzzing_tests: Advanced protocol fuzzing with state machine testing")
+message(STATUS "  - message_fuzzing_tests: Comprehensive protocol message fuzzing with structure-aware mutations")
 message(STATUS "  - security_tests_comprehensive: Full security validation")
 message(STATUS "  - security_tests_quick: Quick security checks")
 message(STATUS "  - security_tests_attack_simulation: Attack simulation tests")
