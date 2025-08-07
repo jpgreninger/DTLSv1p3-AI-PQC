@@ -40,6 +40,15 @@ add_executable(dtls_basic_timing_tests test_basic_timing_resistance.cpp)
 # Create dedicated side-channel resistance test executable
 add_executable(dtls_side_channel_tests test_side_channel_resistance.cpp security_validation_suite.cpp)
 
+# Create enhanced side-channel resistance test executable
+add_executable(dtls_enhanced_side_channel_tests test_side_channel_resistance_enhanced.cpp security_validation_suite.cpp)
+
+# Create simple side-channel resistance test executable
+add_executable(dtls_simple_side_channel_tests test_side_channel_simple.cpp security_validation_suite.cpp)
+
+# Create basic side-channel resistance test executable (minimal dependencies)
+add_executable(dtls_basic_side_channel_tests test_side_channel_basic.cpp)
+
 # Link required libraries
 target_link_libraries(dtls_security_tests
     PRIVATE
@@ -102,6 +111,33 @@ target_link_libraries(dtls_side_channel_tests
         ${CMAKE_THREAD_LIBS_INIT}
 )
 
+# Link required libraries for enhanced side-channel tests
+target_link_libraries(dtls_enhanced_side_channel_tests
+    PRIVATE
+        dtlsv13
+        gtest
+        gtest_main
+        ${CMAKE_THREAD_LIBS_INIT}
+)
+
+# Link required libraries for simple side-channel tests
+target_link_libraries(dtls_simple_side_channel_tests
+    PRIVATE
+        dtlsv13
+        gtest
+        gtest_main
+        ${CMAKE_THREAD_LIBS_INIT}
+)
+
+# Link required libraries for basic side-channel tests
+target_link_libraries(dtls_basic_side_channel_tests
+    PRIVATE
+        dtlsv13
+        gtest
+        gtest_main
+        ${CMAKE_THREAD_LIBS_INIT}
+)
+
 # Include directories
 target_include_directories(dtls_security_tests
     PRIVATE
@@ -144,6 +180,30 @@ target_include_directories(dtls_timing_attack_tests_simple
 
 # Include directories for side-channel tests
 target_include_directories(dtls_side_channel_tests
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}/tests/test_infrastructure
+)
+
+# Include directories for enhanced side-channel tests
+target_include_directories(dtls_enhanced_side_channel_tests
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}/tests/test_infrastructure
+)
+
+# Include directories for simple side-channel tests
+target_include_directories(dtls_simple_side_channel_tests
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}/tests/test_infrastructure
+)
+
+# Include directories for basic side-channel tests
+target_include_directories(dtls_basic_side_channel_tests
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_SOURCE_DIR}/include
@@ -234,6 +294,48 @@ target_compile_options(dtls_side_channel_tests
         -mtune=native
 )
 
+# Compiler flags for enhanced side-channel testing
+target_compile_options(dtls_enhanced_side_channel_tests
+    PRIVATE
+        -Wall
+        -Wextra
+        -Werror
+        -pedantic
+        -O2
+        -g
+        -fstack-protector-strong
+        -march=native
+        -mtune=native
+)
+
+# Compiler flags for simple side-channel testing
+target_compile_options(dtls_simple_side_channel_tests
+    PRIVATE
+        -Wall
+        -Wextra
+        -Werror
+        -pedantic
+        -O2
+        -g
+        -fstack-protector-strong
+        -march=native
+        -mtune=native
+)
+
+# Compiler flags for basic side-channel testing
+target_compile_options(dtls_basic_side_channel_tests
+    PRIVATE
+        -Wall
+        -Wextra
+        -Werror
+        -pedantic
+        -O2
+        -g
+        -fstack-protector-strong
+        -march=native
+        -mtune=native
+)
+
 # Linker flags for security testing
 target_link_options(dtls_security_tests
     PRIVATE
@@ -262,6 +364,16 @@ target_link_options(dtls_timing_attack_tests
 
 # Linker flags for side-channel testing
 target_link_options(dtls_side_channel_tests
+    PRIVATE
+)
+
+# Linker flags for enhanced side-channel testing
+target_link_options(dtls_enhanced_side_channel_tests
+    PRIVATE
+)
+
+# Linker flags for basic side-channel testing
+target_link_options(dtls_basic_side_channel_tests
     PRIVATE
 )
 
@@ -326,6 +438,8 @@ gtest_discover_tests(dtls_rate_limiter_tests)
 gtest_discover_tests(dtls_attack_resilience_tests)
 gtest_discover_tests(dtls_timing_attack_tests)
 gtest_discover_tests(dtls_side_channel_tests)
+gtest_discover_tests(dtls_enhanced_side_channel_tests)
+gtest_discover_tests(dtls_basic_side_channel_tests)
 gtest_discover_tests(comprehensive_security_validation)
 
 # Custom test targets for different security test types
@@ -356,6 +470,18 @@ add_custom_target(timing_attack_tests
 add_custom_target(side_channel_tests
     COMMAND dtls_side_channel_tests
     COMMENT "Running comprehensive side-channel resistance tests"
+    VERBATIM
+)
+
+add_custom_target(enhanced_side_channel_tests
+    COMMAND dtls_enhanced_side_channel_tests
+    COMMENT "Running enhanced side-channel resistance tests with statistical analysis"
+    VERBATIM
+)
+
+add_custom_target(basic_side_channel_tests
+    COMMAND dtls_basic_side_channel_tests
+    COMMENT "Running basic side-channel resistance tests"
     VERBATIM
 )
 
@@ -437,6 +563,8 @@ add_test(NAME RateLimiterTests COMMAND dtls_rate_limiter_tests)
 add_test(NAME AttackResilienceTests COMMAND dtls_attack_resilience_tests)
 add_test(NAME TimingAttackTests COMMAND dtls_timing_attack_tests)
 add_test(NAME SideChannelTests COMMAND dtls_side_channel_tests)
+add_test(NAME EnhancedSideChannelTests COMMAND dtls_enhanced_side_channel_tests)
+add_test(NAME BasicSideChannelTests COMMAND dtls_basic_side_channel_tests)
 add_test(NAME SecurityTests_Comprehensive COMMAND comprehensive_security_validation)
 
 # Set test properties
@@ -465,13 +593,23 @@ set_tests_properties(SideChannelTests PROPERTIES
     LABELS "security;side_channels;timing_attacks;power_analysis"
 )
 
+set_tests_properties(EnhancedSideChannelTests PROPERTIES
+    TIMEOUT 3600  # 60 minutes (extended time for comprehensive statistical analysis)
+    LABELS "security;side_channels;statistical_analysis;correlation_analysis"
+)
+
+set_tests_properties(BasicSideChannelTests PROPERTIES
+    TIMEOUT 600  # 10 minutes (basic side-channel tests)
+    LABELS "security;side_channels;basic_tests"
+)
+
 set_tests_properties(SecurityTests_Comprehensive PROPERTIES
     TIMEOUT 1800  # 30 minutes
     LABELS "security;comprehensive"
 )
 
 # Install security test executables and reports
-install(TARGETS dtls_security_tests dtls_rate_limiter_tests dtls_attack_resilience_tests dtls_timing_attack_tests dtls_side_channel_tests comprehensive_security_validation security_report_generator
+install(TARGETS dtls_security_tests dtls_rate_limiter_tests dtls_attack_resilience_tests dtls_timing_attack_tests dtls_side_channel_tests dtls_enhanced_side_channel_tests dtls_basic_side_channel_tests comprehensive_security_validation security_report_generator
     RUNTIME DESTINATION bin/security_tests
 )
 
@@ -494,6 +632,7 @@ message(STATUS "  - rate_limiter_tests: Dedicated rate limiter tests")
 message(STATUS "  - attack_resilience_tests: Comprehensive DoS attack resilience tests")
 message(STATUS "  - timing_attack_tests: Dedicated timing attack resistance validation")
 message(STATUS "  - side_channel_tests: Comprehensive side-channel resistance testing")
+message(STATUS "  - enhanced_side_channel_tests: Advanced statistical side-channel analysis")
 message(STATUS "  - security_tests_comprehensive: Full security validation")
 message(STATUS "  - security_tests_quick: Quick security checks")
 message(STATUS "  - security_tests_attack_simulation: Attack simulation tests")
