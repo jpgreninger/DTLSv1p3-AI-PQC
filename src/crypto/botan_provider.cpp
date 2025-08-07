@@ -402,12 +402,26 @@ Result<std::vector<uint8_t>> dtls::v13::crypto::BotanProvider::aead_encrypt(
             ciphertext[i] = plaintext[i] ^ params.key[i % params.key.size()] ^ params.nonce[i % params.nonce.size()];
         }
         
-        // Simulate proper tag generation based on AAD
+        // Simulate proper tag generation based on key, nonce, plaintext, and AAD
+        // RFC 9147 Section 4.2.3: AEAD authentication must include all authenticated data
         for (size_t i = 0; i < tag_length; ++i) {
             uint8_t tag_byte = static_cast<uint8_t>((i + params.key[0] + params.nonce[0]) % 256);
+            
+            // Include plaintext content in tag computation (critical for authentication)
+            // This ensures the tag depends on the actual data being protected
+            if (!plaintext.empty()) {
+                tag_byte ^= plaintext[i % plaintext.size()];
+            }
+            
+            // Include additional authenticated data
             if (!params.additional_data.empty()) {
                 tag_byte ^= params.additional_data[i % params.additional_data.size()];
             }
+            
+            // Include full key and nonce for stronger authentication
+            tag_byte ^= params.key[i % params.key.size()];
+            tag_byte ^= params.nonce[i % params.nonce.size()];
+            
             ciphertext[plaintext.size() + i] = tag_byte;
         }
         
@@ -468,13 +482,35 @@ Result<std::vector<uint8_t>> dtls::v13::crypto::BotanProvider::aead_decrypt(
         size_t plaintext_len = ciphertext.size() - tag_length;
         std::vector<uint8_t> plaintext(plaintext_len);
         
-        // Verify tag first (constant-time comparison)
+        // Extract ciphertext data (excluding tag) and decrypt to get plaintext
+        std::vector<uint8_t> ciphertext_data(ciphertext.begin(), ciphertext.end() - tag_length);
+        std::vector<uint8_t> decrypted_plaintext(ciphertext_data.size());
+        
+        for (size_t i = 0; i < ciphertext_data.size(); ++i) {
+            decrypted_plaintext[i] = ciphertext_data[i] ^ params.key[i % params.key.size()] ^ params.nonce[i % params.nonce.size()];
+        }
+        
+        // Verify tag by computing expected tag based on the decrypted plaintext
+        // RFC 9147 Section 4.2.3: AEAD decryption must verify authentication tag
         std::vector<uint8_t> expected_tag(tag_length);
         for (size_t i = 0; i < tag_length; ++i) {
             uint8_t tag_byte = static_cast<uint8_t>((i + params.key[0] + params.nonce[0]) % 256);
+            
+            // Include plaintext content in tag computation (critical for authentication)
+            // This must match the tag generation algorithm used during encryption
+            if (!decrypted_plaintext.empty()) {
+                tag_byte ^= decrypted_plaintext[i % decrypted_plaintext.size()];
+            }
+            
+            // Include additional authenticated data
             if (!params.additional_data.empty()) {
                 tag_byte ^= params.additional_data[i % params.additional_data.size()];
             }
+            
+            // Include full key and nonce for stronger authentication
+            tag_byte ^= params.key[i % params.key.size()];
+            tag_byte ^= params.nonce[i % params.nonce.size()];
+            
             expected_tag[i] = tag_byte;
         }
         
@@ -483,12 +519,8 @@ Result<std::vector<uint8_t>> dtls::v13::crypto::BotanProvider::aead_decrypt(
             return Result<std::vector<uint8_t>>(DTLSError::DECRYPT_ERROR);
         }
         
-        // Decrypt data
-        for (size_t i = 0; i < plaintext_len; ++i) {
-            plaintext[i] = ciphertext[i] ^ params.key[i % params.key.size()] ^ params.nonce[i % params.nonce.size()];
-        }
-        
-        return Result<std::vector<uint8_t>>(std::move(plaintext));
+        // Return the already decrypted plaintext
+        return Result<std::vector<uint8_t>>(std::move(decrypted_plaintext));
         
     } catch (const std::exception& e) {
         // In real implementation: catch Botan::Exception and return DECRYPT_ERROR for auth failures
@@ -551,12 +583,26 @@ Result<AEADEncryptionOutput> dtls::v13::crypto::BotanProvider::encrypt_aead(cons
             output.ciphertext[i] = params.plaintext[i] ^ params.key[i % params.key.size()] ^ params.nonce[i % params.nonce.size()];
         }
         
-        // Simulate proper tag generation based on AAD
+        // Simulate proper tag generation based on key, nonce, plaintext, and AAD
+        // RFC 9147 Section 4.2.3: AEAD authentication must include all authenticated data
         for (size_t i = 0; i < tag_length; ++i) {
             uint8_t tag_byte = static_cast<uint8_t>((i + params.key[0] + params.nonce[0]) % 256);
+            
+            // Include plaintext content in tag computation (critical for authentication)
+            // This must match the algorithm used in decryption functions
+            if (!params.plaintext.empty()) {
+                tag_byte ^= params.plaintext[i % params.plaintext.size()];
+            }
+            
+            // Include additional authenticated data
             if (!params.additional_data.empty()) {
                 tag_byte ^= params.additional_data[i % params.additional_data.size()];
             }
+            
+            // Include full key and nonce for stronger authentication
+            tag_byte ^= params.key[i % params.key.size()];
+            tag_byte ^= params.nonce[i % params.nonce.size()];
+            
             output.tag[i] = tag_byte;
         }
         
@@ -616,13 +662,33 @@ Result<std::vector<uint8_t>> dtls::v13::crypto::BotanProvider::decrypt_aead(cons
         // Stub implementation with proper structure
         std::vector<uint8_t> plaintext(params.ciphertext.size());
         
-        // Verify tag first (constant-time comparison)
+        // First decrypt the data to get plaintext
+        std::vector<uint8_t> decrypted_plaintext(params.ciphertext.size());
+        for (size_t i = 0; i < params.ciphertext.size(); ++i) {
+            decrypted_plaintext[i] = params.ciphertext[i] ^ params.key[i % params.key.size()] ^ params.nonce[i % params.nonce.size()];
+        }
+        
+        // Verify tag by computing expected tag based on the decrypted plaintext
+        // RFC 9147 Section 4.2.3: AEAD decryption must verify authentication tag
         std::vector<uint8_t> expected_tag(expected_tag_length);
         for (size_t i = 0; i < expected_tag_length; ++i) {
             uint8_t tag_byte = static_cast<uint8_t>((i + params.key[0] + params.nonce[0]) % 256);
+            
+            // Include plaintext content in tag computation (critical for authentication)
+            // This must match the tag generation algorithm used during encryption
+            if (!decrypted_plaintext.empty()) {
+                tag_byte ^= decrypted_plaintext[i % decrypted_plaintext.size()];
+            }
+            
+            // Include additional authenticated data
             if (!params.additional_data.empty()) {
                 tag_byte ^= params.additional_data[i % params.additional_data.size()];
             }
+            
+            // Include full key and nonce for stronger authentication
+            tag_byte ^= params.key[i % params.key.size()];
+            tag_byte ^= params.nonce[i % params.nonce.size()];
+            
             expected_tag[i] = tag_byte;
         }
         
@@ -630,12 +696,8 @@ Result<std::vector<uint8_t>> dtls::v13::crypto::BotanProvider::decrypt_aead(cons
             return Result<std::vector<uint8_t>>(DTLSError::DECRYPT_ERROR);
         }
         
-        // Decrypt data
-        for (size_t i = 0; i < params.ciphertext.size(); ++i) {
-            plaintext[i] = params.ciphertext[i] ^ params.key[i % params.key.size()] ^ params.nonce[i % params.nonce.size()];
-        }
-        
-        return Result<std::vector<uint8_t>>(std::move(plaintext));
+        // Return the already decrypted plaintext
+        return Result<std::vector<uint8_t>>(std::move(decrypted_plaintext));
         
     } catch (const std::exception& e) {
         // In real implementation: catch Botan::Exception and return DECRYPT_ERROR for auth failures
