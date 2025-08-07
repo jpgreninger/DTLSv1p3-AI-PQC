@@ -311,6 +311,9 @@ TEST_F(HelloRetryRequestTest, HandshakeMessageIntegration) {
     // Test serialization of HandshakeMessage
     memory::Buffer handshake_serialized;
     auto serialize_result = handshake_msg.serialize(handshake_serialized);
+    if (!serialize_result.is_success()) {
+        std::cout << "Serialization failed with error: " << static_cast<int>(serialize_result.error()) << std::endl;
+    }
     EXPECT_TRUE(serialize_result.is_success());
     
     // Test deserialization of HandshakeMessage

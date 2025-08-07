@@ -2,6 +2,7 @@
 #define DTLS_TYPES_H
 
 #include <dtls/config.h>
+#include <dtls/result.h>
 #include <cstdint>
 #include <cstddef>
 #include <array>

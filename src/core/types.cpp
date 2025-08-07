@@ -1,4 +1,5 @@
 #include <dtls/types.h>
+#include <dtls/error.h>
 #include <sstream>
 #include <iomanip>
 #include <unordered_map>
@@ -353,7 +354,7 @@ NetworkAddress::NetworkAddress(const std::string& ip, uint16_t port_num) : port(
 Result<NetworkAddress> NetworkAddress::from_string(const std::string& address_with_port) {
     size_t last_colon = address_with_port.rfind(':');
     if (last_colon == std::string::npos) {
-        return Result<NetworkAddress>::error(Error::INVALID_PARAMETER, "No port separator found");
+        return make_error<NetworkAddress>(DTLSError::INVALID_PARAMETER, "No port separator found");
     }
     
     std::string ip = address_with_port.substr(0, last_colon);
@@ -362,9 +363,9 @@ Result<NetworkAddress> NetworkAddress::from_string(const std::string& address_wi
     try {
         uint16_t port_num = static_cast<uint16_t>(std::stoi(port_str));
         NetworkAddress addr(ip, port_num);
-        return Result<NetworkAddress>::success(std::move(addr));
+        return make_result(std::move(addr));
     } catch (const std::exception&) {
-        return Result<NetworkAddress>::error(Error::INVALID_PARAMETER, "Invalid port number");
+        return make_error<NetworkAddress>(DTLSError::INVALID_PARAMETER, "Invalid port number");
     }
 }
 

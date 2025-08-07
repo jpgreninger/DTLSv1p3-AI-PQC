@@ -150,7 +150,7 @@ add_executable(dtls_performance_test
     performance/handshake_benchmarks.cpp
     performance/throughput_benchmarks.cpp
     performance/resource_benchmarks.cpp
-    # performance/regression_testing.cpp     # TODO: Fix compilation issues
+    performance/regression_testing.cpp
 )
 
 target_include_directories(dtls_performance_test PRIVATE 

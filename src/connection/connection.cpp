@@ -1,6 +1,7 @@
 #include <dtls/connection.h>
 #include <dtls/protocol/message_layer.h>
 #include <dtls/protocol/handshake_manager.h>
+#include <dtls/protocol/fragment_reassembler.h>
 #include <dtls/crypto/crypto_utils.h>
 #include <dtls/memory/pool.h>
 #include <dtls/transport/udp_transport.h>
@@ -159,6 +160,18 @@ Result<void> Connection::initialize() {
         return record_init_result;
     }
     
+    // Initialize fragment reassembly manager
+    protocol::FragmentReassemblyConfig fragment_config;
+    fragment_config.reassembly_timeout = config_.handshake_timeout;
+    fragment_config.max_concurrent_reassemblies = 10; // Limit concurrent reassemblies
+    fragment_config.max_reassembly_memory = 65536; // 64KB limit
+    fragment_config.max_message_size = 16384; // 16KB max handshake message
+    fragment_config.strict_validation = true;
+    fragment_config.detect_duplicates = true;
+    fragment_config.handle_out_of_order = true;
+    
+    fragment_manager_ = std::make_unique<protocol::ConnectionFragmentManager>(fragment_config);
+    
     // Update statistics
     stats_.connection_start = std::chrono::steady_clock::now();
     stats_.last_activity = stats_.connection_start;
@@ -256,6 +269,11 @@ Result<void> Connection::process_record_data(const memory::ZeroCopyBuffer& recor
         // Process through record layer
         auto plaintext_result = record_layer_->process_incoming_record(dtls_ciphertext_result.value());
         if (!plaintext_result) {
+            // Check if this is a replay attack
+            if (plaintext_result.error() == DTLSError::REPLAY_ATTACK_DETECTED) {
+                record_replay_attack();
+                return make_error<void>(plaintext_result.error());
+            }
             stats_.decrypt_errors++;
             return make_error<void>(plaintext_result.error());
         }
@@ -279,6 +297,11 @@ Result<void> Connection::process_record_data(const memory::ZeroCopyBuffer& recor
     
     auto plaintext_result = record_layer_->process_incoming_record(converted_result.value());
     if (!plaintext_result) {
+        // Check if this is a replay attack
+        if (plaintext_result.error() == DTLSError::REPLAY_ATTACK_DETECTED) {
+            record_replay_attack();
+            return make_error<void>(plaintext_result.error());
+        }
         stats_.decrypt_errors++;
         return make_error<void>(plaintext_result.error());
     }
@@ -309,6 +332,9 @@ Result<void> Connection::process_record(const protocol::PlaintextRecord& record)
 }
 
 Result<void> Connection::process_dtls_plaintext_record(const protocol::DTLSPlaintext& record) {
+    // Update sequence number tracking
+    update_receive_sequence_stats(record.get_sequence_number().value);
+    
     switch (record.get_type()) {
         case protocol::ContentType::HANDSHAKE:
             return handle_handshake_data(record.get_fragment());
@@ -369,19 +395,81 @@ Result<protocol::PlaintextRecord> Connection::convert_dtls_to_legacy_plaintext(c
 }
 
 Result<void> Connection::handle_handshake_data(const memory::ZeroCopyBuffer& data) {
-    // Process handshake messages through message layer for fragmentation handling
-    // TODO: Implement when message layer utilities exist
-    // auto messages_result = message_layer_->process_handshake_data(data);
-    // if (!messages_result) {
-    //     return messages_result.error();
-    // }
+    if (!fragment_manager_) {
+        return make_error<void>(DTLSError::INTERNAL_ERROR, "Fragment manager not initialized");
+    }
     
-    // For now, create a dummy handshake message for processing
-    protocol::HandshakeMessage dummy_message;
-    auto handle_result = handle_handshake_message(dummy_message);
-    if (!handle_result) {
-        fire_event(ConnectionEvent::HANDSHAKE_FAILED);
-        return handle_result;
+    // Parse handshake messages from the data buffer
+    size_t offset = 0;
+    const uint8_t* buffer_data = reinterpret_cast<const uint8_t*>(data.data());
+    
+    while (offset < data.size()) {
+        // Check if there's enough data for a handshake header
+        if (data.size() < offset + protocol::HandshakeHeader::SERIALIZED_SIZE) {
+            break; // Incomplete header, wait for more data
+        }
+        
+        // Parse handshake header
+        auto header_result = protocol::HandshakeHeader::deserialize(data, offset);
+        if (!header_result.is_success()) {
+            return make_error<void>(header_result.error(), "Failed to parse handshake header");
+        }
+        
+        const auto& header = header_result.value();
+        
+        // Validate header fields
+        if (header.fragment_offset + header.fragment_length > header.length) {
+            return make_error<void>(DTLSError::INVALID_MESSAGE_FRAGMENT, 
+                                   "Fragment extends beyond message length");
+        }
+        
+        // Calculate expected fragment data size
+        size_t expected_fragment_size = std::min(
+            static_cast<size_t>(header.fragment_length),
+            data.size() - offset - protocol::HandshakeHeader::SERIALIZED_SIZE
+        );
+        
+        if (expected_fragment_size == 0) {
+            break; // No fragment data available
+        }
+        
+        // Create fragment data buffer
+        memory::ZeroCopyBuffer fragment_data(expected_fragment_size);
+        auto resize_result = fragment_data.resize(expected_fragment_size);
+        if (!resize_result.is_success()) {
+            return make_error<void>(resize_result.error(), "Failed to allocate fragment buffer");
+        }
+        
+        // Copy fragment data
+        std::memcpy(fragment_data.mutable_data(),
+                   buffer_data + offset + protocol::HandshakeHeader::SERIALIZED_SIZE,
+                   expected_fragment_size);
+        
+        // Process fragment through fragment manager
+        auto fragment_result = fragment_manager_->process_handshake_fragment(header, fragment_data);
+        if (!fragment_result.is_success()) {
+            return make_error<void>(fragment_result.error(), "Failed to process handshake fragment");
+        }
+        
+        bool is_complete = fragment_result.value();
+        
+        // If message is complete, retrieve and process it
+        if (is_complete) {
+            auto message_result = fragment_manager_->get_complete_handshake_message(header.message_seq);
+            if (!message_result.is_success()) {
+                return make_error<void>(message_result.error(), "Failed to get complete message");
+            }
+            
+            // Process the complete handshake message
+            auto handle_result = handle_handshake_message(message_result.value());
+            if (!handle_result.is_success()) {
+                fire_event(ConnectionEvent::HANDSHAKE_FAILED);
+                return handle_result;
+            }
+        }
+        
+        // Move to next message in buffer
+        offset += protocol::HandshakeHeader::SERIALIZED_SIZE + expected_fragment_size;
     }
     
     return make_result();
@@ -528,11 +616,28 @@ Result<void> Connection::send_application_data(const memory::ZeroCopyBuffer& dat
         std::move(fragment_buffer)
     );
     
+    // Check for sequence number overflow before sending
+    if (check_sequence_overflow_threshold()) {
+        record_sequence_overflow();
+        // Automatically trigger key update if enabled
+        if (config_.enable_session_resumption) {
+            auto key_update_result = update_keys();
+            if (!key_update_result) {
+                return make_error<void>(DTLSError::KEY_EXCHANGE_FAILED);
+            }
+        } else {
+            return make_error<void>(DTLSError::SEQUENCE_NUMBER_OVERFLOW);
+        }
+    }
+    
     // Protect the record through the record layer
     auto protected_result = record_layer_->prepare_outgoing_record(plaintext_record);
     if (!protected_result) {
         return make_error<void>(protected_result.error());
     }
+    
+    // Update send sequence number statistics
+    update_send_sequence_stats();
     
     // Serialize the protected record
     memory::Buffer send_buffer(protected_result.value().total_size());
@@ -782,6 +887,11 @@ Result<void> Connection::process_handshake_timeouts() {
         // Timeout processing failed, might indicate handshake failure
         fire_event(ConnectionEvent::HANDSHAKE_FAILED);
         return timeout_result;
+    }
+    
+    // Perform fragment reassembly maintenance (cleanup timed-out reassemblies)
+    if (fragment_manager_) {
+        fragment_manager_->perform_maintenance();
     }
     
     update_last_activity();
@@ -1080,6 +1190,12 @@ Result<void> Connection::cleanup_resources() {
     // Reset early data management
     session_ticket_manager_.reset();
     replay_protection_.reset();
+    
+    // Cleanup fragment reassembly manager
+    if (fragment_manager_) {
+        fragment_manager_->cleanup();
+        fragment_manager_.reset();
+    }
     
     // Reset record and message layers
     record_layer_.reset();
@@ -2286,6 +2402,61 @@ Result<void> Context::initialize() {
     }
     
     return connection_->initialize();
+}
+
+// ============================================================================
+// Sequence Number Management Implementation
+// ============================================================================
+
+void Connection::update_send_sequence_stats() {
+    if (record_layer_) {
+        auto record_stats = record_layer_->get_stats();
+        stats_.current_send_sequence = record_stats.current_sequence_number;
+        stats_.records_sent = record_stats.records_sent;
+    }
+}
+
+void Connection::update_receive_sequence_stats(uint64_t sequence_number) {
+    if (sequence_number > stats_.highest_received_sequence) {
+        stats_.highest_received_sequence = sequence_number;
+    }
+    update_last_activity();
+}
+
+void Connection::record_sequence_overflow() {
+    stats_.sequence_number_overflows++;
+    
+    // Fire event for sequence number overflow
+    fire_event(ConnectionEvent::ERROR_OCCURRED);
+    
+    // Log critical event
+    record_error(DTLSError::SEQUENCE_NUMBER_OVERFLOW, "Sequence number overflow detected");
+}
+
+void Connection::record_replay_attack() {
+    stats_.replay_attacks_detected++;
+    stats_.sequence_errors++;
+    
+    // Fire event for security incident
+    fire_event(ConnectionEvent::ERROR_OCCURRED);
+    
+    // Log security event
+    record_error(DTLSError::REPLAY_ATTACK_DETECTED, "Replay attack detected");
+}
+
+bool Connection::check_sequence_overflow_threshold() {
+    if (!record_layer_) {
+        return false;
+    }
+    
+    // Check if we're approaching sequence number overflow (90% threshold)
+    auto record_stats = record_layer_->get_stats();
+    
+    // 48-bit sequence numbers, check if we're near overflow
+    constexpr uint64_t MAX_SEQUENCE_48BIT = (1ULL << 48) - 1;
+    constexpr uint64_t OVERFLOW_THRESHOLD = static_cast<uint64_t>(MAX_SEQUENCE_48BIT * 0.9);
+    
+    return record_stats.current_sequence_number >= OVERFLOW_THRESHOLD;
 }
 
 }  // namespace v13

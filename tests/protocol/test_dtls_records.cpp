@@ -227,9 +227,13 @@ TEST_F(DTLSRecordsTest, DTLSPlaintextValidation) {
                                  1, protocol::SequenceNumber48(100), ZeroCopyBuffer(100));
     EXPECT_FALSE(invalid_version.is_valid());
     
-    // Fragment too large
+    // Fragment too large - create buffer with actual 20000 bytes of data
+    std::vector<uint8_t> large_data(20000, 0x42);  // Create vector with 20000 bytes
+    memory::ZeroCopyBuffer large_buffer(reinterpret_cast<const std::byte*>(large_data.data()), large_data.size());
+    
     protocol::DTLSPlaintext large_fragment(protocol::ContentType::HANDSHAKE, protocol::ProtocolVersion::DTLS_1_3,
-                                1, protocol::SequenceNumber48(100), ZeroCopyBuffer(20000));
+                                1, protocol::SequenceNumber48(100), std::move(large_buffer));
+    
     EXPECT_FALSE(large_fragment.is_valid());
 }
 
@@ -354,15 +358,19 @@ TEST_F(DTLSRecordsTest, UtilityFunctions) {
 }
 
 TEST_F(DTLSRecordsTest, SequenceNumberOverflowDetection) {
-    // Test near overflow detection
-    protocol::SequenceNumber48 near_overflow(0xE666666666666); // ~90% of max
+    // Test near overflow detection (90% of 48-bit max)
+    protocol::SequenceNumber48 near_overflow(0xE66666666665ULL); // 90% of max
     EXPECT_TRUE(protocol::dtls_records_utils::is_sequence_number_near_overflow(near_overflow));
     
-    protocol::SequenceNumber48 not_near_overflow(0x1000000000000); // ~6% of max
+    protocol::SequenceNumber48 not_near_overflow(0x1999999999999ULL); // ~10% of max  
     EXPECT_FALSE(protocol::dtls_records_utils::is_sequence_number_near_overflow(not_near_overflow));
     
-    protocol::SequenceNumber48 at_max(0xFFFFFFFFFFFF);
+    protocol::SequenceNumber48 at_max(0xFFFFFFFFFFFFULL);
     EXPECT_TRUE(protocol::dtls_records_utils::is_sequence_number_near_overflow(at_max));
+    
+    // Test edge case: exactly at 90% threshold
+    protocol::SequenceNumber48 exactly_90_percent(0xE66666666666ULL); // Exactly 90%
+    EXPECT_TRUE(protocol::dtls_records_utils::is_sequence_number_near_overflow(exactly_90_percent));
 }
 
 TEST_F(DTLSRecordsTest, ErrorHandling) {

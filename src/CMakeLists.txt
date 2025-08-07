@@ -22,6 +22,7 @@ set(DTLS_PROTOCOL_SOURCES
     protocol/cookie.cpp
     protocol/message_layer.cpp
     protocol/early_data.cpp
+    protocol/fragment_reassembler.cpp
 )
 
 # Crypto layer sources  
@@ -59,11 +60,11 @@ endif()
 #     monitoring/metrics_system.cpp
 # )
 
-# set(DTLS_SECURITY_SOURCES
-#     security/dos_protection.cpp
-#     security/rate_limiter.cpp
-#     security/resource_manager.cpp
-# )
+set(DTLS_SECURITY_SOURCES
+    security/dos_protection.cpp
+    security/rate_limiter.cpp
+    security/resource_manager.cpp
+)
 
 # set(DTLS_COMPATIBILITY_SOURCES
 #     compatibility/dtls12_compat.cpp
@@ -77,7 +78,7 @@ set(DTLS_ALL_SOURCES
     ${DTLS_TRANSPORT_SOURCES}
     ${DTLS_CONNECTION_SOURCES}
     # ${DTLS_MONITORING_SOURCES}      # Temporarily disabled
-    # ${DTLS_SECURITY_SOURCES}        # Temporarily disabled
+    ${DTLS_SECURITY_SOURCES}        # Rate limiting and DoS protection
     # ${DTLS_COMPATIBILITY_SOURCES}   # Temporarily disabled
 )
 

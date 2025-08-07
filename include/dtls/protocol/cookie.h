@@ -164,6 +164,11 @@ public:
      * Update configuration
      */
     void update_config(const CookieConfig& new_config);
+    
+    /**
+     * Get current configuration
+     */
+    const CookieConfig& get_config() const;
 
 private:
     /**
@@ -227,6 +232,9 @@ private:
     std::unordered_map<std::string, CookieEntry> active_cookies_;
     std::unordered_map<std::string, std::vector<std::string>> client_cookie_mapping_;
     
+    // Client authentication tracking (client_id -> last successful validation time)
+    std::unordered_map<std::string, std::chrono::steady_clock::time_point> authenticated_clients_;
+    
     // Statistics
     mutable Statistics stats_;
     
@@ -277,6 +285,6 @@ DTLS_API bool is_valid_cookie_format(const memory::Buffer& cookie);
  * @param size Cookie size in bytes
  * @return Test cookie buffer
  */
-DTLS_API memory::Buffer generate_test_cookie(uint8_t size = 32);
+DTLS_API memory::Buffer generate_test_cookie(size_t size = 32);
 
 } // namespace dtls::v13::protocol

@@ -3,6 +3,7 @@
 
 #include <dtls/connection.h>
 #include <dtls/crypto.h>
+#include <dtls/crypto/provider_factory.h>
 #include <dtls/protocol.h>
 #include <dtls/result.h>
 #include "test_certificates.h"
@@ -44,9 +45,9 @@ public:
     void SetUp();
     void TearDown();
     
-    // Connection creation
-    std::unique_ptr<v13::Connection> create_client_connection();
-    std::unique_ptr<v13::Connection> create_server_connection();
+    // Connection creation (returns raw pointers managed by internal contexts)
+    v13::Connection* create_client_connection();
+    v13::Connection* create_server_connection();
     
     // Transport management
     void set_network_conditions(const MockTransport::NetworkConditions& conditions);
@@ -83,6 +84,7 @@ private:
     // Contexts and crypto providers
     std::unique_ptr<v13::Context> client_context_;
     std::unique_ptr<v13::Context> server_context_;
+    std::unique_ptr<v13::crypto::CryptoProvider> crypto_provider_;
     
     // Transport layer
     std::unique_ptr<MockTransport> client_transport_;

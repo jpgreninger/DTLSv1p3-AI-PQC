@@ -8,6 +8,7 @@
 #include <memory>
 #include <atomic>
 #include <mutex>
+#include <shared_mutex>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -120,6 +121,12 @@ struct SourceResourceData {
         first_allocation = now;
         last_activity = now;
     }
+    
+    // Delete copy and move constructors/assignments due to atomic and mutex members
+    SourceResourceData(const SourceResourceData&) = delete;
+    SourceResourceData& operator=(const SourceResourceData&) = delete;
+    SourceResourceData(SourceResourceData&&) = delete;
+    SourceResourceData& operator=(SourceResourceData&&) = delete;
 };
 
 /**
@@ -250,9 +257,17 @@ public:
     /**
      * Get per-source resource usage
      * @param source_address Source IP address
-     * @return Source resource data or error if not found
+     * @return Source resource summary or error if not found
      */
-    Result<SourceResourceData> get_source_usage(const NetworkAddress& source_address) const;
+    struct SourceResourceSummary {
+        size_t total_memory = 0;
+        size_t connection_count = 0;
+        size_t handshake_count = 0;
+        size_t buffer_memory = 0;
+        std::chrono::steady_clock::time_point first_allocation;
+        std::chrono::steady_clock::time_point last_activity;
+    };
+    Result<SourceResourceSummary> get_source_usage(const NetworkAddress& source_address) const;
     
     /**
      * Force cleanup of idle resources

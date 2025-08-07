@@ -524,10 +524,8 @@ Result<size_t> HelloRetryRequest::serialize(memory::Buffer& buffer) const {
     }
     
     size_t total_size = serialized_size();
-    if (buffer.capacity() < total_size) {
-        return Result<size_t>(DTLSError::INSUFFICIENT_BUFFER_SIZE);
-    }
     
+    // Ensure buffer has sufficient capacity and resize to fit data
     auto resize_result = buffer.resize(total_size);
     if (!resize_result.is_success()) {
         return Result<size_t>(resize_result.error());
@@ -1469,9 +1467,6 @@ Result<size_t> HandshakeMessage::serialize(memory::Buffer& buffer) const {
     }
     
     size_t total_size = serialized_size();
-    if (buffer.capacity() < total_size) {
-        return Result<size_t>(DTLSError::INSUFFICIENT_BUFFER_SIZE);
-    }
     
     auto resize_result = buffer.resize(total_size);
     if (!resize_result.is_success()) {
@@ -1490,13 +1485,30 @@ Result<size_t> HandshakeMessage::serialize(memory::Buffer& buffer) const {
     // Serialize message payload
     memory::Buffer payload_buffer(total_size - HandshakeHeader::SERIALIZED_SIZE);
     size_t payload_size = 0;
+    DTLSError serialize_error = DTLSError::SUCCESS;
     
     std::visit([&](const auto& msg) {
         auto msg_result = msg.serialize(payload_buffer);
         if (msg_result.is_success()) {
             payload_size = msg_result.value();
+        } else {
+            serialize_error = msg_result.error();
         }
     }, message_);
+    
+    if (serialize_error != DTLSError::SUCCESS) {
+        return Result<size_t>(serialize_error);
+    }
+    
+    // Validate that serialization produced expected payload
+    // Calculate expected payload size from total_size
+    size_t expected_payload_size = (total_size > HandshakeHeader::SERIALIZED_SIZE) ? 
+                                  (total_size - HandshakeHeader::SERIALIZED_SIZE) : 0;
+    
+    if (expected_payload_size > 0 && payload_size == 0) {
+        // Expected payload but got none - this indicates a serialization failure
+        return Result<size_t>(DTLSError::SERIALIZATION_FAILED);
+    }
     
     if (payload_size > 0) {
         copy_to_byte_buffer(buffer.mutable_data() + HandshakeHeader::SERIALIZED_SIZE, 

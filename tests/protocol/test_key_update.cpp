@@ -5,9 +5,13 @@
 #include <dtls/crypto/openssl_provider.h>
 #include <dtls/crypto/botan_provider.h>
 #include <dtls/crypto/provider_factory.h>
+#include <dtls/types.h>
+#include <dtls/error.h>
+#include <dtls/memory/buffer.h>
 #include <chrono>
 #include <thread>
 
+using namespace dtls::v13;
 using namespace dtls::v13::protocol;
 using namespace dtls::v13::crypto;
 
@@ -26,8 +30,9 @@ protected:
         }
         
         // Create record layer for testing
-        record_layer_ = std::make_unique<RecordLayer>(
-            std::make_unique<OpenSSLProvider>(*openssl_provider_));
+        auto crypto_provider = std::make_unique<OpenSSLProvider>();
+        crypto_provider->initialize();
+        record_layer_ = std::make_unique<RecordLayer>(std::move(crypto_provider));
         record_layer_->initialize();
         record_layer_->set_cipher_suite(CipherSuite::TLS_AES_128_GCM_SHA256);
     }
@@ -124,13 +129,12 @@ TEST_F(KeyUpdateTest, HandshakeMessageIntegration) {
     HandshakeMessage message(key_update, 42);
     
     // Verify message type mapping
-    EXPECT_EQ(message.get_handshake_type(), HandshakeType::KEY_UPDATE);
-    EXPECT_EQ(message.get_message_sequence(), 42);
+    EXPECT_EQ(message.get_handshake_type<KeyUpdate>(), HandshakeType::KEY_UPDATE);
+    EXPECT_EQ(message.get_message_seq_num(), 42);
     
     // Verify message retrieval
     auto retrieved_update = message.get<KeyUpdate>();
-    ASSERT_TRUE(retrieved_update.has_value());
-    EXPECT_EQ(retrieved_update->update_request(), KeyUpdateRequest::UPDATE_REQUESTED);
+    EXPECT_EQ(retrieved_update.update_request(), KeyUpdateRequest::UPDATE_REQUESTED);
 }
 
 // ============================================================================

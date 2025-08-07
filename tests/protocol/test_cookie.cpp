@@ -167,6 +167,7 @@ TEST_F(CookieTest, ClientNeedsCookie) {
 TEST_F(CookieTest, MaxCookiesPerClient) {
     CookieConfig config;
     config.max_cookies_per_client = 3;
+    config.strict_validation = true; // Ensure consistent config with other tests
     CookieManager limited_manager(config);
     auto init_result = limited_manager.initialize(test_secret_key);
     ASSERT_TRUE(init_result.is_success());

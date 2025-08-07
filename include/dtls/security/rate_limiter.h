@@ -9,6 +9,7 @@
 #include <unordered_set>
 #include <memory>
 #include <mutex>
+#include <shared_mutex>
 #include <atomic>
 
 namespace dtls {

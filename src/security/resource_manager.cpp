@@ -31,7 +31,7 @@ Result<uint64_t> ResourceManager::allocate_connection_resources(
         !can_allocate(source_address, ResourceType::CONNECTION_MEMORY, memory_estimate)) {
         
         record_allocation_failure(ResourceResult::CONNECTION_LIMIT_EXCEEDED);
-        return Result<uint64_t>::error(ErrorCode::RESOURCE_EXHAUSTED, 
+        return make_error<uint64_t>(DTLSError::RESOURCE_EXHAUSTED, 
                                       "Connection allocation would exceed limits");
     }
     
@@ -46,7 +46,7 @@ Result<uint64_t> ResourceManager::allocate_connection_resources(
     auto* source_data = get_or_create_source_data(source_address);
     if (!source_data) {
         record_allocation_failure(ResourceResult::RESOURCE_UNAVAILABLE);
-        return Result<uint64_t>::error(ErrorCode::RESOURCE_EXHAUSTED, 
+        return make_error<uint64_t>(DTLSError::RESOURCE_EXHAUSTED, 
                                       "Cannot create source data");
     }
     
@@ -83,7 +83,7 @@ Result<uint64_t> ResourceManager::allocate_connection_resources(
     
     update_pressure_level();
     
-    return Result<uint64_t>::success(allocation_id);
+    return make_result(allocation_id);
 }
 
 Result<uint64_t> ResourceManager::allocate_handshake_resources(
@@ -97,7 +97,7 @@ Result<uint64_t> ResourceManager::allocate_handshake_resources(
         !can_allocate(source_address, ResourceType::HANDSHAKE_MEMORY, memory_estimate)) {
         
         record_allocation_failure(ResourceResult::SOURCE_LIMIT_EXCEEDED);
-        return Result<uint64_t>::error(ErrorCode::RESOURCE_EXHAUSTED, 
+        return make_error<uint64_t>(DTLSError::RESOURCE_EXHAUSTED, 
                                       "Handshake allocation would exceed limits");
     }
     
@@ -112,7 +112,7 @@ Result<uint64_t> ResourceManager::allocate_handshake_resources(
     auto* source_data = get_or_create_source_data(source_address);
     if (!source_data) {
         record_allocation_failure(ResourceResult::RESOURCE_UNAVAILABLE);
-        return Result<uint64_t>::error(ErrorCode::RESOURCE_EXHAUSTED, 
+        return make_error<uint64_t>(DTLSError::RESOURCE_EXHAUSTED, 
                                       "Cannot create source data");
     }
     
@@ -148,7 +148,7 @@ Result<uint64_t> ResourceManager::allocate_handshake_resources(
     
     update_pressure_level();
     
-    return Result<uint64_t>::success(allocation_id);
+    return make_result(allocation_id);
 }
 
 Result<uint64_t> ResourceManager::allocate_buffer_memory(
@@ -160,7 +160,7 @@ Result<uint64_t> ResourceManager::allocate_buffer_memory(
     // Check if allocation would succeed
     if (!can_allocate(source_address, ResourceType::BUFFER_MEMORY, buffer_size)) {
         record_allocation_failure(ResourceResult::MEMORY_LIMIT_EXCEEDED);
-        return Result<uint64_t>::error(ErrorCode::RESOURCE_EXHAUSTED, 
+        return make_error<uint64_t>(DTLSError::RESOURCE_EXHAUSTED, 
                                       "Buffer allocation would exceed memory limits");
     }
     
@@ -175,7 +175,7 @@ Result<uint64_t> ResourceManager::allocate_buffer_memory(
     auto* source_data = get_or_create_source_data(source_address);
     if (!source_data) {
         record_allocation_failure(ResourceResult::RESOURCE_UNAVAILABLE);
-        return Result<uint64_t>::error(ErrorCode::RESOURCE_EXHAUSTED, 
+        return make_error<uint64_t>(DTLSError::RESOURCE_EXHAUSTED, 
                                       "Cannot create source data");
     }
     
@@ -209,7 +209,7 @@ Result<uint64_t> ResourceManager::allocate_buffer_memory(
     
     update_pressure_level();
     
-    return Result<uint64_t>::success(allocation_id);
+    return make_result(allocation_id);
 }
 
 Result<void> ResourceManager::release_resources(uint64_t allocation_id) {
@@ -219,7 +219,7 @@ Result<void> ResourceManager::release_resources(uint64_t allocation_id) {
         std::shared_lock<std::shared_mutex> lock(allocations_mutex_);
         auto it = allocations_.find(allocation_id);
         if (it == allocations_.end()) {
-            return Result<void>::error(ErrorCode::NOT_FOUND, "Allocation ID not found");
+            return make_error<void>(DTLSError::MESSAGE_NOT_FOUND, "Allocation ID not found");
         }
         allocation = it->second.get();
     }
@@ -290,14 +290,14 @@ Result<void> ResourceManager::release_resources(uint64_t allocation_id) {
     
     update_pressure_level();
     
-    return Result<void>::success();
+    return make_result();
 }
 
 Result<void> ResourceManager::update_activity(uint64_t allocation_id) {
     std::shared_lock<std::shared_mutex> lock(allocations_mutex_);
     auto it = allocations_.find(allocation_id);
     if (it == allocations_.end()) {
-        return Result<void>::error(ErrorCode::NOT_FOUND, "Allocation ID not found");
+        return make_error<void>(DTLSError::MESSAGE_NOT_FOUND, "Allocation ID not found");
     }
     
     it->second->last_activity = std::chrono::steady_clock::now();
@@ -309,7 +309,7 @@ Result<void> ResourceManager::update_activity(uint64_t allocation_id) {
         source_it->second->last_activity = std::chrono::steady_clock::now();
     }
     
-    return Result<void>::success();
+    return make_result();
 }
 
 bool ResourceManager::can_allocate(const NetworkAddress& source_address,
@@ -380,13 +380,25 @@ ResourceStats ResourceManager::get_resource_stats() const {
     return stats;
 }
 
-Result<SourceResourceData> ResourceManager::get_source_usage(const NetworkAddress& source_address) const {
-    auto* source_data = get_source_data(source_address);
-    if (!source_data) {
-        return Result<SourceResourceData>::error(ErrorCode::NOT_FOUND, "Source not found");
+Result<ResourceManager::SourceResourceSummary> ResourceManager::get_source_usage(const NetworkAddress& source_address) const {
+    std::string source_key = address_to_key(source_address);
+    
+    std::shared_lock<std::shared_mutex> lock(source_data_mutex_);
+    auto it = source_data_.find(source_key);
+    if (it == source_data_.end()) {
+        return make_error<SourceResourceSummary>(DTLSError::MESSAGE_NOT_FOUND, "Source not found");
     }
     
-    return Result<SourceResourceData>::success(*source_data);
+    // Create a copyable summary from the non-copyable SourceResourceData
+    SourceResourceSummary summary;
+    summary.total_memory = it->second->total_memory.load();
+    summary.connection_count = it->second->connection_count.load();
+    summary.handshake_count = it->second->handshake_count.load();
+    summary.buffer_memory = it->second->buffer_memory.load();
+    summary.first_allocation = it->second->first_allocation;
+    summary.last_activity = it->second->last_activity;
+    
+    return make_result(summary);
 }
 
 size_t ResourceManager::force_cleanup(size_t max_cleanup_count) {
@@ -473,7 +485,7 @@ PressureLevel ResourceManager::check_system_health() {
 Result<void> ResourceManager::update_config(const ResourceConfig& new_config) {
     config_ = new_config;
     update_pressure_level();
-    return Result<void>::success();
+    return make_result();
 }
 
 void ResourceManager::set_memory_monitoring(bool enabled) {

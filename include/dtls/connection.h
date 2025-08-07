@@ -7,6 +7,7 @@
 #include <dtls/protocol/record_layer.h>
 #include <dtls/protocol/handshake.h>
 #include <dtls/protocol/early_data.h>
+#include <dtls/protocol/fragment_reassembler.h>
 #include <dtls/memory/buffer.h>
 #include <dtls/transport/udp_transport.h>
 
@@ -169,6 +170,12 @@ struct ConnectionStats {
     uint32_t decrypt_errors = 0;
     uint32_t sequence_errors = 0;
     uint32_t protocol_errors = 0;
+    
+    // Sequence number metrics
+    uint64_t current_send_sequence = 0;
+    uint64_t highest_received_sequence = 0;
+    uint32_t sequence_number_overflows = 0;
+    uint32_t replay_attacks_detected = 0;
     
     // Key update metrics
     uint32_t key_updates_performed = 0;
@@ -516,6 +523,13 @@ private:
     void cleanup_old_error_timestamps();
     bool is_retryable_error(DTLSError error) const;
     
+    // Sequence number management methods
+    void update_send_sequence_stats();
+    void update_receive_sequence_stats(uint64_t sequence_number);
+    void record_sequence_overflow();
+    void record_replay_attack();
+    bool check_sequence_overflow_threshold();
+    
     // Member variables
     ConnectionConfig config_;
     std::unique_ptr<crypto::CryptoProvider> crypto_provider_;
@@ -545,6 +559,9 @@ private:
     std::unique_ptr<protocol::EarlyDataReplayProtection> replay_protection_;
     protocol::EarlyDataContext early_data_context_;
     mutable std::mutex early_data_mutex_;
+    
+    // Fragment reassembly support
+    std::unique_ptr<protocol::ConnectionFragmentManager> fragment_manager_;
     
     // Error recovery state
     ErrorRecoveryState recovery_state_;

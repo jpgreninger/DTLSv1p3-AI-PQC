@@ -444,46 +444,118 @@ std::vector<std::string> ProviderFactory::get_hardware_accelerated_providers() c
 Result<std::string> ProviderFactory::select_provider_for_cipher_suite(CipherSuite suite) const {
     std::lock_guard<std::mutex> lock(mutex_);
     
+    // Build list of providers that support this cipher suite
+    std::vector<std::pair<std::string, int>> candidates;
+    
     for (const auto& [name, registration] : providers_) {
         if (!registration.is_available) continue;
         
         const auto& suites = registration.capabilities.supported_cipher_suites;
         if (std::find(suites.begin(), suites.end(), suite) != suites.end()) {
-            return Result<std::string>(name);
+            candidates.emplace_back(name, registration.priority);
         }
     }
     
-    return Result<std::string>(DTLSError::CIPHER_SUITE_NOT_SUPPORTED);
+    if (candidates.empty()) {
+        return Result<std::string>(DTLSError::CIPHER_SUITE_NOT_SUPPORTED);
+    }
+    
+    // Sort by preference order first, then by priority
+    std::sort(candidates.begin(), candidates.end(), 
+        [this](const auto& a, const auto& b) {
+            // Check preference order first
+            auto a_pos = std::find(preference_order_.begin(), preference_order_.end(), a.first);
+            auto b_pos = std::find(preference_order_.begin(), preference_order_.end(), b.first);
+            
+            if (a_pos != preference_order_.end() && b_pos != preference_order_.end()) {
+                return a_pos < b_pos;  // Earlier in preference order wins
+            }
+            if (a_pos != preference_order_.end()) return true;   // a is in preference order, b is not
+            if (b_pos != preference_order_.end()) return false;  // b is in preference order, a is not
+            
+            // Neither in preference order, sort by priority (higher priority wins)
+            return a.second > b.second;
+        });
+    
+    return Result<std::string>(candidates.front().first);
 }
 
 Result<std::string> ProviderFactory::select_provider_for_key_exchange(NamedGroup group) const {
     std::lock_guard<std::mutex> lock(mutex_);
+    
+    // Build list of providers that support this named group
+    std::vector<std::pair<std::string, int>> candidates;
     
     for (const auto& [name, registration] : providers_) {
         if (!registration.is_available) continue;
         
         const auto& groups = registration.capabilities.supported_groups;
         if (std::find(groups.begin(), groups.end(), group) != groups.end()) {
-            return Result<std::string>(name);
+            candidates.emplace_back(name, registration.priority);
         }
     }
     
-    return Result<std::string>(DTLSError::KEY_EXCHANGE_FAILED);
+    if (candidates.empty()) {
+        return Result<std::string>(DTLSError::KEY_EXCHANGE_FAILED);
+    }
+    
+    // Sort by preference order first, then by priority
+    std::sort(candidates.begin(), candidates.end(), 
+        [this](const auto& a, const auto& b) {
+            // Check preference order first
+            auto a_pos = std::find(preference_order_.begin(), preference_order_.end(), a.first);
+            auto b_pos = std::find(preference_order_.begin(), preference_order_.end(), b.first);
+            
+            if (a_pos != preference_order_.end() && b_pos != preference_order_.end()) {
+                return a_pos < b_pos;  // Earlier in preference order wins
+            }
+            if (a_pos != preference_order_.end()) return true;   // a is in preference order, b is not
+            if (b_pos != preference_order_.end()) return false;  // b is in preference order, a is not
+            
+            // Neither in preference order, sort by priority (higher priority wins)
+            return a.second > b.second;
+        });
+    
+    return Result<std::string>(candidates.front().first);
 }
 
 Result<std::string> ProviderFactory::select_provider_for_signature(SignatureScheme scheme) const {
     std::lock_guard<std::mutex> lock(mutex_);
+    
+    // Build list of providers that support this signature scheme
+    std::vector<std::pair<std::string, int>> candidates;
     
     for (const auto& [name, registration] : providers_) {
         if (!registration.is_available) continue;
         
         const auto& schemes = registration.capabilities.supported_signatures;
         if (std::find(schemes.begin(), schemes.end(), scheme) != schemes.end()) {
-            return Result<std::string>(name);
+            candidates.emplace_back(name, registration.priority);
         }
     }
     
-    return Result<std::string>(DTLSError::SIGNATURE_VERIFICATION_FAILED);
+    if (candidates.empty()) {
+        return Result<std::string>(DTLSError::SIGNATURE_VERIFICATION_FAILED);
+    }
+    
+    // Sort by preference order first, then by priority
+    std::sort(candidates.begin(), candidates.end(), 
+        [this](const auto& a, const auto& b) {
+            // Check preference order first
+            auto a_pos = std::find(preference_order_.begin(), preference_order_.end(), a.first);
+            auto b_pos = std::find(preference_order_.begin(), preference_order_.end(), b.first);
+            
+            if (a_pos != preference_order_.end() && b_pos != preference_order_.end()) {
+                return a_pos < b_pos;  // Earlier in preference order wins
+            }
+            if (a_pos != preference_order_.end()) return true;   // a is in preference order, b is not
+            if (b_pos != preference_order_.end()) return false;  // b is in preference order, a is not
+            
+            // Neither in preference order, sort by priority (higher priority wins)
+            return a.second > b.second;
+        });
+    
+    return Result<std::string>(candidates.front().first);
 }
 
 ProviderFactory::ProviderStats ProviderFactory::get_provider_stats(const std::string& name) const {

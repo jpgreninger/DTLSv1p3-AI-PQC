@@ -22,9 +22,9 @@ protected:
         dos_protection_ = std::make_unique<DoSProtection>(config_);
         
         // Test addresses
-        client1_ = NetworkAddress("192.168.1.100", 12345);
-        client2_ = NetworkAddress("192.168.1.101", 12346);
-        attacker_ = NetworkAddress("10.0.0.1", 54321);
+        client1_ = dtls::v13::NetworkAddress("192.168.1.100", 12345);
+        client2_ = dtls::v13::NetworkAddress("192.168.1.101", 12346);
+        attacker_ = dtls::v13::NetworkAddress("10.0.0.1", 54321);
     }
     
     void TearDown() override {
@@ -33,9 +33,9 @@ protected:
     
     DoSProtectionConfig config_;
     std::unique_ptr<DoSProtection> dos_protection_;
-    NetworkAddress client1_;
-    NetworkAddress client2_;
-    NetworkAddress attacker_;
+    dtls::v13::NetworkAddress client1_;
+    dtls::v13::NetworkAddress client2_;
+    dtls::v13::NetworkAddress attacker_;
 };
 
 // Rate Limiting Tests
@@ -121,7 +121,7 @@ TEST_F(DoSProtectionTest, ResourceExhaustion) {
     std::vector<uint64_t> allocations;
     
     // Allocate up to the limit
-    for (int i = 0; i < config_.resource_config.max_connections_per_source; ++i) {
+    for (size_t i = 0; i < config_.resource_config.max_connections_per_source; ++i) {
         auto result = dos_protection_->allocate_connection_resources(client1_, 1024);
         EXPECT_TRUE(result.is_success());
         allocations.push_back(result.value());
@@ -364,7 +364,7 @@ protected:
 
 TEST_F(DoSProtectionStressTest, HighVolumeConnections) {
     // Simulate high volume of connections from many sources
-    std::vector<NetworkAddress> sources;
+    std::vector<dtls::v13::NetworkAddress> sources;
     for (int i = 0; i < 100; ++i) {
         sources.emplace_back("192.168.1." + std::to_string(i), 12345);
     }
@@ -390,7 +390,7 @@ TEST_F(DoSProtectionStressTest, HighVolumeConnections) {
 
 TEST_F(DoSProtectionStressTest, ResourceAllocationStress) {
     std::vector<uint64_t> allocations;
-    NetworkAddress client("192.168.1.10", 12345);
+    dtls::v13::NetworkAddress client("192.168.1.10", 12345);
     
     // Allocate as many resources as possible
     for (int i = 0; i < 1000; ++i) {
@@ -422,7 +422,7 @@ protected:
 };
 
 TEST_F(DoSProtectionIntegrationTest, FullConnectionLifecycle) {
-    NetworkAddress client("192.168.1.50", 12345);
+    dtls::v13::NetworkAddress client("192.168.1.50", 12345);
     
     // 1. Check connection attempt
     auto check_result = dos_protection_->check_connection_attempt(client, 512);
@@ -461,8 +461,8 @@ TEST_F(DoSProtectionIntegrationTest, FullConnectionLifecycle) {
 }
 
 TEST_F(DoSProtectionIntegrationTest, AttackScenario) {
-    NetworkAddress attacker("10.0.0.100", 54321);
-    NetworkAddress legitimate_client("192.168.1.100", 12345);
+    dtls::v13::NetworkAddress attacker("10.0.0.100", 54321);
+    dtls::v13::NetworkAddress legitimate_client("192.168.1.100", 12345);
     
     // 1. Legitimate client should work normally
     auto result = dos_protection_->check_connection_attempt(legitimate_client);

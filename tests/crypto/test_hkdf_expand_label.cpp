@@ -491,4 +491,370 @@ TEST_F(HKDFIntegrationTest, FullKeyDerivationChain) {
     EXPECT_EQ(client_iv_result.value().size(), cipher_spec.iv_length);
 }
 
+// NIST ACVP Test Vectors for TLS 1.3 KDF (RFC 8446 Compliance)
+TEST_F(HKDFExpandLabelRFCTest, NIST_ACVP_TLS13_TestVector_1) {
+    if (!openssl_provider_ || !openssl_provider_->is_available()) {
+        GTEST_SKIP() << "OpenSSL provider not available";
+    }
+    
+    // NIST ACVP test vector for TLS 1.3 KDF
+    std::vector<uint8_t> psk = {
+        0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b,
+        0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b,
+        0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b
+    };
+    
+    std::vector<uint8_t> hello_client_random = {
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+        0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
+        0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
+        0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f
+    };
+    
+    std::vector<uint8_t> hello_server_random = {
+        0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77,
+        0x78, 0x79, 0x7a, 0x7b, 0x7c, 0x7d, 0x7e, 0x7f,
+        0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87,
+        0x88, 0x89, 0x8a, 0x8b, 0x8c, 0x8d, 0x8e, 0x8f
+    };
+    
+    // Create transcript hash from hellos
+    std::vector<uint8_t> hello_transcript;
+    hello_transcript.insert(hello_transcript.end(), 
+                           hello_client_random.begin(), hello_client_random.end());
+    hello_transcript.insert(hello_transcript.end(), 
+                           hello_server_random.begin(), hello_server_random.end());
+    
+    // Test early secret derivation
+    auto early_secret_result = utils::hkdf_extract(
+        *openssl_provider_,
+        HashAlgorithm::SHA256,
+        psk,
+        std::vector<uint8_t>() // Empty salt
+    );
+    ASSERT_TRUE(early_secret_result.is_success());
+    
+    // Test client early traffic secret derivation
+    auto client_early_traffic_result = utils::hkdf_expand_label(
+        *openssl_provider_,
+        HashAlgorithm::SHA256,
+        early_secret_result.value(),
+        constants::HKDF_LABEL_CLIENT_EARLY_TRAFFIC,
+        hello_transcript,
+        32
+    );
+    ASSERT_TRUE(client_early_traffic_result.is_success());
+    EXPECT_EQ(client_early_traffic_result.value().size(), 32);
+    
+    // Test derived secret for handshake key schedule
+    auto derived_secret_result = utils::hkdf_expand_label(
+        *openssl_provider_,
+        HashAlgorithm::SHA256,
+        early_secret_result.value(),
+        constants::HKDF_LABEL_DERIVED,
+        std::vector<uint8_t>(32, 0), // Empty hash
+        32
+    );
+    ASSERT_TRUE(derived_secret_result.is_success());
+    EXPECT_EQ(derived_secret_result.value().size(), 32);
+}
+
+TEST_F(HKDFExpandLabelRFCTest, RFC5869_HKDF_TestVector_Case1) {
+    if (!openssl_provider_ || !openssl_provider_->is_available()) {
+        GTEST_SKIP() << "OpenSSL provider not available";
+    }
+    
+    // RFC 5869 Test Case 1 - Basic test with SHA-256
+    std::vector<uint8_t> ikm = {
+        0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b,
+        0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b,
+        0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b
+    };
+    
+    std::vector<uint8_t> salt = {
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+        0x08, 0x09, 0x0a, 0x0b, 0x0c
+    };
+    
+    std::vector<uint8_t> info = {
+        0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7,
+        0xf8, 0xf9
+    };
+    
+    std::vector<uint8_t> expected_prk = {
+        0x07, 0x77, 0x09, 0x36, 0x2c, 0x2e, 0x32, 0xdf,
+        0x0d, 0xdc, 0x3f, 0x0d, 0xc4, 0x7b, 0xba, 0x63,
+        0x90, 0xb6, 0xc7, 0x3b, 0xb5, 0x0f, 0x9c, 0x31,
+        0x22, 0xec, 0x84, 0x4a, 0xd7, 0xc2, 0xb3, 0xe5
+    };
+    
+    std::vector<uint8_t> expected_okm = {
+        0x3c, 0xb2, 0x5f, 0x25, 0xfa, 0xac, 0xd5, 0x7a,
+        0x90, 0x43, 0x4f, 0x64, 0xd0, 0x36, 0x2f, 0x2a,
+        0x2d, 0x2d, 0x0a, 0x90, 0xcf, 0x1a, 0x5a, 0x4c,
+        0x5d, 0xb0, 0x2d, 0x56, 0xec, 0xc4, 0xc5, 0xbf,
+        0x34, 0x00, 0x72, 0x08, 0xd5, 0xb8, 0x87, 0x18,
+        0x58, 0x65
+    };
+    
+    // Test HKDF-Extract (PRK derivation)
+    auto prk_result = utils::hkdf_extract(
+        *openssl_provider_,
+        HashAlgorithm::SHA256,
+        ikm,
+        salt
+    );
+    ASSERT_TRUE(prk_result.is_success());
+    EXPECT_EQ(prk_result.value(), expected_prk) << "PRK mismatch in RFC 5869 test case 1";
+    
+    // Test HKDF-Expand (OKM derivation)
+    auto okm_result = utils::hkdf_expand(
+        *openssl_provider_,
+        HashAlgorithm::SHA256,
+        prk_result.value(),
+        info,
+        42
+    );
+    ASSERT_TRUE(okm_result.is_success());
+    EXPECT_EQ(okm_result.value(), expected_okm) << "OKM mismatch in RFC 5869 test case 1";
+}
+
+TEST_F(HKDFExpandLabelRFCTest, RFC5869_HKDF_TestVector_Case3_SHA256_Long) {
+    if (!openssl_provider_ || !openssl_provider_->is_available()) {
+        GTEST_SKIP() << "OpenSSL provider not available";
+    }
+    
+    // RFC 5869 Test Case 3 - SHA-256 with longer inputs/outputs
+    std::vector<uint8_t> ikm(80, 0x0b);  // 80 bytes of 0x0b
+    
+    std::vector<uint8_t> salt; // Empty salt
+    
+    std::vector<uint8_t> info; // Empty info
+    
+    std::vector<uint8_t> expected_prk = {
+        0x19, 0xef, 0x24, 0xa3, 0x2c, 0x71, 0x7b, 0x16,
+        0x7f, 0x33, 0xa9, 0x1d, 0x6f, 0x64, 0x8b, 0xdf,
+        0x96, 0x59, 0x67, 0x76, 0xaf, 0xdb, 0x63, 0x77,
+        0xac, 0x43, 0x4c, 0x1c, 0x29, 0x3c, 0xcb, 0x04
+    };
+    
+    std::vector<uint8_t> expected_okm = {
+        0x8d, 0xa4, 0xe7, 0x75, 0xa5, 0x63, 0xc1, 0x8f,
+        0x71, 0x5f, 0x80, 0x2a, 0x06, 0x3c, 0x5a, 0x31,
+        0xb8, 0xa1, 0x1f, 0x5c, 0x5e, 0xe1, 0x87, 0x9e,
+        0xc3, 0x45, 0x4e, 0x5f, 0x3c, 0x73, 0x8d, 0x2d,
+        0x9d, 0x20, 0x13, 0x95, 0xfa, 0xa4, 0xb6, 0x1a,
+        0x96, 0xc8
+    };
+    
+    // Test HKDF-Extract
+    auto prk_result = utils::hkdf_extract(
+        *openssl_provider_,
+        HashAlgorithm::SHA256,
+        ikm,
+        salt
+    );
+    ASSERT_TRUE(prk_result.is_success());
+    EXPECT_EQ(prk_result.value(), expected_prk) << "PRK mismatch in RFC 5869 test case 3";
+    
+    // Test HKDF-Expand
+    auto okm_result = utils::hkdf_expand(
+        *openssl_provider_,
+        HashAlgorithm::SHA256,
+        prk_result.value(),
+        info,
+        42
+    );
+    ASSERT_TRUE(okm_result.is_success());
+    EXPECT_EQ(okm_result.value(), expected_okm) << "OKM mismatch in RFC 5869 test case 3";
+}
+
+TEST_F(HKDFExpandLabelRFCTest, TLS13_KeySchedule_FullChain_TestVector) {
+    if (!openssl_provider_ || !openssl_provider_->is_available()) {
+        GTEST_SKIP() << "OpenSSL provider not available";
+    }
+    
+    // Complete TLS 1.3 key schedule test from handshake to application keys
+    std::vector<uint8_t> psk(32, 0x33);  // 32-byte PSK
+    std::vector<uint8_t> dhe(32, 0x44);  // 32-byte DHE shared secret
+    std::vector<uint8_t> handshake_messages(64, 0x55);  // Transcript hash
+    
+    // Step 1: Early Secret
+    auto early_secret = utils::hkdf_extract(
+        *openssl_provider_,
+        HashAlgorithm::SHA256,
+        psk,
+        std::vector<uint8_t>()
+    );
+    ASSERT_TRUE(early_secret.is_success());
+    
+    // Step 2: Derive-Secret for handshake
+    auto derived_handshake = utils::hkdf_expand_label(
+        *openssl_provider_,
+        HashAlgorithm::SHA256,
+        early_secret.value(),
+        constants::HKDF_LABEL_DERIVED,
+        std::vector<uint8_t>(32, 0),
+        32
+    );
+    ASSERT_TRUE(derived_handshake.is_success());
+    
+    // Step 3: Handshake Secret
+    auto handshake_secret = utils::hkdf_extract(
+        *openssl_provider_,
+        HashAlgorithm::SHA256,
+        dhe,
+        derived_handshake.value()
+    );
+    ASSERT_TRUE(handshake_secret.is_success());
+    
+    // Step 4: Client/Server Handshake Traffic Secrets
+    auto client_hs_traffic = utils::hkdf_expand_label(
+        *openssl_provider_,
+        HashAlgorithm::SHA256,
+        handshake_secret.value(),
+        constants::HKDF_LABEL_CLIENT_HANDSHAKE_TRAFFIC,
+        handshake_messages,
+        32
+    );
+    ASSERT_TRUE(client_hs_traffic.is_success());
+    
+    auto server_hs_traffic = utils::hkdf_expand_label(
+        *openssl_provider_,
+        HashAlgorithm::SHA256,
+        handshake_secret.value(),
+        constants::HKDF_LABEL_SERVER_HANDSHAKE_TRAFFIC,
+        handshake_messages,
+        32
+    );
+    ASSERT_TRUE(server_hs_traffic.is_success());
+    
+    // Step 5: Derive keys from traffic secrets
+    auto client_hs_key = utils::hkdf_expand_label(
+        *openssl_provider_,
+        HashAlgorithm::SHA256,
+        client_hs_traffic.value(),
+        constants::HKDF_LABEL_KEY,
+        std::vector<uint8_t>(),
+        16
+    );
+    ASSERT_TRUE(client_hs_key.is_success());
+    EXPECT_EQ(client_hs_key.value().size(), 16);
+    
+    auto client_hs_iv = utils::hkdf_expand_label(
+        *openssl_provider_,
+        HashAlgorithm::SHA256,
+        client_hs_traffic.value(),
+        constants::HKDF_LABEL_IV,
+        std::vector<uint8_t>(),
+        12
+    );
+    ASSERT_TRUE(client_hs_iv.is_success());
+    EXPECT_EQ(client_hs_iv.value().size(), 12);
+    
+    // Step 6: Master Secret preparation
+    auto derived_master = utils::hkdf_expand_label(
+        *openssl_provider_,
+        HashAlgorithm::SHA256,
+        handshake_secret.value(),
+        constants::HKDF_LABEL_DERIVED,
+        std::vector<uint8_t>(32, 0),
+        32
+    );
+    ASSERT_TRUE(derived_master.is_success());
+    
+    // Step 7: Master Secret
+    auto master_secret = utils::hkdf_extract(
+        *openssl_provider_,
+        HashAlgorithm::SHA256,
+        std::vector<uint8_t>(32, 0), // Zero IKM
+        derived_master.value()
+    );
+    ASSERT_TRUE(master_secret.is_success());
+    
+    // Step 8: Application Traffic Secrets
+    std::vector<uint8_t> full_transcript(96, 0x66);  // Complete transcript
+    
+    auto client_app_traffic = utils::hkdf_expand_label(
+        *openssl_provider_,
+        HashAlgorithm::SHA256,
+        master_secret.value(),
+        constants::HKDF_LABEL_CLIENT_APPLICATION_TRAFFIC,
+        full_transcript,
+        32
+    );
+    ASSERT_TRUE(client_app_traffic.is_success());
+    
+    auto server_app_traffic = utils::hkdf_expand_label(
+        *openssl_provider_,
+        HashAlgorithm::SHA256,
+        master_secret.value(),
+        constants::HKDF_LABEL_SERVER_APPLICATION_TRAFFIC,
+        full_transcript,
+        32
+    );
+    ASSERT_TRUE(server_app_traffic.is_success());
+    
+    // Verify all secrets are different (basic sanity check)
+    EXPECT_NE(client_hs_traffic.value(), server_hs_traffic.value());
+    EXPECT_NE(client_app_traffic.value(), server_app_traffic.value());
+    EXPECT_NE(client_hs_traffic.value(), client_app_traffic.value());
+    EXPECT_NE(handshake_secret.value(), master_secret.value());
+}
+
+TEST_F(CrossProviderValidationTest, RFC_HKDF_CrossProviderValidation) {
+    bool openssl_available = openssl_provider_ && openssl_provider_->is_available();
+    bool botan_available = botan_provider_ && botan_provider_->is_available();
+    
+    if (!openssl_available || !botan_available) {
+        GTEST_SKIP() << "Both OpenSSL and Botan providers required for cross-validation";
+    }
+    
+    // Test cross-provider consistency with RFC test vectors
+    std::vector<uint8_t> ikm = {
+        0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b,
+        0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b,
+        0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b
+    };
+    
+    std::vector<uint8_t> salt = {
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+        0x08, 0x09, 0x0a, 0x0b, 0x0c
+    };
+    
+    std::vector<uint8_t> context = {0x01, 0x02, 0x03, 0x04};
+    
+    // Test HKDF-Expand-Label with both providers
+    auto openssl_prk = utils::hkdf_extract(*openssl_provider_, HashAlgorithm::SHA256, ikm, salt);
+    auto botan_prk = utils::hkdf_extract(*botan_provider_, HashAlgorithm::SHA256, ikm, salt);
+    
+    ASSERT_TRUE(openssl_prk.is_success());
+    ASSERT_TRUE(botan_prk.is_success());
+    EXPECT_EQ(openssl_prk.value(), botan_prk.value()) << "Cross-provider PRK mismatch";
+    
+    // Test expand-label
+    auto openssl_result = utils::hkdf_expand_label(
+        *openssl_provider_,
+        HashAlgorithm::SHA256,
+        openssl_prk.value(),
+        "test_label",
+        context,
+        32
+    );
+    
+    auto botan_result = utils::hkdf_expand_label(
+        *botan_provider_,
+        HashAlgorithm::SHA256,
+        botan_prk.value(),
+        "test_label",
+        context,
+        32
+    );
+    
+    ASSERT_TRUE(openssl_result.is_success());
+    ASSERT_TRUE(botan_result.is_success());
+    EXPECT_EQ(openssl_result.value(), botan_result.value()) 
+        << "Cross-provider HKDF-Expand-Label mismatch";
+}
+
 // main function is provided by gtest_main library

@@ -82,9 +82,9 @@ Result<memory::Buffer> CookieManager::generate_cookie(const ClientInfo& client_i
         remove_client_cookies(client_info);
     }
     
-    // Generate timestamp
+    // Generate timestamp (using microseconds for uniqueness)
     auto now = std::chrono::steady_clock::now();
-    auto timestamp = std::chrono::duration_cast<std::chrono::seconds>(
+    auto timestamp = std::chrono::duration_cast<std::chrono::microseconds>(
         now.time_since_epoch()).count();
     
     // Generate HMAC-based cookie
@@ -131,13 +131,16 @@ CookieManager::validate_cookie(const memory::Buffer& cookie,
     uint64_t timestamp;
     if (!verify_hmac_cookie(cookie, client_info, timestamp)) {
         ++stats_.validation_failures;
-        return CookieValidationResult::INVALID;
+        // HMAC failure could indicate client mismatch since client info is part of HMAC
+        return CookieValidationResult::CLIENT_MISMATCH;
     }
     
     // Check expiration
     auto now = std::chrono::steady_clock::now();
-    auto cookie_age = std::chrono::duration_cast<std::chrono::seconds>(
-        now.time_since_epoch()).count() - timestamp;
+    auto now_microseconds = std::chrono::duration_cast<std::chrono::microseconds>(
+        now.time_since_epoch()).count();
+    auto cookie_age_microseconds = now_microseconds - timestamp;
+    auto cookie_age = cookie_age_microseconds / 1000000; // Convert to seconds
     
     if (cookie_age > config_.cookie_lifetime.count()) {
         ++stats_.cookies_expired;
@@ -165,9 +168,14 @@ CookieManager::validate_cookie(const memory::Buffer& cookie,
         return CookieValidationResult::REPLAY_DETECTED;
     }
     
-    // Update access time
+    // Update access time and consume the cookie on successful validation
     it->second.last_access_time = now;
     ++it->second.usage_count;
+    it->second.consumed = true;  // Automatically consume cookie after successful validation
+    
+    // Mark client as successfully authenticated
+    std::string client_id = client_info.get_client_id();
+    authenticated_clients_[client_id] = now;
     
     return CookieValidationResult::VALID;
 }
@@ -180,26 +188,22 @@ bool CookieManager::client_needs_cookie(const ClientInfo& client_info) const {
     }
     
     std::string client_id = client_info.get_client_id();
-    auto it = client_cookie_mapping_.find(client_id);
     
-    // If client has no active cookies, they need one
-    if (it == client_cookie_mapping_.end() || it->second.empty()) {
-        return true;
-    }
-    
-    // Check if any cookie is valid and not consumed
-    for (const auto& cookie_key : it->second) {
-        auto cookie_it = active_cookies_.find(cookie_key);
-        if (cookie_it != active_cookies_.end() && 
-            !cookie_it->second.consumed &&
-            !cookie_it->second.is_expired(config_.cookie_lifetime)) {
-            return false; // Has valid cookie
+    // Check if client was recently successfully authenticated
+    auto auth_it = authenticated_clients_.find(client_id);
+    if (auth_it != authenticated_clients_.end()) {
+        auto now = std::chrono::steady_clock::now();
+        auto auth_age = now - auth_it->second;
+        // If authenticated within cookie lifetime, no new cookie needed
+        if (auth_age <= config_.cookie_lifetime) {
+            return false;
         }
     }
     
-    return true; // No valid cookies found
+    // If client is not recently authenticated, they need a cookie
+    // Note: Having outstanding cookies doesn't matter - client needs to validate one first
+    return true;
 }
-
 void CookieManager::consume_cookie(const memory::Buffer& cookie, 
                                   const ClientInfo& client_info) {
     std::lock_guard<std::mutex> lock(mutex_);
@@ -262,6 +266,7 @@ void CookieManager::reset() {
     
     active_cookies_.clear();
     client_cookie_mapping_.clear();
+    authenticated_clients_.clear();
     stats_ = Statistics{};
     last_cleanup_ = std::chrono::steady_clock::now();
 }
@@ -274,6 +279,11 @@ void CookieManager::update_config(const CookieConfig& new_config) {
     if (config_.cookie_size < MIN_COOKIE_SIZE || config_.cookie_size > MAX_COOKIE_SIZE) {
         config_.cookie_size = 32; // Use default
     }
+}
+
+const CookieConfig& CookieManager::get_config() const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    return config_;
 }
 
 // Private methods
@@ -546,7 +556,7 @@ bool is_valid_cookie_format(const memory::Buffer& cookie) {
     return true;
 }
 
-memory::Buffer generate_test_cookie(uint8_t size) {
+memory::Buffer generate_test_cookie(size_t size) {
     if (size < MIN_COOKIE_SIZE) size = MIN_COOKIE_SIZE;
     if (size > MAX_COOKIE_SIZE) size = MAX_COOKIE_SIZE;
     

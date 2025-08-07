@@ -7,7 +7,7 @@
 // Note: handshake_benchmarks.cpp is now compiled separately via CMakeLists.txt
 // #include "throughput_benchmarks.cpp"  // TODO: Fix compilation issues
 // #include "resource_benchmarks.cpp"    // TODO: Fix compilation issues  
-// #include "regression_testing.cpp"     // TODO: Fix compilation issues
+#include "regression_testing.cpp"
 #include <iostream>
 #include <memory>
 #include <chrono>
@@ -397,11 +397,10 @@ private:
     int run_regression_testing() {
         std::cout << "Running performance regression testing...\n\n";
         
-        // TODO: Fix compilation issues before re-enabling
-        // PerformanceRegressionTester regression_tester;
-        // regression_tester.run_full_regression_test();
+        PerformanceRegressionTester regression_tester;
+        regression_tester.run_full_regression_test();
         
-        std::cout << "Regression testing disabled due to compilation issues.\n";
+        std::cout << "Regression testing completed successfully.\n";
         return 0;
     }
     

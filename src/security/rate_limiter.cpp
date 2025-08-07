@@ -239,13 +239,13 @@ void RateLimiter::record_violation(const NetworkAddress& source_address,
 Result<void> RateLimiter::add_to_whitelist(const NetworkAddress& source_address) {
     std::unique_lock<std::shared_mutex> lock(whitelist_mutex_);
     whitelist_.insert(address_to_key(source_address));
-    return Result<void>::success();
+    return make_result();
 }
 
 Result<void> RateLimiter::remove_from_whitelist(const NetworkAddress& source_address) {
     std::unique_lock<std::shared_mutex> lock(whitelist_mutex_);
     whitelist_.erase(address_to_key(source_address));
-    return Result<void>::success();
+    return make_result();
 }
 
 bool RateLimiter::is_whitelisted(const NetworkAddress& source_address) const {
@@ -257,12 +257,12 @@ Result<void> RateLimiter::blacklist_source(const NetworkAddress& source_address,
                                           std::chrono::seconds duration) {
     auto* source_data = get_or_create_source_data(source_address);
     if (!source_data) {
-        return Result<void>::error(ErrorCode::RESOURCE_EXHAUSTED, "Cannot create source data");
+        return make_error<void>(DTLSError::RESOURCE_EXHAUSTED, "Cannot create source data");
     }
     
     auto blacklist_duration = duration.count() > 0 ? duration : config_.blacklist_duration;
     apply_blacklist(source_data, blacklist_duration);
-    return Result<void>::success();
+    return make_result();
 }
 
 Result<void> RateLimiter::remove_from_blacklist(const NetworkAddress& source_address) {
@@ -271,7 +271,7 @@ Result<void> RateLimiter::remove_from_blacklist(const NetworkAddress& source_add
         source_data->is_blacklisted = false;
         source_data->blacklist_expiry = std::chrono::steady_clock::now();
     }
-    return Result<void>::success();
+    return make_result();
 }
 
 bool RateLimiter::is_blacklisted(const NetworkAddress& source_address) {
@@ -297,10 +297,10 @@ bool RateLimiter::is_blacklisted(const NetworkAddress& source_address) {
 Result<RateLimitStats> RateLimiter::get_source_stats(const NetworkAddress& source_address) const {
     auto* source_data = get_source_data(source_address);
     if (!source_data) {
-        return Result<RateLimitStats>::error(ErrorCode::NOT_FOUND, "Source not found");
+        return make_error<RateLimitStats>(DTLSError::MESSAGE_NOT_FOUND, "Source not found");
     }
     
-    return Result<RateLimitStats>::success(source_data->stats);
+    return make_result(source_data->stats);
 }
 
 RateLimiter::OverallStats RateLimiter::get_overall_stats() const {
@@ -378,7 +378,7 @@ Result<void> RateLimiter::update_config(const RateLimitConfig& new_config) {
         source_data->token_bucket->reset();
     }
     
-    return Result<void>::success();
+    return make_result();
 }
 
 void RateLimiter::reset() {
