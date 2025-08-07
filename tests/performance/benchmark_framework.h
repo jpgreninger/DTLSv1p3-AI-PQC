@@ -238,11 +238,10 @@ private:
     std::unique_ptr<Impl> pimpl_;
 };
 
-// TODO: Re-enable when throughput_benchmarks.cpp is fixed
-/*
 class ThroughputBenchmark {
 public:
     explicit ThroughputBenchmark(const BenchmarkConfig& config = BenchmarkConfig{});
+    ~ThroughputBenchmark();
     
     BenchmarkResult benchmark_application_data_throughput(size_t data_size);
     BenchmarkResult benchmark_concurrent_connections(size_t connection_count);
@@ -257,13 +256,11 @@ private:
     class Impl;
     std::unique_ptr<Impl> pimpl_;
 };
-*/
 
-// TODO: Re-enable when resource_benchmarks.cpp is fixed
-/*
 class MemoryBenchmark {
 public:
     explicit MemoryBenchmark(const BenchmarkConfig& config = BenchmarkConfig{});
+    ~MemoryBenchmark();
     
     BenchmarkResult benchmark_connection_memory_usage();
     BenchmarkResult benchmark_handshake_memory_overhead();
@@ -278,7 +275,6 @@ private:
     class Impl;
     std::unique_ptr<Impl> pimpl_;
 };
-*/
 
 // ============================================================================
 // Integration with Google Benchmark (if available)
