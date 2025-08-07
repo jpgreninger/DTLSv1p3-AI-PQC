@@ -7,6 +7,8 @@ set(SECURITY_TEST_SOURCES
     test_dos_protection.cpp
     test_rate_limiter.cpp
     test_attack_resilience.cpp
+    test_timing_attack_resistance.cpp
+    test_side_channel_resistance.cpp
     security_validation_suite.cpp
     comprehensive_security_tests.cpp
     security_assessment_report_generator.cpp
@@ -25,6 +27,18 @@ add_executable(dtls_rate_limiter_tests test_rate_limiter.cpp)
 
 # Create dedicated attack resilience test executable
 add_executable(dtls_attack_resilience_tests test_attack_resilience.cpp)
+
+# Create dedicated timing attack resistance test executable
+add_executable(dtls_timing_attack_tests test_timing_attack_resistance.cpp security_validation_suite.cpp)
+
+# Create simplified timing attack resistance test executable
+add_executable(dtls_timing_attack_tests_simple test_timing_attack_resistance_simple.cpp security_validation_suite.cpp)
+
+# Create basic timing resistance test executable (minimal dependencies)
+add_executable(dtls_basic_timing_tests test_basic_timing_resistance.cpp)
+
+# Create dedicated side-channel resistance test executable
+add_executable(dtls_side_channel_tests test_side_channel_resistance.cpp security_validation_suite.cpp)
 
 # Link required libraries
 target_link_libraries(dtls_security_tests
@@ -53,6 +67,41 @@ target_link_libraries(dtls_attack_resilience_tests
         ${CMAKE_THREAD_LIBS_INIT}
 )
 
+# Link required libraries for timing attack tests
+target_link_libraries(dtls_timing_attack_tests
+    PRIVATE
+        dtlsv13
+        gtest
+        gtest_main
+        ${CMAKE_THREAD_LIBS_INIT}
+)
+
+# Link required libraries for simplified timing attack tests
+target_link_libraries(dtls_timing_attack_tests_simple
+    PRIVATE
+        dtlsv13
+        gtest
+        gtest_main
+        ${CMAKE_THREAD_LIBS_INIT}
+)
+
+# Link required libraries for basic timing tests
+target_link_libraries(dtls_basic_timing_tests
+    PRIVATE
+        gtest
+        gtest_main
+        ${CMAKE_THREAD_LIBS_INIT}
+)
+
+# Link required libraries for side-channel tests
+target_link_libraries(dtls_side_channel_tests
+    PRIVATE
+        dtlsv13
+        gtest
+        gtest_main
+        ${CMAKE_THREAD_LIBS_INIT}
+)
+
 # Include directories
 target_include_directories(dtls_security_tests
     PRIVATE
@@ -71,6 +120,30 @@ target_include_directories(dtls_rate_limiter_tests
 
 # Include directories for attack resilience tests
 target_include_directories(dtls_attack_resilience_tests
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}/tests/test_infrastructure
+)
+
+# Include directories for timing attack tests
+target_include_directories(dtls_timing_attack_tests
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}/tests/test_infrastructure
+)
+
+# Include directories for simplified timing attack tests
+target_include_directories(dtls_timing_attack_tests_simple
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}/tests/test_infrastructure
+)
+
+# Include directories for side-channel tests
+target_include_directories(dtls_side_channel_tests
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_SOURCE_DIR}/include
@@ -119,6 +192,48 @@ target_compile_options(dtls_attack_resilience_tests
         -fstack-protector-strong
 )
 
+# Compiler flags for timing attack testing (optimized for timing precision)
+target_compile_options(dtls_timing_attack_tests
+    PRIVATE
+        -Wall
+        -Wextra
+        -Werror
+        -pedantic
+        -O2
+        -g
+        -fstack-protector-strong
+        -march=native  # For precise timing measurements
+        -mtune=native
+)
+
+# Compiler flags for simplified timing attack testing
+target_compile_options(dtls_timing_attack_tests_simple
+    PRIVATE
+        -Wall
+        -Wextra
+        -Werror
+        -pedantic
+        -O2
+        -g
+        -fstack-protector-strong
+        -march=native
+        -mtune=native
+)
+
+# Compiler flags for side-channel testing
+target_compile_options(dtls_side_channel_tests
+    PRIVATE
+        -Wall
+        -Wextra
+        -Werror
+        -pedantic
+        -O2
+        -g
+        -fstack-protector-strong
+        -march=native
+        -mtune=native
+)
+
 # Linker flags for security testing
 target_link_options(dtls_security_tests
     PRIVATE
@@ -138,6 +253,16 @@ target_link_options(dtls_attack_resilience_tests
     PRIVATE
         -fsanitize=address
         -fsanitize=undefined
+)
+
+# Linker flags for timing attack testing (no sanitizers for precise timing)
+target_link_options(dtls_timing_attack_tests
+    PRIVATE
+)
+
+# Linker flags for side-channel testing
+target_link_options(dtls_side_channel_tests
+    PRIVATE
 )
 
 # Create comprehensive security validation test
@@ -199,6 +324,8 @@ include(GoogleTest)
 gtest_discover_tests(dtls_security_tests)
 gtest_discover_tests(dtls_rate_limiter_tests)
 gtest_discover_tests(dtls_attack_resilience_tests)
+gtest_discover_tests(dtls_timing_attack_tests)
+gtest_discover_tests(dtls_side_channel_tests)
 gtest_discover_tests(comprehensive_security_validation)
 
 # Custom test targets for different security test types
@@ -217,6 +344,18 @@ add_custom_target(rate_limiter_tests
 add_custom_target(attack_resilience_tests
     COMMAND dtls_attack_resilience_tests
     COMMENT "Running comprehensive DoS attack resilience tests"
+    VERBATIM
+)
+
+add_custom_target(timing_attack_tests
+    COMMAND dtls_timing_attack_tests
+    COMMENT "Running timing attack resistance validation tests"
+    VERBATIM
+)
+
+add_custom_target(side_channel_tests
+    COMMAND dtls_side_channel_tests
+    COMMENT "Running comprehensive side-channel resistance tests"
     VERBATIM
 )
 
@@ -296,6 +435,8 @@ enable_testing()
 add_test(NAME SecurityTests_Basic COMMAND dtls_security_tests)
 add_test(NAME RateLimiterTests COMMAND dtls_rate_limiter_tests)
 add_test(NAME AttackResilienceTests COMMAND dtls_attack_resilience_tests)
+add_test(NAME TimingAttackTests COMMAND dtls_timing_attack_tests)
+add_test(NAME SideChannelTests COMMAND dtls_side_channel_tests)
 add_test(NAME SecurityTests_Comprehensive COMMAND comprehensive_security_validation)
 
 # Set test properties
@@ -314,13 +455,23 @@ set_tests_properties(AttackResilienceTests PROPERTIES
     LABELS "security;attack_resilience;dos_protection"
 )
 
+set_tests_properties(TimingAttackTests PROPERTIES
+    TIMEOUT 1800  # 30 minutes (extended time for statistical timing analysis)
+    LABELS "security;timing_attacks;side_channels"
+)
+
+set_tests_properties(SideChannelTests PROPERTIES
+    TIMEOUT 2400  # 40 minutes (extended time for comprehensive side-channel analysis)
+    LABELS "security;side_channels;timing_attacks;power_analysis"
+)
+
 set_tests_properties(SecurityTests_Comprehensive PROPERTIES
     TIMEOUT 1800  # 30 minutes
     LABELS "security;comprehensive"
 )
 
 # Install security test executables and reports
-install(TARGETS dtls_security_tests dtls_rate_limiter_tests dtls_attack_resilience_tests comprehensive_security_validation security_report_generator
+install(TARGETS dtls_security_tests dtls_rate_limiter_tests dtls_attack_resilience_tests dtls_timing_attack_tests dtls_side_channel_tests comprehensive_security_validation security_report_generator
     RUNTIME DESTINATION bin/security_tests
 )
 
@@ -341,6 +492,8 @@ message(STATUS "Available security test targets:")
 message(STATUS "  - security_tests_basic: Basic security tests")
 message(STATUS "  - rate_limiter_tests: Dedicated rate limiter tests")
 message(STATUS "  - attack_resilience_tests: Comprehensive DoS attack resilience tests")
+message(STATUS "  - timing_attack_tests: Dedicated timing attack resistance validation")
+message(STATUS "  - side_channel_tests: Comprehensive side-channel resistance testing")
 message(STATUS "  - security_tests_comprehensive: Full security validation")
 message(STATUS "  - security_tests_quick: Quick security checks")
 message(STATUS "  - security_tests_attack_simulation: Attack simulation tests")
