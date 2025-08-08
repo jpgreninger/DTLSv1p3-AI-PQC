@@ -24,6 +24,10 @@
 #include <atomic>
 #include <queue>
 #include <mutex>
+#include <iomanip>
+#include <iostream>
+#include <fstream>
+#include <sstream>
 
 namespace dtls::v13::test {
 
@@ -79,7 +83,7 @@ private:
     
     void create_valid_client_hello_template() {
         client_hello_template_ = std::make_unique<protocol::ClientHello>();
-        client_hello_template_->set_legacy_version({254, 253}); // DTLS v1.3
+        client_hello_template_->set_legacy_version(static_cast<dtls::v13::protocol::ProtocolVersion>(0xFEFC)); // DTLS v1.3
         
         // Set valid random
         std::array<uint8_t, 32> random_array;
@@ -97,7 +101,7 @@ private:
     
     void create_valid_server_hello_template() {
         server_hello_template_ = std::make_unique<protocol::ServerHello>();
-        server_hello_template_->set_legacy_version({254, 253});
+        server_hello_template_->set_legacy_version(static_cast<dtls::v13::protocol::ProtocolVersion>(0xFEFC)); // DTLS v1.3
         
         std::array<uint8_t, 32> random_array;
         auto random_data = generate_secure_random_data(32);
@@ -138,6 +142,7 @@ private:
         finished_template_->set_verify_data(std::move(verify_buffer));
     }
     
+protected:
     std::vector<uint8_t> generate_secure_random_data(size_t size) {
         std::vector<uint8_t> data(size);
         std::uniform_int_distribution<uint8_t> dist(0, 255);
@@ -179,9 +184,8 @@ private:
             event.type = SecurityEventType::MALFORMED_MESSAGE;
             event.severity = caused_crash ? SecurityEventSeverity::CRITICAL : 
                            caused_hang ? SecurityEventSeverity::HIGH : SecurityEventSeverity::MEDIUM;
-            event.description = "Advanced fuzzing detected " + 
-                               (caused_crash ? "crash" : caused_hang ? "hang" : "exception") +
-                               " in " + test_name;
+            std::string event_type = caused_crash ? "crash" : (caused_hang ? "hang" : "exception");
+            event.description = "Advanced fuzzing detected " + event_type + " in " + test_name;
             event.connection_id = 0;
             event.timestamp = std::chrono::steady_clock::now();
             event.metadata["test"] = test_name;
@@ -311,7 +315,7 @@ TEST_F(AdvancedFuzzingTest, StateMachineFuzzing) {
                         case HandshakeType::CLIENT_HELLO: {
                             // Create a copy of the template for mutation
                             protocol::ClientHello client_hello;
-                            client_hello.set_legacy_version({254, 253});
+                            client_hello.set_legacy_version(static_cast<dtls::v13::protocol::ProtocolVersion>(0xFEFC)); // DTLS v1.3
                             
                             std::array<uint8_t, 32> random_array;
                             auto random_data = generate_secure_random_data(32);
@@ -325,7 +329,7 @@ TEST_F(AdvancedFuzzingTest, StateMachineFuzzing) {
                         }
                         case HandshakeType::SERVER_HELLO: {
                             protocol::ServerHello server_hello;
-                            server_hello.set_legacy_version({254, 253});
+                            server_hello.set_legacy_version(static_cast<dtls::v13::protocol::ProtocolVersion>(0xFEFC)); // DTLS v1.3
                             
                             std::array<uint8_t, 32> random_array;
                             auto random_data = generate_secure_random_data(32);
@@ -383,6 +387,7 @@ TEST_F(AdvancedFuzzingTest, StateMachineFuzzing) {
                 for (auto& msg : messages) {
                     memory::Buffer buffer(4096);
                     auto result = msg.serialize(buffer);
+                    (void)result; // We don't care about serialization success for fuzzing
                     
                     // Validate each message individually
                     bool is_valid = msg.is_valid();
@@ -479,7 +484,7 @@ TEST_F(AdvancedFuzzingTest, CryptographicMessageFuzzing) {
             bool is_valid = certificate.is_valid();
             error_msg = "Certificate fuzzing completed, valid: " + std::string(is_valid ? "true" : "false");
             
-            if (!result.has_value()) {
+            if (!result.is_success()) {
                 error_msg += " (serialization failed)";
             }
             
@@ -536,6 +541,7 @@ TEST_F(AdvancedFuzzingTest, CryptographicMessageFuzzing) {
             // Test serialization and validation
             memory::Buffer buffer(15000);
             auto result = cert_verify.serialize(buffer);
+            (void)result; // We don't care about serialization success for fuzzing
             
             bool is_valid = cert_verify.is_valid();
             error_msg = "CertificateVerify fuzzing completed, valid: " + std::string(is_valid ? "true" : "false");
@@ -611,7 +617,7 @@ TEST_F(AdvancedFuzzingTest, FragmentReassemblyFuzzing) {
             bool is_fragmented = header.is_fragmented();
             (void)is_fragmented;
             
-            if (!result.has_value()) {
+            if (!result.is_success()) {
                 error_msg += " (serialization failed)";
             }
             
@@ -657,7 +663,7 @@ TEST_F(AdvancedFuzzingTest, ConcurrentMessageFuzzing) {
                             if (thread_id % 2 == 0) {
                                 // Serialize messages
                                 protocol::ClientHello client_hello;
-                                client_hello.set_legacy_version({254, 253});
+                                client_hello.set_legacy_version(static_cast<dtls::v13::protocol::ProtocolVersion>(0xFEFC)); // DTLS v1.3
                                 
                                 std::array<uint8_t, 32> random_array;
                                 auto random_data = generate_secure_random_data(32);
@@ -749,7 +755,7 @@ TEST_F(AdvancedFuzzingTest, MemoryPressureFuzzing) {
             
             for (size_t j = 0; j < num_messages; ++j) {
                 auto client_hello = std::make_unique<protocol::ClientHello>();
-                client_hello->set_legacy_version({254, 253});
+                client_hello->set_legacy_version(static_cast<dtls::v13::protocol::ProtocolVersion>(0xFEFC)); // DTLS v1.3
                 
                 // Add large amounts of extension data
                 for (int k = 0; k < 10; ++k) {
@@ -773,7 +779,7 @@ TEST_F(AdvancedFuzzingTest, MemoryPressureFuzzing) {
             for (const auto& msg : messages) {
                 memory::Buffer buffer(20000);
                 auto result = msg->serialize(buffer);
-                if (result.has_value()) {
+                if (result.is_success()) {
                     total_serialized++;
                 }
             }
