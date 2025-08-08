@@ -119,11 +119,12 @@ Result<void> Connection::initialize() {
     
     handshake_manager_ = std::make_unique<protocol::HandshakeManager>(handshake_config);
     
-    // Initialize record layer with its own crypto provider instance
+    // Initialize record layer with a separate default crypto provider
     auto record_crypto_result = crypto::ProviderFactory::instance().create_default_provider();
     if (!record_crypto_result) {
         return make_error<void>(DTLSError::CRYPTO_PROVIDER_ERROR, "Failed to create crypto provider for record layer");
     }
+    
     record_layer_ = std::make_unique<protocol::RecordLayer>(std::move(record_crypto_result.value()));
     
     // Setup handshake manager callbacks
@@ -193,7 +194,24 @@ Result<void> Connection::start_handshake() {
             return result;
         }
         
-        // TODO: Send ClientHello message
+        // Generate and send ClientHello message
+        auto client_hello_result = generate_client_hello();
+        if (!client_hello_result) {
+            return make_error<void>(client_hello_result.error());
+        }
+        
+        // Create handshake message with ClientHello
+        auto handshake_message = protocol::HandshakeMessage(
+            std::move(client_hello_result.value()), 
+            get_next_handshake_sequence()
+        );
+        
+        // Send the ClientHello message
+        auto send_result = send_handshake_message(handshake_message);
+        if (!send_result) {
+            return send_result;
+        }
+        
         fire_event(ConnectionEvent::HANDSHAKE_STARTED);
         
     } else {
@@ -1975,6 +1993,66 @@ Result<void> Connection::handle_ack_message(const protocol::ACK& ack_message) {
     return make_result();
 }
 
+Result<protocol::ClientHello> Connection::generate_client_hello() {
+    // Create ClientHello according to RFC 9147
+    protocol::ClientHello client_hello;
+    
+    // Set DTLS 1.3 legacy version (actual version negotiated via extensions)
+    client_hello.set_legacy_version(protocol::ProtocolVersion::DTLS_1_2);
+    
+    // Generate random bytes (32 bytes as per RFC)
+    crypto::RandomParams random_params;
+    random_params.length = 32;
+    random_params.cryptographically_secure = true;
+    
+    auto random_result = crypto_provider_->generate_random(random_params);
+    if (!random_result) {
+        return make_error<protocol::ClientHello>(random_result.error());
+    }
+    
+    // Copy random bytes to ClientHello
+    std::array<uint8_t, 32> random_array;
+    std::copy_n(random_result.value().begin(), 32, random_array.begin());
+    client_hello.set_random(random_array);
+    
+    // Set cipher suites from configuration
+    client_hello.set_cipher_suites(config_.supported_cipher_suites);
+    
+    // Create supported groups extension if configured
+    if (!config_.supported_groups.empty()) {
+        // Convert from dtls::v13::NamedGroup to protocol::NamedGroup
+        std::vector<protocol::NamedGroup> protocol_groups;
+        for (auto group : config_.supported_groups) {
+            protocol_groups.push_back(static_cast<protocol::NamedGroup>(group));
+        }
+        auto groups_ext = protocol::create_supported_groups_extension(protocol_groups);
+        if (groups_ext) {
+            client_hello.add_extension(std::move(groups_ext.value()));
+        }
+    }
+    
+    // Create signature algorithms extension if configured
+    if (!config_.supported_signatures.empty()) {
+        // Convert from dtls::v13::SignatureScheme to protocol::SignatureScheme
+        std::vector<protocol::SignatureScheme> protocol_signatures;
+        for (auto sig : config_.supported_signatures) {
+            protocol_signatures.push_back(static_cast<protocol::SignatureScheme>(sig));
+        }
+        auto sig_ext = protocol::create_signature_algorithms_extension(protocol_signatures);
+        if (sig_ext) {
+            client_hello.add_extension(std::move(sig_ext.value()));
+        }
+    }
+    
+    // Add DTLS 1.3 version extension (supported_versions)
+    auto version_ext = protocol::create_supported_versions_extension({protocol::ProtocolVersion::DTLS_1_3});
+    if (version_ext) {
+        client_hello.add_extension(std::move(version_ext.value()));
+    }
+    
+    return make_result(std::move(client_hello));
+}
+
 Result<void> Connection::send_handshake_message(const protocol::HandshakeMessage& message) {
     // This method is called by HandshakeManager to send messages
     // We need to wrap the handshake message in a record and send it
@@ -1983,16 +2061,81 @@ Result<void> Connection::send_handshake_message(const protocol::HandshakeMessage
         return make_error<void>(DTLSError::CONNECTION_CLOSED);
     }
     
-    // TODO: When record layer is properly implemented, use it to create records
-    // For now, we'll simulate sending by updating statistics
+    // Serialize the handshake message
+    memory::Buffer message_buffer(message.serialized_size());
+    auto serialize_result = message.serialize(message_buffer);
+    if (!serialize_result) {
+        return make_error<void>(serialize_result.error());
+    }
     
-    // Create a mock transport packet (in real implementation, this would go through record layer)
-    // For demonstration, we'll just update statistics and fire events
+    // Create DTLS plaintext record for the handshake message
+    protocol::DTLSPlaintext plaintext(
+        protocol::ContentType::HANDSHAKE,
+        protocol::ProtocolVersion::DTLS_1_3,
+        0, // Epoch 0 for handshake messages
+        protocol::SequenceNumber48(0), // Will be set by record layer
+        std::move(message_buffer)
+    );
     
+    // Protect the record through the record layer if available
+    if (record_layer_) {
+        auto protected_result = record_layer_->prepare_outgoing_record(plaintext);
+        if (!protected_result) {
+            return make_error<void>(protected_result.error());
+        }
+        
+        // Serialize the protected record
+        memory::Buffer send_buffer(protected_result.value().total_size());
+        auto protected_serialize_result = protected_result.value().serialize(send_buffer);
+        if (!protected_serialize_result) {
+            return make_error<void>(protected_serialize_result.error());
+        }
+        
+        // Convert to ZeroCopyBuffer for transport
+        memory::ZeroCopyBuffer transport_buffer(send_buffer.data(), protected_serialize_result.value());
+        
+        // Send through transport layer if available
+        if (transport_) {
+            // Convert peer address to transport endpoint
+            transport::NetworkEndpoint peer_endpoint(
+                std::string(reinterpret_cast<const char*>(peer_address_.address.data()), 4),
+                peer_address_.port
+            );
+            
+            auto send_result = transport_->send_packet(peer_endpoint, transport_buffer);
+            if (!send_result) {
+                return send_result;
+            }
+        }
+    } else {
+        // If no record layer available yet, serialize plaintext directly
+        memory::Buffer send_buffer(plaintext.total_size());
+        auto plaintext_serialize_result = plaintext.serialize(send_buffer);
+        if (!plaintext_serialize_result) {
+            return make_error<void>(plaintext_serialize_result.error());
+        }
+        
+        // Send through transport layer if available
+        if (transport_) {
+            memory::ZeroCopyBuffer transport_buffer(send_buffer.data(), plaintext_serialize_result.value());
+            
+            // Convert peer address to transport endpoint
+            transport::NetworkEndpoint peer_endpoint(
+                std::string(reinterpret_cast<const char*>(peer_address_.address.data()), 4),
+                peer_address_.port
+            );
+            
+            auto send_result = transport_->send_packet(peer_endpoint, transport_buffer);
+            if (!send_result) {
+                return send_result;
+            }
+        }
+    }
+    
+    // Update statistics
     stats_.records_sent++;
     update_last_activity();
     
-    // Message sent successfully
     return make_result();
 }
 
@@ -2326,7 +2469,7 @@ Result<std::unique_ptr<Context>> Context::create_client() {
     }
     
     auto init_result = crypto_provider->initialize();
-    if (!init_result.is_ok()) {
+    if (!init_result) {
         return make_error<std::unique_ptr<Context>>(DTLSError::INITIALIZATION_FAILED);
     }
     
@@ -2341,7 +2484,7 @@ Result<std::unique_ptr<Context>> Context::create_client() {
     dummy_address.port = 4433;
     
     auto connection_result = Connection::create_client(config, std::move(crypto_provider), dummy_address);
-    if (!connection_result.is_ok()) {
+    if (!connection_result) {
         return make_error<std::unique_ptr<Context>>(connection_result.error());
     }
     
@@ -2374,7 +2517,7 @@ Result<std::unique_ptr<Context>> Context::create_server() {
     }
     
     auto init_result = crypto_provider->initialize();
-    if (!init_result.is_ok()) {
+    if (!init_result) {
         return make_error<std::unique_ptr<Context>>(DTLSError::INITIALIZATION_FAILED);
     }
     
@@ -2389,7 +2532,7 @@ Result<std::unique_ptr<Context>> Context::create_server() {
     dummy_address.port = 4433;
     
     auto connection_result = Connection::create_server(config, std::move(crypto_provider), dummy_address);
-    if (!connection_result.is_ok()) {
+    if (!connection_result) {
         return make_error<std::unique_ptr<Context>>(connection_result.error());
     }
     

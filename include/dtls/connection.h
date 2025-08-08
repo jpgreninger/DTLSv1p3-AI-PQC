@@ -496,6 +496,7 @@ private:
     
     // ACK processing methods
     Result<void> handle_ack_message(const protocol::ACK& ack_message);
+    Result<protocol::ClientHello> generate_client_hello();
     Result<void> send_handshake_message(const protocol::HandshakeMessage& message);
     bool should_process_ack_for_state(ConnectionState state) const;
     void handle_transport_event(transport::TransportEvent event,
