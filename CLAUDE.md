@@ -8,17 +8,27 @@ This is a comprehensive DTLS (Datagram Transport Layer Security) v1.3 implementa
 
 ## Build System
 
+**IMPORTANT**: Always build in `~/Work/DTLSv1p3/build` directory. Never build in the source root.
+
 ### Main Build Commands
 ```bash
-# Configure and build main library
+# REQUIRED: Always use build directory for out-of-source builds
 mkdir -p build && cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release
 make -j$(nproc)
 
-# Build with SystemC support (requires SystemC installation)
-cmake .. -DDTLS_BUILD_SYSTEMC=ON -DSYSTEMC_ROOT=/path/to/systemc
+# Or use the provided build script (RECOMMENDED)
+./build.sh                      # Release build
+./build.sh --debug              # Debug build
+./build.sh --clean --verbose    # Clean verbose build
 
-# Build options
+# Build with SystemC support (requires SystemC installation)
+cd build
+cmake .. -DDTLS_BUILD_SYSTEMC=ON -DSYSTEMC_ROOT=/path/to/systemc
+make -j$(nproc)
+
+# Build options (always run from build/ directory)
+cd build
 cmake .. \
   -DDTLS_BUILD_TESTS=ON \          # Build test suite (default: ON)
   -DDTLS_BUILD_EXAMPLES=ON \       # Build examples (default: ON)
@@ -35,12 +45,21 @@ make -j$(nproc)
 
 ### Test Execution
 ```bash
+# REQUIRED: Always run tests from build directory or use test script
+cd build
+
 # Run all tests
 make test
 # or
 ctest --output-on-failure
 
-# Run specific test categories
+# Or use the provided test script (RECOMMENDED)
+./test.sh                       # Run all tests
+./test.sh security              # Run security tests only
+./test.sh single dtls_crypto_test  # Run specific test
+./test.sh ctest -R "crypto" -V  # Custom ctest command
+
+# Run specific test categories (from build directory)
 make run_integration_tests      # Integration tests
 make run_performance_tests      # Performance benchmarks
 make run_security_tests         # Security validation
@@ -53,6 +72,27 @@ make run_performance_regression  # Regression testing
 
 # SystemC tests (if enabled)
 cd systemc/build && make systemc-test
+```
+
+### Build Script Usage
+```bash
+# Available build options
+./build.sh -h                   # Show help
+./build.sh --clean              # Clean build
+./build.sh --debug              # Debug build
+./build.sh --release            # Release build (default)
+./build.sh --verbose --jobs 8   # Verbose build with 8 jobs
+```
+
+### Test Script Usage
+```bash
+# Available test options
+./test.sh -h                    # Show help
+./test.sh all                   # All tests (default)
+./test.sh performance          # Performance tests
+./test.sh security             # Security tests
+./test.sh single <test_name>    # Single test executable
+./test.sh --verbose             # Verbose output
 ```
 
 ## Code Architecture

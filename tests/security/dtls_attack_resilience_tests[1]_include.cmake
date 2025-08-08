@@ -1,5 +1,0 @@
-if(EXISTS "/home/jgreninger/Work/DTLSv1p3/tests/security/dtls_attack_resilience_tests[1]_tests.cmake")
-  include("/home/jgreninger/Work/DTLSv1p3/tests/security/dtls_attack_resilience_tests[1]_tests.cmake")
-else()
-  add_test(dtls_attack_resilience_tests_NOT_BUILT dtls_attack_resilience_tests_NOT_BUILT)
-endif()
