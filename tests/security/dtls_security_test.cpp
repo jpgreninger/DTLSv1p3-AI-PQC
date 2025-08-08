@@ -103,6 +103,10 @@ protected:
         client_transport_ = std::make_unique<transport::UDPTransport>(transport_config);
         server_transport_ = std::make_unique<transport::UDPTransport>(transport_config);
         
+        // Initialize transports before binding
+        ASSERT_TRUE(client_transport_->initialize().is_ok());
+        ASSERT_TRUE(server_transport_->initialize().is_ok());
+        
         transport::NetworkEndpoint client_endpoint("127.0.0.1", 0);
         transport::NetworkEndpoint server_endpoint("127.0.0.1", 4433);
         ASSERT_TRUE(client_transport_->bind(client_endpoint).is_ok());

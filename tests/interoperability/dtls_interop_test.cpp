@@ -211,6 +211,11 @@ protected:
         auto client_transport = std::make_unique<transport::UDPTransport>(transport_config);
         auto server_transport = std::make_unique<transport::UDPTransport>(transport_config);
         
+        // Initialize transports before binding
+        if (!client_transport->initialize().is_ok() || !server_transport->initialize().is_ok()) {
+            return false;
+        }
+        
         transport::NetworkEndpoint client_endpoint("127.0.0.1", 0);
         transport::NetworkEndpoint server_endpoint("127.0.0.1", 4433);
         if (!client_transport->bind(client_endpoint).is_ok() || !server_transport->bind(server_endpoint).is_ok()) {
@@ -509,9 +514,11 @@ TEST_F(DTLSInteroperabilityTest, CipherSuiteNegotiation) {
             auto client_transport = std::make_unique<transport::UDPTransport>(transport_config);
             auto server_transport = std::make_unique<transport::UDPTransport>(transport_config);
             
-            transport::NetworkEndpoint client_ep("127.0.0.1", 0);
-            transport::NetworkEndpoint server_ep("127.0.0.1", 4433);
-            if (client_transport->bind(client_ep).is_ok() && server_transport->bind(server_ep).is_ok()) {
+            // Initialize transports before binding
+            if (client_transport->initialize().is_ok() && server_transport->initialize().is_ok()) {
+                transport::NetworkEndpoint client_ep("127.0.0.1", 0);
+                transport::NetworkEndpoint server_ep("127.0.0.1", 4433);
+                if (client_transport->bind(client_ep).is_ok() && server_transport->bind(server_ep).is_ok()) {
                 // Note: set_transport() not available in current API - transport managed internally
                 // Transport is handled internally by the Connection objects
                 
@@ -532,6 +539,7 @@ TEST_F(DTLSInteroperabilityTest, CipherSuiteNegotiation) {
                 
                 test_transports_.push_back(std::move(client_transport));
                 test_transports_.push_back(std::move(server_transport));
+                }
             }
         }
     }
@@ -646,9 +654,11 @@ TEST_F(DTLSInteroperabilityTest, RecordSizeCompatibility) {
             auto client_transport = std::make_unique<transport::UDPTransport>(transport_config);
             auto server_transport = std::make_unique<transport::UDPTransport>(transport_config);
             
-            transport::NetworkEndpoint client_ep("127.0.0.1", 0);
-            transport::NetworkEndpoint server_ep("127.0.0.1", 4433);
-            if (client_transport->bind(client_ep).is_ok() && server_transport->bind(server_ep).is_ok()) {
+            // Initialize transports before binding
+            if (client_transport->initialize().is_ok() && server_transport->initialize().is_ok()) {
+                transport::NetworkEndpoint client_ep("127.0.0.1", 0);
+                transport::NetworkEndpoint server_ep("127.0.0.1", 4433);
+                if (client_transport->bind(client_ep).is_ok() && server_transport->bind(server_ep).is_ok()) {
                 // Note: set_transport() not available in current API - transport managed internally
                 // Transport is handled internally by the Connection objects
                 
@@ -675,6 +685,7 @@ TEST_F(DTLSInteroperabilityTest, RecordSizeCompatibility) {
                 
                 test_transports_.push_back(std::move(client_transport));
                 test_transports_.push_back(std::move(server_transport));
+                }
             }
         }
     }

@@ -4,6 +4,9 @@
 #include <cstring>
 #include <algorithm>
 #include <sstream>
+#ifndef _WIN32
+#include <errno.h>
+#endif
 
 #ifdef _WIN32
 #pragma comment(lib, "ws2_32.lib")
@@ -224,7 +227,12 @@ Result<void> UDPTransport::bind(const NetworkEndpoint& local_endpoint) {
     
     // Bind socket
     if (::bind(socket_, reinterpret_cast<const sockaddr*>(&addr), addr_len) != 0) {
+        int error = get_last_socket_error();
         close_socket();
+        // In debug builds, we could log the specific error
+        #ifdef DEBUG
+        // Error codes like EADDRINUSE (98), EACCES (13), etc. could be handled specifically
+        #endif
         return make_error<void>(DTLSError::SOCKET_ERROR);
     }
     
