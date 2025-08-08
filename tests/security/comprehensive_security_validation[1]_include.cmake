@@ -1,0 +1,5 @@
+if(EXISTS "/home/jgreninger/Work/DTLSv1p3/tests/security/comprehensive_security_validation[1]_tests.cmake")
+  include("/home/jgreninger/Work/DTLSv1p3/tests/security/comprehensive_security_validation[1]_tests.cmake")
+else()
+  add_test(comprehensive_security_validation_NOT_BUILT comprehensive_security_validation_NOT_BUILT)
+endif()

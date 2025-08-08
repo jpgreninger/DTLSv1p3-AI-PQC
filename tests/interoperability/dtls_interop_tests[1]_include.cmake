@@ -1,0 +1,5 @@
+if(EXISTS "/home/jgreninger/Work/DTLSv1p3/tests/interoperability/dtls_interop_tests[1]_tests.cmake")
+  include("/home/jgreninger/Work/DTLSv1p3/tests/interoperability/dtls_interop_tests[1]_tests.cmake")
+else()
+  add_test(dtls_interop_tests_NOT_BUILT dtls_interop_tests_NOT_BUILT)
+endif()
