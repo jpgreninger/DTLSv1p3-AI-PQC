@@ -1,8 +1,10 @@
 #include "security_validation_suite.h"
 #include <dtls/crypto/crypto_utils.h>
 #include <dtls/protocol/early_data.h>
+#include <dtls/memory/buffer.h>
 #include <algorithm>
 #include <cmath>
+#include <thread>
 
 namespace dtls {
 namespace v13 {
@@ -81,7 +83,9 @@ TEST_F(SecurityValidationSuite, AdvancedFuzzingTests) {
     for (const auto& test_case : fuzzing_tests_) {
         auto start_events = security_metrics_.total_security_events;
         
-        auto result = client->send_raw_packet(test_case.payload);
+        // Simulate malformed packet injection through transport layer
+        memory::ZeroCopyBuffer buffer(reinterpret_cast<const std::byte*>(test_case.payload.data()), test_case.payload.size());
+        auto result = client->process_incoming_data(buffer);
         
         // Should be rejected for malformed packets
         EXPECT_FALSE(result.is_ok()) << "Malformed packet should be rejected: " << test_case.name;
@@ -92,7 +96,7 @@ TEST_F(SecurityValidationSuite, AdvancedFuzzingTests) {
         
         // Verify system didn't crash
         if (test_case.should_crash_system) {
-            EXPECT_SYSTEM_STABLE() << "System should remain stable for test case: " << test_case.name;
+            EXPECT_SYSTEM_STABLE();
         }
     }
     
@@ -105,11 +109,13 @@ TEST_F(SecurityValidationSuite, AdvancedFuzzingTests) {
     const size_t random_iterations = config_.max_fuzzing_iterations;
     
     for (size_t i = 0; i < random_iterations; ++i) {
-        auto start_events = security_metrics_.total_security_events;
+        (void)security_metrics_.total_security_events; // Suppress unused variable warning
         
         // Generate random malformed packet
         auto fuzz_data = generate_random_data(size_dist_(rng_));
-        auto result = client->send_raw_packet(fuzz_data);
+        // Test fuzzing via transport layer
+        memory::ZeroCopyBuffer fuzz_buffer(reinterpret_cast<const std::byte*>(fuzz_data.data()), fuzz_data.size());
+        auto result = client->process_incoming_data(fuzz_buffer);
         
         // Most random data should be rejected
         if (!result.is_ok()) {
@@ -118,11 +124,12 @@ TEST_F(SecurityValidationSuite, AdvancedFuzzingTests) {
         
         // Periodic stability check
         if (i % 1000 == 0) {
-            EXPECT_SYSTEM_STABLE() << "System unstable after " << i << " fuzzing iterations";
+            EXPECT_SYSTEM_STABLE();
             
             // Test legitimate operation still works
             std::vector<uint8_t> test_data = {0x01, 0x02, 0x03};
-            auto legitimate_result = client->send(test_data);
+            memory::ZeroCopyBuffer test_buffer(reinterpret_cast<const std::byte*>(test_data.data()), test_data.size());
+            auto legitimate_result = client->send_application_data(test_buffer);
             EXPECT_TRUE(legitimate_result.is_ok()) << "Legitimate operation failed after fuzzing";
         }
     }
@@ -139,7 +146,8 @@ TEST_F(SecurityValidationSuite, AdvancedFuzzingTests) {
     
     // Don't complete handshake, try to send application data
     std::vector<uint8_t> premature_data = {0x17, 0x03, 0x03, 0x00, 0x05, 0x48, 0x65, 0x6C, 0x6C, 0x6F};
-    auto premature_result = state_client->send_raw_packet(premature_data);
+    memory::ZeroCopyBuffer premature_buffer(reinterpret_cast<const std::byte*>(premature_data.data()), premature_data.size());
+    auto premature_result = state_client->process_incoming_data(premature_buffer);
     EXPECT_FALSE(premature_result.is_ok()) << "Application data before handshake should be rejected";
     
     EXPECT_SECURITY_EVENT(SecurityEventType::PROTOCOL_VIOLATION);
@@ -207,7 +215,9 @@ TEST_F(SecurityValidationSuite, TimingAttackResistanceTests) {
                 SecurityEventType::TIMING_ATTACK_SUSPECTED,
                 SecurityEventSeverity::HIGH,
                 "High timing variation detected in " + timing_test.operation_name,
-                0
+                0,
+                std::chrono::steady_clock::now(),
+                {}
             };
             handle_security_event(event, "TIMING_ANALYSIS");
         }
@@ -229,7 +239,9 @@ TEST_F(SecurityValidationSuite, TimingAttackResistanceTests) {
         
         for (size_t i = 0; i < 1000; ++i) {
             auto start = std::chrono::high_resolution_clock::now();
-            auto result = crypto::hkdf_expand_label(secret, "test_label", {}, 32);
+            auto provider = std::make_unique<crypto::OpenSSLProvider>();
+            provider->initialize();
+            auto result = crypto::utils::hkdf_expand_label(*provider, HashAlgorithm::SHA256, secret, "test_label", {}, 32);
             auto end = std::chrono::high_resolution_clock::now();
             
             hkdf_timings.push_back(std::chrono::duration_cast<std::chrono::microseconds>(end - start));
@@ -279,7 +291,9 @@ TEST_F(SecurityValidationSuite, SideChannelResistanceTests) {
         std::iota(secret.begin(), secret.end(), static_cast<uint8_t>(i % 256));
         
         auto start = std::chrono::high_resolution_clock::now();
-        auto result = crypto::hkdf_expand_label(secret, "power_test", {}, 32);
+        auto provider = std::make_unique<crypto::OpenSSLProvider>();
+        provider->initialize();
+        auto result = crypto::utils::hkdf_expand_label(*provider, HashAlgorithm::SHA256, secret, "power_test", {}, 32);
         auto end = std::chrono::high_resolution_clock::now();
         
         // Simulate power consumption based on operation time (mock measurement)
@@ -310,7 +324,9 @@ TEST_F(SecurityValidationSuite, SideChannelResistanceTests) {
             SecurityEventType::SIDE_CHANNEL_ANOMALY,
             SecurityEventSeverity::MEDIUM,
             "High power consumption variation detected",
-            0
+            0,
+            std::chrono::steady_clock::now(),
+            {}
         };
         handle_security_event(event, "POWER_ANALYSIS");
     }
@@ -333,7 +349,9 @@ TEST_F(SecurityValidationSuite, SideChannelResistanceTests) {
         memory_patterns.push_back(mock_pattern);
         
         // Perform operation
-        auto result = crypto::hkdf_expand_label(key, "memory_test", {}, 32);
+        auto provider = std::make_unique<crypto::OpenSSLProvider>();
+        provider->initialize();
+        auto result = crypto::utils::hkdf_expand_label(*provider, HashAlgorithm::SHA256, key, "memory_test", {}, 32);
     }
     
     // Analyze memory access patterns for data-dependent behavior
@@ -384,7 +402,8 @@ TEST_F(SecurityValidationSuite, MemorySafetyValidation) {
     size_t overflow_attempts_blocked = 0;
     
     for (const auto& overflow_data : overflow_tests) {
-        auto result = client->send_raw_packet(overflow_data);
+        memory::ZeroCopyBuffer overflow_buffer(reinterpret_cast<const std::byte*>(overflow_data.data()), overflow_data.size());
+        auto result = client->process_incoming_data(overflow_buffer);
         
         // Should be rejected to prevent buffer overflow
         if (!result.is_ok()) {
@@ -417,7 +436,8 @@ TEST_F(SecurityValidationSuite, MemorySafetyValidation) {
             
             // Send some data
             std::vector<uint8_t> test_data = {0x01, 0x02, 0x03, 0x04, 0x05};
-            cycle_client->send(test_data);
+            memory::ZeroCopyBuffer cycle_buffer(reinterpret_cast<const std::byte*>(test_data.data()), test_data.size());
+            cycle_client->send_application_data(cycle_buffer);
         }
         // Connections go out of scope and should be cleaned up
     }
@@ -510,7 +530,9 @@ TEST_F(SecurityValidationSuite, CryptographicComplianceValidation) {
                 SecurityEventType::CRYPTO_COMPLIANCE_FAILURE,
                 crypto_test.is_critical ? SecurityEventSeverity::CRITICAL : SecurityEventSeverity::MEDIUM,
                 "Cryptographic compliance test failed: " + crypto_test.name,
-                0
+                0,
+                std::chrono::steady_clock::now(),
+                {}
             };
             handle_security_event(event, "CRYPTO_COMPLIANCE");
         }
@@ -547,7 +569,9 @@ TEST_F(SecurityValidationSuite, CryptographicComplianceValidation) {
                 SecurityEventType::CRYPTO_COMPLIANCE_FAILURE,
                 SecurityEventSeverity::CRITICAL,
                 "Required cipher suite not supported",
-                0
+                0,
+                std::chrono::steady_clock::now(),
+                {}
             };
             handle_security_event(event, "RFC_COMPLIANCE");
         }
@@ -555,7 +579,9 @@ TEST_F(SecurityValidationSuite, CryptographicComplianceValidation) {
     
     // Test HKDF-Expand-Label compliance
     std::vector<uint8_t> test_secret(32, 0x42);
-    auto hkdf_result = crypto::hkdf_expand_label(test_secret, "dtls13", {}, 32);
+    auto provider_hkdf = std::make_unique<crypto::OpenSSLProvider>();
+    provider_hkdf->initialize();
+    auto hkdf_result = crypto::utils::hkdf_expand_label(*provider_hkdf, HashAlgorithm::SHA256, test_secret, "dtls13", {}, 32);
     EXPECT_TRUE(hkdf_result.is_ok()) << "HKDF-Expand-Label implementation failed";
     
     if (!hkdf_result.is_ok()) {
@@ -563,7 +589,9 @@ TEST_F(SecurityValidationSuite, CryptographicComplianceValidation) {
             SecurityEventType::CRYPTO_COMPLIANCE_FAILURE,
             SecurityEventSeverity::CRITICAL,
             "HKDF-Expand-Label compliance failure",
-            0
+            0,
+            std::chrono::steady_clock::now(),
+            {}
         };
         handle_security_event(event, "RFC_COMPLIANCE");
     }
@@ -717,7 +745,8 @@ TEST_F(SecurityValidationSuite, FinalSecurityAssessment) {
     
     // Test data transfer security
     std::vector<uint8_t> sensitive_data = {0xDE, 0xAD, 0xBE, 0xEF, 0xCA, 0xFE, 0xBA, 0xBE};
-    auto send_result = client->send(sensitive_data);
+    memory::ZeroCopyBuffer sensitive_buffer(reinterpret_cast<const std::byte*>(sensitive_data.data()), sensitive_data.size());
+    auto send_result = client->send_application_data(sensitive_buffer);
     EXPECT_TRUE(send_result.is_ok()) << "Secure data transfer failed";
     
     // Test key update security
@@ -725,7 +754,8 @@ TEST_F(SecurityValidationSuite, FinalSecurityAssessment) {
     EXPECT_TRUE(key_update_result.is_ok()) << "Key update failed";
     
     // Test post-key-update communication
-    auto post_update_send = client->send(sensitive_data);
+    memory::ZeroCopyBuffer post_update_buffer(reinterpret_cast<const std::byte*>(sensitive_data.data()), sensitive_data.size());
+    auto post_update_send = client->send_application_data(post_update_buffer);
     EXPECT_TRUE(post_update_send.is_ok()) << "Communication failed after key update";
     
     // Generate final security assessment report

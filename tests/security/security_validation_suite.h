@@ -232,6 +232,12 @@ protected:
     
     // Reporting and analysis
     void generate_security_assessment_report();
+    void generate_json_report(const std::string& output_dir, const std::string& timestamp);
+    void generate_html_report(const std::string& output_dir, const std::string& timestamp);
+    void generate_text_report(const std::string& output_dir, const std::string& timestamp);
+    bool calculate_overall_security_assessment();
+    std::string get_security_level_assessment();
+    std::vector<std::string> generate_security_recommendations();
     void analyze_security_metrics();
     void export_test_results(const std::string& format = "json");
     

@@ -1,12 +1,10 @@
 # Security Validation Suite CMake Configuration
 cmake_minimum_required(VERSION 3.16)
 
-# Security test sources
+# Security test sources (excluding files with standalone main functions)
 set(SECURITY_TEST_SOURCES
     dtls_security_test.cpp
-    test_dos_protection.cpp
     test_rate_limiter.cpp
-    test_attack_resilience.cpp
     test_timing_attack_resistance.cpp
     test_side_channel_resistance.cpp
     security_validation_suite.cpp

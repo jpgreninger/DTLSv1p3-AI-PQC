@@ -10,6 +10,10 @@
 #include "security_validation_suite.h"
 #include <dtls/crypto/openssl_provider.h>
 #include <dtls/protocol/cookie.h>
+#include <dtls/memory/buffer.h>
+#include <dtls/types.h>
+#include <dtls/crypto/crypto_utils.h>
+#include <cstring>
 #include <gtest/gtest.h>
 #include <chrono>
 #include <vector>
@@ -193,15 +197,18 @@ protected:
  */
 TEST_F(TimingAttackResistanceTest, HMACVerificationConstantTime) {
     auto provider_result = crypto::ProviderFactory::instance().create_provider("openssl");
-    ASSERT_TRUE(provider_result.has_value()) << "Failed to create OpenSSL provider";
+    ASSERT_TRUE(provider_result.is_ok()) << "Failed to create OpenSSL provider";
     auto& provider = provider_result.value();
 
     std::vector<std::chrono::nanoseconds> valid_hmac_times;
     std::vector<std::chrono::nanoseconds> invalid_hmac_times;
     
     // Generate test HMAC key
-    auto key_result = provider->generate_random({.size = 32});
-    ASSERT_TRUE(key_result.has_value());
+    crypto::RandomParams random_params;
+    random_params.length = 32;
+    random_params.cryptographically_secure = true;
+    auto key_result = provider->generate_random(random_params);
+    ASSERT_TRUE(key_result.is_ok());
     const auto& hmac_key = key_result.value();
 
     // Test with valid HMACs
@@ -209,16 +216,27 @@ TEST_F(TimingAttackResistanceTest, HMACVerificationConstantTime) {
         auto data = generate_random_data(64);
         
         // Generate valid HMAC
-        auto hmac_result = provider->compute_hmac(data, hmac_key, "SHA256");
-        ASSERT_TRUE(hmac_result.has_value());
+        crypto::HMACParams hmac_params;
+        hmac_params.key = hmac_key;
+        hmac_params.data = data;
+        hmac_params.algorithm = HashAlgorithm::SHA256;
+        
+        auto hmac_result = provider->compute_hmac(hmac_params);
+        ASSERT_TRUE(hmac_result.is_ok());
         const auto& valid_hmac = hmac_result.value();
         
         // Measure verification time
+        crypto::MACValidationParams validate_params;
+        validate_params.key = hmac_key;
+        validate_params.data = data;
+        validate_params.expected_mac = valid_hmac;
+        validate_params.algorithm = HashAlgorithm::SHA256;
+        
         auto start = std::chrono::high_resolution_clock::now();
-        auto verify_result = provider->verify_hmac(data, valid_hmac, hmac_key, "SHA256");
+        auto verify_result = provider->verify_hmac(validate_params);
         auto end = std::chrono::high_resolution_clock::now();
         
-        EXPECT_TRUE(verify_result.has_value() && verify_result.value());
+        EXPECT_TRUE(verify_result.is_ok() && verify_result.value());
         valid_hmac_times.push_back(end - start);
     }
 
@@ -228,11 +246,18 @@ TEST_F(TimingAttackResistanceTest, HMACVerificationConstantTime) {
         auto invalid_hmac = generate_random_data(32); // Wrong HMAC
         
         // Measure verification time
+        // Prepare validation params for invalid HMAC
+        crypto::MACValidationParams invalid_validate_params;
+        invalid_validate_params.key = hmac_key;
+        invalid_validate_params.data = data;
+        invalid_validate_params.expected_mac = invalid_hmac;
+        invalid_validate_params.algorithm = HashAlgorithm::SHA256;
+        
         auto start = std::chrono::high_resolution_clock::now();
-        auto verify_result = provider->verify_hmac(data, invalid_hmac, hmac_key, "SHA256");
+        auto verify_result = provider->verify_hmac(invalid_validate_params);
         auto end = std::chrono::high_resolution_clock::now();
         
-        EXPECT_TRUE(verify_result.has_value() && !verify_result.value());
+        EXPECT_TRUE(verify_result.is_ok() && !verify_result.value());
         invalid_hmac_times.push_back(end - start);
     }
 
@@ -294,35 +319,54 @@ TEST_F(TimingAttackResistanceTest, CookieValidationConstantTime) {
     // Create cookie manager
     protocol::CookieManager cookie_manager;
     
+    // Initialize cookie manager with secret key
+    memory::Buffer secret_key(32);
+    secret_key.resize(32);
+    for (size_t i = 0; i < 32; ++i) {
+        reinterpret_cast<uint8_t*>(secret_key.mutable_data())[i] = static_cast<uint8_t>(i);
+    }
+    auto init_result = cookie_manager.initialize(secret_key);
+    ASSERT_TRUE(init_result.is_ok());
+    
     // Test data for cookie generation
     NetworkAddress client_addr = NetworkAddress::from_string("192.168.1.100:12345").value();
     std::vector<uint8_t> client_hello_data = generate_random_data(128);
+    
+    // Create client info
+    protocol::CookieManager::ClientInfo client_info(
+        client_addr.get_ip(), 
+        client_addr.get_port(), 
+        client_hello_data
+    );
     
     std::vector<std::chrono::nanoseconds> valid_cookie_times;
     std::vector<std::chrono::nanoseconds> invalid_cookie_times;
     
     // Test valid cookie validation timing
     for (size_t i = 0; i < 500; ++i) {
-        auto cookie_result = cookie_manager.generate_cookie(client_addr, client_hello_data);
-        ASSERT_TRUE(cookie_result.has_value());
+        auto cookie_result = cookie_manager.generate_cookie(client_info);
+        ASSERT_TRUE(cookie_result.is_ok());
         
         auto start = std::chrono::high_resolution_clock::now();
-        bool is_valid = cookie_manager.validate_cookie(cookie_result.value(), client_addr, client_hello_data);
+        auto validation_result = cookie_manager.validate_cookie(cookie_result.value(), client_info);
         auto end = std::chrono::high_resolution_clock::now();
         
-        EXPECT_TRUE(is_valid);
+        EXPECT_EQ(validation_result, protocol::CookieManager::CookieValidationResult::VALID);
         valid_cookie_times.push_back(end - start);
     }
     
     // Test invalid cookie validation timing
     for (size_t i = 0; i < 500; ++i) {
-        auto invalid_cookie = generate_random_data(20); // Random cookie
+        memory::Buffer invalid_cookie(20);
+        invalid_cookie.resize(20);
+        auto random_data = generate_random_data(20);
+        std::memcpy(invalid_cookie.mutable_data(), random_data.data(), 20);
         
         auto start = std::chrono::high_resolution_clock::now();
-        bool is_valid = cookie_manager.validate_cookie(invalid_cookie, client_addr, client_hello_data);
+        auto validation_result = cookie_manager.validate_cookie(invalid_cookie, client_info);
         auto end = std::chrono::high_resolution_clock::now();
         
-        EXPECT_FALSE(is_valid);
+        EXPECT_NE(validation_result, protocol::CookieManager::CookieValidationResult::VALID);
         invalid_cookie_times.push_back(end - start);
     }
     
@@ -340,7 +384,7 @@ TEST_F(TimingAttackResistanceTest, CookieValidationConstantTime) {
  */
 TEST_F(TimingAttackResistanceTest, KeyDerivationConstantTime) {
     auto provider_result = crypto::ProviderFactory::instance().create_provider("openssl");
-    ASSERT_TRUE(provider_result.has_value()) << "Failed to create OpenSSL provider";
+    ASSERT_TRUE(provider_result.is_ok()) << "Failed to create OpenSSL provider";
     auto& provider = provider_result.value();
 
     std::vector<std::chrono::nanoseconds> pattern_times;
@@ -353,10 +397,10 @@ TEST_F(TimingAttackResistanceTest, KeyDerivationConstantTime) {
         std::string label = "dtls13 test key";
         
         auto start = std::chrono::high_resolution_clock::now();
-        auto result = provider->hkdf_expand_label(pattern_key, label, salt, 32);
+        auto result = crypto::utils::hkdf_expand_label(*provider, HashAlgorithm::SHA256, pattern_key, label, salt, 32);
         auto end = std::chrono::high_resolution_clock::now();
         
-        ASSERT_TRUE(result.has_value());
+        ASSERT_TRUE(result.is_ok());
         pattern_times.push_back(end - start);
     }
     
@@ -367,10 +411,10 @@ TEST_F(TimingAttackResistanceTest, KeyDerivationConstantTime) {
         std::string label = "dtls13 test key";
         
         auto start = std::chrono::high_resolution_clock::now();
-        auto result = provider->hkdf_expand_label(random_key, label, salt, 32);
+        auto result = crypto::utils::hkdf_expand_label(*provider, HashAlgorithm::SHA256, random_key, label, salt, 32);
         auto end = std::chrono::high_resolution_clock::now();
         
-        ASSERT_TRUE(result.has_value());
+        ASSERT_TRUE(result.is_ok());
         random_times.push_back(end - start);
     }
     
@@ -387,12 +431,12 @@ TEST_F(TimingAttackResistanceTest, KeyDerivationConstantTime) {
  */
 TEST_F(TimingAttackResistanceTest, SignatureVerificationConstantTime) {
     auto provider_result = crypto::ProviderFactory::instance().create_provider("openssl");
-    ASSERT_TRUE(provider_result.has_value()) << "Failed to create OpenSSL provider";
+    ASSERT_TRUE(provider_result.is_ok()) << "Failed to create OpenSSL provider";
     auto& provider = provider_result.value();
     
     // Generate test key pair
     auto keypair_result = provider->generate_key_pair(NamedGroup::SECP256R1);
-    ASSERT_TRUE(keypair_result.has_value());
+    ASSERT_TRUE(keypair_result.is_ok());
     auto& [private_key, public_key] = keypair_result.value();
     
     std::vector<std::chrono::nanoseconds> valid_signature_times;
@@ -409,7 +453,7 @@ TEST_F(TimingAttackResistanceTest, SignatureVerificationConstantTime) {
         sign_params.private_key = private_key.get();
         
         auto sig_result = provider->sign_data(sign_params);
-        ASSERT_TRUE(sig_result.has_value());
+        ASSERT_TRUE(sig_result.is_ok());
         
         // Measure verification time
         crypto::SignatureParams verify_params = sign_params;
@@ -420,7 +464,7 @@ TEST_F(TimingAttackResistanceTest, SignatureVerificationConstantTime) {
         auto verify_result = provider->verify_signature(verify_params, sig_result.value());
         auto end = std::chrono::high_resolution_clock::now();
         
-        EXPECT_TRUE(verify_result.has_value() && verify_result.value());
+        EXPECT_TRUE(verify_result.is_ok() && verify_result.value());
         valid_signature_times.push_back(end - start);
     }
     
@@ -438,7 +482,7 @@ TEST_F(TimingAttackResistanceTest, SignatureVerificationConstantTime) {
         auto verify_result = provider->verify_signature(verify_params, invalid_signature);
         auto end = std::chrono::high_resolution_clock::now();
         
-        EXPECT_TRUE(verify_result.has_value() && !verify_result.value());
+        EXPECT_TRUE(verify_result.is_ok() && !verify_result.value());
         invalid_signature_times.push_back(end - start);
     }
     
@@ -455,7 +499,7 @@ TEST_F(TimingAttackResistanceTest, SignatureVerificationConstantTime) {
  */
 TEST_F(TimingAttackResistanceTest, AEADOperationsConstantTime) {
     auto provider_result = crypto::ProviderFactory::instance().create_provider("openssl");
-    ASSERT_TRUE(provider_result.has_value()) << "Failed to create OpenSSL provider";
+    ASSERT_TRUE(provider_result.is_ok()) << "Failed to create OpenSSL provider";
     auto& provider = provider_result.value();
     
     std::vector<std::chrono::nanoseconds> small_data_times;
@@ -480,7 +524,7 @@ TEST_F(TimingAttackResistanceTest, AEADOperationsConstantTime) {
         auto encrypt_result = provider->encrypt_aead(encrypt_params);
         auto end = std::chrono::high_resolution_clock::now();
         
-        ASSERT_TRUE(encrypt_result.has_value());
+        ASSERT_TRUE(encrypt_result.is_ok());
         small_data_times.push_back(end - start);
     }
     
@@ -499,7 +543,7 @@ TEST_F(TimingAttackResistanceTest, AEADOperationsConstantTime) {
         auto encrypt_result = provider->encrypt_aead(encrypt_params);
         auto end = std::chrono::high_resolution_clock::now();
         
-        ASSERT_TRUE(encrypt_result.has_value());
+        ASSERT_TRUE(encrypt_result.is_ok());
         large_data_times.push_back(end - start);
     }
     
@@ -514,7 +558,7 @@ TEST_F(TimingAttackResistanceTest, AEADOperationsConstantTime) {
  */
 TEST_F(TimingAttackResistanceTest, SequenceNumberEncryptionConstantTime) {
     auto provider_result = crypto::ProviderFactory::instance().create_provider("openssl");
-    ASSERT_TRUE(provider_result.has_value()) << "Failed to create OpenSSL provider";
+    ASSERT_TRUE(provider_result.is_ok()) << "Failed to create OpenSSL provider";
     auto& provider = provider_result.value();
     
     std::vector<std::chrono::nanoseconds> pattern_times;
@@ -541,7 +585,7 @@ TEST_F(TimingAttackResistanceTest, SequenceNumberEncryptionConstantTime) {
         auto result = provider->encrypt_aead(params);
         auto end = std::chrono::high_resolution_clock::now();
         
-        ASSERT_TRUE(result.has_value());
+        ASSERT_TRUE(result.is_ok());
         pattern_times.push_back(end - start);
     }
     
@@ -559,7 +603,7 @@ TEST_F(TimingAttackResistanceTest, SequenceNumberEncryptionConstantTime) {
         auto result = provider->encrypt_aead(params);
         auto end = std::chrono::high_resolution_clock::now();
         
-        ASSERT_TRUE(result.has_value());
+        ASSERT_TRUE(result.is_ok());
         random_times.push_back(end - start);
     }
     
@@ -576,7 +620,7 @@ TEST_F(TimingAttackResistanceTest, SequenceNumberEncryptionConstantTime) {
  */
 TEST_F(TimingAttackResistanceTest, RecordMACValidationConstantTime) {
     auto provider_result = crypto::ProviderFactory::instance().create_provider("openssl");
-    ASSERT_TRUE(provider_result.has_value()) << "Failed to create OpenSSL provider";
+    ASSERT_TRUE(provider_result.is_ok()) << "Failed to create OpenSSL provider";
     auto& provider = provider_result.value();
     
     std::vector<std::chrono::nanoseconds> valid_mac_times;
@@ -597,7 +641,7 @@ TEST_F(TimingAttackResistanceTest, RecordMACValidationConstantTime) {
         hmac_params.algorithm = HashAlgorithm::SHA256;
         
         auto mac_result = provider->compute_hmac(hmac_params);
-        ASSERT_TRUE(mac_result.has_value());
+        ASSERT_TRUE(mac_result.is_ok());
         
         // Prepare MAC validation parameters
         crypto::MACValidationParams validate_params;
@@ -611,7 +655,7 @@ TEST_F(TimingAttackResistanceTest, RecordMACValidationConstantTime) {
         auto verify_result = provider->verify_hmac(validate_params);
         auto end = std::chrono::high_resolution_clock::now();
         
-        EXPECT_TRUE(verify_result.has_value() && verify_result.value());
+        EXPECT_TRUE(verify_result.is_ok() && verify_result.value());
         valid_mac_times.push_back(end - start);
     }
     
@@ -632,7 +676,7 @@ TEST_F(TimingAttackResistanceTest, RecordMACValidationConstantTime) {
         auto verify_result = provider->verify_hmac(validate_params);
         auto end = std::chrono::high_resolution_clock::now();
         
-        EXPECT_TRUE(verify_result.has_value() && !verify_result.value());
+        EXPECT_TRUE(verify_result.is_ok() && !verify_result.value());
         invalid_mac_times.push_back(end - start);
     }
     

@@ -39,382 +39,8 @@ namespace dtls::v13::test {
  * on standard hardware and provide meaningful security insights.
  */
 class EnhancedSideChannelResistanceTest : public SecurityValidationSuite {
-protected:
-    void SetUp() override {
-        SecurityValidationSuite::SetUp();
-        setup_enhanced_side_channel_environment();
-    }
-
-    void TearDown() override {
-        generate_comprehensive_side_channel_report();
-        SecurityValidationSuite::TearDown();
-    }
-
-private:
-    void setup_enhanced_side_channel_environment() {
-        // Configure statistical analysis parameters
-        side_channel_config_.confidence_level = 0.99;
-        side_channel_config_.correlation_threshold = 0.1;
-        side_channel_config_.sample_size = 1000;
-        side_channel_config_.outlier_threshold = 3.0;
-        
-        // Initialize performance monitoring
-        #ifdef __linux__
-        setup_performance_counters();
-        #endif
-        
-        // Setup test vectors with known patterns
-        setup_comprehensive_test_vectors();
-        
-        // Calibrate timing measurements
-        calibrate_measurement_precision();
-    }
-
-    void setup_comprehensive_test_vectors() {
-        test_vectors_.clear();
-        
-        // Hamming weight test vectors (critical for power analysis)
-        for (int weight = 0; weight <= 8; ++weight) {
-            std::vector<uint8_t> vector(32);
-            for (auto& byte : vector) {
-                byte = generate_byte_with_hamming_weight(weight);
-            }
-            test_vectors_["hamming_weight_" + std::to_string(weight)] = vector;
-        }
-        
-        // Bit transition test vectors (for EM analysis)
-        test_vectors_["all_zeros"] = std::vector<uint8_t>(32, 0x00);
-        test_vectors_["all_ones"] = std::vector<uint8_t>(32, 0xFF);
-        test_vectors_["alternating_01"] = std::vector<uint8_t>(32, 0xAA);
-        test_vectors_["alternating_10"] = std::vector<uint8_t>(32, 0x55);
-        
-        // Cache line boundary test vectors
-        test_vectors_["cache_aligned"] = generate_cache_aligned_data();
-        test_vectors_["cache_misaligned"] = generate_cache_misaligned_data();
-        
-        // Random vectors for statistical baseline
-        std::mt19937 rng(42);
-        for (int i = 0; i < 10; ++i) {
-            std::vector<uint8_t> random_vector(32);
-            std::generate(random_vector.begin(), random_vector.end(), 
-                         [&rng]() { return rng() & 0xFF; });
-            test_vectors_["random_" + std::to_string(i)] = random_vector;
-        }
-    }
-
-private:
-    // Configuration and state
-    SideChannelConfig side_channel_config_;
-    std::map<std::string, std::vector<uint8_t>> test_vectors_;
-    std::map<std::string, SideChannelAnalysis> side_channel_results_;
-    std::chrono::nanoseconds timing_precision_;
-
-protected:
-    // Helper functions accessible to tests
-    SideChannelConfig& get_side_channel_config() { return side_channel_config_; }
-    std::map<std::string, SideChannelAnalysis>& get_side_channel_results() { return side_channel_results_; }
-};
-
-// ====================================================================
-// Enhanced Timing-Based Side-Channel Tests
-// ====================================================================
-
-/**
- * Test cryptographic operation timing resistance
- * Enhanced timing analysis with statistical validation
- */
-TEST_F(EnhancedSideChannelResistanceTest, CryptographicTimingAnalysis) {
-        auto provider_result = crypto::ProviderFactory::instance().create_provider("openssl");
-        ASSERT_TRUE(provider_result.has_value()) << "Failed to create OpenSSL provider";
-        auto& provider = provider_result.value();
-        
-        auto init_result = provider->initialize();
-        ASSERT_TRUE(init_result.has_value()) << "Failed to initialize provider";
-        
-        std::map<std::string, std::vector<std::chrono::nanoseconds>> timing_groups;
-        
-        // Test HMAC computation with different key patterns
-        for (const auto& [pattern_name, key_pattern] : test_vectors_) {
-            timing_groups[pattern_name].reserve(1000);
-            
-            for (size_t i = 0; i < 1000; ++i) {
-                auto data = generate_random_data(64);
-                
-                crypto::HMACParams params{
-                    .key = key_pattern,
-                    .data = data,
-                    .algorithm = HashAlgorithm::SHA256
-                };
-                
-                // Perform CPU warm-up
-                warmup_cpu();
-                
-                auto start = std::chrono::high_resolution_clock::now();
-                auto result = provider->compute_hmac(params);
-                auto end = std::chrono::high_resolution_clock::now();
-                
-                if (result.has_value()) {
-                    timing_groups[pattern_name].push_back(end - start);
-                }
-            }
-        }
-        
-        auto timing_analysis = analyze_timing_patterns(timing_groups);
-        
-        EXPECT_LT(timing_analysis.max_correlation, side_channel_config_.correlation_threshold)
-            << "HMAC timing correlates with key patterns (max correlation: " 
-            << timing_analysis.max_correlation << ")";
-            
-        record_side_channel_result("Cryptographic_Timing", timing_analysis);
-}
-
-/**
- * Test AEAD encryption timing resistance
- * Analyze timing patterns in AEAD operations
- */
-TEST_F(EnhancedSideChannelResistanceTest, AEADTimingAnalysis) {
-        auto provider_result = crypto::ProviderFactory::instance().create_provider("openssl");
-        ASSERT_TRUE(provider_result.has_value());
-        auto& provider = provider_result.value();
-        
-        auto init_result = provider->initialize();
-        ASSERT_TRUE(init_result.has_value());
-        
-        std::map<std::string, std::vector<std::chrono::nanoseconds>> timing_groups;
-        
-        // Test AEAD encryption with different plaintext patterns
-        for (const auto& [pattern_name, plaintext_pattern] : test_vectors_) {
-            timing_groups[pattern_name].reserve(500);
-            
-            for (size_t i = 0; i < 500; ++i) {
-                auto key = generate_random_data(32);
-                auto nonce = generate_random_data(12);
-                auto aad = generate_random_data(16);
-                
-                crypto::AEADEncryptionParams params{
-                    .key = key,
-                    .nonce = nonce,
-                    .additional_data = aad,
-                    .plaintext = plaintext_pattern,
-                    .cipher = AEADCipher::AES_256_GCM
-                };
-                
-                warmup_cpu();
-                
-                auto start = std::chrono::high_resolution_clock::now();
-                auto result = provider->encrypt_aead(params);
-                auto end = std::chrono::high_resolution_clock::now();
-                
-                if (result.has_value()) {
-                    timing_groups[pattern_name].push_back(end - start);
-                }
-            }
-        }
-        
-        auto timing_analysis = analyze_timing_patterns(timing_groups);
-        
-        EXPECT_LT(timing_analysis.max_correlation, 0.15) // Stricter for AEAD
-            << "AEAD encryption timing correlates with plaintext patterns";
-            
-        record_side_channel_result("AEAD_Timing", timing_analysis);
-}
-
-// ====================================================================
-// Cache-Based Side-Channel Analysis
-// ====================================================================
-
-/**
- * Test cache timing resistance with performance counters
- * Uses hardware performance counters when available
- */
-TEST_F(EnhancedSideChannelResistanceTest, CacheTimingAnalysis) {
-        auto provider_result = crypto::ProviderFactory::instance().create_provider("openssl");
-        ASSERT_TRUE(provider_result.has_value());
-        auto& provider = provider_result.value();
-        
-        auto init_result = provider->initialize();
-        ASSERT_TRUE(init_result.has_value());
-        
-        std::map<std::string, CacheMetrics> cache_metrics;
-        
-        for (const auto& [pattern_name, data_pattern] : test_vectors_) {
-            CacheMetrics metrics;
-            
-            for (size_t i = 0; i < 500; ++i) {
-                // Flush caches
-                flush_cache_lines();
-                
-                auto key = generate_random_data(32);
-                
-                crypto::HMACParams params{
-                    .key = key,
-                    .data = data_pattern,
-                    .algorithm = HashAlgorithm::SHA256
-                };
-                
-                // Measure cache performance
-                auto cache_start = measure_cache_performance();
-                auto result = provider->compute_hmac(params);
-                auto cache_end = measure_cache_performance();
-                
-                if (result.has_value()) {
-                    metrics.cache_misses.push_back(cache_end.cache_misses - cache_start.cache_misses);
-                    metrics.cache_hits.push_back(cache_end.cache_hits - cache_start.cache_hits);
-                    metrics.instructions.push_back(cache_end.instructions - cache_start.instructions);
-                }
-            }
-            
-            cache_metrics[pattern_name] = metrics;
-        }
-        
-        auto cache_analysis = analyze_cache_patterns(cache_metrics);
-        
-        EXPECT_LT(cache_analysis.max_correlation, 0.2)
-            << "Cache access patterns correlate with secret data";
-            
-        record_side_channel_result("Cache_Timing", cache_analysis);
-}
-
-    /**
-     * Test memory access pattern resistance
-     * Analyze patterns in memory access during crypto operations
-     */
-    TEST_F(EnhancedSideChannelResistanceTest, MemoryAccessPatternAnalysis) {
-        auto provider_result = crypto::ProviderFactory::instance().create_provider("openssl");
-        ASSERT_TRUE(provider_result.has_value());
-        auto& provider = provider_result.value();
-        
-        auto init_result = provider->initialize();
-        ASSERT_TRUE(init_result.has_value());
-        
-        std::map<std::string, std::vector<MemoryAccessPattern>> access_patterns;
-        
-        for (const auto& [pattern_name, secret_pattern] : test_vectors_) {
-            access_patterns[pattern_name].reserve(200);
-            
-            for (size_t i = 0; i < 200; ++i) {
-                auto message = generate_random_data(64);
-                
-                // Monitor memory access patterns during signing
-                auto access_start = start_memory_monitoring();
-                
-                crypto::SignatureParams sign_params{
-                    .data = message,
-                    .scheme = SignatureScheme::ECDSA_SECP256R1_SHA256,
-                    // Note: In real implementation, would use secret_pattern as private key
-                };
-                
-                // Simulate signing operation
-                simulate_signature_operation(secret_pattern, message);
-                
-                auto access_pattern = end_memory_monitoring(access_start);
-                access_patterns[pattern_name].push_back(access_pattern);
-            }
-        }
-        
-        auto pattern_analysis = analyze_memory_access_patterns(access_patterns);
-        
-        EXPECT_LT(pattern_analysis.max_correlation, 0.15)
-            << "Memory access patterns leak secret information";
-            
-        record_side_channel_result("Memory_Access_Patterns", pattern_analysis);
-    }
-
-    // ====================================================================
-    // Power Analysis Simulation
-    // ====================================================================
-
-    /**
-     * Test simulated power analysis resistance
-     * Simulates power consumption analysis techniques
-     */
-    TEST_F(EnhancedSideChannelResistanceTest, SimulatedPowerAnalysis) {
-        auto provider_result = crypto::ProviderFactory::instance().create_provider("openssl");
-        ASSERT_TRUE(provider_result.has_value());
-        auto& provider = provider_result.value();
-        
-        auto init_result = provider->initialize();
-        ASSERT_TRUE(init_result.has_value());
-        
-        std::map<std::string, std::vector<PowerConsumptionTrace>> power_traces;
-        
-        // Analyze power consumption patterns for different key patterns
-        for (const auto& [pattern_name, key_pattern] : test_vectors_) {
-            power_traces[pattern_name].reserve(300);
-            
-            for (size_t i = 0; i < 300; ++i) {
-                auto plaintext = generate_random_data(16);
-                auto nonce = generate_random_data(12);
-                
-                // Simulate power measurement
-                auto power_trace = simulate_power_consumption([&]() {
-                    crypto::AEADEncryptionParams params{
-                        .key = key_pattern,
-                        .nonce = nonce,
-                        .plaintext = plaintext,
-                        .cipher = AEADCipher::AES_128_GCM
-                    };
-                    
-                    return provider->encrypt_aead(params);
-                });
-                
-                power_traces[pattern_name].push_back(power_trace);
-            }
-        }
-        
-        auto power_analysis = analyze_power_consumption_patterns(power_traces);
-        
-        EXPECT_LT(power_analysis.max_correlation, 0.1)
-            << "Power consumption patterns correlate with secret keys";
-            
-        record_side_channel_result("Power_Analysis", power_analysis);
-    }
-
-    // ====================================================================
-    // Branch Prediction Analysis
-    // ====================================================================
-
-    /**
-     * Test branch prediction resistance
-     * Analyze if secret data affects branch prediction patterns
-     */
-    TEST_F(EnhancedSideChannelResistanceTest, BranchPredictionAnalysis) {
-        std::map<std::string, std::vector<BranchPredictionMetrics>> branch_metrics;
-        
-        for (const auto& [pattern_name, secret_data] : test_vectors_) {
-            branch_metrics[pattern_name].reserve(500);
-            
-            for (size_t i = 0; i < 500; ++i) {
-                auto metrics_start = measure_branch_prediction();
-                
-                // Simulate secret-dependent branching
-                simulate_secret_dependent_branching(secret_data);
-                
-                auto metrics_end = measure_branch_prediction();
-                
-                BranchPredictionMetrics metrics{
-                    .branch_misses = metrics_end.branch_misses - metrics_start.branch_misses,
-                    .branch_instructions = metrics_end.branch_instructions - metrics_start.branch_instructions,
-                    .conditional_branches = metrics_end.conditional_branches - metrics_start.conditional_branches
-                };
-                
-                branch_metrics[pattern_name].push_back(metrics);
-            }
-        }
-        
-        auto branch_analysis = analyze_branch_prediction_patterns(branch_metrics);
-        
-        EXPECT_LT(branch_analysis.max_correlation, 0.1)
-            << "Branch prediction patterns correlate with secret data";
-            
-        record_side_channel_result("Branch_Prediction", branch_analysis);
-    }
-
-private:
-    // ====================================================================
-    // Analysis Structures and Configuration
-    // ====================================================================
-    
+public:
+    // Analysis result structures
     struct SideChannelAnalysis {
         double max_correlation{0.0};
         double mean_correlation{0.0};
@@ -466,10 +92,77 @@ private:
         uint64_t conditional_branches{0};
     };
 
-    // ====================================================================
+protected:
+    void SetUp() override {
+        SecurityValidationSuite::SetUp();
+        setup_enhanced_side_channel_environment();
+    }
+
+    void TearDown() override {
+        generate_comprehensive_side_channel_report();
+        SecurityValidationSuite::TearDown();
+    }
+
+    // Helper functions accessible to tests
+    SideChannelConfig& get_side_channel_config() { return side_channel_config_; }
+    std::map<std::string, SideChannelAnalysis>& get_side_channel_results() { return side_channel_results_; }
+
+protected:
+    void setup_enhanced_side_channel_environment() {
+        // Configure statistical analysis parameters
+        side_channel_config_.confidence_level = 0.99;
+        side_channel_config_.correlation_threshold = 0.1;
+        side_channel_config_.sample_size = 1000;
+        side_channel_config_.outlier_threshold = 3.0;
+        
+        // Initialize performance monitoring
+        #ifdef __linux__
+        setup_performance_counters();
+        #endif
+        
+        // Setup test vectors with known patterns
+        setup_comprehensive_test_vectors();
+        
+        // Calibrate timing measurements
+        calibrate_measurement_precision();
+    }
+
+    void setup_comprehensive_test_vectors() {
+        test_vectors_.clear();
+        
+        // Hamming weight test vectors (critical for power analysis)
+        for (int weight = 0; weight <= 8; ++weight) {
+            std::vector<uint8_t> vector(32);
+            for (auto& byte : vector) {
+                byte = generate_byte_with_hamming_weight(weight);
+            }
+            test_vectors_["hamming_weight_" + std::to_string(weight)] = vector;
+        }
+        
+        // Bit transition test vectors (for EM analysis)
+        test_vectors_["all_zeros"] = std::vector<uint8_t>(32, 0x00);
+        test_vectors_["all_ones"] = std::vector<uint8_t>(32, 0xFF);
+        test_vectors_["alternating_01"] = std::vector<uint8_t>(32, 0xAA);
+        test_vectors_["alternating_10"] = std::vector<uint8_t>(32, 0x55);
+        
+        // Cache line boundary test vectors
+        test_vectors_["cache_aligned"] = generate_cache_aligned_data();
+        test_vectors_["cache_misaligned"] = generate_cache_misaligned_data();
+        
+        // Random vectors for statistical baseline
+        std::mt19937 rng(42);
+        for (int i = 0; i < 10; ++i) {
+            std::vector<uint8_t> random_vector(32);
+            std::generate(random_vector.begin(), random_vector.end(), 
+                         [&rng]() { return rng() & 0xFF; });
+            test_vectors_["random_" + std::to_string(i)] = random_vector;
+        }
+    }
+
+    // Configuration and state
+    std::map<std::string, std::vector<uint8_t>> test_vectors_;
+
     // Analysis Functions
-    // ====================================================================
-    
     SideChannelAnalysis analyze_timing_patterns(
         const std::map<std::string, std::vector<std::chrono::nanoseconds>>& timing_groups) {
         
@@ -645,10 +338,7 @@ private:
         return analysis;
     }
 
-    // ====================================================================
     // Utility Functions
-    // ====================================================================
-    
     double calculate_correlation(const std::vector<double>& x, const std::vector<double>& y) {
         if (x.size() != y.size() || x.empty()) return 0.0;
         
@@ -740,7 +430,7 @@ private:
         return MemoryAccessPattern{};
     }
     
-    MemoryAccessPattern end_memory_monitoring(const MemoryAccessPattern& start) {
+    MemoryAccessPattern end_memory_monitoring(const MemoryAccessPattern& /* start */) {
         MemoryAccessPattern pattern;
         
         std::random_device rd;
@@ -756,13 +446,14 @@ private:
         return pattern;
     }
     
-    PowerConsumptionTrace simulate_power_consumption(std::function<void()> operation) {
+    PowerConsumptionTrace simulate_power_consumption(std::function<Result<void>()> operation) {
         PowerConsumptionTrace trace;
         
         // Simulate power measurement during operation
         auto start = std::chrono::high_resolution_clock::now();
-        operation();
+        auto result = operation();
         auto end = std::chrono::high_resolution_clock::now();
+        (void)result; // Suppress unused variable warning
         
         auto duration_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
         
@@ -898,14 +589,294 @@ private:
 private:
     // Configuration and state
     SideChannelConfig side_channel_config_;
-    std::map<std::string, std::vector<uint8_t>> test_vectors_;
     std::map<std::string, SideChannelAnalysis> side_channel_results_;
     std::chrono::nanoseconds timing_precision_;
 };
 
 // ====================================================================
-// Additional Test Cases for Specific Side-Channel Scenarios
+// Enhanced Timing-Based Side-Channel Tests
 // ====================================================================
+
+/**
+ * Test cryptographic operation timing resistance
+ * Enhanced timing analysis with statistical validation
+ */
+TEST_F(EnhancedSideChannelResistanceTest, CryptographicTimingAnalysis) {
+    auto provider_result = crypto::ProviderFactory::instance().create_provider("openssl");
+    ASSERT_TRUE(provider_result.is_success()) << "Failed to create OpenSSL provider";
+    auto& provider = provider_result.value();
+    
+    auto init_result = provider->initialize();
+    ASSERT_TRUE(init_result.is_success()) << "Failed to initialize provider";
+    
+    std::map<std::string, std::vector<std::chrono::nanoseconds>> timing_groups;
+    
+    // Test HMAC computation with different key patterns
+    for (const auto& [pattern_name, key_pattern] : test_vectors_) {
+        timing_groups[pattern_name].reserve(1000);
+        
+        for (size_t i = 0; i < 1000; ++i) {
+            auto data = generate_random_data(64);
+            
+            crypto::HMACParams params{
+                .key = key_pattern,
+                .data = data,
+                .algorithm = HashAlgorithm::SHA256
+            };
+            
+            // Perform CPU warm-up
+            warmup_cpu();
+            
+            auto start = std::chrono::high_resolution_clock::now();
+            auto result = provider->compute_hmac(params);
+            auto end = std::chrono::high_resolution_clock::now();
+            
+            if (result.is_success()) {
+                timing_groups[pattern_name].push_back(end - start);
+            }
+        }
+    }
+    
+    auto timing_analysis = analyze_timing_patterns(timing_groups);
+    
+    EXPECT_LT(timing_analysis.max_correlation, get_side_channel_config().correlation_threshold)
+        << "HMAC timing correlates with key patterns (max correlation: " 
+        << timing_analysis.max_correlation << ")";
+        
+    record_side_channel_result("Cryptographic_Timing", timing_analysis);
+}
+
+/**
+ * Test AEAD encryption timing resistance
+ * Analyze timing patterns in AEAD operations
+ */
+TEST_F(EnhancedSideChannelResistanceTest, AEADTimingAnalysis) {
+    auto provider_result = crypto::ProviderFactory::instance().create_provider("openssl");
+    ASSERT_TRUE(provider_result.is_success());
+    auto& provider = provider_result.value();
+    
+    auto init_result = provider->initialize();
+    ASSERT_TRUE(init_result.is_success());
+    
+    std::map<std::string, std::vector<std::chrono::nanoseconds>> timing_groups;
+    
+    // Test AEAD encryption with different plaintext patterns
+    for (const auto& [pattern_name, plaintext_pattern] : test_vectors_) {
+        timing_groups[pattern_name].reserve(500);
+        
+        for (size_t i = 0; i < 500; ++i) {
+            auto key = generate_random_data(32);
+            auto nonce = generate_random_data(12);
+            auto aad = generate_random_data(16);
+            
+            crypto::AEADEncryptionParams params{
+                .key = key,
+                .nonce = nonce,
+                .additional_data = aad,
+                .plaintext = plaintext_pattern,
+                .cipher = AEADCipher::AES_256_GCM
+            };
+            
+            warmup_cpu();
+            
+            auto start = std::chrono::high_resolution_clock::now();
+            auto result = provider->encrypt_aead(params);
+            auto end = std::chrono::high_resolution_clock::now();
+            
+            if (result.is_success()) {
+                timing_groups[pattern_name].push_back(end - start);
+            }
+        }
+    }
+    
+    auto timing_analysis = analyze_timing_patterns(timing_groups);
+    
+    EXPECT_LT(timing_analysis.max_correlation, 0.15) // Stricter for AEAD
+        << "AEAD encryption timing correlates with plaintext patterns";
+        
+    record_side_channel_result("AEAD_Timing", timing_analysis);
+}
+
+/**
+ * Test cache timing resistance with performance counters
+ * Uses hardware performance counters when available
+ */
+TEST_F(EnhancedSideChannelResistanceTest, CacheTimingAnalysis) {
+    auto provider_result = crypto::ProviderFactory::instance().create_provider("openssl");
+    ASSERT_TRUE(provider_result.is_success());
+    auto& provider = provider_result.value();
+    
+    auto init_result = provider->initialize();
+    ASSERT_TRUE(init_result.is_success());
+    
+    std::map<std::string, CacheMetrics> cache_metrics;
+    
+    for (const auto& [pattern_name, data_pattern] : test_vectors_) {
+        CacheMetrics metrics;
+        
+        for (size_t i = 0; i < 500; ++i) {
+            // Flush caches
+            flush_cache_lines();
+            
+            auto key = generate_random_data(32);
+            
+            crypto::HMACParams params{
+                .key = key,
+                .data = data_pattern,
+                .algorithm = HashAlgorithm::SHA256
+            };
+            
+            // Measure cache performance
+            auto cache_start = measure_cache_performance();
+            auto result = provider->compute_hmac(params);
+            auto cache_end = measure_cache_performance();
+            
+            if (result.is_success()) {
+                metrics.cache_misses.push_back(cache_end.cache_misses - cache_start.cache_misses);
+                metrics.cache_hits.push_back(cache_end.cache_hits - cache_start.cache_hits);
+                metrics.instructions.push_back(cache_end.instructions - cache_start.instructions);
+            }
+        }
+        
+        cache_metrics[pattern_name] = metrics;
+    }
+    
+    auto cache_analysis = analyze_cache_patterns(cache_metrics);
+    
+    EXPECT_LT(cache_analysis.max_correlation, 0.2)
+        << "Cache access patterns correlate with secret data";
+        
+    record_side_channel_result("Cache_Timing", cache_analysis);
+}
+
+/**
+ * Test memory access pattern resistance
+ * Analyze patterns in memory access during crypto operations
+ */
+TEST_F(EnhancedSideChannelResistanceTest, MemoryAccessPatternAnalysis) {
+    auto provider_result = crypto::ProviderFactory::instance().create_provider("openssl");
+    ASSERT_TRUE(provider_result.is_success());
+    auto& provider = provider_result.value();
+    
+    auto init_result = provider->initialize();
+    ASSERT_TRUE(init_result.is_success());
+    
+    std::map<std::string, std::vector<MemoryAccessPattern>> access_patterns;
+    
+    for (const auto& [pattern_name, secret_pattern] : test_vectors_) {
+        access_patterns[pattern_name].reserve(200);
+        
+        for (size_t i = 0; i < 200; ++i) {
+            auto message = generate_random_data(64);
+            
+            // Monitor memory access patterns during signing
+            auto access_start = start_memory_monitoring();
+            
+            crypto::SignatureParams sign_params{
+                .data = message,
+                .scheme = SignatureScheme::ECDSA_SECP256R1_SHA256,
+                // Note: In real implementation, would use secret_pattern as private key
+            };
+            
+            // Simulate signing operation
+            simulate_signature_operation(secret_pattern, message);
+            
+            auto access_pattern = end_memory_monitoring(access_start);
+            access_patterns[pattern_name].push_back(access_pattern);
+        }
+    }
+    
+    auto pattern_analysis = analyze_memory_access_patterns(access_patterns);
+    
+    EXPECT_LT(pattern_analysis.max_correlation, 0.15)
+        << "Memory access patterns leak secret information";
+        
+    record_side_channel_result("Memory_Access_Patterns", pattern_analysis);
+}
+
+/**
+ * Test simulated power analysis resistance
+ * Simulates power consumption analysis techniques
+ */
+TEST_F(EnhancedSideChannelResistanceTest, SimulatedPowerAnalysis) {
+    auto provider_result = crypto::ProviderFactory::instance().create_provider("openssl");
+    ASSERT_TRUE(provider_result.is_success());
+    auto& provider = provider_result.value();
+    
+    auto init_result = provider->initialize();
+    ASSERT_TRUE(init_result.is_success());
+    
+    std::map<std::string, std::vector<PowerConsumptionTrace>> power_traces;
+    
+    // Analyze power consumption patterns for different key patterns
+    for (const auto& [pattern_name, key_pattern] : test_vectors_) {
+        power_traces[pattern_name].reserve(300);
+        
+        for (size_t i = 0; i < 300; ++i) {
+            auto plaintext = generate_random_data(16);
+            auto nonce = generate_random_data(12);
+            
+            // Simulate power measurement
+            auto power_trace = simulate_power_consumption([&]() -> Result<void> {
+                crypto::AEADEncryptionParams params{
+                    .key = key_pattern,
+                    .nonce = nonce,
+                    .additional_data = std::vector<uint8_t>(),
+                    .plaintext = plaintext,
+                    .cipher = AEADCipher::AES_128_GCM
+                };
+                
+                auto result = provider->encrypt_aead(params);
+                return result.is_success() ? Result<void>{} : Result<void>{DTLSError::DECRYPT_ERROR};
+            });
+            
+            power_traces[pattern_name].push_back(power_trace);
+        }
+    }
+    
+    auto power_analysis = analyze_power_consumption_patterns(power_traces);
+    
+    EXPECT_LT(power_analysis.max_correlation, 0.1)
+        << "Power consumption patterns correlate with secret keys";
+        
+    record_side_channel_result("Power_Analysis", power_analysis);
+}
+
+/**
+ * Test branch prediction resistance
+ * Analyze if secret data affects branch prediction patterns
+ */
+TEST_F(EnhancedSideChannelResistanceTest, BranchPredictionAnalysis) {
+    std::map<std::string, std::vector<BranchPredictionMetrics>> branch_metrics;
+    
+    for (const auto& [pattern_name, secret_data] : test_vectors_) {
+        branch_metrics[pattern_name].reserve(500);
+        
+        for (size_t i = 0; i < 500; ++i) {
+            auto metrics_start = measure_branch_prediction();
+            
+            // Simulate secret-dependent branching
+            simulate_secret_dependent_branching(secret_data);
+            
+            auto metrics_end = measure_branch_prediction();
+            
+            BranchPredictionMetrics metrics{
+                .branch_misses = metrics_end.branch_misses - metrics_start.branch_misses,
+                .branch_instructions = metrics_end.branch_instructions - metrics_start.branch_instructions,
+                .conditional_branches = metrics_end.conditional_branches - metrics_start.conditional_branches
+            };
+            
+            branch_metrics[pattern_name].push_back(metrics);
+        }
+    }
+    
+    auto branch_analysis = analyze_branch_prediction_patterns(branch_metrics);
+    
+    EXPECT_LT(branch_analysis.max_correlation, 0.1)
+        << "Branch prediction patterns correlate with secret data";
+        
+    record_side_channel_result("Branch_Prediction", branch_analysis);
+}
 
 /**
  * Test comprehensive side-channel resistance validation
@@ -925,12 +896,15 @@ TEST_F(EnhancedSideChannelResistanceTest, ComprehensiveSideChannelValidation) {
     size_t failed_tests = 0;
     double max_overall_correlation = 0.0;
     
+    auto& results = get_side_channel_results();
+    auto& config = get_side_channel_config();
+    
     for (const auto& test_name : required_tests) {
-        auto it = side_channel_results_.find(test_name);
-        if (it != side_channel_results_.end()) {
+        auto it = results.find(test_name);
+        if (it != results.end()) {
             max_overall_correlation = std::max(max_overall_correlation, it->second.max_correlation);
             
-            if (it->second.max_correlation <= side_channel_config_.correlation_threshold) {
+            if (it->second.max_correlation <= config.correlation_threshold) {
                 passed_tests++;
             } else {
                 failed_tests++;
@@ -945,15 +919,15 @@ TEST_F(EnhancedSideChannelResistanceTest, ComprehensiveSideChannelValidation) {
     
     EXPECT_EQ(failed_tests, 0u) << "Some side-channel resistance tests failed";
     EXPECT_GE(passed_tests, required_tests.size() * 0.8) << "Insufficient side-channel coverage";
-    EXPECT_LT(max_overall_correlation, side_channel_config_.correlation_threshold)
+    EXPECT_LT(max_overall_correlation, config.correlation_threshold)
         << "Overall side-channel resistance insufficient";
         
     // Log final assessment
     std::cout << "Side-Channel Analysis Summary:\n";
     std::cout << "  Tests Passed: " << passed_tests << "/" << required_tests.size() << "\n";
     std::cout << "  Maximum Correlation: " << max_overall_correlation << "\n";
-    std::cout << "  Security Threshold: " << side_channel_config_.correlation_threshold << "\n";
-    std::cout << "  Overall Assessment: " << (max_overall_correlation <= side_channel_config_.correlation_threshold ? "SECURE" : "VULNERABLE") << "\n";
+    std::cout << "  Security Threshold: " << config.correlation_threshold << "\n";
+    std::cout << "  Overall Assessment: " << (max_overall_correlation <= config.correlation_threshold ? "SECURE" : "VULNERABLE") << "\n";
 }
 
 } // namespace dtls::v13::test
