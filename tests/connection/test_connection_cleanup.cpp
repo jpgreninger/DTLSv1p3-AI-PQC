@@ -17,6 +17,9 @@ protected:
         config_.retransmission_timeout = std::chrono::milliseconds(1000);
         config_.max_retransmissions = 3;
         
+        // Disable error recovery for tests to prevent timeouts
+        config_.error_recovery.enable_automatic_recovery = false;
+        
         // Create test network address
         test_address_.family = NetworkAddress::Family::IPv4;
         test_address_.port = 4433;

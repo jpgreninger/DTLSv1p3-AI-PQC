@@ -204,7 +204,9 @@ Result<void> EpochManager::set_epoch_keys(uint16_t epoch,
                                         const std::vector<uint8_t>& write_iv) {
     std::lock_guard<std::mutex> lock(mutex_);
     
-    if (read_key.empty() || write_key.empty() || read_iv.empty() || write_iv.empty()) {
+    // Epoch 0 uses null protection (empty keys are valid)
+    // For other epochs, keys must be non-empty
+    if (epoch != 0 && (read_key.empty() || write_key.empty() || read_iv.empty() || write_iv.empty())) {
         return Result<void>(DTLSError::INVALID_KEY_MATERIAL);
     }
     

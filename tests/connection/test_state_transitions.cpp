@@ -30,6 +30,9 @@ protected:
         config_.retransmission_timeout = std::chrono::milliseconds(500);
         config_.max_retransmissions = 3;
         
+        // Disable error recovery for tests to prevent timeouts
+        config_.error_recovery.enable_automatic_recovery = false;
+        
         // Create test addresses
         server_address_ = NetworkAddress::from_ipv4(0x7F000001, 4433); // 127.0.0.1:4433
         client_address_ = NetworkAddress::from_ipv4(0x7F000001, 54321); // 127.0.0.1:54321
@@ -122,7 +125,7 @@ TEST_F(StateTransitionTest, ClientHandshakeInitiation) {
     client_connection_ = std::move(client_result.value());
     
     auto init_result = client_connection_->initialize();
-    ASSERT_TRUE(init_result.is_success()) << "Failed to initialize client connection";
+    ASSERT_TRUE(init_result.is_success()) << "Failed to initialize client connection: " << static_cast<int>(init_result.error());
     
     // Start handshake should transition to WAIT_SERVER_HELLO
     auto handshake_result = client_connection_->start_handshake();
