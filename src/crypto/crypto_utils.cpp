@@ -1287,37 +1287,32 @@ Result<uint64_t> decrypt_sequence_number(
         case AEADCipher::AES_256_GCM:
         case AEADCipher::AES_128_CCM:
         case AEADCipher::AES_128_CCM_8: {
-            // For AES-based AEAD: Mask = AES-ECB(sn_key, Ciphertext[0..15])
+            // For AES-based AEAD: Use HMAC-SHA256 for mask generation
+            // This matches the encrypt function implementation
             if (sequence_number_key.size() < 16) {
                 return make_error<uint64_t>(DTLSError::INVALID_PARAMETER);
             }
             
-            // Use AES-ECB to encrypt the first 16 bytes of ciphertext
+            // Use HMAC-SHA256(sn_key, ciphertext[0:15]) for mask generation
             std::vector<uint8_t> block(ciphertext.begin(), ciphertext.begin() + 16);
             
-            // WORKAROUND: Use AEAD-GCM in CTR-like mode for ECB simulation
-            // This creates deterministic output by using ciphertext as IV
-            AEADParams ecb_params;
-            ecb_params.key = sequence_number_key;
-            // Use first 12 bytes of ciphertext as nonce for deterministic encryption
-            std::vector<uint8_t> deterministic_nonce(12);
-            std::copy(ciphertext.begin(), ciphertext.begin() + 12, deterministic_nonce.begin());
-            ecb_params.nonce = deterministic_nonce;
-            ecb_params.additional_data = {}; // No AAD
-            ecb_params.cipher = AEADCipher::AES_128_GCM;
+            HMACParams hmac_params;
+            hmac_params.key = sequence_number_key;
+            hmac_params.data = block;
+            hmac_params.algorithm = HashAlgorithm::SHA256;
             
-            auto mask_result = provider.aead_encrypt(ecb_params, block);
+            auto mask_result = provider.compute_hmac(hmac_params);
             if (!mask_result.is_success()) {
                 return make_error<uint64_t>(mask_result.error());
             }
             
-            auto encrypted_mask = mask_result.value();
-            if (encrypted_mask.size() < 16) {
+            auto hmac_output = mask_result.value();
+            if (hmac_output.size() < 16) {
                 return make_error<uint64_t>(DTLSError::INTERNAL_ERROR);
             }
             
-            // Extract first 16 bytes as mask (before auth tag)
-            std::copy(encrypted_mask.begin(), encrypted_mask.begin() + 16, mask.begin());
+            // Use first 16 bytes of HMAC output as mask
+            std::copy(hmac_output.begin(), hmac_output.begin() + 16, mask.begin());
             break;
         }
         

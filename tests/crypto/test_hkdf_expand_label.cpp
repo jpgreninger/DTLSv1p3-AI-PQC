@@ -625,7 +625,7 @@ TEST_F(HKDFExpandLabelRFCTest, RFC5869_HKDF_TestVector_Case3_SHA256_Long) {
     }
     
     // RFC 5869 Test Case 3 - SHA-256 with longer inputs/outputs
-    std::vector<uint8_t> ikm(80, 0x0b);  // 80 bytes of 0x0b
+    std::vector<uint8_t> ikm(22, 0x0b);  // 22 bytes of 0x0b (corrected from erroneous 80)
     
     std::vector<uint8_t> salt; // Empty salt
     
