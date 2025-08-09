@@ -19,6 +19,7 @@ using namespace dtls::v13::crypto::utils;
 #include <openssl/bio.h>
 #include <chrono>
 #include <thread>
+#include <iostream>
 
 namespace dtls {
 namespace v13 {

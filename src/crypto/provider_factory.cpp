@@ -5,6 +5,7 @@
 #endif
 #include <algorithm>
 #include <chrono>
+#include <iostream>
 
 namespace dtls {
 namespace v13 {
@@ -76,6 +77,10 @@ void ProviderFactory::unregister_provider(const std::string& name) {
 
 std::vector<std::string> ProviderFactory::available_providers() const {
     std::lock_guard<std::mutex> lock(mutex_);
+    return available_providers_unlocked();
+}
+
+std::vector<std::string> ProviderFactory::available_providers_unlocked() const {
     std::vector<std::string> available;
     
     for (const auto& [name, registration] : providers_) {
@@ -210,7 +215,7 @@ Result<std::unique_ptr<CryptoProvider>> ProviderFactory::create_default_provider
     }
     
     // Fall back to highest priority available provider
-    auto available = available_providers();
+    auto available = available_providers_unlocked();
     if (!available.empty()) {
         auto unlock_guard = std::unique_lock<std::mutex>(mutex_, std::adopt_lock);
         unlock_guard.unlock();

@@ -49,6 +49,7 @@ public:
     
     // Provider discovery
     std::vector<std::string> available_providers() const;
+    std::vector<std::string> available_providers_unlocked() const;
     std::vector<ProviderRegistration> get_all_registrations() const;
     Result<ProviderRegistration> get_registration(const std::string& name) const;
     

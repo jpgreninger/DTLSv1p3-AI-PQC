@@ -1190,12 +1190,16 @@ Result<uint64_t> encrypt_sequence_number(
             // Use AES-ECB to encrypt the first 16 bytes of ciphertext
             std::vector<uint8_t> block(ciphertext.begin(), ciphertext.begin() + 16);
             
-            // We'll use AEAD encryption with zero nonce/AAD to simulate ECB
+            // WORKAROUND: Use AEAD-GCM in CTR-like mode for ECB simulation
+            // This creates deterministic output by using ciphertext as IV
             AEADParams ecb_params;
             ecb_params.key = sequence_number_key;
-            ecb_params.nonce = std::vector<uint8_t>(12, 0); // Zero nonce
+            // Use first 12 bytes of ciphertext as nonce for deterministic encryption
+            std::vector<uint8_t> deterministic_nonce(12);
+            std::copy(ciphertext.begin(), ciphertext.begin() + 12, deterministic_nonce.begin());
+            ecb_params.nonce = deterministic_nonce;
             ecb_params.additional_data = {}; // No AAD
-            ecb_params.cipher = AEADCipher::AES_128_GCM; // Use GCM as ECB simulation
+            ecb_params.cipher = AEADCipher::AES_128_GCM;
             
             auto mask_result = provider.aead_encrypt(ecb_params, block);
             if (!mask_result.is_success()) {
@@ -1301,12 +1305,16 @@ Result<uint64_t> decrypt_sequence_number(
             // Use AES-ECB to encrypt the first 16 bytes of ciphertext
             std::vector<uint8_t> block(ciphertext.begin(), ciphertext.begin() + 16);
             
-            // We'll use AEAD encryption with zero nonce/AAD to simulate ECB
+            // WORKAROUND: Use AEAD-GCM in CTR-like mode for ECB simulation
+            // This creates deterministic output by using ciphertext as IV
             AEADParams ecb_params;
             ecb_params.key = sequence_number_key;
-            ecb_params.nonce = std::vector<uint8_t>(12, 0); // Zero nonce
+            // Use first 12 bytes of ciphertext as nonce for deterministic encryption
+            std::vector<uint8_t> deterministic_nonce(12);
+            std::copy(ciphertext.begin(), ciphertext.begin() + 12, deterministic_nonce.begin());
+            ecb_params.nonce = deterministic_nonce;
             ecb_params.additional_data = {}; // No AAD
-            ecb_params.cipher = AEADCipher::AES_128_GCM; // Use GCM as ECB simulation
+            ecb_params.cipher = AEADCipher::AES_128_GCM;
             
             auto mask_result = provider.aead_encrypt(ecb_params, block);
             if (!mask_result.is_success()) {
