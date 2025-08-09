@@ -497,6 +497,10 @@ TEST_F(DTLSIntegrationTest, ErrorInjectionAndRecovery) {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
     
+    // With error injection, the transfer may not succeed immediately,
+    // but DTLS should handle the errors gracefully (no crashes/hangs)
+    // We don't strictly require success with error injection, as this tests resilience
+    
     // Disable error injection
     test_env_->inject_transport_error(false);
     
