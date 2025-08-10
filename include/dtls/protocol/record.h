@@ -24,6 +24,31 @@ enum class ProtocolVersion : uint16_t {
     DTLS_1_3 = 0xfefc
 };
 
+// Comparison operators for ProtocolVersion (DTLS versions are reverse-ordered)
+inline bool operator<(ProtocolVersion a, ProtocolVersion b) {
+    return static_cast<uint16_t>(a) > static_cast<uint16_t>(b); 
+}
+
+inline bool operator<=(ProtocolVersion a, ProtocolVersion b) {
+    return static_cast<uint16_t>(a) >= static_cast<uint16_t>(b);
+}
+
+inline bool operator>(ProtocolVersion a, ProtocolVersion b) {
+    return static_cast<uint16_t>(a) < static_cast<uint16_t>(b);
+}
+
+inline bool operator>=(ProtocolVersion a, ProtocolVersion b) {
+    return static_cast<uint16_t>(a) <= static_cast<uint16_t>(b);
+}
+
+inline bool operator==(ProtocolVersion a, ProtocolVersion b) {
+    return static_cast<uint16_t>(a) == static_cast<uint16_t>(b);
+}
+
+inline bool operator!=(ProtocolVersion a, ProtocolVersion b) {
+    return static_cast<uint16_t>(a) != static_cast<uint16_t>(b);
+}
+
 struct RecordHeader {
     ContentType content_type;
     ProtocolVersion version;

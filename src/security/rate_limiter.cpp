@@ -19,8 +19,10 @@ bool TokenBucket::try_consume(size_t tokens) {
     
     refill_tokens();
     
-    if (current_tokens_.load() >= tokens) {
-        current_tokens_ -= tokens;
+    // Get current token count and check if we have enough
+    size_t current = current_tokens_.load();
+    if (current >= tokens) {
+        current_tokens_.store(current - tokens);
         return true;
     }
     
@@ -47,9 +49,11 @@ void TokenBucket::refill_tokens() {
     if (time_passed.count() > 0) {
         size_t tokens_to_add = (time_passed.count() * tokens_per_second_) / 1000;
         if (tokens_to_add > 0) {
-            size_t new_tokens = std::min(max_tokens_, current_tokens_.load() + tokens_to_add);
-            current_tokens_ = new_tokens;
-            last_refill_ = now;
+            // Read current tokens atomically, calculate new value, and store atomically
+            size_t current = current_tokens_.load();
+            size_t new_tokens = std::min(max_tokens_, current + tokens_to_add);
+            current_tokens_.store(new_tokens);
+            last_refill_.store(now);
         }
     }
 }

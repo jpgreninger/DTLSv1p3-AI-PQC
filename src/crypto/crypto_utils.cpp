@@ -4,6 +4,7 @@
 #include <sstream>
 #include <iomanip>
 #include <cstring>
+#include <atomic>
 
 namespace dtls {
 namespace v13 {
@@ -771,14 +772,35 @@ Result<ConnectionID> generate_connection_id(CryptoProvider& provider, size_t len
 
 // Timing-safe comparison
 bool constant_time_compare(const std::vector<uint8_t>& a, const std::vector<uint8_t>& b) {
-    if (a.size() != b.size()) {
-        return false;
+    // Always perform comparison, even if sizes differ
+    // This prevents early exit timing attacks
+    size_t min_size = (a.size() < b.size()) ? a.size() : b.size();
+    size_t max_size = (a.size() > b.size()) ? a.size() : b.size();
+    
+    // Mark as volatile to prevent compiler optimizations
+    volatile uint8_t result = 0;
+    
+    // Compare all bytes up to the minimum size
+    for (size_t i = 0; i < min_size; ++i) {
+        uint8_t diff = (a[i] ^ b[i]);
+        result = result | diff;
     }
     
-    uint8_t result = 0;
-    for (size_t i = 0; i < a.size(); ++i) {
-        result |= (a[i] ^ b[i]);
+    // If sizes differ, XOR remaining bytes with themselves
+    // This maintains constant-time behavior regardless of size difference
+    if (a.size() != b.size()) {
+        result = result | 1; // Set result to indicate size mismatch
+        
+        // Perform dummy operations to maintain constant timing
+        const std::vector<uint8_t>& longer = (a.size() > b.size()) ? a : b;
+        for (size_t i = min_size; i < max_size; ++i) {
+            volatile uint8_t dummy = longer[i];
+            (void)dummy; // Suppress unused variable warning
+        }
     }
+    
+    // Use memory barrier to prevent reordering
+    std::atomic_thread_fence(std::memory_order_acq_rel);
     
     return result == 0;
 }

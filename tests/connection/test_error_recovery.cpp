@@ -84,12 +84,13 @@ TEST_F(ErrorRecoveryTest, ErrorRecording) {
     auto result = connection->recover_from_error(DTLSError::NETWORK_ERROR, "Test network error");
     EXPECT_TRUE(result.is_success());
     
-    // Check that error was recorded
+    // Check that error was recorded and recovery succeeded
     auto recovery_state = connection->get_recovery_state();
     EXPECT_EQ(recovery_state.last_error_code, DTLSError::NETWORK_ERROR);
     EXPECT_EQ(recovery_state.last_error_message, "Test network error");
-    EXPECT_EQ(recovery_state.consecutive_errors, 1);
+    EXPECT_EQ(recovery_state.consecutive_errors, 1); // Should be 1 - the error count doesn't reset just because recovery succeeded
     EXPECT_EQ(recovery_state.total_recovery_attempts, 1);
+    EXPECT_EQ(recovery_state.successful_recoveries, 1); // Should have 1 successful recovery
     
     // Check that recovery events were fired
     EXPECT_GE(events_received_.size(), 2);
@@ -141,8 +142,8 @@ TEST_F(ErrorRecoveryTest, ConsecutiveErrorHandling) {
 TEST_F(ErrorRecoveryTest, DegradedModeEntry) {
     auto connection = create_test_connection();
     
-    // Simulate enough errors to trigger degraded mode
-    for (int i = 0; i < 10; ++i) {
+    // Simulate enough errors to trigger degraded mode (5 = max_consecutive_errors)
+    for (int i = 0; i < 5; ++i) {
         connection->recover_from_error(DTLSError::NETWORK_ERROR, "Error " + std::to_string(i));
         // Small delay to spread errors over time
         std::this_thread::sleep_for(std::chrono::milliseconds(10));

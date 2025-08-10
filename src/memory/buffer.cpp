@@ -251,17 +251,34 @@ void MutableBufferView::fill(std::byte value) noexcept {
 
 // Utility functions
 bool constant_time_compare(const BufferView& a, const BufferView& b) noexcept {
-    if (a.size() != b.size()) {
-        return false;
-    }
+    // Always perform comparison, even if sizes differ
+    // This prevents early exit timing attacks
+    size_t min_size = (a.size() < b.size()) ? a.size() : b.size();
+    size_t max_size = (a.size() > b.size()) ? a.size() : b.size();
     
     const std::byte* ptr_a = a.data();
     const std::byte* ptr_b = b.data();
-    size_t size = a.size();
     
-    std::byte result{0};
-    for (size_t i = 0; i < size; ++i) {
-        result |= (ptr_a[i] ^ ptr_b[i]);
+    // Mark as volatile to prevent compiler optimizations
+    volatile std::byte result{0};
+    
+    // Compare all bytes up to the minimum size
+    for (size_t i = 0; i < min_size; ++i) {
+        std::byte diff = (ptr_a[i] ^ ptr_b[i]);
+        result = result | diff;
+    }
+    
+    // If sizes differ, XOR remaining bytes with themselves
+    // This maintains constant-time behavior regardless of size difference
+    if (a.size() != b.size()) {
+        result = result | std::byte{1}; // Set result to indicate size mismatch
+        
+        // Perform dummy operations to maintain constant timing
+        const std::byte* longer_ptr = (a.size() > b.size()) ? ptr_a : ptr_b;
+        for (size_t i = min_size; i < max_size; ++i) {
+            volatile std::byte dummy = longer_ptr[i];
+            (void)dummy; // Suppress unused variable warning
+        }
     }
     
     return result == std::byte{0};

@@ -954,21 +954,30 @@ Result<bool> OpenSSLProvider::verify_hmac(const MACValidationParams& params) {
     
     const auto& computed_hmac = computed_hmac_result.value();
     
-    // Constant-time comparison to prevent timing attacks
+    // Always use constant-time comparison to prevent timing attacks
     bool is_valid = false;
-    if (params.constant_time_required) {
-        // Use OpenSSL's constant-time comparison if available, fallback to our implementation
-#ifdef CRYPTO_memcmp
-        is_valid = (computed_hmac.size() == params.expected_mac.size()) &&
-                   (CRYPTO_memcmp(computed_hmac.data(), params.expected_mac.data(), computed_hmac.size()) == 0);
+    
+    // Ensure both MACs are always computed with same-size expectations
+    // This prevents timing attacks based on MAC length validation
+    bool size_match = (computed_hmac.size() == params.expected_mac.size());
+    
+    if (params.constant_time_required || true) { // Always use constant-time for security
+        // Use OpenSSL's CRYPTO_memcmp if available and sizes match
+        if (size_match) {
+#if OPENSSL_VERSION_NUMBER >= 0x1010000fL
+            // OpenSSL 1.1.0+ has CRYPTO_memcmp
+            is_valid = (CRYPTO_memcmp(computed_hmac.data(), params.expected_mac.data(), computed_hmac.size()) == 0);
 #else
-        // Use our constant-time comparison implementation
-        is_valid = (computed_hmac.size() == params.expected_mac.size()) &&
-                   constant_time_compare(computed_hmac, params.expected_mac);
+            // Fallback to our enhanced constant-time comparison
+            is_valid = constant_time_compare(computed_hmac, params.expected_mac);
 #endif
+        } else {
+            // Always use our constant-time comparison for size mismatches
+            is_valid = constant_time_compare(computed_hmac, params.expected_mac);
+        }
     } else {
-        // Regular comparison (not recommended for production)
-        is_valid = (computed_hmac == params.expected_mac);
+        // This branch should never be used in production
+        is_valid = size_match && (computed_hmac == params.expected_mac);
     }
     
     return Result<bool>(is_valid);
@@ -1022,14 +1031,22 @@ Result<bool> OpenSSLProvider::validate_record_mac(const RecordMACParams& params)
     
     const auto& computed_mac = computed_mac_result.value();
     
-    // Constant-time comparison
-#ifdef CRYPTO_memcmp
-    bool is_valid = (computed_mac.size() == params.expected_mac.size()) &&
-                    (CRYPTO_memcmp(computed_mac.data(), params.expected_mac.data(), computed_mac.size()) == 0);
+    // Always use constant-time comparison to prevent timing attacks
+    bool is_valid = false;
+    bool size_match = (computed_mac.size() == params.expected_mac.size());
+    
+    if (size_match) {
+#if OPENSSL_VERSION_NUMBER >= 0x1010000fL
+        // OpenSSL 1.1.0+ has CRYPTO_memcmp
+        is_valid = (CRYPTO_memcmp(computed_mac.data(), params.expected_mac.data(), computed_mac.size()) == 0);
 #else
-    bool is_valid = (computed_mac.size() == params.expected_mac.size()) &&
-                    constant_time_compare(computed_mac, params.expected_mac);
+        // Fallback to our enhanced constant-time comparison
+        is_valid = constant_time_compare(computed_mac, params.expected_mac);
 #endif
+    } else {
+        // Always use our constant-time comparison for size mismatches
+        is_valid = constant_time_compare(computed_mac, params.expected_mac);
+    }
     
     return Result<bool>(is_valid);
 }
