@@ -805,7 +805,7 @@ Result<void> RecordLayer::enable_connection_id(const ConnectionID& local_cid,
     return Result<void>();
 }
 
-RecordLayer::RecordLayerStats RecordLayer::get_stats() const {
+RecordLayerStats RecordLayer::get_stats() const {
     std::lock_guard<std::mutex> lock(stats_mutex_);
     RecordLayerStats current_stats = stats_;
     current_stats.current_epoch = epoch_manager_->get_current_epoch();
@@ -1265,9 +1265,10 @@ bool RecordLayer::needs_key_update(uint64_t max_records, std::chrono::seconds ma
     return false;
 }
 
-RecordLayer::KeyUpdateStats RecordLayer::get_key_update_stats() const {
+KeyUpdateStats RecordLayer::get_key_update_stats() const {
     std::lock_guard<std::mutex> lock(key_update_mutex_);
     return key_update_stats_;
 }
+
 
 } // namespace dtls::v13::protocol

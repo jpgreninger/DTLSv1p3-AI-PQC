@@ -21,6 +21,7 @@ set(DTLS_PROTOCOL_SOURCES
     protocol/record.cpp
     protocol/dtls_records.cpp
     protocol/record_layer.cpp
+    protocol/record_layer_factory.cpp
     protocol/handshake.cpp
     protocol/handshake_manager.cpp
     protocol/cookie.cpp

@@ -4,7 +4,7 @@
 #include <dtls/result.h>
 #include <dtls/types.h>
 #include <dtls/crypto/provider.h>
-#include <dtls/protocol/record_layer.h>
+#include <dtls/protocol/record_layer_interface.h>
 #include <dtls/protocol/handshake.h>
 #include <dtls/protocol/early_data.h>
 #include <dtls/protocol/fragment_reassembler.h>
@@ -534,7 +534,7 @@ private:
     // Member variables
     ConnectionConfig config_;
     std::unique_ptr<crypto::CryptoProvider> crypto_provider_;
-    std::unique_ptr<protocol::RecordLayer> record_layer_;
+    std::unique_ptr<protocol::IRecordLayerInterface> record_layer_;
     std::unique_ptr<protocol::HandshakeManager> handshake_manager_;
     // std::unique_ptr<protocol::MessageLayer> message_layer_;
     std::unique_ptr<transport::UDPTransport> transport_;

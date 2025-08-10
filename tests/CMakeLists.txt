@@ -79,6 +79,7 @@ add_executable(dtls_protocol_test
     protocol/test_cookie.cpp
     protocol/test_key_update_simple.cpp
     protocol/test_fragment_reassembler.cpp
+    protocol/test_record_layer_decoupling.cpp
 )
 
 target_link_libraries(dtls_protocol_test PRIVATE ${DTLS_TEST_LIBRARIES})

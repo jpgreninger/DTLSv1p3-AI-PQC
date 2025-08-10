@@ -6,6 +6,7 @@
 #include <dtls/result.h>
 #include <dtls/protocol/record.h>
 #include <dtls/protocol/dtls_records.h>
+#include <dtls/protocol/record_layer_interface.h>
 #include <dtls/crypto.h>
 #include <memory>
 #include <mutex>
@@ -238,8 +239,10 @@ private:
  * 
  * Handles record protection/unprotection, sequence number management,
  * epoch handling, and anti-replay protection for DTLS v1.3.
+ * 
+ * Implements IRecordLayerInterface for modular design and testability.
  */
-class DTLS_API RecordLayer {
+class DTLS_API RecordLayer : public IRecordLayerInterface {
 public:
     RecordLayer(std::unique_ptr<crypto::CryptoProvider> crypto_provider);
     ~RecordLayer() = default;
@@ -253,36 +256,36 @@ public:
     /**
      * Initialize the record layer
      */
-    Result<void> initialize();
+    Result<void> initialize() override;
     
     /**
      * Set cipher suite for current epoch
      */
-    Result<void> set_cipher_suite(CipherSuite suite);
+    Result<void> set_cipher_suite(CipherSuite suite) override;
     
     /**
      * Protect a plaintext record (encrypt) - RFC 9147 compliance
      */
-    Result<DTLSCiphertext> protect_record(const DTLSPlaintext& plaintext);
+    Result<DTLSCiphertext> protect_record(const DTLSPlaintext& plaintext) override;
     
     /**
      * Unprotect a ciphertext record (decrypt) - RFC 9147 compliance
      */
-    Result<DTLSPlaintext> unprotect_record(const DTLSCiphertext& ciphertext);
+    Result<DTLSPlaintext> unprotect_record(const DTLSCiphertext& ciphertext) override;
     
     /**
      * Process incoming record (includes anti-replay check)
      */
-    Result<DTLSPlaintext> process_incoming_record(const DTLSCiphertext& ciphertext);
+    Result<DTLSPlaintext> process_incoming_record(const DTLSCiphertext& ciphertext) override;
     
     /**
      * Prepare outgoing record (includes sequence number assignment)
      */
-    Result<DTLSCiphertext> prepare_outgoing_record(const DTLSPlaintext& plaintext);
+    Result<DTLSCiphertext> prepare_outgoing_record(const DTLSPlaintext& plaintext) override;
     
     // Legacy support for backward compatibility
-    Result<CiphertextRecord> protect_record_legacy(const PlaintextRecord& plaintext);
-    Result<PlaintextRecord> unprotect_record_legacy(const CiphertextRecord& ciphertext);
+    Result<CiphertextRecord> protect_record_legacy(const PlaintextRecord& plaintext) override;
+    Result<PlaintextRecord> unprotect_record_legacy(const CiphertextRecord& ciphertext) override;
     
     /**
      * Advance to next epoch with new keys
@@ -290,59 +293,42 @@ public:
     Result<void> advance_epoch(const std::vector<uint8_t>& read_key,
                               const std::vector<uint8_t>& write_key,
                               const std::vector<uint8_t>& read_iv,
-                              const std::vector<uint8_t>& write_iv);
+                              const std::vector<uint8_t>& write_iv) override;
     
     /**
      * Update traffic keys (RFC 9147 Section 4.6.3)
      * Generates new read/write keys from current keys using HKDF-Expand-Label
      */
-    Result<void> update_traffic_keys();
+    Result<void> update_traffic_keys() override;
     
     /**
      * Update traffic keys with provided key schedule
      * Used for coordinated key updates across multiple layers
      */
-    Result<void> update_traffic_keys(const crypto::KeySchedule& new_keys);
+    Result<void> update_traffic_keys(const crypto::KeySchedule& new_keys) override;
     
     /**
      * Check if key update is needed based on record count or time
      */
     bool needs_key_update(uint64_t max_records = (1ULL << 24), 
-                         std::chrono::seconds max_time = std::chrono::hours(24)) const;
+                         std::chrono::seconds max_time = std::chrono::hours(24)) const override;
     
     /**
      * Get current key update statistics
      */
-    struct KeyUpdateStats {
-        uint64_t updates_performed{0};
-        uint64_t records_since_last_update{0};
-        std::chrono::steady_clock::time_point last_update_time;
-        uint64_t peer_updates_received{0};
-        uint64_t peer_updates_requested{0};
-    };
-    KeyUpdateStats get_key_update_stats() const;
+    KeyUpdateStats get_key_update_stats() const override;
     
     /**
      * Enable connection ID support
      */
     Result<void> enable_connection_id(const ConnectionID& local_cid, 
-                                     const ConnectionID& peer_cid);
+                                     const ConnectionID& peer_cid) override;
     
     /**
      * Get current record layer statistics
      */
-    struct RecordLayerStats {
-        uint64_t records_sent{0};
-        uint64_t records_received{0};
-        uint64_t records_protected{0};
-        uint64_t records_unprotected{0};
-        uint64_t replay_attacks_detected{0};
-        uint64_t decryption_failures{0};
-        uint16_t current_epoch{0};
-        uint64_t current_sequence_number{0};
-    };
     
-    RecordLayerStats get_stats() const;
+    RecordLayerStats get_stats() const override;
 
 private:
     std::unique_ptr<crypto::CryptoProvider> crypto_provider_;

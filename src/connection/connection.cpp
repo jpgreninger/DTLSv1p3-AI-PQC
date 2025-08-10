@@ -2,6 +2,7 @@
 #include <dtls/protocol/message_layer.h>
 #include <dtls/protocol/handshake_manager.h>
 #include <dtls/protocol/fragment_reassembler.h>
+#include <dtls/protocol/record_layer_factory.h>
 #include <dtls/crypto/crypto_utils.h>
 #include <dtls/memory/pool.h>
 #include <dtls/transport/udp_transport.h>
@@ -126,7 +127,13 @@ Result<void> Connection::initialize() {
         return make_error<void>(DTLSError::CRYPTO_PROVIDER_ERROR, "Failed to create crypto provider for record layer");
     }
     
-    record_layer_ = std::make_unique<protocol::RecordLayer>(std::move(record_crypto_result.value()));
+    auto record_layer_result = protocol::RecordLayerFactory::instance().create_record_layer(
+        std::move(record_crypto_result.value()));
+    if (!record_layer_result) {
+        return make_error<void>(record_layer_result.error(), "Failed to create record layer");
+    }
+    
+    record_layer_ = std::move(record_layer_result.value());
     
     // Setup handshake manager callbacks
     auto send_callback = [this](const protocol::HandshakeMessage& message) -> Result<void> {
