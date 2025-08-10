@@ -996,10 +996,7 @@ Result<CiphertextRecord> RecordLayer::protect_record_legacy(const PlaintextRecor
     // Add connection ID if present
     if (dtls_ciphertext.has_cid()) {
         auto cid_vector = dtls_ciphertext.get_connection_id_vector();
-        std::array<uint8_t, 16> cid_array{};
-        size_t copy_size = std::min(cid_vector.size(), cid_array.size());
-        std::memcpy(cid_array.data(), cid_vector.data(), copy_size);
-        legacy_ciphertext.set_connection_id(cid_array);
+        legacy_ciphertext.set_connection_id(cid_vector);
     }
     
     return Result<CiphertextRecord>(std::move(legacy_ciphertext));

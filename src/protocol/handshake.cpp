@@ -2875,4 +2875,285 @@ bool verify_psk_binder(const std::vector<uint8_t>& psk,
     return diff == 0;
 }
 
+// ConnectionIdExtension implementation
+Result<size_t> ConnectionIdExtension::serialize(memory::Buffer& buffer) const {
+    size_t required_size = serialized_size();
+    
+    if (buffer.capacity() < required_size) {
+        return Result<size_t>(DTLSError::INSUFFICIENT_BUFFER_SIZE);
+    }
+    
+    auto resize_result = buffer.resize(required_size);
+    if (!resize_result.is_success()) {
+        return Result<size_t>(resize_result.error());
+    }
+    
+    std::byte* ptr = buffer.mutable_data();
+    
+    // CID length (1 byte)
+    ptr[0] = static_cast<std::byte>(connection_id.size());
+    
+    // CID data
+    if (connection_id.size() > 0) {
+        copy_to_byte_buffer(ptr + 1, connection_id.data(), connection_id.size());
+    }
+    
+    return Result<size_t>(required_size);
+}
+
+Result<ConnectionIdExtension> ConnectionIdExtension::deserialize(const memory::Buffer& buffer, size_t offset) {
+    if (buffer.size() < offset + 1) {
+        return Result<ConnectionIdExtension>(DTLSError::BUFFER_TOO_SMALL);
+    }
+    
+    const std::byte* ptr = buffer.data() + offset;
+    uint8_t cid_length = static_cast<uint8_t>(ptr[0]);
+    
+    // Validate CID length
+    if (cid_length > MAX_CONNECTION_ID_LENGTH) {
+        return Result<ConnectionIdExtension>(DTLSError::INVALID_MESSAGE_FORMAT);
+    }
+    
+    if (buffer.size() < offset + 1 + cid_length) {
+        return Result<ConnectionIdExtension>(DTLSError::BUFFER_TOO_SMALL);
+    }
+    
+    std::vector<uint8_t> cid;
+    if (cid_length > 0) {
+        cid.resize(cid_length);
+        copy_from_byte_buffer(cid.data(), ptr + 1, cid_length);
+    }
+    
+    return Result<ConnectionIdExtension>(ConnectionIdExtension{cid});
+}
+
+// Connection ID utility functions
+Result<Extension> create_connection_id_extension(const std::vector<uint8_t>& connection_id) {
+    ConnectionIdExtension cid_ext(connection_id);
+    
+    if (!cid_ext.is_valid()) {
+        return Result<Extension>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    memory::Buffer ext_data(cid_ext.serialized_size());
+    auto serialize_result = cid_ext.serialize(ext_data);
+    if (!serialize_result.is_success()) {
+        return Result<Extension>(serialize_result.error());
+    }
+    
+    return Result<Extension>(Extension(ExtensionType::CONNECTION_ID, std::move(ext_data)));
+}
+
+Result<ConnectionIdExtension> parse_connection_id_extension(const Extension& ext) {
+    if (ext.type != ExtensionType::CONNECTION_ID) {
+        return Result<ConnectionIdExtension>(DTLSError::INVALID_MESSAGE_FORMAT);
+    }
+    
+    return ConnectionIdExtension::deserialize(ext.data, 0);
+}
+
+// CertificateRequest implementation
+Result<size_t> CertificateRequest::serialize(memory::Buffer& buffer) const {
+    size_t total_size = serialized_size();
+    
+    if (buffer.capacity() < total_size) {
+        return Result<size_t>(DTLSError::INSUFFICIENT_BUFFER_SIZE);
+    }
+    
+    auto resize_result = buffer.resize(total_size);
+    if (!resize_result.is_success()) {
+        return Result<size_t>(resize_result.error());
+    }
+    
+    std::byte* ptr = buffer.mutable_data();
+    size_t offset = 0;
+    
+    // Certificate request context length (1 byte)
+    ptr[offset++] = static_cast<std::byte>(certificate_request_context_.size());
+    
+    // Certificate request context
+    if (certificate_request_context_.size() > 0) {
+        copy_to_byte_buffer(ptr + offset, certificate_request_context_.data(), certificate_request_context_.size());
+        offset += certificate_request_context_.size();
+    }
+    
+    // Extensions length (2 bytes, network byte order)
+    size_t extensions_length = 0;
+    for (const auto& ext : extensions_) {
+        extensions_length += ext.serialized_size();
+    }
+    
+    uint16_t ext_len_net = htons(static_cast<uint16_t>(extensions_length));
+    copy_to_byte_buffer(ptr + offset, &ext_len_net, 2);
+    offset += 2;
+    
+    // Extensions
+    for (const auto& ext : extensions_) {
+        memory::Buffer ext_buffer(ext.serialized_size());
+        auto ext_result = ext.serialize(ext_buffer);
+        if (!ext_result.is_success()) {
+            return Result<size_t>(ext_result.error());
+        }
+        
+        copy_to_byte_buffer(ptr + offset, ext_buffer.data(), ext_buffer.size());
+        offset += ext_buffer.size();
+    }
+    
+    return Result<size_t>(total_size);
+}
+
+Result<CertificateRequest> CertificateRequest::deserialize(const memory::Buffer& buffer, size_t offset) {
+    if (buffer.size() < offset + 1) {
+        return Result<CertificateRequest>(DTLSError::BUFFER_TOO_SMALL);
+    }
+    
+    const std::byte* ptr = buffer.data() + offset;
+    size_t pos = 0;
+    
+    // Certificate request context length
+    uint8_t context_length = static_cast<uint8_t>(ptr[pos++]);
+    
+    if (buffer.size() < offset + pos + context_length + 2) {
+        return Result<CertificateRequest>(DTLSError::BUFFER_TOO_SMALL);
+    }
+    
+    CertificateRequest cert_request;
+    
+    // Certificate request context
+    if (context_length > 0) {
+        memory::Buffer context(context_length);
+        auto resize_result = context.resize(context_length);
+        if (!resize_result.is_success()) {
+            return Result<CertificateRequest>(resize_result.error());
+        }
+        
+        copy_to_byte_buffer(context.mutable_data(), ptr + pos, context_length);
+        cert_request.certificate_request_context_ = std::move(context);
+    }
+    pos += context_length;
+    
+    // Extensions length
+    uint16_t extensions_length_net;
+    copy_from_byte_buffer(&extensions_length_net, ptr + pos, 2);
+    uint16_t extensions_length = ntohs(extensions_length_net);
+    pos += 2;
+    
+    if (buffer.size() < offset + pos + extensions_length) {
+        return Result<CertificateRequest>(DTLSError::BUFFER_TOO_SMALL);
+    }
+    
+    // Extensions
+    size_t extensions_parsed = 0;
+    while (extensions_parsed < extensions_length) {
+        auto ext_result = Extension::deserialize(buffer, offset + pos + extensions_parsed);
+        if (!ext_result.is_success()) {
+            return Result<CertificateRequest>(ext_result.error());
+        }
+        
+        Extension ext = std::move(ext_result.value());
+        extensions_parsed += ext.serialized_size();
+        cert_request.extensions_.push_back(std::move(ext));
+    }
+    
+    return Result<CertificateRequest>(std::move(cert_request));
+}
+
+size_t CertificateRequest::serialized_size() const {
+    size_t size = 1 + certificate_request_context_.size() + 2; // context length + context + extensions length
+    
+    for (const auto& ext : extensions_) {
+        size += ext.serialized_size();
+    }
+    
+    return size;
+}
+
+std::optional<Extension> CertificateRequest::get_extension(ExtensionType type) const {
+    for (const auto& ext : extensions_) {
+        if (ext.type == type) {
+            return ext;
+        }
+    }
+    return std::nullopt;
+}
+
+bool CertificateRequest::has_extension(ExtensionType type) const {
+    for (const auto& ext : extensions_) {
+        if (ext.type == type) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// Alert implementation
+Result<size_t> Alert::serialize(memory::Buffer& buffer) const {
+    constexpr size_t ALERT_SIZE = 2;
+    
+    if (buffer.capacity() < ALERT_SIZE) {
+        return Result<size_t>(DTLSError::INSUFFICIENT_BUFFER_SIZE);
+    }
+    
+    auto resize_result = buffer.resize(ALERT_SIZE);
+    if (!resize_result.is_success()) {
+        return Result<size_t>(resize_result.error());
+    }
+    
+    std::byte* ptr = buffer.mutable_data();
+    ptr[0] = static_cast<std::byte>(static_cast<uint8_t>(level_));
+    ptr[1] = static_cast<std::byte>(static_cast<uint8_t>(description_));
+    
+    return Result<size_t>(ALERT_SIZE);
+}
+
+Result<Alert> Alert::deserialize(const memory::Buffer& buffer, size_t offset) {
+    constexpr size_t ALERT_SIZE = 2;
+    
+    if (buffer.size() < offset + ALERT_SIZE) {
+        return Result<Alert>(DTLSError::BUFFER_TOO_SMALL);
+    }
+    
+    const std::byte* ptr = buffer.data() + offset;
+    AlertLevel level = static_cast<AlertLevel>(static_cast<uint8_t>(ptr[0]));
+    AlertDescription description = static_cast<AlertDescription>(static_cast<uint8_t>(ptr[1]));
+    
+    return Result<Alert>(Alert(level, description));
+}
+
+Result<Alert> Alert::deserialize_from_zerocopy(const memory::ZeroCopyBuffer& buffer, size_t offset) {
+    constexpr size_t ALERT_SIZE = 2;
+    
+    if (buffer.size() < offset + ALERT_SIZE) {
+        return Result<Alert>(DTLSError::BUFFER_TOO_SMALL);
+    }
+    
+    const uint8_t* ptr = reinterpret_cast<const uint8_t*>(buffer.data()) + offset;
+    AlertLevel level = static_cast<AlertLevel>(ptr[0]);
+    AlertDescription description = static_cast<AlertDescription>(ptr[1]);
+    
+    return Result<Alert>(Alert(level, description));
+}
+
+// Alert utility functions
+Alert create_close_notify_alert() {
+    return Alert(AlertLevel::WARNING, AlertDescription::CLOSE_NOTIFY);
+}
+
+Alert create_fatal_alert(AlertDescription description) {
+    return Alert(AlertLevel::FATAL, description);
+}
+
+Alert create_warning_alert(AlertDescription description) {
+    return Alert(AlertLevel::WARNING, description);
+}
+
+Result<memory::Buffer> serialize_alert(const Alert& alert) {
+    memory::Buffer buffer(alert.serialized_size());
+    auto result = alert.serialize(buffer);
+    if (!result.is_success()) {
+        return Result<memory::Buffer>(result.error());
+    }
+    return Result<memory::Buffer>(std::move(buffer));
+}
+
 }  // namespace dtls::v13::protocol

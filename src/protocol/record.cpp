@@ -268,18 +268,24 @@ CiphertextRecord::CiphertextRecord(ContentType content_type, ProtocolVersion ver
     header_.epoch = epoch;
     header_.sequence_number = sequence_number;
     header_.length = static_cast<uint16_t>(encrypted_payload_.size() + authentication_tag_.size());
-    connection_id_.fill(0);
+    connection_id_.clear();
 }
 
-void CiphertextRecord::set_connection_id(const std::array<uint8_t, 16>& cid) {
+void CiphertextRecord::set_connection_id(const std::vector<uint8_t>& cid) {
+    // Validate CID length per RFC 9146
+    if (cid.size() > MAX_CONNECTION_ID_LENGTH) {
+        return; // Invalid CID length
+    }
+    
     connection_id_ = cid;
-    has_connection_id_ = true;
+    has_connection_id_ = !cid.empty();
+    
     // Update header length to include connection ID
-    header_.length = static_cast<uint16_t>(encrypted_payload_.size() + authentication_tag_.size() + 16);
+    header_.length = static_cast<uint16_t>(encrypted_payload_.size() + authentication_tag_.size() + connection_id_.size());
 }
 
 void CiphertextRecord::clear_connection_id() {
-    connection_id_.fill(0);
+    connection_id_.clear();
     has_connection_id_ = false;
     // Update header length to exclude connection ID
     header_.length = static_cast<uint16_t>(encrypted_payload_.size() + authentication_tag_.size());
@@ -292,7 +298,7 @@ Result<size_t> CiphertextRecord::serialize(memory::Buffer& buffer) const {
     
     size_t total_size = RecordHeader::SERIALIZED_SIZE + encrypted_payload_.size() + authentication_tag_.size();
     if (has_connection_id_) {
-        total_size += 16; // Fixed CID size for now
+        total_size += connection_id_.size(); // Flexible CID size
     }
     
     if (buffer.capacity() < total_size) {
@@ -319,8 +325,8 @@ Result<size_t> CiphertextRecord::serialize(memory::Buffer& buffer) const {
     
     // Copy connection ID if present
     if (has_connection_id_) {
-        copy_to_byte_buffer(buffer.mutable_data() + offset, connection_id_.data(), 16);
-        offset += 16;
+        copy_to_byte_buffer(buffer.mutable_data() + offset, connection_id_.data(), connection_id_.size());
+        offset += connection_id_.size();
     }
     
     // Copy encrypted payload
@@ -410,7 +416,7 @@ bool CiphertextRecord::is_valid() const {
     // Check that encrypted payload + auth tag size matches header length
     size_t expected_length = encrypted_payload_.size() + authentication_tag_.size();
     if (has_connection_id_) {
-        expected_length += 16;
+        expected_length += connection_id_.size();
     }
     
     if (header_.length != expected_length) {
@@ -423,7 +429,7 @@ bool CiphertextRecord::is_valid() const {
 size_t CiphertextRecord::total_size() const {
     size_t size = RecordHeader::SERIALIZED_SIZE + encrypted_payload_.size() + authentication_tag_.size();
     if (has_connection_id_) {
-        size += 16;
+        size += connection_id_.size();
     }
     return size;
 }

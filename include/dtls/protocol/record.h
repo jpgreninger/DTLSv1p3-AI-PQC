@@ -93,7 +93,7 @@ private:
     RecordHeader header_;
     memory::Buffer encrypted_payload_;
     memory::Buffer authentication_tag_;
-    std::array<uint8_t, 16> connection_id_;  // Optional CID
+    std::vector<uint8_t> connection_id_;  // Optional CID (flexible length)
     bool has_connection_id_;
     
 public:
@@ -108,9 +108,9 @@ public:
     const memory::Buffer& authentication_tag() const { return authentication_tag_; }
     
     bool has_connection_id() const { return has_connection_id_; }
-    const std::array<uint8_t, 16>& connection_id() const { return connection_id_; }
+    const std::vector<uint8_t>& connection_id() const { return connection_id_; }
     
-    void set_connection_id(const std::array<uint8_t, 16>& cid);
+    void set_connection_id(const std::vector<uint8_t>& cid);
     void clear_connection_id();
     
     Result<size_t> serialize(memory::Buffer& buffer) const;

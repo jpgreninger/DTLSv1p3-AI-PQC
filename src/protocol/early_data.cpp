@@ -1,4 +1,6 @@
 #include "dtls/protocol/early_data.h"
+#include "dtls/crypto/provider_factory.h"
+#include "dtls/crypto/crypto_utils.h"
 #include "dtls/error.h"
 #include <algorithm>
 #include <random>
@@ -94,22 +96,70 @@ Result<NewSessionTicket> SessionTicketManager::create_ticket(
 Result<SessionTicket> SessionTicketManager::decrypt_ticket(const std::vector<uint8_t>& encrypted_ticket) {
     std::lock_guard<std::mutex> lock(mutex_);
     
-    // This is a simplified implementation
-    // In production, this would use proper encryption/decryption
-    
-    if (encrypted_ticket.empty()) {
+    if (encrypted_ticket.size() < 12) { // Need at least nonce (12 bytes)
         return Result<SessionTicket>(DTLSError::INVALID_MESSAGE_FORMAT);
     }
     
-    // For now, we'll look up the ticket by searching our stored tickets
-    // In a real implementation, the encrypted_ticket would be decrypted to extract the identity
-    for (const auto& [identity, ticket] : tickets_) {
-        if (ticket.ticket_data == encrypted_ticket && ticket.is_valid()) {
-            return Result<SessionTicket>(ticket);
-        }
+    // Get crypto provider for AEAD decryption
+    auto provider = dtls::v13::crypto::ProviderFactory::instance().create_default_provider();
+    if (!provider.is_success()) {
+        return Result<SessionTicket>(provider.error());
     }
     
-    return Result<SessionTicket>(DTLSError::DECODE_ERROR);
+    // Extract nonce (first 12 bytes), ciphertext, and tag (last 16 bytes for AES-GCM)
+    constexpr size_t TAG_SIZE = 16;
+    if (encrypted_ticket.size() < 12 + TAG_SIZE) {
+        return Result<SessionTicket>(DTLSError::INVALID_MESSAGE_FORMAT);
+    }
+    
+    std::vector<uint8_t> nonce(encrypted_ticket.begin(), encrypted_ticket.begin() + 12);
+    std::vector<uint8_t> ciphertext(encrypted_ticket.begin() + 12, encrypted_ticket.end() - TAG_SIZE);
+    std::vector<uint8_t> tag(encrypted_ticket.end() - TAG_SIZE, encrypted_ticket.end());
+    
+    // Setup AEAD parameters for decryption
+    dtls::v13::crypto::AEADDecryptionParams aead_params;
+    aead_params.key = encryption_key_;
+    aead_params.nonce = nonce;
+    aead_params.ciphertext = ciphertext;
+    aead_params.tag = tag;
+    aead_params.cipher = AEADCipher::AES_128_GCM;
+    
+    // Decrypt the ticket
+    auto decrypt_result = provider.value()->decrypt_aead(aead_params);
+    if (!decrypt_result.is_success()) {
+        return Result<SessionTicket>(DTLSError::DECRYPT_ERROR);
+    }
+    
+    std::vector<uint8_t> plaintext = decrypt_result.value();
+    if (plaintext.size() < 6) { // Need at least cipher suite (2) + max_early_data (4)
+        return Result<SessionTicket>(DTLSError::INVALID_MESSAGE_FORMAT);
+    }
+    
+    // Parse the decrypted ticket data
+    SessionTicket ticket;
+    size_t offset = 0;
+    
+    // Extract resumption master secret (everything except last 6 bytes)
+    size_t secret_len = plaintext.size() - 6;
+    ticket.resumption_master_secret.assign(plaintext.begin(), plaintext.begin() + secret_len);
+    offset += secret_len;
+    
+    // Extract cipher suite (2 bytes)
+    uint16_t cipher_be;
+    std::memcpy(&cipher_be, plaintext.data() + offset, 2);
+    ticket.cipher_suite = static_cast<CipherSuite>(ntohs(cipher_be));
+    offset += 2;
+    
+    // Extract max early data size (4 bytes)
+    uint32_t max_early_be;
+    std::memcpy(&max_early_be, plaintext.data() + offset, 4);
+    ticket.max_early_data_size = ntohl(max_early_be);
+    
+    ticket.issued_time = std::chrono::steady_clock::now(); // Reset timestamp for security
+    ticket.ticket_lifetime = static_cast<uint32_t>(default_ticket_lifetime_.count());
+    ticket.ticket_data = encrypted_ticket;
+    
+    return Result<SessionTicket>(std::move(ticket));
 }
 
 bool SessionTicketManager::store_ticket(const std::string& identity, const SessionTicket& ticket) {
@@ -174,12 +224,15 @@ size_t SessionTicketManager::get_ticket_count() const {
 }
 
 Result<std::vector<uint8_t>> SessionTicketManager::encrypt_ticket_data(const SessionTicket& ticket) {
-    // This is a simplified implementation
-    // In production, this would use proper AES-GCM or similar encryption
+    // Get crypto provider for proper AEAD encryption
+    auto provider = dtls::v13::crypto::ProviderFactory::instance().create_default_provider();
+    if (!provider.is_success()) {
+        return Result<std::vector<uint8_t>>(provider.error());
+    }
     
     std::vector<uint8_t> plaintext;
     
-    // Serialize ticket data (simplified)
+    // Serialize ticket data
     plaintext.insert(plaintext.end(), ticket.resumption_master_secret.begin(), ticket.resumption_master_secret.end());
     
     // Add cipher suite (2 bytes)
@@ -192,13 +245,34 @@ Result<std::vector<uint8_t>> SessionTicketManager::encrypt_ticket_data(const Ses
     plaintext.insert(plaintext.end(), reinterpret_cast<uint8_t*>(&max_early_be),
                      reinterpret_cast<uint8_t*>(&max_early_be) + 4);
     
-    // Simple XOR encryption (NOT secure - just for structure)
-    std::vector<uint8_t> encrypted = plaintext;
-    for (size_t i = 0; i < encrypted.size(); ++i) {
-        encrypted[i] ^= encryption_key_[i % encryption_key_.size()];
+    // Generate random nonce for AEAD
+    std::vector<uint8_t> nonce(12); // 96-bit nonce for AES-GCM
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<uint8_t> dis(0, 255);
+    for (auto& byte : nonce) {
+        byte = dis(gen);
     }
     
-    return Result<std::vector<uint8_t>>(std::move(encrypted));
+    // Use AES-128-GCM encryption
+    dtls::v13::crypto::AEADEncryptionParams aead_params;
+    aead_params.key = encryption_key_;
+    aead_params.nonce = nonce;
+    aead_params.plaintext = plaintext;
+    aead_params.cipher = AEADCipher::AES_128_GCM;
+    
+    auto encrypt_result = provider.value()->encrypt_aead(aead_params);
+    if (!encrypt_result.is_success()) {
+        return Result<std::vector<uint8_t>>(encrypt_result.error());
+    }
+    
+    // Prepend nonce to encrypted data for decryption
+    auto encryption_output = encrypt_result.value();
+    std::vector<uint8_t> final_encrypted = nonce;
+    final_encrypted.insert(final_encrypted.end(), encryption_output.ciphertext.begin(), encryption_output.ciphertext.end());
+    final_encrypted.insert(final_encrypted.end(), encryption_output.tag.begin(), encryption_output.tag.end());
+    
+    return Result<std::vector<uint8_t>>(std::move(final_encrypted));
 }
 
 std::string SessionTicketManager::generate_ticket_identity() {
@@ -286,43 +360,45 @@ Result<std::vector<uint8_t>> derive_early_traffic_secret(
     const std::vector<uint8_t>& resumption_master_secret,
     const std::vector<uint8_t>& client_hello_hash) {
     
-    // This is a simplified implementation
-    // In production, this would use HKDF-Expand-Label as per RFC 9147
+    // RFC 9147 Section 4.4.1: Early Data Support
+    // early_secret = HKDF-Expand-Label(resumption_master_secret, "c e traffic", ClientHello..HelloRetryRequest, Hash.length)
     
     if (resumption_master_secret.empty() || client_hello_hash.empty()) {
         return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
     }
     
-    std::vector<uint8_t> early_secret(32); // 256-bit secret
-    
-    // Simple derivation (NOT cryptographically secure - just for structure)
-    for (size_t i = 0; i < early_secret.size(); ++i) {
-        early_secret[i] = resumption_master_secret[i % resumption_master_secret.size()] ^
-                         client_hello_hash[i % client_hello_hash.size()] ^
-                         static_cast<uint8_t>(i);
+    // Get crypto provider for HKDF-Expand-Label
+    auto provider = dtls::v13::crypto::ProviderFactory::instance().create_default_provider();
+    if (!provider.is_success()) {
+        return Result<std::vector<uint8_t>>(provider.error());
     }
     
-    return Result<std::vector<uint8_t>>(std::move(early_secret));
+    // Use proper HKDF-Expand-Label with "c e traffic" label for early data
+    return dtls::v13::crypto::utils::hkdf_expand_label(
+        *provider.value(),
+        HashAlgorithm::SHA256,
+        resumption_master_secret,
+        "c e traffic",
+        client_hello_hash,
+        32  // 256-bit output for SHA256
+    );
 }
 
 Result<std::vector<uint8_t>> calculate_early_data_hash(const std::vector<uint8_t>& early_data) {
-    // This is a simplified implementation
-    // In production, this would use SHA-256 or the hash function from the cipher suite
+    // Use proper cryptographic hash function (SHA-256) via crypto provider
     
-    std::vector<uint8_t> hash(32); // 256-bit hash
-    
-    // Simple hash (NOT cryptographically secure - just for structure)
-    size_t hash_val = 0;
-    for (uint8_t byte : early_data) {
-        hash_val = hash_val * 31 + byte;
+    // Get crypto provider for hash computation
+    auto provider = dtls::v13::crypto::ProviderFactory::instance().create_default_provider();
+    if (!provider.is_success()) {
+        return Result<std::vector<uint8_t>>(provider.error());
     }
     
-    for (size_t i = 0; i < hash.size(); ++i) {
-        hash[i] = static_cast<uint8_t>((hash_val >> (i % 8)) & 0xFF);
-        hash_val = hash_val * 17 + i;
-    }
+    // Compute SHA-256 hash of early data
+    dtls::v13::crypto::HashParams hash_params;
+    hash_params.data = early_data;
+    hash_params.algorithm = HashAlgorithm::SHA256;
     
-    return Result<std::vector<uint8_t>>(std::move(hash));
+    return provider.value()->compute_hash(hash_params);
 }
 
 bool validate_early_data_extensions(const std::vector<Extension>& extensions) {

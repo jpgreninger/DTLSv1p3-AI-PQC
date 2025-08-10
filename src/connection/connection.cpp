@@ -573,14 +573,14 @@ Result<void> Connection::handle_application_data(const memory::ZeroCopyBuffer& d
 }
 
 Result<void> Connection::handle_alert_data(const memory::ZeroCopyBuffer& data) {
-    if (data.size() < 2) {
-        return make_error<void>(DTLSError::INVALID_MESSAGE_FORMAT);
+    // Use structured Alert message instead of raw byte parsing
+    auto alert_result = protocol::Alert::deserialize_from_zerocopy(data, 0);
+    if (!alert_result.is_success()) {
+        return make_error<void>(alert_result.error());
     }
     
-    AlertLevel level = static_cast<AlertLevel>(reinterpret_cast<const uint8_t*>(data.data())[0]);
-    AlertDescription description = static_cast<AlertDescription>(reinterpret_cast<const uint8_t*>(data.data())[1]);
-    
-    return handle_alert(level, description);
+    const auto& alert = alert_result.value();
+    return handle_alert(alert.level(), alert.description());
 }
 
 Result<void> Connection::handle_alert(AlertLevel level, AlertDescription description) {

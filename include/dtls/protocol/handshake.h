@@ -396,6 +396,84 @@ public:
     size_t serialized_size() const;
 };
 
+// CertificateRequest message (RFC 9147 Section 4.3.2)
+class CertificateRequest {
+private:
+    memory::Buffer certificate_request_context_;
+    std::vector<Extension> extensions_;
+    
+public:
+    CertificateRequest() = default;
+    
+    // Move-only semantics (copy disabled due to Buffer containing move-only ZeroCopyBuffer)
+    CertificateRequest(const CertificateRequest&) = delete;
+    CertificateRequest& operator=(const CertificateRequest&) = delete;
+    CertificateRequest(CertificateRequest&&) = default;
+    CertificateRequest& operator=(CertificateRequest&&) = default;
+    
+    // Accessors
+    const memory::Buffer& certificate_request_context() const { return certificate_request_context_; }
+    const std::vector<Extension>& extensions() const { return extensions_; }
+    
+    // Mutators
+    void set_certificate_request_context(memory::Buffer context) { certificate_request_context_ = std::move(context); }
+    void add_extension(Extension extension) { extensions_.push_back(std::move(extension)); }
+    
+    // Serialization
+    Result<size_t> serialize(memory::Buffer& buffer) const;
+    static Result<CertificateRequest> deserialize(const memory::Buffer& buffer, size_t offset = 0);
+    
+    // Validation
+    bool is_valid() const { return true; } // Context and extensions can be empty
+    size_t serialized_size() const;
+    
+    // Extension helpers
+    std::optional<Extension> get_extension(ExtensionType type) const;
+    bool has_extension(ExtensionType type) const;
+};
+
+// Alert message (RFC 9147 Section 4.7)
+class Alert {
+private:
+    AlertLevel level_;
+    AlertDescription description_;
+    
+public:
+    Alert() = default;
+    Alert(AlertLevel level, AlertDescription description) 
+        : level_(level), description_(description) {}
+    
+    // Accessors
+    AlertLevel level() const { return level_; }
+    AlertDescription description() const { return description_; }
+    
+    // Mutators
+    void set_level(AlertLevel level) { level_ = level; }
+    void set_description(AlertDescription description) { description_ = description; }
+    
+    // Serialization
+    Result<size_t> serialize(memory::Buffer& buffer) const;
+    static Result<Alert> deserialize(const memory::Buffer& buffer, size_t offset = 0);
+    static Result<Alert> deserialize_from_zerocopy(const memory::ZeroCopyBuffer& buffer, size_t offset = 0);
+    
+    // Validation
+    bool is_valid() const { return true; } // All alert combinations are valid
+    size_t serialized_size() const { return 2; } // Always 2 bytes
+    
+    // Utility methods
+    bool is_fatal() const { return level_ == AlertLevel::FATAL; }
+    bool is_warning() const { return level_ == AlertLevel::WARNING; }
+    
+    // Equality operators
+    bool operator==(const Alert& other) const {
+        return level_ == other.level_ && description_ == other.description_;
+    }
+    
+    bool operator!=(const Alert& other) const {
+        return !(*this == other);
+    }
+};
+
 class CertificateVerify {
 private:
     SignatureScheme algorithm_;
@@ -682,7 +760,7 @@ public:
 class HandshakeMessage {
 private:
     HandshakeHeader header_;
-    std::variant<ClientHello, ServerHello, HelloRetryRequest, Certificate, CertificateVerify, Finished, KeyUpdate, ACK, EndOfEarlyData, NewSessionTicket> message_;
+    std::variant<ClientHello, ServerHello, HelloRetryRequest, Certificate, CertificateRequest, CertificateVerify, Finished, KeyUpdate, ACK, EndOfEarlyData, NewSessionTicket> message_;
     
 public:
     HandshakeMessage() = default;
@@ -745,6 +823,7 @@ template<> constexpr HandshakeType HandshakeMessage::get_handshake_type<ClientHe
 template<> constexpr HandshakeType HandshakeMessage::get_handshake_type<ServerHello>() { return HandshakeType::SERVER_HELLO; }
 template<> constexpr HandshakeType HandshakeMessage::get_handshake_type<HelloRetryRequest>() { return HandshakeType::HELLO_RETRY_REQUEST; }
 template<> constexpr HandshakeType HandshakeMessage::get_handshake_type<Certificate>() { return HandshakeType::CERTIFICATE; }
+template<> constexpr HandshakeType HandshakeMessage::get_handshake_type<CertificateRequest>() { return HandshakeType::CERTIFICATE_REQUEST; }
 template<> constexpr HandshakeType HandshakeMessage::get_handshake_type<CertificateVerify>() { return HandshakeType::CERTIFICATE_VERIFY; }
 template<> constexpr HandshakeType HandshakeMessage::get_handshake_type<Finished>() { return HandshakeType::FINISHED; }
 template<> constexpr HandshakeType HandshakeMessage::get_handshake_type<KeyUpdate>() { return HandshakeType::KEY_UPDATE; }
@@ -854,6 +933,37 @@ struct PskKeyExchangeModesExtension {
     }
 };
 
+// Connection ID Extension (RFC 9146/9147)
+struct ConnectionIdExtension {
+    std::vector<uint8_t> connection_id;
+    
+    ConnectionIdExtension() = default;
+    explicit ConnectionIdExtension(const std::vector<uint8_t>& cid) : connection_id(cid) {}
+    
+    static constexpr ExtensionType extension_type = ExtensionType::CONNECTION_ID;
+    
+    Result<size_t> serialize(memory::Buffer& buffer) const;
+    static Result<ConnectionIdExtension> deserialize(const memory::Buffer& buffer, size_t offset = 0);
+    
+    bool is_valid() const { 
+        // RFC 9146: CID length must be 0-20 bytes
+        return connection_id.size() <= MAX_CONNECTION_ID_LENGTH; 
+    }
+    
+    size_t serialized_size() const { 
+        return 1 + connection_id.size(); // 1 byte length + CID data
+    }
+    
+    // Equality operators
+    bool operator==(const ConnectionIdExtension& other) const {
+        return connection_id == other.connection_id;
+    }
+    
+    bool operator!=(const ConnectionIdExtension& other) const {
+        return !(*this == other);
+    }
+};
+
 // Utility functions
 bool is_supported_cipher_suite(CipherSuite suite);
 bool is_supported_signature_scheme(SignatureScheme scheme);
@@ -876,6 +986,16 @@ Result<Extension> create_early_data_extension(uint32_t max_early_data_size = 0);
 Result<Extension> create_psk_extension(const std::vector<PskIdentity>& identities, 
                                        const std::vector<std::vector<uint8_t>>& binders);
 Result<Extension> create_psk_key_exchange_modes_extension(const std::vector<PskKeyExchangeMode>& modes);
+
+// Connection ID utility functions
+Result<Extension> create_connection_id_extension(const std::vector<uint8_t>& connection_id);
+Result<ConnectionIdExtension> parse_connection_id_extension(const Extension& ext);
+
+// Alert utility functions
+Alert create_close_notify_alert();
+Alert create_fatal_alert(AlertDescription description);
+Alert create_warning_alert(AlertDescription description);
+Result<memory::Buffer> serialize_alert(const Alert& alert);
 
 // Extension parsing utilities
 Result<EarlyDataExtension> parse_early_data_extension(const Extension& ext);
