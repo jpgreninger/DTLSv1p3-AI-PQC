@@ -5,6 +5,8 @@ set(DTLS_CORE_SOURCES
     core/types.cpp
     core/error.cpp
     core/result.cpp
+    core/error_handler.cpp
+    core/error_context.cpp
     memory/buffer.cpp
     memory/pool.cpp
     memory/memory_utils.cpp

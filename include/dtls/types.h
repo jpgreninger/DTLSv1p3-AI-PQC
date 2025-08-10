@@ -96,7 +96,9 @@ enum class AlertDescription : uint8_t {
     BAD_CERTIFICATE_STATUS_RESPONSE = 113,
     UNKNOWN_PSK_IDENTITY = 115,
     CERTIFICATE_REQUIRED = 116,
-    NO_APPLICATION_PROTOCOL = 120
+    NO_APPLICATION_PROTOCOL = 120,
+    // DTLS v1.3 specific alerts (RFC 9147)
+    TOO_MANY_CIDS_REQUESTED = 52
 };
 
 // Cipher suites

@@ -275,7 +275,9 @@ AlertDescription error_to_alert(DTLSError error) {
         {DTLSError::INSUFFICIENT_SECURITY, AlertDescription::INSUFFICIENT_SECURITY},
         {DTLSError::INTERNAL_ERROR, AlertDescription::INTERNAL_ERROR},
         {DTLSError::USER_CANCELED, AlertDescription::USER_CANCELED},
-        {DTLSError::UNKNOWN_PSK_IDENTITY, AlertDescription::UNKNOWN_PSK_IDENTITY}
+        {DTLSError::UNKNOWN_PSK_IDENTITY, AlertDescription::UNKNOWN_PSK_IDENTITY},
+        // Additional DTLS v1.3 mappings (RFC 9147)
+        {DTLSError::CONNECTION_ID_MISMATCH, AlertDescription::TOO_MANY_CIDS_REQUESTED}
     };
     
     auto it = error_to_alert_map.find(error);
@@ -314,7 +316,9 @@ DTLSError alert_to_error(AlertDescription alert) {
         {AlertDescription::BAD_CERTIFICATE_STATUS_RESPONSE, DTLSError::BAD_CERTIFICATE_STATUS_RESPONSE},
         {AlertDescription::UNKNOWN_PSK_IDENTITY, DTLSError::UNKNOWN_PSK_IDENTITY},
         {AlertDescription::CERTIFICATE_REQUIRED, DTLSError::CERTIFICATE_REQUIRED},
-        {AlertDescription::NO_APPLICATION_PROTOCOL, DTLSError::NO_APPLICATION_PROTOCOL}
+        {AlertDescription::NO_APPLICATION_PROTOCOL, DTLSError::NO_APPLICATION_PROTOCOL},
+        // Additional DTLS v1.3 reverse mappings (RFC 9147)
+        {AlertDescription::TOO_MANY_CIDS_REQUESTED, DTLSError::CONNECTION_ID_MISMATCH}
     };
     
     auto it = alert_to_error_map.find(alert);

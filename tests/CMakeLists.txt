@@ -192,6 +192,21 @@ set_tests_properties(DTLSPerformanceTest_Regression PROPERTIES
     LABELS "performance;regression"
 )
 
+# Error Handling Tests
+add_executable(dtls_error_handling_test
+    error_handling_test.cpp
+    rfc9147_compliance_test.cpp
+)
+
+target_link_libraries(dtls_error_handling_test PRIVATE ${DTLS_TEST_LIBRARIES})
+target_compile_options(dtls_error_handling_test PRIVATE ${DTLS_TEST_COMPILE_OPTIONS})
+
+add_test(NAME DTLSErrorHandlingTest COMMAND dtls_error_handling_test)
+set_tests_properties(DTLSErrorHandlingTest PROPERTIES
+    TIMEOUT 300
+    LABELS "error_handling;rfc9147"
+)
+
 # Security Tests
 add_executable(dtls_security_test
     security/dtls_security_test.cpp

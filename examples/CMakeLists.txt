@@ -12,6 +12,9 @@ set(DTLS_EXAMPLES
     dtls_connection_migration_example
     dtls_early_data_example
     dtls_multi_connection_server_example
+    
+    # Error handling example
+    error_handling_example
 )
 
 # Example source files with descriptions
@@ -22,6 +25,7 @@ set(EXAMPLE_DESCRIPTIONS
     "dtls_connection_migration_example;Connection migration using Connection IDs"
     "dtls_early_data_example;Early data (0-RTT) functionality demonstration"
     "dtls_multi_connection_server_example;High-performance multi-connection server"
+    "error_handling_example;RFC 9147 compliant error handling system demonstration"
 )
 
 # Common compile definitions for examples
