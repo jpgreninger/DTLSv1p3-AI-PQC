@@ -134,7 +134,8 @@ public:
     // Custom reporter callback type
     using ReporterCallback = std::function<void(const ErrorReport&)>;
     
-    explicit ErrorReporter(const ReportingConfig& config = ReportingConfig{});
+    ErrorReporter();
+    explicit ErrorReporter(const ReportingConfig& config);
     ~ErrorReporter();
     
     // Non-copyable but moveable

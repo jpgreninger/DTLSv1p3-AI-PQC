@@ -85,7 +85,8 @@ public:
     // Alert handler callback type
     using AlertHandler = std::function<Result<void>(const AlertMessage&, const std::vector<uint8_t>&)>;
     
-    explicit AlertManager(const AlertPolicy& policy = AlertPolicy{});
+    AlertManager();
+    explicit AlertManager(const AlertPolicy& policy);
     ~AlertManager();
     
     // Non-copyable but moveable

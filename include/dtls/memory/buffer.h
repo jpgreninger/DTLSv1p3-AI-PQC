@@ -6,6 +6,7 @@
 #include <memory>
 #include <cstddef>
 #include <cstring>
+#include <atomic>
 
 namespace dtls {
 namespace v13 {

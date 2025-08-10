@@ -45,8 +45,8 @@ protected:
         secure_policy.generate_alerts_for_invalid_records = true;
         secure_policy.generate_alerts_for_auth_failures = true;
         
-        udp_alert_manager_ = std::make_unique<AlertManager>(udp_policy);
-        secure_alert_manager_ = std::make_unique<AlertManager>(secure_policy);
+        udp_alert_manager_ = std::make_shared<AlertManager>(udp_policy);
+        secure_alert_manager_ = std::make_shared<AlertManager>(secure_policy);
         
         udp_error_handler_->set_alert_manager(udp_alert_manager_);
         secure_error_handler_->set_alert_manager(secure_alert_manager_);
@@ -58,8 +58,8 @@ protected:
     std::unique_ptr<ErrorHandler> udp_error_handler_;
     std::unique_ptr<ErrorHandler> secure_error_handler_;
     
-    std::unique_ptr<AlertManager> udp_alert_manager_;
-    std::unique_ptr<AlertManager> secure_alert_manager_;
+    std::shared_ptr<AlertManager> udp_alert_manager_;
+    std::shared_ptr<AlertManager> secure_alert_manager_;
 };
 
 /**

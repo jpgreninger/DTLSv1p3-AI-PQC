@@ -76,7 +76,8 @@ public:
         uint32_t max_log_message_length = 512;
     };
 
-    explicit ErrorHandler(const Configuration& config = Configuration{});
+    ErrorHandler();
+    explicit ErrorHandler(const Configuration& config);
     ~ErrorHandler();
     
     // Non-copyable but moveable
@@ -249,6 +250,7 @@ private:
     // Internal helper methods
     bool is_transport_secure() const;
     bool should_generate_alert_for_error(DTLSError error) const;
+    bool is_security_relevant_error(DTLSError error) const;
     void update_dos_counters();
     void cleanup_expired_contexts();
     Result<void> log_error_securely(DTLSError error, 

@@ -10,9 +10,12 @@ namespace v13 {
 // Thread-local storage for error context
 thread_local std::weak_ptr<ErrorContext> ErrorHandler::thread_error_context_;
 
+ErrorHandler::ErrorHandler()
+    : ErrorHandler(Configuration{}) {
+}
+
 ErrorHandler::ErrorHandler(const Configuration& config)
-    : config_(config)
-    , stats_() {
+    : config_(config) {
     
     stats_.start_time = std::chrono::steady_clock::now();
     dos_state_.last_second_reset = std::chrono::steady_clock::now();
@@ -249,7 +252,15 @@ Result<void> ErrorHandler::update_configuration(const Configuration& config) {
 }
 
 void ErrorHandler::reset_statistics() {
-    stats_ = ErrorStats{};
+    // Reset atomic counters individually
+    stats_.total_errors = 0;
+    stats_.fatal_errors = 0;
+    stats_.retryable_errors = 0;
+    stats_.invalid_records_discarded = 0;
+    stats_.authentication_failures = 0;
+    stats_.alerts_generated = 0;
+    stats_.connections_terminated = 0;
+    stats_.dos_attacks_detected = 0;
     stats_.start_time = std::chrono::steady_clock::now();
 }
 

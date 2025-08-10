@@ -205,7 +205,15 @@ void ErrorContext::clear_history(bool keep_connection_info) {
         connection_info_.total_errors = 0;
         connection_info_.fatal_errors = 0;
         connection_info_.security_errors = 0;
-        security_metrics_ = SecurityMetrics{};
+        
+        // Reset security metrics individually (atomic types cannot be assigned)
+        security_metrics_.authentication_failures = 0;
+        security_metrics_.record_integrity_failures = 0;
+        security_metrics_.replay_detections = 0;
+        security_metrics_.tampering_detections = 0;
+        security_metrics_.suspicious_patterns = 0;
+        security_metrics_.first_security_event = std::chrono::steady_clock::time_point{};
+        security_metrics_.last_security_event = std::chrono::steady_clock::time_point{};
     }
 }
 

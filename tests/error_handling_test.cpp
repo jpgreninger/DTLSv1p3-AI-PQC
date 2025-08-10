@@ -6,10 +6,31 @@
 #include <memory>
 #include <chrono>
 #include <thread>
+#include <algorithm>
 
 namespace dtls {
 namespace v13 {
 namespace test {
+
+// Helper function for error equivalence testing
+bool is_equivalent_error(DTLSError error1, DTLSError error2) {
+    // Define groups of equivalent errors
+    std::vector<std::vector<DTLSError>> equivalent_groups = {
+        {DTLSError::CERTIFICATE_VERIFY_FAILED, DTLSError::CERTIFICATE_UNKNOWN},
+        {DTLSError::TIMEOUT, DTLSError::CONNECTION_TIMEOUT},
+        {DTLSError::NETWORK_ERROR, DTLSError::TRANSPORT_ERROR}
+    };
+    
+    for (const auto& group : equivalent_groups) {
+        bool found1 = std::find(group.begin(), group.end(), error1) != group.end();
+        bool found2 = std::find(group.begin(), group.end(), error2) != group.end();
+        if (found1 && found2) {
+            return true;
+        }
+    }
+    
+    return error1 == error2;
+}
 
 class ErrorHandlingTest : public ::testing::Test {
 protected:
@@ -31,7 +52,7 @@ protected:
         alert_policy.generate_alerts_for_invalid_records = false;
         alert_policy.generate_alerts_for_auth_failures = false;
         
-        alert_manager_ = std::make_unique<AlertManager>(alert_policy);
+        alert_manager_ = std::make_shared<AlertManager>(alert_policy);
         
         // Configure error reporter for testing
         ErrorReporter::ReportingConfig reporter_config;
@@ -41,7 +62,7 @@ protected:
         reporter_config.log_connection_ids = false;
         reporter_config.max_reports_per_second = 1000; // High for testing
         
-        error_reporter_ = std::make_unique<ErrorReporter>(reporter_config);
+        error_reporter_ = std::make_shared<ErrorReporter>(reporter_config);
         
         // Wire up components
         error_handler_->set_alert_manager(alert_manager_);
@@ -55,8 +76,8 @@ protected:
     }
     
     std::unique_ptr<ErrorHandler> error_handler_;
-    std::unique_ptr<AlertManager> alert_manager_;
-    std::unique_ptr<ErrorReporter> error_reporter_;
+    std::shared_ptr<AlertManager> alert_manager_;
+    std::shared_ptr<ErrorReporter> error_reporter_;
 };
 
 // Test RFC 9147 Section 4.2.1 - Invalid records should be silently discarded
@@ -133,7 +154,9 @@ TEST_F(ErrorHandlingTest, TransportSpecificAlertPolicy) {
 
 // Test error context creation and management
 TEST_F(ErrorHandlingTest, ErrorContextManagement) {
-    NetworkAddress peer_addr = NetworkAddress::from_ipv4("192.168.1.100", 443);
+    // Convert IP address 192.168.1.100 to uint32_t (network byte order)
+    uint32_t ip_addr = (192U << 24) | (168U << 16) | (1U << 8) | 100U;
+    NetworkAddress peer_addr = NetworkAddress::from_ipv4(ip_addr, 443);
     auto context = error_handler_->create_error_context("test_conn_4", peer_addr);
     
     EXPECT_NE(context, nullptr);
@@ -373,25 +396,6 @@ TEST_F(ErrorHandlingTest, ConnectionIDErrorHandling) {
     EXPECT_EQ(reverse_error, DTLSError::CONNECTION_ID_MISMATCH);
 }
 
-// Helper function for error equivalence testing
-bool is_equivalent_error(DTLSError error1, DTLSError error2) {
-    // Define groups of equivalent errors
-    std::vector<std::vector<DTLSError>> equivalent_groups = {
-        {DTLSError::CERTIFICATE_VERIFY_FAILED, DTLSError::BAD_CERTIFICATE},
-        {DTLSError::TIMEOUT, DTLSError::CONNECTION_TIMEOUT},
-        {DTLSError::NETWORK_ERROR, DTLSError::TRANSPORT_ERROR}
-    };
-    
-    for (const auto& group : equivalent_groups) {
-        bool found1 = std::find(group.begin(), group.end(), error1) != group.end();
-        bool found2 = std::find(group.begin(), group.end(), error2) != group.end();
-        if (found1 && found2) {
-            return true;
-        }
-    }
-    
-    return error1 == error2;
-}
 
 } // namespace test
 } // namespace v13

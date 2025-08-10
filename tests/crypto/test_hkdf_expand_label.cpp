@@ -18,11 +18,13 @@ protected:
             openssl_provider_->initialize();
         }
         
-        // Botan provider testing disabled for now
-        // if (botan_utils::is_botan_available()) {
-        //     botan_provider_ = std::make_unique<BotanProvider>();
-        //     botan_provider_->initialize();
-        // }
+        // Enable Botan provider for cross-validation testing
+        if (botan_utils::is_botan_available()) {
+            botan_provider_ = std::make_unique<BotanProvider>();
+            if (botan_provider_->is_available()) {
+                botan_provider_->initialize();
+            }
+        }
     }
     
     void TearDown() override {
