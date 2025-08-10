@@ -11,7 +11,38 @@ namespace dtls {
 namespace v13 {
 namespace memory {
 
-// Zero-copy buffer for efficient data handling
+// Forward declarations for optimized buffer sharing
+class BufferSharedState;
+class BufferRefCount;
+
+// Shared buffer state for zero-copy buffer sharing
+class DTLS_API BufferSharedState {
+public:
+    BufferSharedState(std::unique_ptr<std::byte[]> data, size_t capacity);
+    ~BufferSharedState() = default;
+    
+    // Non-copyable, non-movable (managed by shared_ptr)
+    BufferSharedState(const BufferSharedState&) = delete;
+    BufferSharedState& operator=(const BufferSharedState&) = delete;
+    BufferSharedState(BufferSharedState&&) = delete;
+    BufferSharedState& operator=(BufferSharedState&&) = delete;
+    
+    const std::byte* data() const noexcept { return data_.get(); }
+    std::byte* mutable_data() noexcept { return data_.get(); }
+    size_t capacity() const noexcept { return capacity_; }
+    
+    // Reference counting
+    std::atomic<size_t> ref_count{1};
+    
+    // Security
+    void secure_zero() noexcept;
+    
+private:
+    std::unique_ptr<std::byte[]> data_;
+    size_t capacity_;
+};
+
+// Zero-copy buffer for efficient data handling with reference counting and buffer sharing
 class DTLS_API ZeroCopyBuffer {
 public:
     // Constructors
@@ -19,9 +50,12 @@ public:
     ZeroCopyBuffer(std::unique_ptr<std::byte[]> data, size_t size, size_t capacity);
     ZeroCopyBuffer(const std::byte* data, size_t size);
     
-    // Move semantics (copying disabled for zero-copy)
-    ZeroCopyBuffer(const ZeroCopyBuffer&) = delete;
-    ZeroCopyBuffer& operator=(const ZeroCopyBuffer&) = delete;
+    // Shared buffer constructor for zero-copy sharing
+    ZeroCopyBuffer(std::shared_ptr<BufferSharedState> shared_state, size_t offset = 0, size_t size = 0);
+    
+    // Copy semantics now allowed for reference-counted zero-copy sharing
+    ZeroCopyBuffer(const ZeroCopyBuffer& other) noexcept;
+    ZeroCopyBuffer& operator=(const ZeroCopyBuffer& other) noexcept;
     ZeroCopyBuffer(ZeroCopyBuffer&& other) noexcept;
     ZeroCopyBuffer& operator=(ZeroCopyBuffer&& other) noexcept;
     
@@ -29,8 +63,8 @@ public:
     ~ZeroCopyBuffer() = default;
     
     // Data access
-    std::byte* mutable_data() noexcept { return data_.get(); }
-    const std::byte* data() const noexcept { return data_.get(); }
+    std::byte* mutable_data() noexcept { return get_mutable_data_ptr(); }
+    const std::byte* data() const noexcept { return get_data_ptr(); }
     size_t size() const noexcept { return size_; }
     size_t capacity() const noexcept { return capacity_; }
     bool empty() const noexcept { return size_ == 0; }
@@ -40,6 +74,16 @@ public:
     Result<void> append(const ZeroCopyBuffer& other);
     Result<void> prepend(const std::byte* data, size_t length);
     Result<ZeroCopyBuffer> slice(size_t offset, size_t length) const;
+    
+    // Zero-copy operations
+    ZeroCopyBuffer create_slice(size_t offset, size_t length) const noexcept;
+    Result<ZeroCopyBuffer> share_buffer() const;
+    bool is_shared() const noexcept;
+    size_t reference_count() const noexcept;
+    
+    // Buffer sharing optimization
+    Result<void> make_unique(); // Copy-on-write when shared
+    bool can_modify() const noexcept; // Check if buffer can be modified without copying
     
     // Memory management
     Result<void> reserve(size_t new_capacity);
@@ -52,26 +96,43 @@ public:
     size_t available_space() const noexcept { return capacity_ - size_; }
     
     // Iterator support
-    std::byte* begin() noexcept { return data_.get(); }
-    std::byte* end() noexcept { return data_.get() + size_; }
-    const std::byte* begin() const noexcept { return data_.get(); }
-    const std::byte* end() const noexcept { return data_.get() + size_; }
-    const std::byte* cbegin() const noexcept { return data_.get(); }
-    const std::byte* cend() const noexcept { return data_.get() + size_; }
+    std::byte* begin() noexcept { return get_mutable_data_ptr(); }
+    std::byte* end() noexcept { return get_mutable_data_ptr() + size_; }
+    const std::byte* begin() const noexcept { return get_data_ptr(); }
+    const std::byte* end() const noexcept { return get_data_ptr() + size_; }
+    const std::byte* cbegin() const noexcept { return get_data_ptr(); }
+    const std::byte* cend() const noexcept { return get_data_ptr() + size_; }
     
     // Operators
-    std::byte& operator[](size_t index) noexcept { return data_[index]; }
-    const std::byte& operator[](size_t index) const noexcept { return data_[index]; }
+    std::byte& operator[](size_t index) noexcept { return get_mutable_data_ptr()[index]; }
+    const std::byte& operator[](size_t index) const noexcept { return get_data_ptr()[index]; }
     
     // Security
     void secure_zero() noexcept;
     
+    // Buffer state queries
+    bool is_owning() const noexcept;
+    bool is_pooled() const noexcept;
+    
+    // Performance optimization hints
+    void hint_sequential_access() noexcept;
+    void hint_random_access() noexcept;
+    void hint_read_only() noexcept;
+    
 private:
     std::unique_ptr<std::byte[]> data_;
+    std::shared_ptr<BufferSharedState> shared_state_;
     size_t size_;
     size_t capacity_;
+    size_t offset_; // Offset into shared buffer
+    
+    bool is_shared_buffer_{false};
+    bool is_pooled_buffer_{false};
     
     Result<void> ensure_capacity(size_t required_capacity);
+    void initialize_shared_state();
+    const std::byte* get_data_ptr() const noexcept;
+    std::byte* get_mutable_data_ptr() noexcept;
 };
 
 // Buffer view for non-owning access to buffer data

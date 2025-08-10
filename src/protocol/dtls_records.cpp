@@ -60,13 +60,10 @@ DTLSPlaintext::DTLSPlaintext(const DTLSPlaintext& other)
     , sequence_number(other.sequence_number)
     , length(other.length)
 {
-    // Deep copy the fragment buffer
+    // Zero-copy sharing for fragment buffer
     if (other.fragment.size() > 0) {
-        fragment = memory::Buffer(other.fragment.size());
-        auto resize_result = fragment.resize(other.fragment.size());
-        if (resize_result.is_success()) {
-            std::memcpy(fragment.mutable_data(), other.fragment.data(), other.fragment.size());
-        }
+        // Use zero-copy sharing - the ZeroCopyBuffer copy constructor handles reference counting
+        fragment = other.fragment;
     }
 }
 
@@ -78,16 +75,9 @@ DTLSPlaintext& DTLSPlaintext::operator=(const DTLSPlaintext& other) {
         sequence_number = other.sequence_number;
         length = other.length;
         
-        // Deep copy the fragment buffer
-        if (other.fragment.size() > 0) {
-            fragment = memory::Buffer(other.fragment.size());
-            auto resize_result = fragment.resize(other.fragment.size());
-            if (resize_result.is_success()) {
-                std::memcpy(fragment.mutable_data(), other.fragment.data(), other.fragment.size());
-            }
-        } else {
-            fragment = memory::Buffer();
-        }
+        // Zero-copy sharing for fragment buffer
+        // The ZeroCopyBuffer assignment operator handles reference counting
+        fragment = other.fragment;
     }
     return *this;
 }
@@ -257,13 +247,10 @@ DTLSCiphertext::DTLSCiphertext(const DTLSCiphertext& other)
     , connection_id_length(other.connection_id_length)
     , has_connection_id(other.has_connection_id)
 {
-    // Deep copy the encrypted record buffer
+    // Zero-copy sharing for encrypted record buffer
     if (other.encrypted_record.size() > 0) {
-        encrypted_record = memory::Buffer(other.encrypted_record.size());
-        auto resize_result = encrypted_record.resize(other.encrypted_record.size());
-        if (resize_result.is_success()) {
-            std::memcpy(encrypted_record.mutable_data(), other.encrypted_record.data(), other.encrypted_record.size());
-        }
+        // Use zero-copy sharing - the ZeroCopyBuffer copy constructor handles reference counting
+        encrypted_record = other.encrypted_record;
     }
 }
 
@@ -278,16 +265,9 @@ DTLSCiphertext& DTLSCiphertext::operator=(const DTLSCiphertext& other) {
         connection_id_length = other.connection_id_length;
         has_connection_id = other.has_connection_id;
         
-        // Deep copy the encrypted record buffer
-        if (other.encrypted_record.size() > 0) {
-            encrypted_record = memory::Buffer(other.encrypted_record.size());
-            auto resize_result = encrypted_record.resize(other.encrypted_record.size());
-            if (resize_result.is_success()) {
-                std::memcpy(encrypted_record.mutable_data(), other.encrypted_record.data(), other.encrypted_record.size());
-            }
-        } else {
-            encrypted_record = memory::Buffer();
-        }
+        // Zero-copy sharing for encrypted record buffer
+        // The ZeroCopyBuffer assignment operator handles reference counting
+        encrypted_record = other.encrypted_record;
     }
     return *this;
 }
