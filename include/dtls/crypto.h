@@ -58,6 +58,13 @@
 // Utility functions and helpers
 #include <dtls/crypto/crypto_utils.h>
 
+// Crypto operations abstraction layer
+#include <dtls/crypto/operations.h>
+#include <dtls/crypto/operations_impl.h>
+
+// Advanced cipher suites (optional - commented out due to compilation issues)
+// #include <dtls/crypto/advanced_cipher_suites.h>
+
 namespace dtls {
 namespace v13 {
 
@@ -227,6 +234,11 @@ using ProviderManager = crypto::ProviderManager;
 using PrivateKeyPtr = std::unique_ptr<PrivateKey>;
 using PublicKeyPtr = std::unique_ptr<PublicKey>;
 using CertChainPtr = std::unique_ptr<CertificateChain>;
+
+// Crypto operations abstraction aliases
+using CryptoOps = ICryptoOperations;
+using CryptoOpsPtr = std::unique_ptr<ICryptoOperations>;
+using CryptoOpsManager = CryptoOperationsManager;
 
 } // namespace crypto
 } // namespace v13
