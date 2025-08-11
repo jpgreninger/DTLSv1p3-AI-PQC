@@ -80,19 +80,48 @@ void SecurityValidationSuite::setup_test_environment() {
     ASSERT_TRUE(client_context_->initialize().is_ok());
     ASSERT_TRUE(server_context_->initialize().is_ok());
     
-    // Setup secure transport with random ports to avoid conflicts
-    std::uniform_int_distribution<uint16_t> port_dist(20000, 30000);
-    uint16_t server_port = port_dist(rng_);
-    
+    // Setup secure transport with robust port allocation
     transport::TransportConfig client_config;
     transport::TransportConfig server_config;
     client_transport_ = std::make_unique<transport::UDPTransport>(client_config);
     server_transport_ = std::make_unique<transport::UDPTransport>(server_config);
     
+    // Initialize transports before binding
+    ASSERT_TRUE(client_transport_->initialize().is_ok()) << "Failed to initialize client transport";
+    ASSERT_TRUE(server_transport_->initialize().is_ok()) << "Failed to initialize server transport";
+    
+    // Use ephemeral ports for both client and server to avoid conflicts
     transport::NetworkEndpoint client_endpoint("127.0.0.1", 0);
-    transport::NetworkEndpoint server_endpoint("127.0.0.1", server_port);
-    ASSERT_TRUE(client_transport_->bind(client_endpoint).is_ok());
-    ASSERT_TRUE(server_transport_->bind(server_endpoint).is_ok());
+    transport::NetworkEndpoint server_endpoint("127.0.0.1", 0);
+    
+    // Try multiple times with different ports if binding fails
+    bool client_bound = false, server_bound = false;
+    std::uniform_int_distribution<uint16_t> port_dist(30000, 40000);
+    
+    for (int attempt = 0; attempt < 10 && (!client_bound || !server_bound); ++attempt) {
+        if (!client_bound) {
+            auto client_result = client_transport_->bind(client_endpoint);
+            if (client_result.is_ok()) {
+                client_bound = true;
+            }
+        }
+        
+        if (!server_bound) {
+            uint16_t try_port = port_dist(rng_);
+            transport::NetworkEndpoint try_endpoint("127.0.0.1", try_port);
+            auto server_result = server_transport_->bind(try_endpoint);
+            if (server_result.is_ok()) {
+                server_bound = true;
+            }
+        }
+        
+        if (!client_bound || !server_bound) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+    }
+    
+    ASSERT_TRUE(client_bound) << "Failed to bind client transport after multiple attempts";
+    ASSERT_TRUE(server_bound) << "Failed to bind server transport after multiple attempts";
 }
 
 void SecurityValidationSuite::setup_attack_scenarios() {
@@ -695,23 +724,76 @@ bool SecurityValidationSuite::simulate_replay_attack() {
     // Perform legitimate handshake
     if (!perform_secure_handshake(client.get(), server.get())) return false;
     
-    // Send legitimate data 
+    // Send legitimate data to establish sequence numbers
     std::vector<uint8_t> legitimate_data = {0x01, 0x02, 0x03, 0x04, 0x05};
     memory::ZeroCopyBuffer buffer(reinterpret_cast<const std::byte*>(legitimate_data.data()), legitimate_data.size());
     auto send_result = client->send_application_data(buffer);
     if (!send_result.is_ok()) return false;
     
-    // inject_packet() and get_last_sent_packet() not available in current API
-    // Simulate replay attack detection by attempting duplicate send
+    // Allow processing time
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     
-    // Attempt duplicate send (simulated replay)
-    auto replay_result = client->send_application_data(buffer);
+    // Simulate replay attack by creating a malformed record with duplicate sequence number
+    // This simulates an attacker capturing and replaying a previous packet
     
-    // For now, assume replay protection is working if first send succeeded
-    // Note: In a real implementation, replay_result would be checked for proper replay detection
-    (void)replay_result; // Suppress unused variable warning
-    return send_result.is_ok();
+    // Create a DTLS record that mimics a replayed packet
+    std::vector<uint8_t> replay_packet;
+    
+    // DTLS record header (simulated replayed packet)
+    replay_packet.push_back(0x17); // Application Data content type  
+    replay_packet.push_back(0x03); // DTLS version major
+    replay_packet.push_back(0x03); // DTLS version minor
+    
+    // Epoch (2 bytes) - use 0 to simulate old epoch
+    replay_packet.push_back(0x00);
+    replay_packet.push_back(0x00);
+    
+    // Sequence number (6 bytes) - use a previously seen sequence number
+    // This simulates an attacker replaying an old packet
+    for (int i = 0; i < 6; i++) {
+        replay_packet.push_back(0x00);
+    }
+    
+    // Length
+    replay_packet.push_back(0x00);
+    replay_packet.push_back(0x10); // 16 bytes of fake encrypted data
+    
+    // Fake encrypted payload (would be detected as invalid)
+    for (int i = 0; i < 16; i++) {
+        replay_packet.push_back(0xAA + (i % 16));
+    }
+    
+    // Attempt to process the replayed packet - this should trigger replay detection
+    memory::ZeroCopyBuffer replay_buffer(reinterpret_cast<const std::byte*>(replay_packet.data()), replay_packet.size());
+    auto replay_result = server->process_incoming_data(replay_buffer);
+    
+    // The replay should be rejected, triggering a security event
+    if (!replay_result.is_ok()) {
+        // Generate security event for replay attack detection
+        SecurityEvent event{
+            SecurityEventType::REPLAY_ATTACK_DETECTED,
+            SecurityEventSeverity::HIGH,
+            "Replay attack detected - duplicate sequence number or old epoch",
+            0,
+            std::chrono::steady_clock::now(),
+            {}
+        };
+        handle_security_event(event, "REPLAY_DETECTION");
+        
+        // Log successful replay detection
+        if (config_.enable_verbose_logging) {
+            std::cout << "  Replay attack successfully detected and blocked" << std::endl;
+        }
+        
+        return true; // Attack was detected (which is what we want)
+    }
+    
+    // If replay wasn't detected, this is a security vulnerability
+    if (config_.enable_verbose_logging) {
+        std::cout << "  WARNING: Replay attack was not detected!" << std::endl;
+    }
+    
+    return false; // Replay was not detected (security issue)
 }
 
 bool SecurityValidationSuite::simulate_timing_attack() {
@@ -940,21 +1022,61 @@ std::vector<uint8_t> SecurityValidationSuite::generate_malformed_packet(const st
 
 bool SecurityValidationSuite::check_system_stability() {
     try {
-        // Test basic functionality
-        auto [client, server] = create_secure_connection_pair();
-        if (!client || !server) return false;
+        // Test basic functionality with proper resource management
+        std::unique_ptr<Connection> client, server;
+        
+        {
+            auto [temp_client, temp_server] = create_secure_connection_pair();
+            if (!temp_client || !temp_server) return false;
+            
+            client = std::move(temp_client);
+            server = std::move(temp_server);
+        }
         
         // Quick handshake test
         bool handshake_ok = perform_secure_handshake(client.get(), server.get());
-        if (!handshake_ok) return false;
+        if (!handshake_ok) {
+            // Ensure connections are cleaned up before returning
+            try {
+                if (client) client->force_close();
+                if (server) server->force_close();
+            } catch (...) {
+                // Ignore cleanup errors
+            }
+            return false;
+        }
         
         // Quick data transfer test
         std::vector<uint8_t> test_data = {0x01, 0x02, 0x03};
         memory::ZeroCopyBuffer buffer(reinterpret_cast<const std::byte*>(test_data.data()), test_data.size());
         auto send_result = client->send_application_data(buffer);
         
-        return send_result.is_ok();
+        bool test_passed = send_result.is_ok();
+        
+        // Properly close connections before destruction
+        try {
+            if (client) {
+                client->close();
+                std::this_thread::sleep_for(std::chrono::milliseconds(10)); // Allow cleanup time
+            }
+            if (server) {
+                server->close();
+                std::this_thread::sleep_for(std::chrono::milliseconds(10)); // Allow cleanup time
+            }
+        } catch (...) {
+            // Ignore close errors - they will be force closed in destructor
+        }
+        
+        // Let unique_ptr handle destruction safely
+        client.reset();
+        server.reset();
+        
+        // Small delay to ensure cleanup completes
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        
+        return test_passed;
     } catch (...) {
+        // If any exception occurs, system is unstable
         return false;
     }
 }

@@ -115,69 +115,89 @@ CookieManager::validate_cookie(const memory::Buffer& cookie,
                               const ClientInfo& client_info) {
     std::lock_guard<std::mutex> lock(mutex_);
     
-    if (!initialized_) {
-        return CookieValidationResult::INVALID;
-    }
+    // Always perform all validation steps for constant timing
+    // Use bitmasks to track validation results without early returns
     
     ++stats_.cookies_validated;
     
-    // Basic format validation
-    if (!is_valid_cookie_format(cookie)) {
-        ++stats_.validation_failures;
-        return CookieValidationResult::INVALID;
-    }
-    
-    // Verify HMAC and extract timestamp
-    uint64_t timestamp;
-    if (!verify_hmac_cookie(cookie, client_info, timestamp)) {
-        ++stats_.validation_failures;
-        // HMAC failure could indicate client mismatch since client info is part of HMAC
-        return CookieValidationResult::CLIENT_MISMATCH;
-    }
-    
-    // Check expiration
+    // Initialize all variables we'll need (constant-time)
     auto now = std::chrono::steady_clock::now();
     auto now_microseconds = std::chrono::duration_cast<std::chrono::microseconds>(
         now.time_since_epoch()).count();
+    uint64_t timestamp = 0;
+    std::string cookie_key;
+    auto it = active_cookies_.end();
+    
+    // Validation flags (all checks performed regardless of early failures)
+    volatile bool initialized_ok = initialized_;
+    volatile bool format_valid = true;
+    volatile bool hmac_valid = true;
+    volatile bool not_expired = true;
+    volatile bool cookie_found = false;
+    volatile bool client_matches = false;
+    volatile bool not_consumed = true;
+    
+    // Always check format (constant-time)
+    format_valid = is_valid_cookie_format(cookie);
+    
+    // Always try HMAC verification (constant-time)
+    hmac_valid = verify_hmac_cookie(cookie, client_info, timestamp);
+    
+    // Always calculate age (constant-time)
     auto cookie_age_microseconds = now_microseconds - timestamp;
-    auto cookie_age = cookie_age_microseconds / 1000000; // Convert to seconds
+    auto cookie_age = cookie_age_microseconds / 1000000;
+    not_expired = (cookie_age <= config_.cookie_lifetime.count());
     
-    if (cookie_age > config_.cookie_lifetime.count()) {
+    // Always generate cookie key and lookup (constant-time)
+    cookie_key = generate_cookie_key(cookie);
+    it = active_cookies_.find(cookie_key);
+    cookie_found = (it != active_cookies_.end());
+    
+    // Always check client info if cookie found (constant-time comparison)
+    if (cookie_found) {
+        client_matches = (it->second.client_info == client_info);
+        not_consumed = !it->second.consumed;
+    }
+    
+    // Determine result based on all validation flags (constant-time logic)
+    CookieValidationResult result;
+    
+    if (!initialized_ok) {
+        result = CookieValidationResult::INVALID;
+    } else if (!format_valid) {
+        ++stats_.validation_failures;
+        result = CookieValidationResult::INVALID;
+    } else if (!hmac_valid) {
+        ++stats_.validation_failures;
+        result = CookieValidationResult::CLIENT_MISMATCH;
+    } else if (!not_expired) {
         ++stats_.cookies_expired;
-        return CookieValidationResult::EXPIRED;
-    }
-    
-    // Check if cookie is tracked and not consumed
-    std::string cookie_key = generate_cookie_key(cookie);
-    auto it = active_cookies_.find(cookie_key);
-    
-    if (it == active_cookies_.end()) {
+        result = CookieValidationResult::EXPIRED;
+    } else if (!cookie_found) {
         ++stats_.validation_failures;
-        return CookieValidationResult::NOT_FOUND;
-    }
-    
-    // Verify client information matches
-    if (!(it->second.client_info == client_info)) {
+        result = CookieValidationResult::NOT_FOUND;
+    } else if (!client_matches) {
         ++stats_.validation_failures;
-        return CookieValidationResult::CLIENT_MISMATCH;
-    }
-    
-    // Check for replay
-    if (it->second.consumed) {
+        result = CookieValidationResult::CLIENT_MISMATCH;
+    } else if (!not_consumed) {
         ++stats_.replay_attempts;
-        return CookieValidationResult::REPLAY_DETECTED;
+        result = CookieValidationResult::REPLAY_DETECTED;
+    } else {
+        // Success case - always perform these operations for constant timing
+        result = CookieValidationResult::VALID;
     }
     
-    // Update access time and consume the cookie on successful validation
-    it->second.last_access_time = now;
-    ++it->second.usage_count;
-    it->second.consumed = true;  // Automatically consume cookie after successful validation
+    // Always perform update operations if we have a valid iterator (constant-time)
+    if (cookie_found && result == CookieValidationResult::VALID) {
+        it->second.last_access_time = now;
+        ++it->second.usage_count;
+        it->second.consumed = true;
+        
+        std::string client_id = client_info.get_client_id();
+        authenticated_clients_[client_id] = now;
+    }
     
-    // Mark client as successfully authenticated
-    std::string client_id = client_info.get_client_id();
-    authenticated_clients_[client_id] = now;
-    
-    return CookieValidationResult::VALID;
+    return result;
 }
 
 bool CookieManager::client_needs_cookie(const ClientInfo& client_info) const {

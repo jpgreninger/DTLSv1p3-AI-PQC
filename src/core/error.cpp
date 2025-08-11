@@ -159,6 +159,8 @@ bool is_fatal_error(DTLSError error) {
         case DTLSError::RATE_LIMITED:
         case DTLSError::SERVICE_UNAVAILABLE:
         case DTLSError::MAINTENANCE_MODE:
+        // RFC 9147: Invalid records should be silently discarded (non-fatal)
+        case DTLSError::INVALID_RECORD_HEADER:
             return false;
             
         // Fatal errors that require connection termination

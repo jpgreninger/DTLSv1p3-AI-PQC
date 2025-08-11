@@ -350,8 +350,8 @@ TEST_F(ErrorHandlingTest, ErrorContextExpiration) {
 
 // Test error reporting rate limiting
 TEST_F(ErrorHandlingTest, ErrorReportingRateLimiting) {
-    // Configure strict rate limiting
-    ErrorReporter::ReportingConfig config;
+    // Configure strict rate limiting while preserving other settings
+    auto config = error_reporter_->get_configuration();
     config.max_reports_per_second = 5;
     config.max_reports_per_minute = 20;
     error_reporter_->update_configuration(config);

@@ -24,6 +24,7 @@ protected:
         udp_config_.generate_alerts_on_invalid_records = false; // NOT RECOMMENDED for UDP
         udp_config_.log_invalid_records = true; // MAY be logged for diagnostics
         udp_config_.max_auth_failures_per_epoch = 10; // Per RFC implementation guidelines
+        udp_config_.max_invalid_records_per_second = 25; // Set low for testing persistent bad messages
         
         udp_error_handler_ = std::make_unique<ErrorHandler>(udp_config_);
         

@@ -2483,6 +2483,119 @@ Result<std::vector<uint8_t>> dtls::v13::crypto::BotanProvider::construct_dtls_si
     return Result<std::vector<uint8_t>>(std::move(signature_context));
 }
 
+// Enhanced provider features for dependency reduction
+EnhancedProviderCapabilities dtls::v13::crypto::BotanProvider::enhanced_capabilities() const {
+    EnhancedProviderCapabilities caps;
+    
+    // Copy base capabilities
+    auto base_caps = capabilities();
+    caps.supported_cipher_suites = base_caps.supported_cipher_suites;
+    caps.supported_groups = base_caps.supported_groups;
+    caps.supported_signatures = base_caps.supported_signatures;
+    caps.supported_hashes = base_caps.supported_hashes;
+    caps.hardware_acceleration = base_caps.hardware_acceleration;
+    caps.fips_mode = base_caps.fips_mode;
+    caps.provider_name = base_caps.provider_name;
+    caps.provider_version = base_caps.provider_version;
+    
+    // Runtime capabilities
+    caps.supports_async_operations = supports_async_operations();
+    caps.supports_streaming = false;  // Not implemented yet
+    caps.supports_batch_operations = false;  // Not implemented yet
+    caps.is_thread_safe = true;
+    
+    // Performance characteristics
+    caps.performance = get_performance_metrics();
+    
+    // Health and availability
+    caps.health_status = get_health_status();
+    caps.last_health_check = std::chrono::steady_clock::now();
+    caps.health_message = "Botan provider operational";
+    
+    // Resource usage
+    caps.max_memory_usage = 0;  // No limit set by default
+    caps.current_memory_usage = get_memory_usage();
+    caps.max_concurrent_operations = 0;  // No limit set by default
+    caps.current_operations = get_current_operations();
+    
+    // Compatibility flags
+    caps.compatibility_flags["botan_3_0"] = true;
+    caps.compatibility_flags["quantum_resistant"] = false;
+    caps.compatibility_flags["hardware_rng"] = true;
+    
+    return caps;
+}
+
+Result<void> dtls::v13::crypto::BotanProvider::perform_health_check() {
+    // Basic health check - try a simple crypto operation
+    try {
+        RandomParams params;
+        params.length = 16;
+        params.cryptographically_secure = true;
+        
+        auto result = generate_random(params);
+        if (!result) {
+            return Result<void>(result.error());
+        }
+        
+        // If we can generate random bytes, provider is likely healthy
+        return Result<void>();
+    } catch (const std::exception&) {
+        return Result<void>(DTLSError::CRYPTO_PROVIDER_ERROR);
+    }
+}
+
+ProviderHealth dtls::v13::crypto::BotanProvider::get_health_status() const {
+    // For this stub implementation, always return healthy
+    // In a real implementation, this would check various status indicators
+    return ProviderHealth::HEALTHY;
+}
+
+ProviderPerformanceMetrics dtls::v13::crypto::BotanProvider::get_performance_metrics() const {
+    ProviderPerformanceMetrics metrics;
+    
+    // Stub values - in a real implementation these would be tracked
+    metrics.average_init_time = std::chrono::milliseconds(5);
+    metrics.average_operation_time = std::chrono::milliseconds(1);
+    metrics.throughput_mbps = 150.0;  // Placeholder - Botan can be quite fast
+    metrics.memory_usage_bytes = get_memory_usage();
+    metrics.success_count = 1000;  // Placeholder
+    metrics.failure_count = 0;
+    metrics.success_rate = 1.0;
+    metrics.last_updated = std::chrono::steady_clock::now();
+    
+    return metrics;
+}
+
+Result<void> dtls::v13::crypto::BotanProvider::reset_performance_metrics() {
+    // In a real implementation, this would reset internal counters
+    // For now, just return success
+    return Result<void>();
+}
+
+// Resource management
+size_t dtls::v13::crypto::BotanProvider::get_memory_usage() const {
+    // Stub implementation - in practice would query Botan memory usage
+    return 512 * 1024;  // 512KB placeholder - Botan tends to be more memory efficient
+}
+
+size_t dtls::v13::crypto::BotanProvider::get_current_operations() const {
+    // Stub implementation - would track active operations
+    return 0;
+}
+
+Result<void> dtls::v13::crypto::BotanProvider::set_memory_limit(size_t limit) {
+    // Stub implementation - would configure Botan memory limits
+    (void)limit;  // Suppress unused parameter warning
+    return Result<void>();
+}
+
+Result<void> dtls::v13::crypto::BotanProvider::set_operation_limit(size_t limit) {
+    // Stub implementation - would configure operation limits
+    (void)limit;  // Suppress unused parameter warning
+    return Result<void>();
+}
+
 // Enhanced validation functions for RFC 9147 compliance
 bool dtls::v13::crypto::BotanProvider::validate_enhanced_key_scheme_compatibility(const CryptoKey& key, SignatureScheme scheme) const {
     const std::string& key_algorithm = key.algorithm();

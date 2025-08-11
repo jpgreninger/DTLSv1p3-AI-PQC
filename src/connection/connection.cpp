@@ -30,9 +30,32 @@ Connection::Connection(const ConnectionConfig& config,
 }
 
 Connection::~Connection() {
-    // Ensure connection is properly closed during destruction
-    if (!force_closed_.load()) {
-        force_close();
+    // Comprehensive destructor to prevent heap-use-after-free
+    try {
+        // Set closed flags first
+        force_closed_.store(true);
+        is_closing_.store(true);
+        
+        // Clear transport event callback FIRST to prevent callbacks during destruction
+        if (transport_) {
+            transport_->set_event_callback(nullptr);
+            transport_.reset();  // Explicitly reset to avoid callback access to freed memory
+        }
+        
+        // Clear event callback to prevent any callbacks during destruction
+        event_callback_ = nullptr;
+        
+        // Reset all unique_ptr members in reverse order of initialization
+        // message_layer_.reset();  // When implemented
+        // record_layer_.reset();   // When implemented
+        crypto_provider_.reset();
+        
+        // Clear any remaining data structures (when implemented)
+        // inbound_queue_.clear();  // When data queues are implemented
+        // outbound_queue_.clear(); // When data queues are implemented
+        
+    } catch (...) {
+        // Ignore all exceptions during destruction
     }
 }
 
@@ -748,22 +771,36 @@ Result<void> Connection::close() {
 }
 
 void Connection::force_close() {
-    force_closed_.store(true);
-    is_closing_.store(true);
-    
-    // Force state to closed without normal transition validation
-    {
-        std::lock_guard<std::mutex> lock(state_mutex_);
-        state_ = ConnectionState::CLOSED;
+    // Use compare_exchange to prevent double cleanup
+    bool expected = false;
+    if (force_closed_.compare_exchange_strong(expected, true)) {
+        // Only perform cleanup if we successfully set the flag from false to true
+        is_closing_.store(true);
+        
+        // Force state to closed without normal transition validation
+        {
+            std::lock_guard<std::mutex> lock(state_mutex_);
+            state_ = ConnectionState::CLOSED;
+        }
+        
+        // Cleanup all resources
+        try {
+            auto cleanup_result = cleanup_resources();
+            // Note: Ignoring cleanup errors in force close since this is emergency cleanup
+        } catch (...) {
+            // Ignore all exceptions during force close
+        }
+        
+        // Fire connection closed event
+        try {
+            if (event_callback_) {
+                fire_event(ConnectionEvent::CONNECTION_CLOSED);
+            }
+        } catch (...) {
+            // Ignore callback errors during force close
+        }
     }
-    
-    // Cleanup all resources
-    auto cleanup_result = cleanup_resources();
-    
-    // Fire connection closed event
-    fire_event(ConnectionEvent::CONNECTION_CLOSED);
-    
-    // Note: Ignoring cleanup errors in force close since this is emergency cleanup
+    // If force_closed_ was already true, cleanup is already in progress/completed
 }
 
 bool Connection::is_connected() const {
@@ -1182,22 +1219,34 @@ void Connection::fire_state_transition_events(ConnectionState from, ConnectionSt
 }
 
 Result<void> Connection::cleanup_resources() {
+    // Use instance-specific cleanup guard
+    static thread_local bool in_cleanup = false;
+    if (in_cleanup) {
+        return make_result(); // Already in cleanup, prevent recursion
+    }
+    in_cleanup = true;
+    
     // Ensure cleanup is idempotent - can be called multiple times safely
     if (state_ == ConnectionState::CLOSED && !crypto_provider_ && !transport_) {
+        in_cleanup = false;
         return make_result(); // Already cleaned up
     }
     
     // Clear application data buffers
-    {
+    try {
         std::lock_guard<std::mutex> lock(receive_queue_mutex_);
         receive_queue_.clear();
         receive_queue_.shrink_to_fit(); // Release memory
+    } catch (...) {
+        // Ignore errors clearing buffers
     }
     
     // Clear early data context and buffers
-    {
+    try {
         std::lock_guard<std::mutex> lock(early_data_mutex_);
         early_data_context_ = protocol::EarlyDataContext{}; // Reset to default state
+    } catch (...) {
+        // Ignore errors clearing early data
     }
     
     // Stop and cleanup transport layer
@@ -1207,25 +1256,49 @@ Result<void> Connection::cleanup_resources() {
         } catch (...) {
             // Ignore transport stop errors during cleanup
         }
-        transport_.reset();
+        try {
+            transport_.reset();
+        } catch (...) {
+            // Ignore transport reset errors
+        }
     }
     
     // Reset protocol layer managers (they will clean up automatically via destructors)
-    handshake_manager_.reset();
+    try {
+        handshake_manager_.reset();
+    } catch (...) {
+        // Ignore handshake manager cleanup errors
+    }
     
     // Reset early data management
-    session_ticket_manager_.reset();
-    replay_protection_.reset();
+    try {
+        session_ticket_manager_.reset();
+        replay_protection_.reset();
+    } catch (...) {
+        // Ignore early data cleanup errors
+    }
     
     // Cleanup fragment reassembly manager
     if (fragment_manager_) {
-        fragment_manager_->cleanup();
-        fragment_manager_.reset();
+        try {
+            fragment_manager_->cleanup();
+        } catch (...) {
+            // Ignore fragment manager cleanup errors
+        }
+        try {
+            fragment_manager_.reset();
+        } catch (...) {
+            // Ignore fragment manager reset errors
+        }
     }
     
     // Reset record and message layers
-    record_layer_.reset();
-    // message_layer_.reset();      // Still commented out due to incomplete type
+    try {
+        record_layer_.reset();
+        // message_layer_.reset();      // Still commented out due to incomplete type
+    } catch (...) {
+        // Ignore record layer cleanup errors
+    }
     
     // Cleanup crypto provider resources
     if (crypto_provider_) {
@@ -1234,19 +1307,36 @@ Result<void> Connection::cleanup_resources() {
         } catch (...) {
             // Ignore crypto cleanup errors during connection cleanup
         }
-        crypto_provider_.reset();
+        try {
+            crypto_provider_.reset();
+        } catch (...) {
+            // Ignore crypto provider reset errors
+        }
     }
     
     // Clear event callback to prevent callback during cleanup
-    event_callback_ = nullptr;
+    try {
+        event_callback_ = nullptr;
+    } catch (...) {
+        // Ignore callback clearing errors
+    }
     
     // Reset connection statistics
-    stats_ = ConnectionStats{}; // Reset to default state
+    try {
+        stats_ = ConnectionStats{}; // Reset to default state
+    } catch (...) {
+        // Ignore stats reset errors
+    }
     
     // Reset atomic flags
-    next_handshake_sequence_.store(0);
-    is_closing_.store(true);
+    try {
+        next_handshake_sequence_.store(0);
+        is_closing_.store(true);
+    } catch (...) {
+        // Ignore atomic flag errors
+    }
     
+    in_cleanup = false;
     return make_result();
 }
 

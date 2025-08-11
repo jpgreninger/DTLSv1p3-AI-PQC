@@ -103,6 +103,8 @@ add_executable(dtls_crypto_test
     crypto/test_crypto_security_vectors.cpp
     crypto/test_signature_security_vectors.cpp
     crypto/test_sequence_number_encryption.cpp
+    crypto/test_crypto_dependency_reduction.cpp
+    crypto/test_crypto_operations_abstraction.cpp
 )
 
 target_link_libraries(dtls_crypto_test PRIVATE ${DTLS_TEST_LIBRARIES})

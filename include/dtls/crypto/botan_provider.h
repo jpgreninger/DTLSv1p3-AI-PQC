@@ -123,6 +123,19 @@ public:
     bool is_fips_compliant() const override;
     SecurityLevel security_level() const override;
     Result<void> set_security_level(SecurityLevel level) override;
+    
+    // Enhanced provider features for dependency reduction
+    EnhancedProviderCapabilities enhanced_capabilities() const override;
+    Result<void> perform_health_check() override;
+    ProviderHealth get_health_status() const override;
+    ProviderPerformanceMetrics get_performance_metrics() const override;
+    Result<void> reset_performance_metrics() override;
+    
+    // Resource management
+    size_t get_memory_usage() const override;
+    size_t get_current_operations() const override;
+    Result<void> set_memory_limit(size_t limit) override;
+    Result<void> set_operation_limit(size_t limit) override;
 
     // AEAD helper functions
     size_t get_aead_key_length(AEADCipher cipher) const;

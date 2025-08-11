@@ -83,7 +83,11 @@ uint32_t ErrorContext::record_security_error(DTLSError error,
     
     error_events_.emplace_back(std::move(event));
     
-    // Update security metrics
+    // Update connection info counters
+    connection_info_.total_errors++;
+    if (event.is_fatal) {
+        connection_info_.fatal_errors++;
+    }
     connection_info_.security_errors++;
     update_security_metrics(error);
     
@@ -255,7 +259,7 @@ std::string ErrorContext::generate_context_hash() const {
 
 bool ErrorContext::should_expire(std::chrono::seconds max_age, 
                                 size_t max_events) const {
-    return get_context_age() > max_age || error_events_.size() > max_events;
+    return get_context_age() > max_age || get_total_error_count() > max_events;
 }
 
 // Private helper methods
@@ -348,11 +352,15 @@ double ErrorContext::calculate_attack_confidence() const {
         confidence += 0.4;  // High rate of security errors
     } else if (recent_security_errors > 2) {
         confidence += 0.2;  // Moderate rate
+    } else if (recent_security_errors > 0) {
+        confidence += 0.1;  // Any security error adds some confidence
     }
     
     // Factor 2: Types of security errors
     if (security_metrics_.authentication_failures > 3) {
         confidence += 0.3;
+    } else if (security_metrics_.authentication_failures > 0) {
+        confidence += 0.15;  // Any auth failure adds some confidence
     }
     if (security_metrics_.replay_detections > 0) {
         confidence += 0.2;

@@ -555,8 +555,13 @@ TEST_F(SideChannelResistanceTest, RecordProcessingTimingIndependence) {
  * Key derivation timing should not leak information about secret inputs
  */
 TEST_F(SideChannelResistanceTest, KeyDerivationTimingIndependence) {
-    auto provider = crypto::ProviderFactory::instance().create_provider("openssl");
-    ASSERT_TRUE(provider.is_success());
+    auto provider_result = crypto::ProviderFactory::instance().create_provider("openssl");
+    ASSERT_TRUE(provider_result.is_success());
+    auto& provider = provider_result.value();
+    
+    // Initialize the provider
+    auto init_result = provider->initialize();
+    ASSERT_TRUE(init_result.is_success()) << "Failed to initialize OpenSSL provider";
     
     std::map<std::string, std::vector<std::chrono::nanoseconds>> timing_groups;
     
@@ -574,7 +579,7 @@ TEST_F(SideChannelResistanceTest, KeyDerivationTimingIndependence) {
             kdf_params.salt = salt;
             kdf_params.info = std::vector<uint8_t>(label.begin(), label.end());
             kdf_params.output_length = 32;
-            auto result = (*provider)->derive_key_hkdf(kdf_params);
+            auto result = provider->derive_key_hkdf(kdf_params);
             auto end = std::chrono::high_resolution_clock::now();
             
             ASSERT_TRUE(result.is_success());
@@ -595,8 +600,13 @@ TEST_F(SideChannelResistanceTest, KeyDerivationTimingIndependence) {
  * Cryptographic table lookups should be cache-timing resistant
  */
 TEST_F(SideChannelResistanceTest, CacheTimingResistance) {
-    auto provider = crypto::ProviderFactory::instance().create_provider("openssl");
-    ASSERT_TRUE(provider.is_success());
+    auto provider_result = crypto::ProviderFactory::instance().create_provider("openssl");
+    ASSERT_TRUE(provider_result.is_success());
+    auto& provider = provider_result.value();
+    
+    // Initialize the provider
+    auto init_result = provider->initialize();
+    ASSERT_TRUE(init_result.is_success()) << "Failed to initialize OpenSSL provider";
     
     std::vector<std::chrono::nanoseconds> cold_cache_times;
     std::vector<std::chrono::nanoseconds> warm_cache_times;
@@ -614,7 +624,7 @@ TEST_F(SideChannelResistanceTest, CacheTimingResistance) {
         hmac_params.data = data;
         hmac_params.key = key;
         hmac_params.algorithm = HashAlgorithm::SHA256;
-        auto result = (*provider)->compute_hmac(hmac_params);
+        auto result = provider->compute_hmac(hmac_params);
         auto end = std::chrono::high_resolution_clock::now();
         
         ASSERT_TRUE(result.is_success());
@@ -631,7 +641,7 @@ TEST_F(SideChannelResistanceTest, CacheTimingResistance) {
         warmup_hmac_params.data = warmup_data;
         warmup_hmac_params.key = warmup_key;
         warmup_hmac_params.algorithm = HashAlgorithm::SHA256;
-        (*provider)->compute_hmac(warmup_hmac_params);
+        provider->compute_hmac(warmup_hmac_params);
         
         auto data = generate_random_data(32);
         auto key = generate_random_data(32);
@@ -641,7 +651,7 @@ TEST_F(SideChannelResistanceTest, CacheTimingResistance) {
         hmac_params.data = data;
         hmac_params.key = key;
         hmac_params.algorithm = HashAlgorithm::SHA256;
-        auto result = (*provider)->compute_hmac(hmac_params);
+        auto result = provider->compute_hmac(hmac_params);
         auto end = std::chrono::high_resolution_clock::now();
         
         ASSERT_TRUE(result.is_success());
@@ -699,8 +709,13 @@ TEST_F(SideChannelResistanceTest, MemoryAccessPatternResistance) {
  * Power consumption should not correlate with secret data
  */
 TEST_F(SideChannelResistanceTest, PowerAnalysisResistance) {
-    auto provider = crypto::ProviderFactory::instance().create_provider("openssl");
-    ASSERT_TRUE(provider.is_success());
+    auto provider_result = crypto::ProviderFactory::instance().create_provider("openssl");
+    ASSERT_TRUE(provider_result.is_success());
+    auto& provider = provider_result.value();
+    
+    // Initialize the provider
+    auto init_result = provider->initialize();
+    ASSERT_TRUE(init_result.is_success()) << "Failed to initialize OpenSSL provider";
     
     std::map<std::string, std::vector<double>> power_traces;
     
@@ -721,7 +736,7 @@ TEST_F(SideChannelResistanceTest, PowerAnalysisResistance) {
             aead_params.nonce = generate_random_data(12);
             aead_params.additional_data = {};
             aead_params.cipher = AEADCipher::AES_256_GCM;
-            auto result = (*provider)->encrypt_aead(aead_params);
+            auto result = provider->encrypt_aead(aead_params);
             
             // End power measurement simulation
             auto power_consumption = end_power_measurement(power_start);
@@ -749,8 +764,13 @@ TEST_F(SideChannelResistanceTest, ElectromagneticEmanationResistance) {
     
     std::map<std::string, std::vector<double>> em_traces;
     
-    auto provider = crypto::ProviderFactory::instance().create_provider("openssl");
-    ASSERT_TRUE(provider.is_success());
+    auto provider_result = crypto::ProviderFactory::instance().create_provider("openssl");
+    ASSERT_TRUE(provider_result.is_success());
+    auto& provider = provider_result.value();
+    
+    // Initialize the provider
+    auto init_result = provider->initialize();
+    ASSERT_TRUE(init_result.is_success()) << "Failed to initialize OpenSSL provider";
     
     for (const auto& [pattern_name, key_data] : test_vectors_) {
         em_traces[pattern_name].reserve(500);
@@ -765,7 +785,7 @@ TEST_F(SideChannelResistanceTest, ElectromagneticEmanationResistance) {
             sig_params.data = message;
             sig_params.scheme = SignatureScheme::ECDSA_SECP256R1_SHA256;
             // Note: Using key_data as-is since we don't have actual PrivateKey objects
-            auto result = (*provider)->sign_data(sig_params);
+            auto result = provider->sign_data(sig_params);
             
             auto em_signature = end_em_measurement(em_start);
             
@@ -788,8 +808,13 @@ TEST_F(SideChannelResistanceTest, ElectromagneticEmanationResistance) {
  * Operations should detect and handle fault injection attempts
  */
 TEST_F(SideChannelResistanceTest, FaultInjectionResistance) {
-    auto provider = crypto::ProviderFactory::instance().create_provider("openssl");
-    ASSERT_TRUE(provider.is_success());
+    auto provider_result = crypto::ProviderFactory::instance().create_provider("openssl");
+    ASSERT_TRUE(provider_result.is_success());
+    auto& provider = provider_result.value();
+    
+    // Initialize the provider
+    auto init_result = provider->initialize();
+    ASSERT_TRUE(init_result.is_success()) << "Failed to initialize OpenSSL provider";
     
     size_t fault_detection_count = 0;
     size_t total_operations = 1000;
@@ -810,7 +835,7 @@ TEST_F(SideChannelResistanceTest, FaultInjectionResistance) {
         sig_params.data = message;
         sig_params.scheme = SignatureScheme::ECDSA_SECP256R1_SHA256;
         // Note: Using key_data as-is since we don't have actual PrivateKey objects  
-        auto result = (*provider)->sign_data(sig_params);
+        auto result = provider->sign_data(sig_params);
         
         if (fault_injected && !result.is_success()) {
             fault_detection_count++;

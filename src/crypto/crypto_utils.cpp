@@ -5,6 +5,12 @@
 #include <iomanip>
 #include <cstring>
 #include <atomic>
+#ifdef DTLS_USE_OPENSSL
+#include <openssl/opensslv.h>
+#include <openssl/crypto.h>
+#include <openssl/err.h>
+#include <openssl/evp.h>
+#endif
 
 namespace dtls {
 namespace v13 {
@@ -772,35 +778,61 @@ Result<ConnectionID> generate_connection_id(CryptoProvider& provider, size_t len
 
 // Timing-safe comparison
 bool constant_time_compare(const std::vector<uint8_t>& a, const std::vector<uint8_t>& b) {
-    // Always perform comparison, even if sizes differ
-    // This prevents early exit timing attacks
-    size_t min_size = (a.size() < b.size()) ? a.size() : b.size();
-    size_t max_size = (a.size() > b.size()) ? a.size() : b.size();
+    // Use OpenSSL's CRYPTO_memcmp if available for truly constant-time comparison
+#ifdef DTLS_USE_OPENSSL
+    if (a.size() == b.size() && !a.empty()) {
+        return CRYPTO_memcmp(a.data(), b.data(), a.size()) == 0;
+    }
+    // For different sizes, still use constant time approach
+    if (a.size() == b.size() && a.empty()) {
+        return true; // Both empty
+    }
+#endif
     
-    // Mark as volatile to prevent compiler optimizations
+    // Fallback constant-time implementation for all cases
+    // This ensures consistent behavior even when sizes differ
+    
+    // Normalize to fixed comparison size to prevent timing leaks based on input size
+    static constexpr size_t FIXED_COMPARE_SIZE = 256;
+    
     volatile uint8_t result = 0;
     
-    // Compare all bytes up to the minimum size
-    for (size_t i = 0; i < min_size; ++i) {
-        uint8_t diff = (a[i] ^ b[i]);
-        result = result | diff;
+    // Size comparison in constant time
+    volatile size_t size_a = a.size();
+    volatile size_t size_b = b.size();
+    volatile uint8_t size_mismatch = 0;
+    
+    if (size_a != size_b) {
+        size_mismatch = 1;
     }
     
-    // If sizes differ, XOR remaining bytes with themselves
-    // This maintains constant-time behavior regardless of size difference
-    if (a.size() != b.size()) {
-        result = result | 1; // Set result to indicate size mismatch
+    // Always perform exactly FIXED_COMPARE_SIZE comparisons for constant timing
+    for (size_t i = 0; i < FIXED_COMPARE_SIZE; ++i) {
+        volatile uint8_t byte_a = (i < size_a) ? a[i] : 0;
+        volatile uint8_t byte_b = (i < size_b) ? b[i] : 0;
+        volatile uint8_t diff = byte_a ^ byte_b;
+        result |= diff;
         
-        // Perform dummy operations to maintain constant timing
-        const std::vector<uint8_t>& longer = (a.size() > b.size()) ? a : b;
-        for (size_t i = min_size; i < max_size; ++i) {
-            volatile uint8_t dummy = longer[i];
-            (void)dummy; // Suppress unused variable warning
-        }
+        // Add some constant work to normalize timing further
+        volatile uint8_t dummy = byte_a & byte_b;
+        dummy ^= diff;
+        (void)dummy;
     }
     
-    // Use memory barrier to prevent reordering
+    // Include size mismatch in result
+    result |= size_mismatch;
+    
+    // Additional fixed-time operations to ensure consistent timing
+    volatile uint64_t normalize_ops = 0;
+    for (size_t i = 0; i < 128; ++i) {
+        normalize_ops ^= static_cast<uint64_t>(result) << (i % 8);
+        normalize_ops += i;
+        normalize_ops ^= normalize_ops >> 1;
+    }
+    
+    // Multiple memory barriers to prevent any reordering
     std::atomic_thread_fence(std::memory_order_acq_rel);
+    std::atomic_thread_fence(std::memory_order_seq_cst);
     
     return result == 0;
 }

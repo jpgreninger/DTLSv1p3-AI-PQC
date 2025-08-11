@@ -345,6 +345,39 @@ private:
 
 } // namespace utils
 
+/**
+ * OpenSSL specific utility functions
+ */
+namespace openssl_utils {
+
+/**
+ * Initialize OpenSSL library
+ * 
+ * @return Success or error result
+ */
+DTLS_API Result<void> initialize_openssl();
+
+/**
+ * Cleanup OpenSSL resources
+ */
+DTLS_API void cleanup_openssl();
+
+/**
+ * Check if OpenSSL is available
+ * 
+ * @return True if OpenSSL is available
+ */
+DTLS_API bool is_openssl_available();
+
+/**
+ * Get OpenSSL version string
+ * 
+ * @return OpenSSL version
+ */
+DTLS_API std::string get_openssl_version();
+
+} // namespace openssl_utils
+
 // Key derivation constants
 namespace constants {
 

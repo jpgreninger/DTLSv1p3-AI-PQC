@@ -2618,6 +2618,119 @@ Result<void> OpenSSLProvider::set_security_level(SecurityLevel level) {
     return Result<void>();
 }
 
+// Enhanced provider features for dependency reduction
+EnhancedProviderCapabilities OpenSSLProvider::enhanced_capabilities() const {
+    EnhancedProviderCapabilities caps;
+    
+    // Copy base capabilities
+    auto base_caps = capabilities();
+    caps.supported_cipher_suites = base_caps.supported_cipher_suites;
+    caps.supported_groups = base_caps.supported_groups;
+    caps.supported_signatures = base_caps.supported_signatures;
+    caps.supported_hashes = base_caps.supported_hashes;
+    caps.hardware_acceleration = base_caps.hardware_acceleration;
+    caps.fips_mode = base_caps.fips_mode;
+    caps.provider_name = base_caps.provider_name;
+    caps.provider_version = base_caps.provider_version;
+    
+    // Runtime capabilities
+    caps.supports_async_operations = supports_async_operations();
+    caps.supports_streaming = false;  // Not implemented yet
+    caps.supports_batch_operations = false;  // Not implemented yet
+    caps.is_thread_safe = true;
+    
+    // Performance characteristics
+    caps.performance = get_performance_metrics();
+    
+    // Health and availability
+    caps.health_status = get_health_status();
+    caps.last_health_check = std::chrono::steady_clock::now();
+    caps.health_message = "OpenSSL provider operational";
+    
+    // Resource usage
+    caps.max_memory_usage = 0;  // No limit set by default
+    caps.current_memory_usage = get_memory_usage();
+    caps.max_concurrent_operations = 0;  // No limit set by default
+    caps.current_operations = get_current_operations();
+    
+    // Compatibility flags
+    caps.compatibility_flags["openssl_3_0"] = true;
+    caps.compatibility_flags["legacy_algorithms"] = false;
+    caps.compatibility_flags["quantum_resistant"] = false;
+    
+    return caps;
+}
+
+Result<void> OpenSSLProvider::perform_health_check() {
+    // Basic health check - try a simple crypto operation
+    try {
+        RandomParams params;
+        params.length = 16;
+        params.cryptographically_secure = true;
+        
+        auto result = generate_random(params);
+        if (!result) {
+            return Result<void>(result.error());
+        }
+        
+        // If we can generate random bytes, provider is likely healthy
+        return Result<void>();
+    } catch (const std::exception&) {
+        return Result<void>(DTLSError::CRYPTO_PROVIDER_ERROR);
+    }
+}
+
+ProviderHealth OpenSSLProvider::get_health_status() const {
+    // For this stub implementation, always return healthy
+    // In a real implementation, this would check various status indicators
+    return ProviderHealth::HEALTHY;
+}
+
+ProviderPerformanceMetrics OpenSSLProvider::get_performance_metrics() const {
+    ProviderPerformanceMetrics metrics;
+    
+    // Stub values - in a real implementation these would be tracked
+    metrics.average_init_time = std::chrono::milliseconds(10);
+    metrics.average_operation_time = std::chrono::milliseconds(1);
+    metrics.throughput_mbps = 100.0;  // Placeholder
+    metrics.memory_usage_bytes = get_memory_usage();
+    metrics.success_count = 1000;  // Placeholder
+    metrics.failure_count = 0;
+    metrics.success_rate = 1.0;
+    metrics.last_updated = std::chrono::steady_clock::now();
+    
+    return metrics;
+}
+
+Result<void> OpenSSLProvider::reset_performance_metrics() {
+    // In a real implementation, this would reset internal counters
+    // For now, just return success
+    return Result<void>();
+}
+
+// Resource management
+size_t OpenSSLProvider::get_memory_usage() const {
+    // Stub implementation - in practice would query OpenSSL memory usage
+    return 1024 * 1024;  // 1MB placeholder
+}
+
+size_t OpenSSLProvider::get_current_operations() const {
+    // Stub implementation - would track active operations
+    return 0;
+}
+
+Result<void> OpenSSLProvider::set_memory_limit(size_t limit) {
+    // Stub implementation - would configure OpenSSL memory limits
+    (void)limit;  // Suppress unused parameter warning
+    return Result<void>();
+}
+
+Result<void> OpenSSLProvider::set_operation_limit(size_t limit) {
+    // Stub implementation - would configure operation limits
+    (void)limit;  // Suppress unused parameter warning
+    return Result<void>();
+}
+
 // OpenSSL utility functions
 namespace openssl_utils {
 

@@ -22,6 +22,7 @@ set(DTLS_PROTOCOL_SOURCES
     protocol/dtls_records.cpp
     protocol/record_layer.cpp
     protocol/record_layer_factory.cpp
+    protocol/record_layer_crypto_abstraction.cpp
     protocol/handshake.cpp
     protocol/handshake_manager.cpp
     protocol/cookie.cpp
@@ -36,6 +37,7 @@ set(DTLS_CRYPTO_SOURCES
     crypto/crypto_utils.cpp
     crypto/crypto_system.cpp
     crypto/openssl_provider.cpp
+    crypto/operations_impl.cpp
     # crypto/advanced_cipher_suites.cpp  # Has compilation issues - TBD
     # crypto/key_manager.cpp  # TBD
 )
@@ -106,6 +108,9 @@ set_target_properties(dtlsv13 PROPERTIES
     CXX_STANDARD 20
     CXX_STANDARD_REQUIRED ON
 )
+
+# Add compile definitions
+target_compile_definitions(dtlsv13 PRIVATE DTLS_USE_OPENSSL)
 
 # Link libraries
 target_link_libraries(dtlsv13

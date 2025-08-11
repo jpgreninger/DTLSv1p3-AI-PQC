@@ -8,6 +8,8 @@
 #include <vector>
 #include <string>
 #include <functional>
+#include <future>
+#include <unordered_map>
 
 namespace dtls {
 namespace v13 {
@@ -161,6 +163,52 @@ struct DTLSCertificateVerifyParams {
     std::vector<uint8_t> certificate_der;       // DER-encoded certificate for compatibility checking
 };
 
+// Provider health status
+enum class ProviderHealth {
+    HEALTHY = 0,
+    DEGRADED = 1,
+    FAILING = 2,
+    UNAVAILABLE = 3
+};
+
+// Provider performance metrics
+struct ProviderPerformanceMetrics {
+    std::chrono::milliseconds average_init_time{0};
+    std::chrono::milliseconds average_operation_time{0};
+    double throughput_mbps{0.0};
+    size_t memory_usage_bytes{0};
+    size_t success_count{0};
+    size_t failure_count{0};
+    double success_rate{0.0};
+    std::chrono::steady_clock::time_point last_updated;
+};
+
+// Enhanced provider capabilities with runtime information
+struct EnhancedProviderCapabilities : public ProviderCapabilities {
+    // Runtime capabilities
+    bool supports_async_operations{false};
+    bool supports_streaming{false};
+    bool supports_batch_operations{false};
+    bool is_thread_safe{true};
+    
+    // Performance characteristics
+    ProviderPerformanceMetrics performance;
+    
+    // Health and availability
+    ProviderHealth health_status{ProviderHealth::HEALTHY};
+    std::chrono::steady_clock::time_point last_health_check;
+    std::string health_message;
+    
+    // Resource usage
+    size_t max_memory_usage{0};
+    size_t current_memory_usage{0};
+    size_t max_concurrent_operations{0};
+    size_t current_operations{0};
+    
+    // Compatibility matrix
+    std::unordered_map<std::string, bool> compatibility_flags;
+};
+
 /**
  * Abstract base class for cryptographic providers
  * 
@@ -266,6 +314,37 @@ public:
     virtual bool is_fips_compliant() const = 0;
     virtual SecurityLevel security_level() const = 0;
     virtual Result<void> set_security_level(SecurityLevel level) = 0;
+    
+    // Enhanced provider features for dependency reduction
+    virtual EnhancedProviderCapabilities enhanced_capabilities() const = 0;
+    virtual Result<void> perform_health_check() = 0;
+    virtual ProviderHealth get_health_status() const = 0;
+    virtual ProviderPerformanceMetrics get_performance_metrics() const = 0;
+    virtual Result<void> reset_performance_metrics() = 0;
+    
+    // Resource management
+    virtual size_t get_memory_usage() const = 0;
+    virtual size_t get_current_operations() const = 0;
+    virtual Result<void> set_memory_limit(size_t limit) = 0;
+    virtual Result<void> set_operation_limit(size_t limit) = 0;
+    
+    // Async operation support (optional)
+    virtual bool supports_async_operations() const { return false; }
+    virtual Result<std::future<std::vector<uint8_t>>> async_derive_key_hkdf(
+        const KeyDerivationParams& params) { 
+        (void)params;
+        return Result<std::future<std::vector<uint8_t>>>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+    virtual Result<std::future<AEADEncryptionOutput>> async_encrypt_aead(
+        const AEADEncryptionParams& params) {
+        (void)params;
+        return Result<std::future<AEADEncryptionOutput>>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+    virtual Result<std::future<std::vector<uint8_t>>> async_decrypt_aead(
+        const AEADDecryptionParams& params) {
+        (void)params;
+        return Result<std::future<std::vector<uint8_t>>>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
 
 protected:
     CryptoProvider() = default;
@@ -358,16 +437,34 @@ struct KeySchedule {
     }
 };
 
-// Provider selection criteria
+// Enhanced provider selection criteria with advanced options
 struct ProviderSelection {
     std::string preferred_provider;
+    std::vector<std::string> fallback_providers;
     bool require_hardware_acceleration{false};
     bool require_fips_compliance{false};
+    bool allow_software_fallback{true};
     SecurityLevel minimum_security_level{SecurityLevel::MEDIUM};
     std::vector<CipherSuite> required_cipher_suites;
     std::vector<NamedGroup> required_groups;
     std::vector<SignatureScheme> required_signatures;
+    
+    // Performance requirements
+    std::chrono::milliseconds max_init_time{1000};
+    size_t max_memory_usage{0}; // 0 = no limit
+    double min_throughput_mbps{0.0}; // 0.0 = no requirement
+    
+    // Compatibility requirements
+    bool require_thread_safety{true};
+    bool require_async_operations{false};
+    bool require_streaming_support{false};
+    
+    // Provider health requirements
+    bool enable_health_monitoring{true};
+    std::chrono::seconds health_check_interval{300};
+    size_t max_consecutive_failures{3};
 };
+
 
 } // namespace crypto
 } // namespace v13

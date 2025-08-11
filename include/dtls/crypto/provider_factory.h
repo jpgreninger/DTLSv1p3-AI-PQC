@@ -17,7 +17,16 @@ namespace crypto {
 // Provider factory function type
 using ProviderFactoryFunction = std::function<std::unique_ptr<CryptoProvider>()>;
 
-// Provider registration information
+// Provider plugin information for dynamic loading
+struct ProviderPluginInfo {
+    std::string plugin_path;
+    std::string plugin_name;
+    std::string plugin_version;
+    std::vector<std::string> dependencies;
+    std::unordered_map<std::string, std::string> metadata;
+};
+
+// Enhanced provider registration information
 struct ProviderRegistration {
     std::string name;
     std::string description;
@@ -25,6 +34,49 @@ struct ProviderRegistration {
     int priority{0}; // Higher priority providers are preferred
     bool is_available{true};
     ProviderCapabilities capabilities;
+    
+    // Enhanced registration info
+    std::string provider_version;
+    std::vector<std::string> supported_standards;
+    std::unordered_map<std::string, bool> feature_flags;
+    ProviderPluginInfo plugin_info;
+    
+    // Health and monitoring
+    ProviderHealth health_status{ProviderHealth::HEALTHY};
+    std::chrono::steady_clock::time_point last_health_check;
+    size_t consecutive_failures{0};
+    
+    // Performance tracking
+    ProviderPerformanceMetrics performance_metrics;
+};
+
+// Provider compatibility result
+struct ProviderCompatibilityResult {
+    bool is_compatible{false};
+    double compatibility_score{0.0};
+    std::vector<std::string> missing_features;
+    std::vector<std::string> warnings;
+    std::vector<std::string> recommendations;
+};
+
+// Provider load balancing strategy
+enum class LoadBalancingStrategy {
+    ROUND_ROBIN,
+    LEAST_LOADED,
+    PERFORMANCE_BASED,
+    HEALTH_BASED,
+    CUSTOM
+};
+
+// Provider pool configuration
+struct ProviderPoolConfig {
+    LoadBalancingStrategy strategy{LoadBalancingStrategy::HEALTH_BASED};
+    size_t min_pool_size{1};
+    size_t max_pool_size{5};
+    bool enable_health_monitoring{true};
+    std::chrono::seconds health_check_interval{300};
+    bool auto_failover_enabled{true};
+    size_t max_retries{3};
 };
 
 /**
@@ -64,9 +116,18 @@ public:
     
     // Provider capabilities query
     Result<ProviderCapabilities> get_capabilities(const std::string& name) const;
+    Result<EnhancedProviderCapabilities> get_enhanced_capabilities(const std::string& name) const;
     bool supports_cipher_suite(const std::string& provider_name, CipherSuite suite) const;
     bool supports_named_group(const std::string& provider_name, NamedGroup group) const;
     bool supports_signature_scheme(const std::string& provider_name, SignatureScheme scheme) const;
+    
+    // Enhanced compatibility checking
+    Result<ProviderCompatibilityResult> check_compatibility(
+        const std::string& provider_name, const ProviderSelection& criteria) const;
+    std::vector<std::string> find_compatible_providers(
+        const ProviderSelection& criteria) const;
+    Result<std::string> select_best_compatible_provider(
+        const ProviderSelection& criteria) const;
     
     // Provider availability
     bool is_provider_available(const std::string& name) const;
@@ -88,13 +149,42 @@ public:
     Result<std::string> select_provider_for_key_exchange(NamedGroup group) const;
     Result<std::string> select_provider_for_signature(SignatureScheme scheme) const;
     
-    // Statistics and monitoring
+    // Advanced provider selection
+    Result<std::vector<std::string>> rank_providers_by_performance() const;
+    Result<std::vector<std::string>> rank_providers_by_compatibility(
+        const ProviderSelection& criteria) const;
+    Result<std::string> select_provider_with_load_balancing(
+        const ProviderSelection& criteria,
+        LoadBalancingStrategy strategy = LoadBalancingStrategy::HEALTH_BASED) const;
+    
+    // Provider health monitoring
+    Result<void> perform_health_checks();
+    Result<void> perform_health_check(const std::string& provider_name);
+    std::vector<std::string> get_healthy_providers() const;
+    std::vector<std::string> get_unhealthy_providers() const;
+    
+    // Provider plugin management
+    Result<void> load_provider_plugin(const std::string& plugin_path);
+    Result<void> unload_provider_plugin(const std::string& plugin_name);
+    std::vector<ProviderPluginInfo> list_loaded_plugins() const;
+    Result<void> reload_provider_plugins();
+    
+    // Enhanced statistics and monitoring
     struct ProviderStats {
         size_t creation_count{0};
         size_t success_count{0};
         size_t failure_count{0};
         std::chrono::steady_clock::time_point last_used;
         std::chrono::milliseconds average_init_time{0};
+        
+        // Enhanced stats
+        size_t operations_count{0};
+        std::chrono::milliseconds average_operation_time{0};
+        size_t memory_usage_peak{0};
+        size_t memory_usage_current{0};
+        double success_rate{0.0};
+        std::chrono::steady_clock::time_point last_failure;
+        std::vector<std::string> recent_errors;
     };
     
     ProviderStats get_provider_stats(const std::string& name) const;
@@ -121,12 +211,45 @@ private:
         bool success,
         std::chrono::milliseconds init_time) const;
     
+    // Enhanced internal methods
+    double calculate_compatibility_score(
+        const ProviderRegistration& registration,
+        const ProviderSelection& criteria) const;
+    
+    Result<void> validate_provider_health(
+        const std::string& name, 
+        ProviderRegistration& registration) const;
+    
+    void update_provider_health_status(
+        const std::string& name,
+        ProviderHealth status,
+        const std::string& message = "") const;
+    
+    std::string select_provider_with_strategy(
+        const std::vector<std::string>& candidates,
+        LoadBalancingStrategy strategy) const;
+    
+    Result<void> load_provider_from_plugin(
+        const ProviderPluginInfo& plugin_info);
+    
     // Member variables
     mutable std::mutex mutex_;
     std::unordered_map<std::string, ProviderRegistration> providers_;
     mutable std::unordered_map<std::string, ProviderStats> stats_;
     std::string default_provider_;
     std::vector<std::string> preference_order_;
+    
+    // Enhanced factory state
+    std::unordered_map<std::string, ProviderPluginInfo> loaded_plugins_;
+    ProviderPoolConfig pool_config_;
+    std::unordered_map<std::string, std::chrono::steady_clock::time_point> last_health_checks_;
+    mutable std::atomic<size_t> round_robin_counter_{0};
+    
+    // Monitoring and health tracking
+    std::chrono::steady_clock::time_point last_global_health_check_;
+    bool auto_health_monitoring_enabled_{true};
+    std::thread health_monitoring_thread_;
+    std::atomic<bool> shutdown_requested_{false};
 };
 
 /**

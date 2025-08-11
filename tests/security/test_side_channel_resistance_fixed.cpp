@@ -253,6 +253,10 @@ TEST_F(SideChannelResistanceTest, KeyDerivationTimingIndependence) {
     auto provider = crypto::ProviderFactory::create_provider("openssl");
     ASSERT_NE(provider, nullptr);
     
+    // Initialize the provider
+    auto init_result = provider->initialize();
+    ASSERT_TRUE(init_result.is_success()) << "Failed to initialize OpenSSL provider";
+    
     std::map<std::string, std::vector<std::chrono::nanoseconds>> timing_groups;
     
     // Test with different secret patterns
@@ -286,6 +290,10 @@ TEST_F(SideChannelResistanceTest, KeyDerivationTimingIndependence) {
 TEST_F(SideChannelResistanceTest, CacheTimingResistance) {
     auto provider = crypto::ProviderFactory::create_provider("openssl");
     ASSERT_NE(provider, nullptr);
+    
+    // Initialize the provider
+    auto init_result = provider->initialize();
+    ASSERT_TRUE(init_result.is_success()) << "Failed to initialize OpenSSL provider";
 
     std::vector<std::chrono::nanoseconds> cold_cache_times;
     std::vector<std::chrono::nanoseconds> warm_cache_times;
@@ -352,6 +360,10 @@ TEST_F(SideChannelResistanceTest, CacheTimingResistance) {
 TEST_F(SideChannelResistanceTest, PowerAnalysisResistance) {
     auto provider = crypto::ProviderFactory::create_provider("openssl");
     ASSERT_NE(provider, nullptr);
+    
+    // Initialize the provider
+    auto init_result = provider->initialize();
+    ASSERT_TRUE(init_result.is_success()) << "Failed to initialize OpenSSL provider";
     
     std::map<std::string, std::vector<double>> power_traces;
     

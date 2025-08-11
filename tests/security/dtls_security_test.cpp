@@ -103,10 +103,36 @@ protected:
         ASSERT_TRUE(client_transport_->initialize().is_ok());
         ASSERT_TRUE(server_transport_->initialize().is_ok());
         
+        // Use robust port allocation to avoid conflicts
         transport::NetworkEndpoint client_endpoint("127.0.0.1", 0);
-        transport::NetworkEndpoint server_endpoint("127.0.0.1", 4433);
-        ASSERT_TRUE(client_transport_->bind(client_endpoint).is_ok());
-        ASSERT_TRUE(server_transport_->bind(server_endpoint).is_ok());
+        
+        bool client_bound = false, server_bound = false;
+        std::uniform_int_distribution<uint16_t> port_dist(40000, 50000);
+        
+        for (int attempt = 0; attempt < 10 && (!client_bound || !server_bound); ++attempt) {
+            if (!client_bound) {
+                auto client_result = client_transport_->bind(client_endpoint);
+                if (client_result.is_ok()) {
+                    client_bound = true;
+                }
+            }
+            
+            if (!server_bound) {
+                uint16_t try_port = port_dist(rng_);
+                transport::NetworkEndpoint try_endpoint("127.0.0.1", try_port);
+                auto server_result = server_transport_->bind(try_endpoint);
+                if (server_result.is_ok()) {
+                    server_bound = true;
+                }
+            }
+            
+            if (!client_bound || !server_bound) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            }
+        }
+        
+        ASSERT_TRUE(client_bound) << "Failed to bind client transport after multiple attempts";
+        ASSERT_TRUE(server_bound) << "Failed to bind server transport after multiple attempts";
         
         // Initialize random number generator for attacks
         rng_.seed(std::chrono::steady_clock::now().time_since_epoch().count());
