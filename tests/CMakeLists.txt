@@ -132,6 +132,20 @@ set_tests_properties(DTLSConnectionTest PROPERTIES
     LABELS "connection"
 )
 
+# Core Protocol Unit Tests
+add_executable(dtls_core_protocol_test
+    core_protocol/test_anti_replay_core.cpp
+)
+
+target_link_libraries(dtls_core_protocol_test PRIVATE ${DTLS_TEST_LIBRARIES})
+target_compile_options(dtls_core_protocol_test PRIVATE ${DTLS_TEST_COMPILE_OPTIONS})
+
+add_test(NAME DTLSCoreProtocolTest COMMAND dtls_core_protocol_test)
+set_tests_properties(DTLSCoreProtocolTest PROPERTIES
+    TIMEOUT 60
+    LABELS "core_protocol;unit"
+)
+
 # Integration Tests
 add_executable(dtls_integration_test
     integration/dtls_integration_test.cpp

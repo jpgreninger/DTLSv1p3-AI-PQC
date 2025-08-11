@@ -15,6 +15,11 @@ set(DTLS_CORE_SOURCES
     memory/memory_system.cpp
 )
 
+# Core protocol sources (shared between production and SystemC)
+set(DTLS_CORE_PROTOCOL_SOURCES
+    core_protocol/anti_replay_core.cpp
+)
+
 # Protocol layer sources
 set(DTLS_PROTOCOL_SOURCES
     protocol/protocol.cpp
@@ -77,9 +82,17 @@ set(DTLS_SECURITY_SOURCES
 #     compatibility/dtls12_compat.cpp
 # )
 
+# Conditionally add SystemC timing adapter
+if(DTLS_BUILD_SYSTEMC)
+    list(APPEND DTLS_CORE_PROTOCOL_SOURCES
+        core_protocol/systemc_timing_adapter.cpp
+    )
+endif()
+
 # All sources
 set(DTLS_ALL_SOURCES
     ${DTLS_CORE_SOURCES}
+    ${DTLS_CORE_PROTOCOL_SOURCES}
     ${DTLS_PROTOCOL_SOURCES}
     ${DTLS_CRYPTO_SOURCES}
     ${DTLS_TRANSPORT_SOURCES}

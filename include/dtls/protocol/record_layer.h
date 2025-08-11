@@ -7,6 +7,7 @@
 #include <dtls/protocol/record.h>
 #include <dtls/protocol/dtls_records.h>
 #include <dtls/protocol/record_layer_interface.h>
+#include <dtls/core_protocol/anti_replay_core.h>
 #include <dtls/crypto.h>
 #include <memory>
 #include <mutex>
@@ -50,6 +51,13 @@ public:
     void mark_received(uint64_t sequence_number);
     
     /**
+     * Check and update in single operation (preferred method)
+     * @param sequence_number The sequence number to check and mark
+     * @return true if valid and marked, false if replay detected
+     */
+    bool check_and_update(uint64_t sequence_number);
+    
+    /**
      * Reset the window (for epoch changes)
      */
     void reset();
@@ -63,19 +71,14 @@ public:
         size_t window_size{0};
         size_t received_count{0};
         size_t replay_count{0};
+        double utilization_ratio{0.0};
     };
     
     WindowStats get_stats() const;
 
 private:
-    size_t window_size_;
-    uint64_t highest_sequence_number_{0};
-    std::vector<bool> window_;
-    size_t received_count_{0};
-    size_t replay_count_{0};
     mutable std::mutex mutex_;
-    
-    void slide_window(uint64_t new_highest);
+    core_protocol::AntiReplayCore::WindowState core_state_;
 };
 
 /**

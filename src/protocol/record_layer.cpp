@@ -33,104 +33,43 @@ namespace dtls::v13::protocol {
 // ============================================================================
 
 AntiReplayWindow::AntiReplayWindow(size_t window_size)
-    : window_size_(window_size), window_(window_size, false) {
-    if (window_size == 0) {
-        window_size_ = DEFAULT_WINDOW_SIZE;
-        window_.resize(DEFAULT_WINDOW_SIZE, false);
-    }
+    : core_state_(window_size == 0 ? DEFAULT_WINDOW_SIZE : window_size) {
 }
 
 bool AntiReplayWindow::is_valid_sequence_number(uint64_t sequence_number) {
     std::lock_guard<std::mutex> lock(mutex_);
-    
-    // First packet is always valid
-    if (highest_sequence_number_ == 0) {
-        return true;
-    }
-    
-    // Packet too old (outside window)
-    if (sequence_number <= highest_sequence_number_ && 
-        (highest_sequence_number_ - sequence_number) >= window_size_) {
-        return false;
-    }
-    
-    // Future packet (always valid, will slide window)
-    if (sequence_number > highest_sequence_number_) {
-        return true;
-    }
-    
-    // Within current window - check if already received
-    size_t window_index = static_cast<size_t>(highest_sequence_number_ - sequence_number);
-    return !window_[window_index];
+    return core_protocol::AntiReplayCore::is_valid_sequence_number(sequence_number, core_state_);
 }
 
 void AntiReplayWindow::mark_received(uint64_t sequence_number) {
     std::lock_guard<std::mutex> lock(mutex_);
-    
-    // First packet
-    if (highest_sequence_number_ == 0) {
-        highest_sequence_number_ = sequence_number;
-        window_[0] = true;
-        received_count_++;
-        return;
-    }
-    
-    // Future packet - slide window
-    if (sequence_number > highest_sequence_number_) {
-        slide_window(sequence_number);
-        window_[0] = true;
-        received_count_++;
-        return;
-    }
-    
-    // Within current window
-    if (sequence_number <= highest_sequence_number_ && 
-        (highest_sequence_number_ - sequence_number) < window_size_) {
-        size_t window_index = static_cast<size_t>(highest_sequence_number_ - sequence_number);
-        if (!window_[window_index]) {
-            window_[window_index] = true;
-            received_count_++;
-        } else {
-            // Duplicate packet
-            replay_count_++;
-        }
-    }
+    core_protocol::AntiReplayCore::update_window(sequence_number, core_state_);
+}
+
+bool AntiReplayWindow::check_and_update(uint64_t sequence_number) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    return core_protocol::AntiReplayCore::check_and_update(sequence_number, core_state_);
 }
 
 void AntiReplayWindow::reset() {
     std::lock_guard<std::mutex> lock(mutex_);
-    highest_sequence_number_ = 0;
-    std::fill(window_.begin(), window_.end(), false);
-    received_count_ = 0;
-    replay_count_ = 0;
+    core_protocol::AntiReplayCore::reset_window(core_state_);
 }
 
 AntiReplayWindow::WindowStats AntiReplayWindow::get_stats() const {
     std::lock_guard<std::mutex> lock(mutex_);
+    auto core_stats = core_protocol::AntiReplayCore::get_stats(core_state_);
+    
     WindowStats stats;
-    stats.highest_sequence_number = highest_sequence_number_;
-    stats.lowest_sequence_number = (highest_sequence_number_ >= window_size_) ? 
-        (highest_sequence_number_ - window_size_ + 1) : 0;
-    stats.window_size = window_size_;
-    stats.received_count = received_count_;
-    stats.replay_count = replay_count_;
+    stats.highest_sequence_number = core_stats.highest_sequence_number;
+    stats.lowest_sequence_number = core_stats.lowest_sequence_number;
+    stats.window_size = core_stats.window_size;
+    stats.received_count = core_stats.received_count;
+    stats.replay_count = core_stats.replay_count;
+    stats.utilization_ratio = core_stats.utilization_ratio;
     return stats;
 }
 
-void AntiReplayWindow::slide_window(uint64_t new_highest) {
-    uint64_t slide_amount = new_highest - highest_sequence_number_;
-    
-    if (slide_amount >= window_size_) {
-        // Complete window shift
-        std::fill(window_.begin(), window_.end(), false);
-    } else {
-        // Partial window shift
-        std::rotate(window_.rbegin(), window_.rbegin() + slide_amount, window_.rend());
-        std::fill(window_.begin(), window_.begin() + slide_amount, false);
-    }
-    
-    highest_sequence_number_ = new_highest;
-}
 
 // ============================================================================
 // SequenceNumberManager Implementation

@@ -3,6 +3,8 @@
 
 #include "dtls_systemc_types.h"
 #include "crypto_provider_tlm.h"
+#include <dtls/core_protocol/anti_replay_core.h>
+#include <dtls/core_protocol/systemc_timing_adapter.h>
 #include <systemc>
 #include <tlm.h>
 #include <tlm_utils/simple_target_socket.h>
@@ -78,10 +80,9 @@ public:
     bool is_sequence_valid(uint64_t sequence_number) const;
 
 private:
-    // Window state
-    uint32_t window_size_;
-    uint64_t highest_sequence_number_;
-    std::vector<bool> window_;
+    // Core protocol state and timing adapter
+    core_protocol::AntiReplayCore::WindowState core_state_;
+    core_protocol::SystemCTimingAdapter timing_adapter_;
     
     // Statistics
     mutable std::mutex stats_mutex_;
@@ -92,9 +93,8 @@ private:
     void configuration_process();
     
     // Internal methods
-    bool check_and_update_window(uint64_t sequence_number);
-    void slide_window(uint64_t new_highest);
-    void update_statistics(bool replay_detected, sc_time check_time);
+    void update_statistics(bool replay_detected, sc_time check_time, bool window_slid = false);
+    void sync_status_ports();
     
     SC_HAS_PROCESS(AntiReplayWindowTLM);
 };

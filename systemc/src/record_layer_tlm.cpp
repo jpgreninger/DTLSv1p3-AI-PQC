@@ -19,9 +19,8 @@ AntiReplayWindowTLM::AntiReplayWindowTLM(sc_module_name name, uint32_t window_si
     , highest_sequence_number("highest_sequence_number")
     , replay_count("replay_count")
     , window_utilization("window_utilization")
-    , window_size_(window_size)
-    , highest_sequence_number_(0)
-    , window_(window_size, false)
+    , core_state_(window_size)
+    , timing_adapter_()
 {
     target_socket.register_b_transport(this, &AntiReplayWindowTLM::b_transport);
     target_socket.register_nb_transport_fw(this, &AntiReplayWindowTLM::nb_transport_fw);
@@ -40,19 +39,21 @@ void AntiReplayWindowTLM::b_transport(tlm::tlm_generic_payload& trans, sc_time& 
         return;
     }
     
-    sc_time check_start = sc_time_stamp();
+    // Use core logic with timing
+    auto result = timing_adapter_.check_and_update_with_timing(ext->sequence_number, core_state_);
     
-    // Perform anti-replay check
-    bool is_replay = !check_and_update_window(ext->sequence_number);
-    ext->replay_detected = is_replay;
-    ext->window_position = highest_sequence_number_;
+    // Update extension with results
+    ext->replay_detected = !result.is_valid;
+    ext->window_position = core_state_.highest_sequence_number;
     
-    // Calculate processing time
-    sc_time check_time = g_dtls_timing.anti_replay_check_time;
-    delay += check_time;
+    // Add processing delay
+    delay += result.processing_time;
     
     // Update statistics
-    update_statistics(is_replay, check_time);
+    update_statistics(!result.is_valid, result.processing_time, result.window_slid);
+    
+    // Sync status ports
+    sync_status_ports();
     
     trans.set_response_status(tlm::TLM_OK_RESPONSE);
 }
@@ -70,49 +71,8 @@ tlm::tlm_sync_enum AntiReplayWindowTLM::nb_transport_fw(tlm::tlm_generic_payload
     return tlm::TLM_ACCEPTED;
 }
 
-bool AntiReplayWindowTLM::check_and_update_window(uint64_t sequence_number) {
-    std::lock_guard<std::mutex> lock(stats_mutex_);
-    
-    // Check if sequence number is too old
-    if (sequence_number + window_size_ <= highest_sequence_number_) {
-        return false; // Too old, definitely a replay
-    }
-    
-    // Check if sequence number is new highest
-    if (sequence_number > highest_sequence_number_) {
-        slide_window(sequence_number);
-        highest_sequence_number_ = sequence_number;
-        window_[0] = true; // Mark as received
-        return true;
-    }
-    
-    // Sequence number is within window
-    uint64_t position = highest_sequence_number_ - sequence_number;
-    if (position < window_.size()) {
-        if (window_[position]) {
-            return false; // Already received, replay detected
-        }
-        window_[position] = true;
-        return true;
-    }
-    
-    return false;
-}
 
-void AntiReplayWindowTLM::slide_window(uint64_t new_highest) {
-    uint64_t slide_amount = new_highest - highest_sequence_number_;
-    
-    if (slide_amount >= window_.size()) {
-        // Complete window shift
-        std::fill(window_.begin(), window_.end(), false);
-    } else {
-        // Partial window shift
-        std::rotate(window_.begin(), window_.begin() + slide_amount, window_.end());
-        std::fill(window_.end() - slide_amount, window_.end(), false);
-    }
-}
-
-void AntiReplayWindowTLM::update_statistics(bool replay_detected, sc_time check_time) {
+void AntiReplayWindowTLM::update_statistics(bool replay_detected, sc_time check_time, bool window_slid) {
     stats_.total_checks++;
     stats_.total_check_time += check_time;
     
@@ -122,11 +82,11 @@ void AntiReplayWindowTLM::update_statistics(bool replay_detected, sc_time check_
         stats_.valid_packets++;
     }
     
-    stats_.current_highest_seq = highest_sequence_number_;
-    
-    // Calculate window utilization
-    size_t used_slots = std::count(window_.begin(), window_.end(), true);
-    stats_.utilization_ratio = static_cast<double>(used_slots) / window_.size();
+    // Get current state from core
+    auto core_stats = core_protocol::AntiReplayCore::get_stats(core_state_);
+    stats_.current_highest_seq = core_stats.highest_sequence_number;
+    stats_.utilization_ratio = core_stats.utilization_ratio;
+    stats_.current_window_size = static_cast<uint32_t>(core_stats.window_size);
     
     // Calculate average check time
     if (stats_.total_checks > 0) {
@@ -140,12 +100,17 @@ void AntiReplayWindowTLM::update_statistics(bool replay_detected, sc_time check_
 void AntiReplayWindowTLM::window_monitor_process() {
     while (true) {
         wait(1, SC_MS); // Monitor every millisecond
-        
-        // Update output ports
-        highest_sequence_number.write(highest_sequence_number_);
-        replay_count.write(static_cast<uint32_t>(stats_.replay_detections));
-        window_utilization.write(stats_.utilization_ratio);
+        sync_status_ports();
     }
+}
+
+void AntiReplayWindowTLM::sync_status_ports() {
+    std::lock_guard<std::mutex> lock(stats_mutex_);
+    
+    // Update output ports with current values
+    highest_sequence_number.write(core_state_.highest_sequence_number);
+    replay_count.write(static_cast<uint32_t>(stats_.replay_detections));
+    window_utilization.write(stats_.utilization_ratio);
 }
 
 void AntiReplayWindowTLM::configuration_process() {
@@ -157,7 +122,7 @@ void AntiReplayWindowTLM::configuration_process() {
         }
         
         uint32_t new_size = window_size_config.read();
-        if (new_size != window_size_ && new_size > 0) {
+        if (new_size != core_state_.window.size() && new_size > 0) {
             set_window_size(new_size);
         }
     }
@@ -165,15 +130,15 @@ void AntiReplayWindowTLM::configuration_process() {
 
 void AntiReplayWindowTLM::set_window_size(uint32_t size) {
     std::lock_guard<std::mutex> lock(stats_mutex_);
-    window_size_ = size;
-    window_.resize(size, false);
+    
+    // Create new core state with different window size
+    core_state_ = core_protocol::AntiReplayCore::WindowState(size);
     stats_.current_window_size = size;
 }
 
 void AntiReplayWindowTLM::reset() {
     std::lock_guard<std::mutex> lock(stats_mutex_);
-    highest_sequence_number_ = 0;
-    std::fill(window_.begin(), window_.end(), false);
+    core_protocol::AntiReplayCore::reset_window(core_state_);
 }
 
 AntiReplayWindowTLM::AntiReplayStats AntiReplayWindowTLM::get_statistics() const {
@@ -184,7 +149,12 @@ AntiReplayWindowTLM::AntiReplayStats AntiReplayWindowTLM::get_statistics() const
 void AntiReplayWindowTLM::reset_statistics() {
     std::lock_guard<std::mutex> lock(stats_mutex_);
     stats_ = AntiReplayStats{};
-    stats_.current_window_size = window_size_;
+    stats_.current_window_size = static_cast<uint32_t>(core_state_.window.size());
+}
+
+bool AntiReplayWindowTLM::is_sequence_valid(uint64_t sequence_number) const {
+    std::lock_guard<std::mutex> lock(stats_mutex_);
+    return core_protocol::AntiReplayCore::is_valid_sequence_number(sequence_number, core_state_);
 }
 
 /**
