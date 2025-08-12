@@ -77,3 +77,24 @@ benchmarks/results/
 *.rpm
 *.tar.gz
 *.zip
+
+# Executable binaries (test and example executables)
+crypto_provider_test*
+dtls_*_test
+dtls_*_tests
+*_test_suite
+examples/dtls_*_example
+examples/transport_example
+tests/security/dtls_*_tests
+tests/security/comprehensive_security_validation
+tests/security/security_report_generator
+tests/interoperability/dtls_interop_tests
+
+# Static libraries
+lib/*.a
+lib/*.so*
+
+# Build artifacts that might be executables
+**/build/bin/*
+**/build/tests/*
+**/build/examples/*
