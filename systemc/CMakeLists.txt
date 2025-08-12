@@ -31,6 +31,12 @@ link_directories(${SYSTEMC_LIBRARY_DIRS})
 # Find required packages
 find_package(Threads REQUIRED)
 
+# Find GoogleTest for comprehensive testing
+find_package(GTest QUIET)
+if(NOT GTest_FOUND)
+    message(STATUS "GoogleTest not found, some comprehensive tests may not build")
+endif()
+
 # Create SystemC imported target manually since find_package failed
 add_library(SystemC::systemc SHARED IMPORTED)
 set_target_properties(SystemC::systemc PROPERTIES
@@ -117,8 +123,8 @@ endif()
 if(DTLS_SYSTEMC_BUILD_TESTS)
     enable_testing()
     
-    # Test executables
-    set(SYSTEMC_TESTS
+    # Basic SystemC test executables (using SystemC only)
+    set(BASIC_SYSTEMC_TESTS
         basic_crypto_test
         record_layer_test
         message_layer_test
@@ -130,7 +136,20 @@ if(DTLS_SYSTEMC_BUILD_TESTS)
         co_simulation_test
     )
     
-    foreach(test_name ${SYSTEMC_TESTS})
+    # Comprehensive SystemC test executables (using SystemC + GoogleTest)
+    set(COMPREHENSIVE_SYSTEMC_TESTS
+        dmi_hardware_acceleration_test
+        tlm_interface_compliance_test
+        dtls_tlm_extension_comprehensive_test
+        hardware_codesign_validation_test
+        quantum_keeper_temporal_test
+        protocol_stack_component_test
+        systemc_integration_comprehensive_test
+        timing_accuracy_validation_test
+    )
+    
+    # Build basic SystemC tests
+    foreach(test_name ${BASIC_SYSTEMC_TESTS})
         add_executable(${test_name}
             tests/${test_name}.cpp
             src/dtls_testbench.cpp  # Testbench implementation
@@ -148,6 +167,34 @@ if(DTLS_SYSTEMC_BUILD_TESTS)
         # Set test timeout (SystemC tests can be long-running)
         set_tests_properties(${test_name} PROPERTIES TIMEOUT 300)
     endforeach()
+    
+    # Build comprehensive SystemC tests (require GoogleTest)
+    if(GTest_FOUND)
+        foreach(test_name ${COMPREHENSIVE_SYSTEMC_TESTS})
+            add_executable(${test_name}
+                tests/${test_name}.cpp
+                src/dtls_testbench.cpp  # Testbench implementation
+            )
+            
+            target_link_libraries(${test_name}
+                PRIVATE
+                    dtls_systemc_tlm
+                    SystemC::systemc
+                    GTest::gtest
+                    GTest::gtest_main
+            )
+            
+            # Add to CTest
+            add_test(NAME ${test_name} COMMAND ${test_name})
+            
+            # Set test timeout (Comprehensive tests can be long-running)
+            set_tests_properties(${test_name} PROPERTIES TIMEOUT 600)
+        endforeach()
+        
+        message(STATUS "Comprehensive SystemC tests enabled with GoogleTest support")
+    else()
+        message(STATUS "GoogleTest not found - comprehensive SystemC tests disabled")
+    endif()
     
     # Comprehensive system test
     add_executable(dtls_system_test
@@ -259,7 +306,7 @@ add_custom_target(systemc-clean
 
 add_custom_target(systemc-test
     COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
-    DEPENDS ${SYSTEMC_TESTS} dtls_system_test
+    DEPENDS ${BASIC_SYSTEMC_TESTS} $<$<BOOL:${GTest_FOUND}>:${COMPREHENSIVE_SYSTEMC_TESTS}> dtls_system_test
     COMMENT "Running all SystemC TLM tests"
 )
 
