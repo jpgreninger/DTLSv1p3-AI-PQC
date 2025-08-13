@@ -21,6 +21,8 @@ struct KeySchedule;
 struct CertificateChain;
 struct PrivateKey;
 struct PublicKey;
+enum class HardwareCapability;
+struct HardwareAccelerationProfile;
 
 // Crypto provider capabilities
 struct ProviderCapabilities {
@@ -344,6 +346,43 @@ public:
         const AEADDecryptionParams& params) {
         (void)params;
         return Result<std::future<std::vector<uint8_t>>>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+    
+    // Hardware acceleration interface
+    virtual Result<HardwareAccelerationProfile> get_hardware_profile() const = 0;
+    virtual Result<void> enable_hardware_acceleration(HardwareCapability capability) = 0;
+    virtual Result<void> disable_hardware_acceleration(HardwareCapability capability) = 0;
+    virtual bool is_hardware_accelerated(const std::string& operation) const = 0;
+    virtual Result<float> benchmark_hardware_operation(const std::string& operation) = 0;
+    
+    // Zero-copy hardware operations
+    virtual Result<void> aead_encrypt_inplace(
+        const AEADParams& params,
+        std::vector<uint8_t>& data,
+        size_t plaintext_len) { 
+        (void)params; (void)data; (void)plaintext_len;
+        return Result<void>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+    
+    virtual Result<void> aead_decrypt_inplace(
+        const AEADParams& params,
+        std::vector<uint8_t>& data,
+        size_t ciphertext_len) {
+        (void)params; (void)data; (void)ciphertext_len;
+        return Result<void>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+    
+    // Vectorized operations for multiple connections
+    virtual Result<std::vector<AEADEncryptionOutput>> batch_encrypt_aead(
+        const std::vector<AEADEncryptionParams>& params_batch) {
+        (void)params_batch;
+        return Result<std::vector<AEADEncryptionOutput>>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+    
+    virtual Result<std::vector<std::vector<uint8_t>>> batch_decrypt_aead(
+        const std::vector<AEADDecryptionParams>& params_batch) {
+        (void)params_batch;
+        return Result<std::vector<std::vector<uint8_t>>>(DTLSError::OPERATION_NOT_SUPPORTED);
     }
 
 protected:

@@ -1970,7 +1970,18 @@ bool dtls::v13::crypto::BotanProvider::supports_hash_algorithm(HashAlgorithm has
 }
 
 bool dtls::v13::crypto::BotanProvider::has_hardware_acceleration() const {
-    return false; // Botan has limited hardware acceleration
+    // Botan has limited hardware acceleration compared to OpenSSL
+    auto detection_result = HardwareAccelerationDetector::detect_capabilities();
+    if (!detection_result) {
+        return false;
+    }
+    
+    const auto& profile = detection_result.value();
+    return std::any_of(profile.capabilities.begin(), profile.capabilities.end(),
+                      [](const auto& cap) {
+                          return (cap.capability == HardwareCapability::AES_NI) &&
+                                 cap.available && cap.enabled;
+                      });
 }
 
 bool dtls::v13::crypto::BotanProvider::is_fips_compliant() const {

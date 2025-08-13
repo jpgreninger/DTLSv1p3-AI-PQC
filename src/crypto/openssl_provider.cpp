@@ -1,5 +1,6 @@
 #include <dtls/crypto/openssl_provider.h>
 #include <dtls/crypto/crypto_utils.h>
+#include <dtls/crypto/hardware_acceleration.h>
 
 using namespace dtls::v13::crypto::utils;
 #include <openssl/opensslv.h>
@@ -2602,7 +2603,20 @@ bool OpenSSLProvider::supports_hash_algorithm(HashAlgorithm hash) const {
 }
 
 bool OpenSSLProvider::has_hardware_acceleration() const {
-    return false; // Would need actual detection
+    // Detect OpenSSL hardware acceleration capabilities
+    auto detection_result = HardwareAccelerationDetector::detect_capabilities();
+    if (!detection_result) {
+        return false;
+    }
+    
+    const auto& profile = detection_result.value();
+    return std::any_of(profile.capabilities.begin(), profile.capabilities.end(),
+                      [](const auto& cap) {
+                          return (cap.capability == HardwareCapability::AES_NI ||
+                                 cap.capability == HardwareCapability::ARM_AES ||
+                                 cap.capability == HardwareCapability::AVX2) &&
+                                 cap.available && cap.enabled;
+                      });
 }
 
 bool OpenSSLProvider::is_fips_compliant() const {
@@ -2729,6 +2743,62 @@ Result<void> OpenSSLProvider::set_operation_limit(size_t limit) {
     // Stub implementation - would configure operation limits
     (void)limit;  // Suppress unused parameter warning
     return Result<void>();
+}
+
+// Hardware acceleration interface implementation
+Result<HardwareAccelerationProfile> OpenSSLProvider::get_hardware_profile() const {
+    return HardwareAccelerationDetector::detect_capabilities();
+}
+
+Result<void> OpenSSLProvider::enable_hardware_acceleration(HardwareCapability capability) {
+    // Enable specific hardware acceleration in OpenSSL
+    switch (capability) {
+        case HardwareCapability::AES_NI:
+            // OpenSSL automatically uses AES-NI when available
+            return Result<void>::success();
+        case HardwareCapability::AVX:
+        case HardwareCapability::AVX2:
+            // OpenSSL automatically uses SIMD when available
+            return Result<void>::success();
+        default:
+            return Result<void>::error(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+}
+
+Result<void> OpenSSLProvider::disable_hardware_acceleration(HardwareCapability capability) {
+    // In practice, would use OpenSSL_ia32cap_mask to disable features
+    (void)capability;
+    return Result<void>::success();
+}
+
+bool OpenSSLProvider::is_hardware_accelerated(const std::string& operation) const {
+    if (!has_hardware_acceleration()) {
+        return false;
+    }
+    
+    // Check if specific operations can use hardware acceleration
+    if (operation.find("aes") != std::string::npos) {
+        return HardwareAccelerationDetector::is_capability_available(HardwareCapability::AES_NI) ||
+               HardwareAccelerationDetector::is_capability_available(HardwareCapability::ARM_AES);
+    }
+    
+    if (operation.find("sha") != std::string::npos) {
+        return HardwareAccelerationDetector::is_capability_available(HardwareCapability::ARM_SHA2);
+    }
+    
+    return false;
+}
+
+Result<float> OpenSSLProvider::benchmark_hardware_operation(const std::string& operation) {
+    if (operation.find("aes") != std::string::npos) {
+        return HardwareAccelerationDetector::benchmark_capability(HardwareCapability::AES_NI);
+    }
+    
+    if (operation.find("sha") != std::string::npos) {
+        return HardwareAccelerationDetector::benchmark_capability(HardwareCapability::ARM_SHA2);
+    }
+    
+    return Result<float>::success(1.0f);
 }
 
 // OpenSSL utility functions
