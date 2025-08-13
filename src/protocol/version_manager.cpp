@@ -77,10 +77,10 @@ bool VersionManager::is_version_valid(GlobalProtocolVersion version) const {
 
 Result<void> VersionManager::prepare_client_hello(ClientHello& client_hello) const {
     // RFC 9147 Section 4.1.2: ClientHello.legacy_version MUST be set to DTLS 1.2
-    client_hello.set_legacy_version(version_utils::constants::DEFAULT_LEGACY_VERSION);
+    client_hello.set_legacy_version(ProtocolVersion::DTLS_1_2);
     
     // Add supported_versions extension with all supported versions
-    auto version_ext_result = create_supported_versions_extension();
+    auto version_ext_result = version_utils::create_supported_versions_extension(config_.supported_versions);
     if (!version_ext_result.is_success()) {
         return Result<void>(version_ext_result.error());
     }
@@ -99,7 +99,7 @@ Result<VersionManager::NegotiationResult> VersionManager::negotiate_version_from
     auto client_versions_result = extract_supported_versions_from_client_hello(client_hello);
     if (!client_versions_result.is_success()) {
         // If no supported_versions extension, use legacy_version
-        std::vector<GlobalProtocolVersion> legacy_versions = {client_hello.legacy_version()};
+        std::vector<GlobalProtocolVersion> legacy_versions = {static_cast<GlobalProtocolVersion>(client_hello.legacy_version())};
         client_versions_result = Result<std::vector<GlobalProtocolVersion>>(std::move(legacy_versions));
     }
     
@@ -134,7 +134,7 @@ Result<GlobalProtocolVersion> VersionManager::validate_server_hello_version(
     const std::vector<GlobalProtocolVersion>& client_offered_versions) const {
     
     // RFC 9147: Check if server selected a version we offered
-    GlobalProtocolVersion server_version = server_hello.legacy_version();
+    GlobalProtocolVersion server_version = static_cast<GlobalProtocolVersion>(server_hello.legacy_version());
     
     // For DTLS 1.3, the actual version should be in supported_versions extension
     auto server_versions_ext = server_hello.get_extension(ExtensionType::SUPPORTED_VERSIONS);
@@ -166,7 +166,7 @@ Result<void> VersionManager::prepare_server_hello(ServerHello& server_hello,
                                                  GlobalProtocolVersion negotiated_version) const {
     if (is_dtls13_version(negotiated_version)) {
         // RFC 9147: For DTLS 1.3, set legacy_version to DTLS 1.2
-        server_hello.set_legacy_version(version_utils::constants::DEFAULT_LEGACY_VERSION);
+        server_hello.set_legacy_version(static_cast<ProtocolVersion>(version_utils::constants::DEFAULT_LEGACY_VERSION));
         
         // Add supported_versions extension with negotiated version
         auto version_ext_result = version_utils::create_supported_versions_extension({negotiated_version});
@@ -177,7 +177,7 @@ Result<void> VersionManager::prepare_server_hello(ServerHello& server_hello,
         server_hello.add_extension(std::move(version_ext_result.value()));
     } else {
         // For DTLS 1.2 and earlier, set legacy_version to actual version
-        server_hello.set_legacy_version(negotiated_version);
+        server_hello.set_legacy_version(static_cast<ProtocolVersion>(negotiated_version));
     }
     
     return Result<void>();
@@ -187,7 +187,7 @@ Result<void> VersionManager::prepare_hello_retry_request(HelloRetryRequest& hrr,
                                                        GlobalProtocolVersion negotiated_version) const {
     // HelloRetryRequest follows same version rules as ServerHello
     if (is_dtls13_version(negotiated_version)) {
-        hrr.set_legacy_version(version_utils::constants::DEFAULT_LEGACY_VERSION);
+        hrr.set_legacy_version(static_cast<ProtocolVersion>(version_utils::constants::DEFAULT_LEGACY_VERSION));
         
         auto version_ext_result = version_utils::create_supported_versions_extension({negotiated_version});
         if (!version_ext_result.is_success()) {
@@ -196,7 +196,7 @@ Result<void> VersionManager::prepare_hello_retry_request(HelloRetryRequest& hrr,
         
         hrr.add_extension(std::move(version_ext_result.value()));
     } else {
-        hrr.set_legacy_version(negotiated_version);
+        hrr.set_legacy_version(static_cast<ProtocolVersion>(negotiated_version));
     }
     
     return Result<void>();
@@ -299,8 +299,8 @@ bool VersionManager::should_enable_dtls12_fallback(const ClientHello& client_hel
     
     if (!client_versions_result.is_success()) {
         // No supported_versions extension - check legacy_version
-        return client_hello.legacy_version() == dtls::v13::DTLS_V12 || 
-               is_version_lower(client_hello.legacy_version(), dtls::v13::DTLS_V12);
+        return static_cast<GlobalProtocolVersion>(client_hello.legacy_version()) == dtls::v13::DTLS_V12 || 
+               is_version_lower(static_cast<GlobalProtocolVersion>(client_hello.legacy_version()), dtls::v13::DTLS_V12);
     }
     
     const auto& client_versions = client_versions_result.value();
@@ -406,7 +406,7 @@ VersionManager::ValidationResult VersionManager::validate_client_hello_versions(
     const ClientHello& client_hello) const {
     
     // Check legacy_version format
-    auto legacy_result = validate_version_format(client_hello.legacy_version());
+    auto legacy_result = validate_version_format(static_cast<GlobalProtocolVersion>(client_hello.legacy_version()));
     if (!legacy_result.is_valid) {
         return legacy_result;
     }
@@ -451,7 +451,7 @@ VersionManager::ValidationResult VersionManager::validate_client_hello_versions(
         }
     } else {
         // No supported_versions extension - validate legacy_version
-        auto support_result = validate_version_support(client_hello.legacy_version());
+        auto support_result = validate_version_support(static_cast<GlobalProtocolVersion>(client_hello.legacy_version()));
         if (!support_result.is_valid) {
             return support_result;
         }
@@ -465,12 +465,12 @@ VersionManager::ValidationResult VersionManager::validate_server_hello_versions(
     const std::vector<GlobalProtocolVersion>& client_offered) const {
     
     // Check legacy_version format
-    auto legacy_result = validate_version_format(server_hello.legacy_version());
+    auto legacy_result = validate_version_format(static_cast<GlobalProtocolVersion>(server_hello.legacy_version()));
     if (!legacy_result.is_valid) {
         return legacy_result;
     }
     
-    GlobalProtocolVersion selected_version = server_hello.legacy_version();
+    GlobalProtocolVersion selected_version = static_cast<GlobalProtocolVersion>(server_hello.legacy_version());
     
     // Check if server included supported_versions extension
     if (server_hello.has_extension(ExtensionType::SUPPORTED_VERSIONS)) {
@@ -549,7 +549,7 @@ Result<VersionManager::HandshakeVersionContext> VersionManager::process_client_h
         context.client_offered_versions = client_versions_result.value();
     } else {
         // Fall back to legacy_version
-        context.client_offered_versions = {client_hello.legacy_version()};
+        context.client_offered_versions = {static_cast<GlobalProtocolVersion>(client_hello.legacy_version())};
     }
     
     // Perform version negotiation
@@ -612,7 +612,7 @@ VersionManager::ValidationResult VersionManager::validate_handshake_version_cons
     }
     
     // Extract actual server version
-    GlobalProtocolVersion server_version = server_hello.legacy_version();
+    GlobalProtocolVersion server_version = static_cast<GlobalProtocolVersion>(server_hello.legacy_version());
     if (server_hello.has_extension(ExtensionType::SUPPORTED_VERSIONS)) {
         auto ext = server_hello.get_extension(ExtensionType::SUPPORTED_VERSIONS);
         if (ext.has_value()) {
@@ -760,11 +760,12 @@ bool is_supported_versions_extension(const Extension& extension) {
 }
 
 bool validate_supported_versions_extension(const Extension& extension) {
-    if (!is_supported_versions_extension(extension)) {
+    if (!dtls::v13::protocol::is_supported_versions_extension(extension)) {
         return false;
     }
     
-    auto parse_result = parse_supported_versions_extension(extension);
+    // Use the local parse_supported_versions_extension function (in version_utils namespace)
+    auto parse_result = dtls::v13::protocol::version_utils::parse_supported_versions_extension(extension);
     return parse_result.is_success() && !parse_result.value().empty();
 }
 

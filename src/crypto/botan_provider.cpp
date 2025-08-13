@@ -1,6 +1,7 @@
 #include <dtls/crypto/botan_provider.h>
 #include <dtls/crypto/openssl_provider.h>
 #include <dtls/crypto/crypto_utils.h>
+#include <dtls/crypto/hardware_acceleration.h>
 #include <sstream>
 #include <random>
 #include <thread>
@@ -2773,6 +2774,45 @@ bool dtls::v13::crypto::BotanProvider::is_signature_scheme_deprecated(SignatureS
         default:
             return false; // All other supported schemes are not deprecated
     }
+}
+
+// Hardware acceleration interface implementation
+Result<HardwareAccelerationProfile> dtls::v13::crypto::BotanProvider::get_hardware_profile() const {
+    // Botan may have limited hardware acceleration compared to OpenSSL
+    // Return a basic profile indicating no hardware acceleration for this implementation
+    HardwareAccelerationProfile profile;
+    profile.platform_name = "Botan Provider";
+    profile.cpu_model = "Unknown";
+    profile.os_version = "Unknown";
+    profile.capabilities = {}; // Empty capabilities list
+    profile.has_any_acceleration = false;
+    profile.overall_performance_score = 0.0f;
+    profile.recommendations = "Consider using OpenSSL provider for hardware acceleration";
+    return Result<HardwareAccelerationProfile>(std::move(profile));
+}
+
+Result<void> dtls::v13::crypto::BotanProvider::enable_hardware_acceleration(HardwareCapability capability) {
+    (void)capability; // Suppress unused parameter warning
+    // Botan provider simulation does not support hardware acceleration
+    return Result<void>(DTLSError::OPERATION_NOT_SUPPORTED);
+}
+
+Result<void> dtls::v13::crypto::BotanProvider::disable_hardware_acceleration(HardwareCapability capability) {
+    (void)capability; // Suppress unused parameter warning
+    // No hardware acceleration to disable
+    return Result<void>();
+}
+
+bool dtls::v13::crypto::BotanProvider::is_hardware_accelerated(const std::string& operation) const {
+    (void)operation; // Suppress unused parameter warning
+    // Botan provider simulation does not support hardware acceleration
+    return false;
+}
+
+Result<float> dtls::v13::crypto::BotanProvider::benchmark_hardware_operation(const std::string& operation) {
+    (void)operation; // Suppress unused parameter warning
+    // No hardware acceleration to benchmark
+    return Result<float>(DTLSError::OPERATION_NOT_SUPPORTED);
 }
 
 } // namespace crypto

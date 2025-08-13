@@ -2755,20 +2755,20 @@ Result<void> OpenSSLProvider::enable_hardware_acceleration(HardwareCapability ca
     switch (capability) {
         case HardwareCapability::AES_NI:
             // OpenSSL automatically uses AES-NI when available
-            return Result<void>::success();
+            return Result<void>();
         case HardwareCapability::AVX:
         case HardwareCapability::AVX2:
             // OpenSSL automatically uses SIMD when available
-            return Result<void>::success();
+            return Result<void>();
         default:
-            return Result<void>::error(DTLSError::OPERATION_NOT_SUPPORTED);
+            return Result<void>(DTLSError::OPERATION_NOT_SUPPORTED);
     }
 }
 
 Result<void> OpenSSLProvider::disable_hardware_acceleration(HardwareCapability capability) {
     // In practice, would use OpenSSL_ia32cap_mask to disable features
     (void)capability;
-    return Result<void>::success();
+    return Result<void>();
 }
 
 bool OpenSSLProvider::is_hardware_accelerated(const std::string& operation) const {
@@ -2798,7 +2798,7 @@ Result<float> OpenSSLProvider::benchmark_hardware_operation(const std::string& o
         return HardwareAccelerationDetector::benchmark_capability(HardwareCapability::ARM_SHA2);
     }
     
-    return Result<float>::success(1.0f);
+    return Result<float>(1.0f);
 }
 
 // OpenSSL utility functions

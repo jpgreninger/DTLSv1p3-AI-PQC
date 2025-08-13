@@ -136,6 +136,13 @@ public:
     size_t get_current_operations() const override;
     Result<void> set_memory_limit(size_t limit) override;
     Result<void> set_operation_limit(size_t limit) override;
+    
+    // Hardware acceleration interface
+    Result<HardwareAccelerationProfile> get_hardware_profile() const override;
+    Result<void> enable_hardware_acceleration(HardwareCapability capability) override;
+    Result<void> disable_hardware_acceleration(HardwareCapability capability) override;
+    bool is_hardware_accelerated(const std::string& operation) const override;
+    Result<float> benchmark_hardware_operation(const std::string& operation) override;
 
     // AEAD helper functions
     size_t get_aead_key_length(AEADCipher cipher) const;

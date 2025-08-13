@@ -858,7 +858,7 @@ Result<memory::Buffer> create_random() {
     return Result<memory::Buffer>(std::move(random_buffer));
 }
 
-Result<Extension> create_supported_versions_extension(const std::vector<GlobalProtocolVersion>& versions) {
+Result<Extension> create_supported_versions_extension(const std::vector<ProtocolVersion>& versions) {
     memory::Buffer data(1 + versions.size() * 2);
     auto resize_result = data.resize(1 + versions.size() * 2);
     if (!resize_result.is_success()) {
@@ -3157,14 +3157,14 @@ Result<memory::Buffer> serialize_alert(const Alert& alert) {
 }
 
 // Version parsing utilities
-Result<std::vector<GlobalProtocolVersion>> parse_supported_versions_extension(const Extension& extension) {
+Result<std::vector<ProtocolVersion>> parse_supported_versions_extension(const Extension& extension) {
     if (extension.type != ExtensionType::SUPPORTED_VERSIONS) {
-        return Result<std::vector<GlobalProtocolVersion>>(DTLSError::UNSUPPORTED_EXTENSION);
+        return Result<std::vector<ProtocolVersion>>(DTLSError::UNSUPPORTED_EXTENSION);
     }
     
     const auto& data = extension.data;
     if (data.size() < 1) {
-        return Result<std::vector<GlobalProtocolVersion>>(DTLSError::INSUFFICIENT_BUFFER_SIZE);
+        return Result<std::vector<ProtocolVersion>>(DTLSError::INSUFFICIENT_BUFFER_SIZE);
     }
     
     const std::byte* ptr = data.data();
@@ -3175,17 +3175,17 @@ Result<std::vector<GlobalProtocolVersion>> parse_supported_versions_extension(co
     
     // Validate length
     if (length % 2 != 0 || offset + length > data.size()) {
-        return Result<std::vector<GlobalProtocolVersion>>(DTLSError::INVALID_MESSAGE_FORMAT);
+        return Result<std::vector<ProtocolVersion>>(DTLSError::INVALID_MESSAGE_FORMAT);
     }
     
     // Parse versions
-    std::vector<GlobalProtocolVersion> versions;
+    std::vector<ProtocolVersion> versions;
     size_t num_versions = length / 2;
     versions.reserve(num_versions);
     
     for (size_t i = 0; i < num_versions; ++i) {
         if (offset + 2 > data.size()) {
-            return Result<std::vector<GlobalProtocolVersion>>(DTLSError::INSUFFICIENT_BUFFER_SIZE);
+            return Result<std::vector<ProtocolVersion>>(DTLSError::INSUFFICIENT_BUFFER_SIZE);
         }
         
         uint16_t version_net;
@@ -3195,7 +3195,7 @@ Result<std::vector<GlobalProtocolVersion>> parse_supported_versions_extension(co
         offset += 2;
     }
     
-    return Result<std::vector<GlobalProtocolVersion>>(std::move(versions));
+    return Result<std::vector<ProtocolVersion>>(std::move(versions));
 }
 
 bool is_supported_versions_extension(const Extension& extension) {
