@@ -30,6 +30,7 @@ set(DTLS_PROTOCOL_SOURCES
     protocol/record_layer_crypto_abstraction.cpp
     protocol/handshake.cpp
     protocol/handshake_manager.cpp
+    protocol/version_manager.cpp
     protocol/cookie.cpp
     protocol/message_layer.cpp
     protocol/early_data.cpp

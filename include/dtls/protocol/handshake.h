@@ -1018,4 +1018,9 @@ bool is_ack_message_valid(const ACK& ack_message);
 std::vector<uint32_t> get_missing_sequences(const ACK& ack_message, uint32_t max_sequence);
 bool should_send_ack(const std::vector<uint32_t>& received_sequences, const ACK& last_ack_sent);
 
+// Version negotiation parsing utilities
+Result<std::vector<ProtocolVersion>> parse_supported_versions_extension(const Extension& extension);
+bool is_supported_versions_extension(const Extension& extension);
+bool validate_supported_versions_extension_format(const Extension& extension);
+
 }  // namespace dtls::v13::protocol
