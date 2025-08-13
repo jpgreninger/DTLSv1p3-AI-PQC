@@ -1,6 +1,23 @@
 #ifndef DTLS_TYPES_H
 #define DTLS_TYPES_H
 
+/**
+ * @file types.h
+ * @brief Core DTLS v1.3 Protocol Types and Constants
+ * 
+ * @details Defines fundamental data types, enumerations, and constants used throughout
+ * the DTLS v1.3 implementation following @rfc{9147} specifications.
+ * 
+ * @par Key Features:
+ * - 🏗️ **Type Safety**: Strong typing for protocol elements
+ * - 📊 **RFC Compliance**: All types mapped to @rfc{9147} specifications  
+ * - ⚡ **Performance**: Optimized primitive types for high-speed operations
+ * - 🔧 **Extensibility**: Designed for future protocol extensions
+ * 
+ * @author DTLS v1.3 Implementation Team
+ * @since v1.0.0
+ */
+
 #include <dtls/config.h>
 #include <dtls/result.h>
 #include <cstdint>
@@ -14,27 +31,58 @@
 namespace dtls {
 namespace v13 {
 
-// Basic protocol types
+/**
+ * @defgroup CoreTypes Core Protocol Types
+ * @brief Fundamental types used throughout the DTLS v1.3 implementation
+ * @{
+ */
+
+/// @brief Protocol version identifier (network byte order)
 using ProtocolVersion = uint16_t;
+
+/// @brief Epoch number for key generation sequencing  
 using Epoch = uint16_t;
+
+/// @brief 64-bit sequence number for replay protection
 using SequenceNumber = uint64_t;
+
+/// @brief Generic length field for protocol messages
 using Length = uint16_t;
 
-// DTLS version constants
+/// @}
+
+/**
+ * @defgroup VersionConstants DTLS Version Constants
+ * @brief Protocol version identifiers per @rfc{9147}
+ * @{
+ */
+
+/// @brief DTLS v1.0 version identifier (legacy support)
 constexpr ProtocolVersion DTLS_V10 = 0xFEFF;
+
+/// @brief DTLS v1.2 version identifier (backward compatibility)
 constexpr ProtocolVersion DTLS_V12 = 0xFEFD;
+
+/// @brief DTLS v1.3 version identifier (primary target)
 constexpr ProtocolVersion DTLS_V13 = 0xFEFC;
 
-// Content types
+/// @}
+
+/**
+ * @brief DTLS record content types per @rfc{9147} Section 5
+ * 
+ * @details Defines the various types of data that can be transmitted within
+ * DTLS records, each serving a specific protocol function.
+ */
 enum class ContentType : uint8_t {
-    INVALID = 0,
-    CHANGE_CIPHER_SPEC = 20,
-    ALERT = 21,
-    HANDSHAKE = 22,
-    APPLICATION_DATA = 23,
-    HEARTBEAT = 24,
-    TLS12_CID = 25,
-    ACK = 26
+    INVALID = 0,                ///< @brief Invalid content type (error indicator)
+    CHANGE_CIPHER_SPEC = 20,   ///< @brief Legacy cipher spec change (DTLS 1.2 compat)
+    ALERT = 21,                ///< @brief Alert messages for error reporting
+    HANDSHAKE = 22,            ///< @brief Handshake protocol messages
+    APPLICATION_DATA = 23,     ///< @brief Encrypted application payload data
+    HEARTBEAT = 24,            ///< @brief Heartbeat extension messages
+    TLS12_CID = 25,            ///< @brief Connection ID for DTLS 1.2 compatibility
+    ACK = 26                   ///< @brief Acknowledgment messages (DTLS 1.3 feature)
 };
 
 // Handshake message types

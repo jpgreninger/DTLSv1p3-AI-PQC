@@ -6,7 +6,7 @@
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "DTLS v1.3 Implementation"
 PROJECT_NUMBER         = "1.0.0"
-PROJECT_BRIEF          = "Complete DTLS v1.3 protocol implementation following RFC 9147"
+PROJECT_BRIEF          = "🔒 Enterprise-grade DTLS v1.3 implementation with SystemC TLM modeling and comprehensive security features"
 PROJECT_LOGO           = 
 OUTPUT_DIRECTORY       = ./api-docs
 CREATE_SUBDIRS         = NO
@@ -38,7 +38,12 @@ PYTHON_DOCSTRING       = YES
 INHERIT_DOCS           = YES
 SEPARATE_MEMBER_PAGES  = NO
 TAB_SIZE               = 4
-ALIASES                = 
+ALIASES                = "rfc{1}=<a href=\"https://www.rfc-editor.org/rfc/rfc\1.html\">RFC \1</a>" \
+                         "security=\xrefitem security \"Security Note\" \"Security Notes\"" \
+                         "performance=\xrefitem performance \"Performance Note\" \"Performance Notes\"" \
+                         "systemc=\xrefitem systemc \"SystemC Note\" \"SystemC Integration\"" \
+                         "example{1}=\par Example:\n \1" \
+                         "complexity{1}=\xrefitem complexity \"Complexity\" \"Algorithmic Complexity\" \1"
 TCL_SUBST              = 
 OPTIMIZE_OUTPUT_FOR_C  = NO
 OPTIMIZE_OUTPUT_JAVA   = NO
@@ -208,17 +213,23 @@ IGNORE_PREFIX          =
 GENERATE_HTML          = YES
 HTML_OUTPUT            = html
 HTML_FILE_EXTENSION    = .html
-HTML_HEADER            = 
+HTML_HEADER            = header.html
 HTML_FOOTER            = 
 HTML_STYLESHEET        = 
-HTML_EXTRA_STYLESHEET  = 
-HTML_EXTRA_FILES       = 
-HTML_COLORSTYLE_HUE    = 220
-HTML_COLORSTYLE_SAT    = 100
+HTML_EXTRA_STYLESHEET  = doxygen-awesome-css/doxygen-awesome.css \
+                         doxygen-awesome-css/doxygen-awesome-sidebar-only.css \
+                         doxygen-awesome-css/doxygen-awesome-sidebar-only-darkmode-toggle.css
+HTML_EXTRA_FILES       = doxygen-awesome-css/doxygen-awesome-darkmode-toggle.js \
+                         doxygen-awesome-css/doxygen-awesome-fragment-copy-button.js \
+                         doxygen-awesome-css/doxygen-awesome-paragraph-link.js \
+                         doxygen-awesome-css/doxygen-awesome-interactive-toc.js \
+                         doxygen-awesome-css/doxygen-awesome-tabs.js
+HTML_COLORSTYLE_HUE    = 209
+HTML_COLORSTYLE_SAT    = 15
 HTML_COLORSTYLE_GAMMA  = 80
 HTML_TIMESTAMP         = NO
 HTML_DYNAMIC_MENUS     = YES
-HTML_DYNAMIC_SECTIONS  = NO
+HTML_DYNAMIC_SECTIONS  = YES
 HTML_INDEX_NUM_ENTRIES = 100
 GENERATE_DOCSET        = NO
 DOCSET_FEEDNAME        = "DTLS v1.3 API Documentation"
@@ -243,7 +254,7 @@ QHG_LOCATION           =
 GENERATE_ECLIPSEHELP   = NO
 ECLIPSE_DOC_ID         = org.dtls.v13.api
 DISABLE_INDEX          = NO
-GENERATE_TREEVIEW      = NO
+GENERATE_TREEVIEW      = YES
 ENUM_VALUES_PER_LINE   = 4
 TREEVIEW_WIDTH         = 250
 EXT_LINKS_IN_WINDOW    = NO

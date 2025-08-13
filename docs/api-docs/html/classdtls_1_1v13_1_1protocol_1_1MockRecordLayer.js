@@ -1,0 +1,18 @@
+var classdtls_1_1v13_1_1protocol_1_1MockRecordLayer =
+[
+    [ "advance_epoch", "classdtls_1_1v13_1_1protocol_1_1MockRecordLayer.html#a928412b5c8a44d7a6cf8cf63fb341be0", null ],
+    [ "enable_connection_id", "classdtls_1_1v13_1_1protocol_1_1MockRecordLayer.html#a1aa5d18d9e0013ee04e0b314f911c16d", null ],
+    [ "get_key_update_stats", "classdtls_1_1v13_1_1protocol_1_1MockRecordLayer.html#a605d1fe4972bd96b75b65861a8ca33bf", null ],
+    [ "get_stats", "classdtls_1_1v13_1_1protocol_1_1MockRecordLayer.html#ab29bd47b46c3b1f827221f737c391e90", null ],
+    [ "initialize", "classdtls_1_1v13_1_1protocol_1_1MockRecordLayer.html#afde1b71e32d587a77a61b3c713fd44c2", null ],
+    [ "needs_key_update", "classdtls_1_1v13_1_1protocol_1_1MockRecordLayer.html#aa33c09f0e7878ebb517867e404bea6a2", null ],
+    [ "prepare_outgoing_record", "classdtls_1_1v13_1_1protocol_1_1MockRecordLayer.html#a31be16d4c9df9f805e52234bdfd033e3", null ],
+    [ "process_incoming_record", "classdtls_1_1v13_1_1protocol_1_1MockRecordLayer.html#a1aa220109f4f526188af7102b6746000", null ],
+    [ "protect_record", "classdtls_1_1v13_1_1protocol_1_1MockRecordLayer.html#ab2c5d115d6709c0933b5c1a5ab478f9a", null ],
+    [ "protect_record_legacy", "classdtls_1_1v13_1_1protocol_1_1MockRecordLayer.html#a4fc4895a4757d77f56a746974dfab27d", null ],
+    [ "set_cipher_suite", "classdtls_1_1v13_1_1protocol_1_1MockRecordLayer.html#aac0b46874dcbcec9ef5d71bce484af4a", null ],
+    [ "unprotect_record", "classdtls_1_1v13_1_1protocol_1_1MockRecordLayer.html#a677d120ed0b3e105f2e23025ec49d181", null ],
+    [ "unprotect_record_legacy", "classdtls_1_1v13_1_1protocol_1_1MockRecordLayer.html#a8eb79dc1d82f2d0ba7a75cfb6d1ae602", null ],
+    [ "update_traffic_keys", "classdtls_1_1v13_1_1protocol_1_1MockRecordLayer.html#a28137c7f2b3d871c79499ef0a14298c2", null ],
+    [ "update_traffic_keys", "classdtls_1_1v13_1_1protocol_1_1MockRecordLayer.html#a532d636ee47180d4cb1ad50230f970f6", null ]
+];

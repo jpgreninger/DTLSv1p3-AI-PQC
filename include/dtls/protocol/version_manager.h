@@ -13,15 +13,44 @@ namespace dtls::v13::protocol {
 using GlobalProtocolVersion = dtls::v13::ProtocolVersion;
 
 /**
- * Protocol Version Manager
+ * @brief Protocol Version Manager for DTLS v1.3
  * 
- * Handles DTLS protocol version negotiation, validation, and compatibility
- * checks according to RFC 9147 specifications.
+ * @details Comprehensive version negotiation system handling DTLS protocol version 
+ * negotiation, validation, and backward compatibility checks following @rfc{9147} specifications.
+ * 
+ * @par Key Features:
+ * - 🔄 **Bidirectional Version Negotiation**: Client and server-side version handling
+ * - 🛡️ **Security-First Design**: Built-in downgrade attack detection 
+ * - 🔧 **Backward Compatible**: Seamless DTLS v1.2 fallback support
+ * - ⚡ **High Performance**: Optimized for production environments
+ * 
+ * @security This class implements critical security measures including version downgrade
+ * attack detection as specified in RFC 9147 Section 4.1.3.
+ * 
+ * @example{
+ * ```cpp
+ * // Server-side version negotiation
+ * VersionManager vm;
+ * auto result = vm.negotiate_version_from_client_hello(client_hello);
+ * if (result.is_ok()) {
+ *     auto negotiated = result.value().negotiated_version;
+ *     // Apply to ServerHello...
+ * }
+ * ```
+ * }
+ * 
+ * @since DTLS v1.3 Implementation v1.0.0
+ * @author DTLS v1.3 Implementation Team
  */
 class DTLS_API VersionManager {
 public:
     /**
-     * Version negotiation result
+     * @brief Version negotiation result structure
+     * 
+     * @details Contains the outcome of version negotiation including security checks
+     * and any required follow-up actions.
+     * 
+     * @see negotiate_version_from_client_hello()
      */
     struct NegotiationResult {
         GlobalProtocolVersion negotiated_version;
@@ -86,8 +115,29 @@ public:
     Result<void> prepare_client_hello(ClientHello& client_hello) const;
     
     /**
-     * Server-side version negotiation: analyze ClientHello and determine
-     * negotiated version for ServerHello
+     * @brief Server-side version negotiation from ClientHello
+     * 
+     * @details Analyzes the ClientHello message to determine the optimal protocol version
+     * for the connection, considering supported versions extension and legacy compatibility.
+     * 
+     * @param client_hello The received ClientHello message containing version preferences
+     * @returns NegotiationResult containing negotiated version and security analysis
+     * 
+     * @complexity{O(n*m) where n=client versions, m=server versions}
+     * @performance Optimized for typical negotiation scenarios with early exit strategies
+     * 
+     * @security Implements mandatory downgrade attack detection per @rfc{9147} Section 4.1.3
+     * 
+     * @example{
+     * ```cpp
+     * VersionManager server_vm;
+     * auto result = server_vm.negotiate_version_from_client_hello(client_hello);
+     * if (result.is_ok() && !result.value().version_downgrade_detected) {
+     *     // Safe to proceed with negotiated version
+     *     auto version = result.value().negotiated_version;
+     * }
+     * ```
+     * }
      */
     Result<NegotiationResult> negotiate_version_from_client_hello(
         const ClientHello& client_hello) const;
