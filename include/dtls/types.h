@@ -3,16 +3,16 @@
 
 /**
  * @file types.h
- * @brief Core DTLS v1.3 Protocol Types and Constants
+ * Core DTLS v1.3 Protocol Types and Constants.
  * 
- * @details Defines fundamental data types, enumerations, and constants used throughout
- * the DTLS v1.3 implementation following @rfc{9147} specifications.
+ * Defines fundamental data types, enumerations, and constants used throughout
+ * the DTLS v1.3 implementation following RFC 9147 specifications.
  * 
- * @par Key Features:
- * - 🏗️ **Type Safety**: Strong typing for protocol elements
- * - 📊 **RFC Compliance**: All types mapped to @rfc{9147} specifications  
- * - ⚡ **Performance**: Optimized primitive types for high-speed operations
- * - 🔧 **Extensibility**: Designed for future protocol extensions
+ * Key Features:
+ * - Type Safety: Strong typing for protocol elements
+ * - RFC Compliance: All types mapped to RFC 9147 specifications  
+ * - Performance: Optimized primitive types for high-speed operations
+ * - Extensibility: Designed for future protocol extensions
  * 
  * @author DTLS v1.3 Implementation Team
  * @since v1.0.0
@@ -33,20 +33,20 @@ namespace v13 {
 
 /**
  * @defgroup CoreTypes Core Protocol Types
- * @brief Fundamental types used throughout the DTLS v1.3 implementation
+ * Fundamental types used throughout the DTLS v1.3 implementation.
  * @{
  */
 
-/// @brief Protocol version identifier (network byte order)
+/** Protocol version identifier (network byte order). */
 using ProtocolVersion = uint16_t;
 
-/// @brief Epoch number for key generation sequencing  
+/** Epoch number for key generation sequencing. */
 using Epoch = uint16_t;
 
-/// @brief 64-bit sequence number for replay protection
+/** 64-bit sequence number for replay protection. */
 using SequenceNumber = uint64_t;
 
-/// @brief Generic length field for protocol messages
+/** Generic length field for protocol messages. */
 using Length = uint16_t;
 
 /// @}

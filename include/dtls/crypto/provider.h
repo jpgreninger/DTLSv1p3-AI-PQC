@@ -24,7 +24,13 @@ struct PublicKey;
 enum class HardwareCapability;
 struct HardwareAccelerationProfile;
 
-// Crypto provider capabilities
+/**
+ * Crypto provider capabilities structure.
+ * 
+ * This structure defines the cryptographic capabilities supported by a provider
+ * including cipher suites, elliptic curve groups, signature schemes, and 
+ * hardware acceleration features.
+ */
 struct ProviderCapabilities {
     std::vector<CipherSuite> supported_cipher_suites;
     std::vector<NamedGroup> supported_groups;
@@ -36,7 +42,12 @@ struct ProviderCapabilities {
     std::string provider_version;
 };
 
-// Key derivation parameters
+/**
+ * Key derivation parameters for HKDF and PBKDF2 operations.
+ * 
+ * Contains all necessary parameters for key derivation functions
+ * as specified in RFC 5869 (HKDF) and RFC 2898 (PBKDF2).
+ */
 struct KeyDerivationParams {
     std::vector<uint8_t> secret;
     std::vector<uint8_t> salt;
@@ -45,7 +56,12 @@ struct KeyDerivationParams {
     HashAlgorithm hash_algorithm{HashAlgorithm::SHA256};
 };
 
-// AEAD encryption/decryption parameters
+/**
+ * AEAD encryption/decryption parameters.
+ * 
+ * Parameters for Authenticated Encryption with Associated Data operations
+ * as defined in RFC 5116. Used for both encryption and decryption operations.
+ */
 struct AEADParams {
     std::vector<uint8_t> key;
     std::vector<uint8_t> nonce;
@@ -212,28 +228,72 @@ struct EnhancedProviderCapabilities : public ProviderCapabilities {
 };
 
 /**
- * Abstract base class for cryptographic providers
+ * Abstract base class for cryptographic providers.
  * 
  * This interface defines all cryptographic operations required for DTLS v1.3.
  * Implementations provide backend-specific crypto functionality (OpenSSL, Botan, etc.)
+ * 
+ * @note This class is thread-safe when properly implemented by concrete providers.
+ * @see OpenSSLProvider, BotanProvider for concrete implementations.
  */
 class DTLS_API CryptoProvider {
 public:
     virtual ~CryptoProvider() = default;
 
-    // Provider information
+    /**
+     * Returns the name of this crypto provider.
+     * @return Provider name (e.g., "OpenSSL", "Botan")
+     */
     virtual std::string name() const = 0;
+    
+    /**
+     * Returns the version string of this crypto provider.
+     * @return Provider version string
+     */
     virtual std::string version() const = 0;
+    
+    /**
+     * Returns the capabilities supported by this provider.
+     * @return Provider capabilities structure
+     */
     virtual ProviderCapabilities capabilities() const = 0;
+    
+    /**
+     * Checks if this provider is available for use.
+     * @return true if provider is available, false otherwise
+     */
     virtual bool is_available() const = 0;
+    
+    /**
+     * Initializes the crypto provider.
+     * @return Success result or error details
+     */
     virtual Result<void> initialize() = 0;
+    
+    /**
+     * Cleans up provider resources.
+     */
     virtual void cleanup() = 0;
 
-    // Random number generation
+    /**
+     * Generates cryptographically secure random bytes.
+     * @param params Random generation parameters
+     * @return Generated random bytes or error details
+     */
     virtual Result<std::vector<uint8_t>> generate_random(const RandomParams& params) = 0;
     
-    // Key derivation
+    /**
+     * Derives key material using HKDF (RFC 5869).
+     * @param params Key derivation parameters including secret, salt, and info
+     * @return Derived key material or error details
+     */
     virtual Result<std::vector<uint8_t>> derive_key_hkdf(const KeyDerivationParams& params) = 0;
+    
+    /**
+     * Derives key material using PBKDF2 (RFC 2898).
+     * @param params Key derivation parameters including password and salt
+     * @return Derived key material or error details
+     */
     virtual Result<std::vector<uint8_t>> derive_key_pbkdf2(const KeyDerivationParams& params) = 0;
     
     // AEAD operations

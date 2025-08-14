@@ -10,22 +10,44 @@
 namespace dtls {
 namespace v13 {
 
-// Forward declaration
+/** Forward declaration for Result template class. */
 template<typename T>
 class Result;
 
-// Result type for operations that can fail
+/**
+ * Result type for operations that can fail.
+ * 
+ * A type that represents either a success value of type T or an error.
+ * This provides a safe way to handle operations that might fail without
+ * using exceptions, following the Rust-style Result pattern.
+ * 
+ * @tparam T The type of the success value
+ */
 template<typename T>
 class DTLS_API Result {
 public:
-    // Constructors
+    /**
+     * Constructs a successful Result with the given value.
+     * @param value The success value
+     */
     Result(T value) : data_(std::move(value)) {}
+    
+    /**
+     * Constructs a failed Result with the given error.
+     * @param error The error code
+     */
     Result(DTLSError error) : data_(error) {}
     
-    // Copy and move constructors
+    /** Copy constructor. */
     Result(const Result&) = default;
+    
+    /** Move constructor. */
     Result(Result&&) = default;
+    
+    /** Copy assignment operator. */
     Result& operator=(const Result&) = default;
+    
+    /** Move assignment operator. */
     Result& operator=(Result&&) = default;
     
     // Success/error checking

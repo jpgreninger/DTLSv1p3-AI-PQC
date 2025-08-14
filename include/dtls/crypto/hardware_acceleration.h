@@ -12,7 +12,11 @@ namespace v13 {
 namespace crypto {
 
 /**
- * Hardware acceleration capabilities and detection
+ * Hardware acceleration capabilities enumeration.
+ * 
+ * Defines the various hardware acceleration capabilities that can be
+ * detected and utilized for cryptographic operations. Includes CPU
+ * instruction sets, dedicated crypto processors, and security hardware.
  */
 enum class HardwareCapability {
     // CPU instruction sets
@@ -82,17 +86,30 @@ struct HardwareAccelerationProfile {
 class DTLS_API HardwareAccelerationDetector {
 public:
     /**
-     * Detect all available hardware acceleration capabilities
+     * Detects all available hardware acceleration capabilities.
+     * 
+     * Performs comprehensive hardware detection including CPU instruction sets,
+     * dedicated crypto processors, and security hardware modules.
+     * 
+     * @return Hardware acceleration profile with detected capabilities or error details
      */
     static Result<HardwareAccelerationProfile> detect_capabilities();
     
     /**
-     * Check if a specific capability is available
+     * Checks if a specific hardware capability is available.
+     * 
+     * @param capability The hardware capability to check
+     * @return true if capability is available, false otherwise
      */
     static bool is_capability_available(HardwareCapability capability);
     
     /**
-     * Get the best available crypto provider based on hardware
+     * Gets the best available crypto provider based on detected hardware.
+     * 
+     * Analyzes detected hardware capabilities and recommends the optimal
+     * crypto provider for maximum performance.
+     * 
+     * @return Recommended provider name or error details
      */
     static Result<std::string> get_recommended_provider();
     

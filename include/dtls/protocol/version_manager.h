@@ -13,22 +13,21 @@ namespace dtls::v13::protocol {
 using GlobalProtocolVersion = dtls::v13::ProtocolVersion;
 
 /**
- * @brief Protocol Version Manager for DTLS v1.3
+ * Protocol Version Manager for DTLS v1.3.
  * 
- * @details Comprehensive version negotiation system handling DTLS protocol version 
- * negotiation, validation, and backward compatibility checks following @rfc{9147} specifications.
+ * Comprehensive version negotiation system handling DTLS protocol version 
+ * negotiation, validation, and backward compatibility checks following RFC 9147 specifications.
  * 
- * @par Key Features:
- * - 🔄 **Bidirectional Version Negotiation**: Client and server-side version handling
- * - 🛡️ **Security-First Design**: Built-in downgrade attack detection 
- * - 🔧 **Backward Compatible**: Seamless DTLS v1.2 fallback support
- * - ⚡ **High Performance**: Optimized for production environments
+ * Key Features:
+ * - Bidirectional Version Negotiation: Client and server-side version handling
+ * - Security-First Design: Built-in downgrade attack detection 
+ * - Backward Compatible: Seamless DTLS v1.2 fallback support
+ * - High Performance: Optimized for production environments
  * 
- * @security This class implements critical security measures including version downgrade
+ * @note This class implements critical security measures including version downgrade
  * attack detection as specified in RFC 9147 Section 4.1.3.
  * 
- * @example{
- * ```cpp
+ * @code
  * // Server-side version negotiation
  * VersionManager vm;
  * auto result = vm.negotiate_version_from_client_hello(client_hello);
@@ -36,8 +35,7 @@ using GlobalProtocolVersion = dtls::v13::ProtocolVersion;
  *     auto negotiated = result.value().negotiated_version;
  *     // Apply to ServerHello...
  * }
- * ```
- * }
+ * @endcode
  * 
  * @since DTLS v1.3 Implementation v1.0.0
  * @author DTLS v1.3 Implementation Team

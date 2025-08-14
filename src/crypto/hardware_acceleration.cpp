@@ -1,3 +1,14 @@
+/**
+ * @file hardware_acceleration.cpp
+ * Hardware acceleration detection and management implementation.
+ * 
+ * Provides cross-platform hardware acceleration detection including CPU
+ * instruction sets, dedicated crypto processors, and security hardware modules.
+ * 
+ * @author DTLS v1.3 Implementation Team
+ * @since v1.0.0
+ */
+
 #include "dtls/crypto/hardware_acceleration.h"
 #include "dtls/types.h"
 #include <algorithm>
