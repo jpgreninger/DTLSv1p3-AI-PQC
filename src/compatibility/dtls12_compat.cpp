@@ -4,9 +4,10 @@
  */
 
 #include "dtls/compatibility/dtls12_compat.h"
-#include "dtls/core/result.h"
+#include "dtls/result.h"
 #include "dtls/crypto/crypto_utils.h"
 #include "dtls/memory/buffer.h"
+#include "dtls/protocol/record.h"
 #include <algorithm>
 #include <unordered_map>
 #include <memory>
@@ -464,27 +465,27 @@ bool dtls12_cipher_provides_pfs(DTLS12CipherSuite suite) {
 
 std::string version_to_string(ProtocolVersion version) {
     switch (version) {
-        case protocol::ProtocolVersion::DTLS_1_0: return "DTLS 1.0";
-        case protocol::ProtocolVersion::DTLS_1_2: return "DTLS 1.2";
-        case protocol::ProtocolVersion::DTLS_1_3: return "DTLS 1.3";
+        case ProtocolVersion::DTLS_1_0: return "DTLS 1.0";
+        case ProtocolVersion::DTLS_1_2: return "DTLS 1.2";
+        case ProtocolVersion::DTLS_1_3: return "DTLS 1.3";
         default: return "Unknown";
     }
 }
 
 Result<void> validate_dtls12_context(const DTLS12CompatibilityContext& context) {
     if (context.allowed_dtls12_ciphers.empty()) {
-        return make_error_void(DTLSError::INVALID_CONFIGURATION);
+        return make_error<void>(DTLSError::INVALID_CONFIGURATION);
     }
     
     if (context.max_dtls12_connections == 0) {
-        return make_error_void(DTLSError::INVALID_CONFIGURATION);
+        return make_error<void>(DTLSError::INVALID_CONFIGURATION);
     }
     
     if (context.dtls12_session_timeout.count() <= 0) {
-        return make_error_void(DTLSError::INVALID_CONFIGURATION);
+        return make_error<void>(DTLSError::INVALID_CONFIGURATION);
     }
     
-    return make_success();
+    return make_result();
 }
 
 } // namespace utils

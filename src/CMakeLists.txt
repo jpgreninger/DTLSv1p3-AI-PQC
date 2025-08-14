@@ -44,6 +44,7 @@ set(DTLS_CRYPTO_SOURCES
     crypto/crypto_system.cpp
     crypto/openssl_provider.cpp
     crypto/operations_impl.cpp
+    crypto/hardware_acceleration.cpp
     # crypto/advanced_cipher_suites.cpp  # Has compilation issues - TBD
     # crypto/key_manager.cpp  # TBD
 )
@@ -79,9 +80,9 @@ set(DTLS_SECURITY_SOURCES
     security/resource_manager.cpp
 )
 
-# set(DTLS_COMPATIBILITY_SOURCES
-#     compatibility/dtls12_compat.cpp
-# )
+set(DTLS_COMPATIBILITY_SOURCES
+    compatibility/compatibility_utils.cpp
+)
 
 # Conditionally add SystemC timing adapter
 if(DTLS_BUILD_SYSTEMC)
@@ -100,7 +101,7 @@ set(DTLS_ALL_SOURCES
     ${DTLS_CONNECTION_SOURCES}
     # ${DTLS_MONITORING_SOURCES}      # Temporarily disabled
     ${DTLS_SECURITY_SOURCES}        # Rate limiting and DoS protection
-    # ${DTLS_COMPATIBILITY_SOURCES}   # Temporarily disabled
+    ${DTLS_COMPATIBILITY_SOURCES}   # Minimal DTLS 1.2 compatibility utilities
 )
 
 # Create library

@@ -28,7 +28,7 @@ protected:
     ClientHello create_test_client_hello(GlobalProtocolVersion legacy_version,
                                        const std::vector<GlobalProtocolVersion>& supported_versions = {}) {
         ClientHello client_hello;
-        client_hello.set_legacy_version(legacy_version);
+        client_hello.set_legacy_version(static_cast<dtls::v13::protocol::ProtocolVersion>(legacy_version));
         
         // Add random data
         std::array<uint8_t, 32> random;
@@ -56,7 +56,7 @@ protected:
     ServerHello create_test_server_hello(GlobalProtocolVersion legacy_version,
                                        const std::vector<GlobalProtocolVersion>& supported_versions = {}) {
         ServerHello server_hello;
-        server_hello.set_legacy_version(legacy_version);
+        server_hello.set_legacy_version(static_cast<dtls::v13::protocol::ProtocolVersion>(legacy_version));
         
         // Add random data
         std::array<uint8_t, 32> random;
@@ -124,13 +124,13 @@ TEST_F(VersionManagerTest, PrepareClientHello) {
     EXPECT_TRUE(result.is_success());
     
     // Should set legacy_version to DTLS 1.2
-    EXPECT_EQ(client_hello.legacy_version(), DTLS_V12);
+    EXPECT_EQ(client_hello.legacy_version(), static_cast<dtls::v13::protocol::ProtocolVersion>(DTLS_V12));
     
     // Should add supported_versions extension
-    EXPECT_TRUE(client_hello.has_extension(ExtensionType::SUPPORTED_VERSIONS));
+    EXPECT_TRUE(client_hello.has_extension(dtls::v13::protocol::ExtensionType::SUPPORTED_VERSIONS));
     
     // Verify supported versions in extension
-    auto ext = client_hello.get_extension(ExtensionType::SUPPORTED_VERSIONS);
+    auto ext = client_hello.get_extension(dtls::v13::protocol::ExtensionType::SUPPORTED_VERSIONS);
     ASSERT_TRUE(ext.has_value());
     
     auto parsed_versions = version_utils::parse_supported_versions_extension(ext.value());
@@ -197,12 +197,12 @@ TEST_F(VersionManagerTest, PrepareServerHello) {
     EXPECT_TRUE(result.is_success());
     
     // Should set legacy_version to DTLS 1.2
-    EXPECT_EQ(server_hello.legacy_version(), DTLS_V12);
+    EXPECT_EQ(server_hello.legacy_version(), static_cast<dtls::v13::protocol::ProtocolVersion>(DTLS_V12));
     
     // Should add supported_versions extension with DTLS 1.3
-    EXPECT_TRUE(server_hello.has_extension(ExtensionType::SUPPORTED_VERSIONS));
+    EXPECT_TRUE(server_hello.has_extension(dtls::v13::protocol::ExtensionType::SUPPORTED_VERSIONS));
     
-    auto ext = server_hello.get_extension(ExtensionType::SUPPORTED_VERSIONS);
+    auto ext = server_hello.get_extension(dtls::v13::protocol::ExtensionType::SUPPORTED_VERSIONS);
     ASSERT_TRUE(ext.has_value());
     
     auto parsed_versions = version_utils::parse_supported_versions_extension(ext.value());
@@ -218,7 +218,7 @@ TEST_F(VersionManagerTest, PrepareServerHello) {
     EXPECT_TRUE(result.is_success());
     
     // Should set legacy_version to actual version for DTLS 1.2
-    EXPECT_EQ(server_hello_v12.legacy_version(), DTLS_V12);
+    EXPECT_EQ(server_hello_v12.legacy_version(), static_cast<dtls::v13::protocol::ProtocolVersion>(DTLS_V12));
 }
 
 TEST_F(VersionManagerTest, ValidateServerHelloVersion) {
@@ -325,8 +325,8 @@ TEST_F(VersionManagerTest, ApplyVersionToServerHello) {
     EXPECT_TRUE(result.is_success());
     
     // Verify server hello has correct version setup
-    EXPECT_EQ(server_hello.legacy_version(), DTLS_V12);
-    EXPECT_TRUE(server_hello.has_extension(ExtensionType::SUPPORTED_VERSIONS));
+    EXPECT_EQ(server_hello.legacy_version(), static_cast<dtls::v13::protocol::ProtocolVersion>(DTLS_V12));
+    EXPECT_TRUE(server_hello.has_extension(dtls::v13::protocol::ExtensionType::SUPPORTED_VERSIONS));
 }
 
 TEST_F(VersionManagerTest, ValidateHandshakeVersionConsistency) {

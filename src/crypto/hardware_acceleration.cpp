@@ -6,6 +6,7 @@
 #include <sstream>
 #include <thread>
 #include <unordered_set>
+#include <cstring>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -191,41 +192,9 @@ bool detect_tpm_availability() {
 #endif
 }
 
-bool detect_hardware_rng() {
-#if defined(__x86_64__) || defined(__i386__)
-    uint32_t eax, ebx, ecx, edx;
-    get_cpuid(1, 0, &eax, &ebx, &ecx, &edx);
-    return (ecx & (1 << 30)) != 0; // RDRAND
-#elif defined(__linux__)
-    std::ifstream hwrng("/dev/hwrng");
-    return hwrng.good();
-#else
-    return false;
-#endif
-}
+// Moved to class static method
 
-std::string get_platform_info() {
-#ifdef __linux__
-    struct utsname buf;
-    if (uname(&buf) == 0) {
-        return std::string(buf.sysname) + " " + buf.release + " " + buf.machine;
-    }
-#elif defined(_WIN32)
-    OSVERSIONINFOA version_info = {0};
-    version_info.dwOSVersionInfoSize = sizeof(version_info);
-    if (GetVersionExA(&version_info)) {
-        std::ostringstream oss;
-        oss << "Windows " << version_info.dwMajorVersion << "." << version_info.dwMinorVersion;
-        return oss.str();
-    }
-#elif defined(__APPLE__)
-    struct utsname buf;
-    if (uname(&buf) == 0) {
-        return std::string(buf.sysname) + " " + buf.release;
-    }
-#endif
-    return "Unknown Platform";
-}
+// Moved to class static method
 
 float benchmark_aes_performance() {
     // Simple AES performance benchmark
@@ -278,8 +247,8 @@ Result<HardwareAccelerationProfile> HardwareAccelerationDetector::detect_capabil
 #endif
         
         profile.cpu_model = cpu_info.brand;
-        profile.platform_name = get_platform_info();
-        profile.os_version = get_platform_info();
+        profile.platform_name = HardwareAccelerationDetector::get_platform_info();
+        profile.os_version = HardwareAccelerationDetector::get_platform_info();
         
         // Convert CPU capabilities to hardware capability statuses
         for (const auto& cap : cpu_info.capabilities) {
@@ -355,7 +324,7 @@ Result<HardwareAccelerationProfile> HardwareAccelerationDetector::detect_capabil
         }
         
         // Check for hardware RNG
-        if (detect_hardware_rng()) {
+        if (HardwareAccelerationDetector::detect_hardware_rng()) {
             HardwareCapabilityStatus rng_status;
             rng_status.capability = HardwareCapability::RNG_HARDWARE;
             rng_status.available = true;
@@ -395,10 +364,10 @@ Result<HardwareAccelerationProfile> HardwareAccelerationDetector::detect_capabil
         
         profile.recommendations = recommendations.str();
         
-        return Result<HardwareAccelerationProfile>::success(std::move(profile));
+        return make_result(std::move(profile));
         
     } catch (const std::exception& e) {
-        return Result<HardwareAccelerationProfile>::error(DTLSError::INTERNAL_ERROR);
+        return make_error<HardwareAccelerationProfile>(DTLSError::INTERNAL_ERROR);
     }
 }
 
@@ -418,7 +387,7 @@ bool HardwareAccelerationDetector::is_capability_available(HardwareCapability ca
 Result<std::string> HardwareAccelerationDetector::get_recommended_provider() {
     auto detection_result = detect_capabilities();
     if (!detection_result) {
-        return Result<std::string>::error(DTLSError::INTERNAL_ERROR);
+        return make_error<std::string>(DTLSError::INTERNAL_ERROR);
     }
     
     const auto& profile = detection_result.value();
@@ -435,43 +404,43 @@ Result<std::string> HardwareAccelerationDetector::get_recommended_provider() {
                                      });
     
     if (has_aes_ni || has_arm_crypto) {
-        return Result<std::string>::success("openssl");
+        return make_result<std::string>("openssl");
     }
     
     // Fallback to OpenSSL as default
-    return Result<std::string>::success("openssl");
+    return make_result<std::string>("openssl");
 }
 
 Result<void> HardwareAccelerationDetector::enable_capability(HardwareCapability capability) {
     // This would involve platform-specific code to enable/disable CPU features
     // For now, return success as most features are enabled by default
     (void)capability;
-    return Result<void>::success();
+    return make_result();
 }
 
 Result<void> HardwareAccelerationDetector::disable_capability(HardwareCapability capability) {
     // Platform-specific implementation would go here
     (void)capability;
-    return Result<void>::success();
+    return make_result();
 }
 
 Result<float> HardwareAccelerationDetector::benchmark_capability(HardwareCapability capability) {
     switch (capability) {
         case HardwareCapability::AES_NI:
         case HardwareCapability::ARM_AES:
-            return Result<float>::success(benchmark_aes_performance());
+            return make_result(benchmark_aes_performance());
         case HardwareCapability::ARM_SHA1:
         case HardwareCapability::ARM_SHA2:
-            return Result<float>::success(benchmark_hash_performance());
+            return make_result(benchmark_hash_performance());
         default:
-            return Result<float>::success(1.0f);
+            return make_result(1.0f);
     }
 }
 
 Result<std::vector<std::string>> HardwareAccelerationDetector::get_optimization_recommendations() {
     auto detection_result = detect_capabilities();
     if (!detection_result) {
-        return Result<std::vector<std::string>>::error(DTLSError::INTERNAL_ERROR);
+        return make_error<std::vector<std::string>>(DTLSError::INTERNAL_ERROR);
     }
     
     const auto& profile = detection_result.value();
@@ -523,7 +492,44 @@ Result<std::vector<std::string>> HardwareAccelerationDetector::get_optimization_
         recommendations.push_back("Consider using ChaCha20-Poly1305 for better software performance");
     }
     
-    return Result<std::vector<std::string>>::success(std::move(recommendations));
+    return make_result(std::move(recommendations));
+}
+
+// Private static methods implementations
+bool HardwareAccelerationDetector::detect_hardware_rng() {
+#if defined(__x86_64__) || defined(__i386__)
+    uint32_t eax, ebx, ecx, edx;
+    get_cpuid(1, 0, &eax, &ebx, &ecx, &edx);
+    return (ecx & (1 << 30)) != 0; // RDRAND
+#elif defined(__linux__)
+    std::ifstream hwrng("/dev/hwrng");
+    return hwrng.good();
+#else
+    return false;
+#endif
+}
+
+std::string HardwareAccelerationDetector::get_platform_info() {
+#ifdef __linux__
+    struct utsname buf;
+    if (uname(&buf) == 0) {
+        return std::string(buf.sysname) + " " + buf.release + " " + buf.machine;
+    }
+#elif defined(_WIN32)
+    OSVERSIONINFOA version_info = {0};
+    version_info.dwOSVersionInfoSize = sizeof(version_info);
+    if (GetVersionExA(&version_info)) {
+        std::ostringstream oss;
+        oss << "Windows " << version_info.dwMajorVersion << "." << version_info.dwMinorVersion;
+        return oss.str();
+    }
+#elif defined(__APPLE__)
+    struct utsname buf;
+    if (uname(&buf) == 0) {
+        return std::string(buf.sysname) + " " + buf.release;
+    }
+#endif
+    return "Unknown Platform";
 }
 
 // HardwareAcceleratedProviderSelector implementation
@@ -533,7 +539,7 @@ Result<std::string> HardwareAcceleratedProviderSelector::select_best_provider(
     const HardwareAccelerationProfile& hw_profile) {
     
     if (available_providers.empty()) {
-        return Result<std::string>::error(DTLSError::INVALID_PARAMETER);
+        return make_error<std::string>(DTLSError::INVALID_PARAMETER);
     }
     
     std::string best_provider = available_providers[0];
@@ -547,7 +553,7 @@ Result<std::string> HardwareAcceleratedProviderSelector::select_best_provider(
         }
     }
     
-    return Result<std::string>::success(best_provider);
+    return make_result(best_provider);
 }
 
 Result<std::vector<std::pair<std::string, std::string>>> 
@@ -565,7 +571,7 @@ HardwareAcceleratedProviderSelector::get_provider_acceleration_settings(const st
         settings.emplace_back("use_avx2", "true");
     }
     
-    return Result<std::vector<std::pair<std::string, std::string>>>::success(std::move(settings));
+    return make_result(std::move(settings));
 }
 
 Result<void> HardwareAcceleratedProviderSelector::optimize_provider_for_hardware(
@@ -577,7 +583,7 @@ Result<void> HardwareAcceleratedProviderSelector::optimize_provider_for_hardware
     (void)provider_name;
     (void)hw_profile;
     
-    return Result<void>::success();
+    return make_result();
 }
 
 float HardwareAcceleratedProviderSelector::score_provider_for_hardware(
@@ -667,7 +673,7 @@ std::string get_acceleration_summary() {
 Result<std::vector<std::pair<HardwareCapability, float>>> benchmark_all_capabilities() {
     auto detection_result = HardwareAccelerationDetector::detect_capabilities();
     if (!detection_result) {
-        return Result<std::vector<std::pair<HardwareCapability, float>>>::error(DTLSError::INTERNAL_ERROR);
+        return make_error<std::vector<std::pair<HardwareCapability, float>>>(DTLSError::INTERNAL_ERROR);
     }
     
     const auto& profile = detection_result.value();
@@ -682,18 +688,18 @@ Result<std::vector<std::pair<HardwareCapability, float>>> benchmark_all_capabili
         }
     }
     
-    return Result<std::vector<std::pair<HardwareCapability, float>>>::success(std::move(benchmarks));
+    return make_result(std::move(benchmarks));
 }
 
 Result<std::string> generate_optimization_report() {
     auto detection_result = HardwareAccelerationDetector::detect_capabilities();
     if (!detection_result) {
-        return Result<std::string>::error(DTLSError::INTERNAL_ERROR);
+        return make_error<std::string>(DTLSError::INTERNAL_ERROR);
     }
     
     auto recommendations_result = HardwareAccelerationDetector::get_optimization_recommendations();
     if (!recommendations_result) {
-        return Result<std::string>::error(DTLSError::INTERNAL_ERROR);
+        return make_error<std::string>(DTLSError::INTERNAL_ERROR);
     }
     
     const auto& profile = detection_result.value();
@@ -711,7 +717,7 @@ Result<std::string> generate_optimization_report() {
     
     report << "\nExpected Performance Improvement: " << profile.overall_performance_score << "x\n";
     
-    return Result<std::string>::success(report.str());
+    return make_result(report.str());
 }
 
 bool supports_secure_boot() {
@@ -724,7 +730,7 @@ bool supports_secure_boot() {
 }
 
 bool has_hardware_entropy() {
-    return detect_hardware_rng();
+    return HardwareAccelerationDetector::detect_hardware_rng();
 }
 
 std::vector<CipherSuite> get_hardware_optimized_cipher_suites() {

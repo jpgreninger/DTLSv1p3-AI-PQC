@@ -3,6 +3,7 @@
 
 #include <dtls/config.h>
 #include <dtls/result.h>
+#include <dtls/types.h>
 #include <vector>
 #include <string>
 
@@ -115,14 +116,22 @@ public:
      */
     static Result<std::vector<std::string>> get_optimization_recommendations();
 
+    /**
+     * Check if hardware RNG is available
+     */
+    static bool detect_hardware_rng();
+    
+    /**
+     * Get platform information string
+     */
+    static std::string get_platform_info();
+
 private:
     static bool detect_aes_ni();
     static bool detect_avx();
     static bool detect_arm_crypto();
     static bool detect_tpm();
-    static bool detect_hardware_rng();
     static std::string get_cpu_model();
-    static std::string get_platform_info();
 };
 
 /**
