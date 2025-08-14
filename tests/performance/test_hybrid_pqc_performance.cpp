@@ -8,7 +8,7 @@
  */
 
 #include <gtest/gtest.h>
-#include "../benchmark_framework.h"
+#include "benchmark_framework.h"
 #include <dtls/crypto/provider.h>
 #include <dtls/crypto/provider_factory.h>
 #include <dtls/types.h>

@@ -89,7 +89,17 @@ enum class NamedGroup : uint16_t {
     FFDHE3072 = 0x0101,
     FFDHE4096 = 0x0102,
     FFDHE6144 = 0x0103,
-    FFDHE8192 = 0x0104
+    FFDHE8192 = 0x0104,
+    
+    // Pure Post-Quantum Groups (draft-connolly-tls-mlkem-key-agreement-05)
+    MLKEM512 = 0x0200,              ///< ML-KEM-512 pure post-quantum group
+    MLKEM768 = 0x0201,              ///< ML-KEM-768 pure post-quantum group
+    MLKEM1024 = 0x0202,             ///< ML-KEM-1024 pure post-quantum group
+    
+    // Hybrid Post-Quantum + Classical Groups (draft-kwiatkowski-tls-ecdhe-mlkem-03)
+    ECDHE_P256_MLKEM512 = 0x1140,   ///< P-256 ECDHE + ML-KEM-512 hybrid group
+    ECDHE_P384_MLKEM768 = 0x1141,   ///< P-384 ECDHE + ML-KEM-768 hybrid group  
+    ECDHE_P521_MLKEM1024 = 0x1142   ///< P-521 ECDHE + ML-KEM-1024 hybrid group
 };
 
 enum class SignatureScheme : uint16_t {

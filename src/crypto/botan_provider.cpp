@@ -6,6 +6,7 @@
 #include <random>
 #include <thread>
 #include <functional>
+#include <algorithm>
 
 using namespace dtls::v13::crypto::utils;
 
@@ -1529,8 +1530,7 @@ dtls::v13::crypto::BotanProvider::generate_key_pair(NamedGroup group) {
             case dtls::v13::NamedGroup::ECDHE_P384_MLKEM768:
             case dtls::v13::NamedGroup::ECDHE_P521_MLKEM1024: {
                 using ReturnType = std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>;
-                return Result<ReturnType>(DTLSError::OPERATION_NOT_SUPPORTED,
-                    "Hybrid PQC groups require separate key generation for classical and post-quantum components");
+                return Result<ReturnType>(DTLSError::OPERATION_NOT_SUPPORTED);
             }
                 
             default:
@@ -2833,7 +2833,7 @@ Result<float> dtls::v13::crypto::BotanProvider::benchmark_hardware_operation(con
 
 Result<std::pair<std::vector<uint8_t>, std::vector<uint8_t>>> 
 dtls::v13::crypto::BotanProvider::mlkem_generate_keypair(const MLKEMKeyGenParams& params) {
-    if (!initialized_) {
+    if (!pimpl_->initialized_) {
         return Result<std::pair<std::vector<uint8_t>, std::vector<uint8_t>>>(DTLSError::NOT_INITIALIZED);
     }
     
@@ -2845,9 +2845,12 @@ dtls::v13::crypto::BotanProvider::mlkem_generate_keypair(const MLKEMKeyGenParams
     
     // Generate random keys (placeholder implementation)
     try {
-        Botan::AutoSeeded_RNG rng;
-        rng.randomize(public_key.data(), public_key.size());
-        rng.randomize(private_key.data(), private_key.size());
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<uint8_t> dist(0, 255);
+        
+        std::generate(public_key.begin(), public_key.end(), [&]() { return dist(gen); });
+        std::generate(private_key.begin(), private_key.end(), [&]() { return dist(gen); });
     } catch (const std::exception& e) {
         return Result<std::pair<std::vector<uint8_t>, std::vector<uint8_t>>>(DTLSError::RANDOM_GENERATION_FAILED);
     }
@@ -2859,7 +2862,7 @@ dtls::v13::crypto::BotanProvider::mlkem_generate_keypair(const MLKEMKeyGenParams
 }
 
 Result<MLKEMEncapResult> dtls::v13::crypto::BotanProvider::mlkem_encapsulate(const MLKEMEncapParams& params) {
-    if (!initialized_) {
+    if (!pimpl_->initialized_) {
         return Result<MLKEMEncapResult>(DTLSError::NOT_INITIALIZED);
     }
     
@@ -2878,9 +2881,12 @@ Result<MLKEMEncapResult> dtls::v13::crypto::BotanProvider::mlkem_encapsulate(con
     result.shared_secret.resize(sizes.shared_secret_bytes);
     
     try {
-        Botan::AutoSeeded_RNG rng;
-        rng.randomize(result.ciphertext.data(), result.ciphertext.size());
-        rng.randomize(result.shared_secret.data(), result.shared_secret.size());
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<uint8_t> dist(0, 255);
+        
+        std::generate(result.ciphertext.begin(), result.ciphertext.end(), [&]() { return dist(gen); });
+        std::generate(result.shared_secret.begin(), result.shared_secret.end(), [&]() { return dist(gen); });
     } catch (const std::exception& e) {
         return Result<MLKEMEncapResult>(DTLSError::RANDOM_GENERATION_FAILED);
     }
@@ -2890,7 +2896,7 @@ Result<MLKEMEncapResult> dtls::v13::crypto::BotanProvider::mlkem_encapsulate(con
 }
 
 Result<std::vector<uint8_t>> dtls::v13::crypto::BotanProvider::mlkem_decapsulate(const MLKEMDecapParams& params) {
-    if (!initialized_) {
+    if (!pimpl_->initialized_) {
         return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
     }
     
@@ -2908,8 +2914,11 @@ Result<std::vector<uint8_t>> dtls::v13::crypto::BotanProvider::mlkem_decapsulate
     std::vector<uint8_t> shared_secret(sizes.shared_secret_bytes);
     
     try {
-        Botan::AutoSeeded_RNG rng;
-        rng.randomize(shared_secret.data(), shared_secret.size());
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<uint8_t> dist(0, 255);
+        
+        std::generate(shared_secret.begin(), shared_secret.end(), [&]() { return dist(gen); });
     } catch (const std::exception& e) {
         return Result<std::vector<uint8_t>>(DTLSError::RANDOM_GENERATION_FAILED);
     }
@@ -2920,7 +2929,7 @@ Result<std::vector<uint8_t>> dtls::v13::crypto::BotanProvider::mlkem_decapsulate
 
 // Hybrid Key Exchange Implementation for Botan
 Result<HybridKeyExchangeResult> dtls::v13::crypto::BotanProvider::perform_hybrid_key_exchange(const HybridKeyExchangeParams& params) {
-    if (!initialized_) {
+    if (!pimpl_->initialized_) {
         return Result<HybridKeyExchangeResult>(DTLSError::NOT_INITIALIZED);
     }
     
@@ -2993,6 +3002,52 @@ Result<HybridKeyExchangeResult> dtls::v13::crypto::BotanProvider::perform_hybrid
     result.combined_shared_secret = *combined_result;
     
     return Result<HybridKeyExchangeResult>(std::move(result));
+}
+
+// Pure ML-KEM Key Exchange implementation (draft-connolly-tls-mlkem-key-agreement-05)
+Result<PureMLKEMKeyExchangeResult> dtls::v13::crypto::BotanProvider::perform_pure_mlkem_key_exchange(const PureMLKEMKeyExchangeParams& params) {
+    if (!pimpl_->initialized_) {
+        return Result<PureMLKEMKeyExchangeResult>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    if (!supports_pure_mlkem_group(params.mlkem_group)) {
+        return Result<PureMLKEMKeyExchangeResult>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+    
+    PureMLKEMKeyExchangeResult result;
+    
+    if (params.is_encapsulation) {
+        // Client side: perform ML-KEM encapsulation
+        MLKEMEncapParams encap_params;
+        encap_params.parameter_set = pqc_utils::get_pure_mlkem_parameter_set(params.mlkem_group);
+        encap_params.public_key = params.peer_public_key;
+        if (!params.encap_randomness.empty()) {
+            encap_params.randomness = params.encap_randomness;
+        }
+        
+        auto encap_result = mlkem_encapsulate(encap_params);
+        if (!encap_result) {
+            return Result<PureMLKEMKeyExchangeResult>(encap_result.error());
+        }
+        
+        result.ciphertext = encap_result->ciphertext;
+        result.shared_secret = encap_result->shared_secret;
+    } else {
+        // Server side: perform ML-KEM decapsulation
+        MLKEMDecapParams decap_params;
+        decap_params.parameter_set = pqc_utils::get_pure_mlkem_parameter_set(params.mlkem_group);
+        decap_params.private_key = params.private_key;
+        decap_params.ciphertext = params.peer_public_key; // This is actually the ciphertext in decap mode
+        
+        auto decap_result = mlkem_decapsulate(decap_params);
+        if (!decap_result) {
+            return Result<PureMLKEMKeyExchangeResult>(decap_result.error());
+        }
+        
+        result.shared_secret = *decap_result;
+    }
+    
+    return Result<PureMLKEMKeyExchangeResult>(std::move(result));
 }
 
 } // namespace crypto

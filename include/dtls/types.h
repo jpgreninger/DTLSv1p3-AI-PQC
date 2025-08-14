@@ -174,6 +174,11 @@ enum class NamedGroup : uint16_t {
     FFDHE6144 = 259,
     FFDHE8192 = 260,
     
+    // Pure Post-Quantum Groups (draft-connolly-tls-mlkem-key-agreement-05)
+    MLKEM512 = 0x0200,              ///< ML-KEM-512 pure post-quantum group
+    MLKEM768 = 0x0201,              ///< ML-KEM-768 pure post-quantum group
+    MLKEM1024 = 0x0202,             ///< ML-KEM-1024 pure post-quantum group
+    
     // Hybrid Post-Quantum + Classical Groups (draft-kwiatkowski-tls-ecdhe-mlkem-03)
     ECDHE_P256_MLKEM512 = 0x1140,   ///< P-256 ECDHE + ML-KEM-512 hybrid group
     ECDHE_P384_MLKEM768 = 0x1141,   ///< P-384 ECDHE + ML-KEM-768 hybrid group  

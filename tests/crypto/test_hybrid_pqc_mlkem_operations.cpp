@@ -340,15 +340,15 @@ TEST_F(MLKEMOperationsTest, InvalidKeySizes) {
         decap_params.private_key = std::vector<uint8_t>(100, 0x42); // Wrong size
         decap_params.ciphertext = std::vector<uint8_t>(768, 0x42);
         
-        result = provider->mlkem_decapsulate(decap_params);
-        EXPECT_FALSE(result) << "Should fail with incorrect private key size";
+        auto decap_result = provider->mlkem_decapsulate(decap_params);
+        EXPECT_FALSE(decap_result) << "Should fail with incorrect private key size";
         
         // Test decapsulation with wrong ciphertext size
         decap_params.private_key = std::vector<uint8_t>(1632, 0x42); // Correct size
         decap_params.ciphertext = std::vector<uint8_t>(100, 0x42); // Wrong size
         
-        result = provider->mlkem_decapsulate(decap_params);
-        EXPECT_FALSE(result) << "Should fail with incorrect ciphertext size";
+        decap_result = provider->mlkem_decapsulate(decap_params);
+        EXPECT_FALSE(decap_result) << "Should fail with incorrect ciphertext size";
     }
 }
 

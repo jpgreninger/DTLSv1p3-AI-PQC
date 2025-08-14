@@ -142,6 +142,22 @@ struct MLKEMEncapResult {
     std::vector<uint8_t> shared_secret;      ///< Shared secret (32 bytes)
 };
 
+// Pure ML-KEM key exchange parameters (draft-connolly-tls-mlkem-key-agreement-05)
+struct PureMLKEMKeyExchangeParams {
+    NamedGroup mlkem_group{NamedGroup::MLKEM512};
+    std::vector<uint8_t> peer_public_key;           ///< ML-KEM public key from peer
+    std::vector<uint8_t> private_key;               ///< Our ML-KEM private key (for decap)
+    bool is_encapsulation{true};                    ///< true=encap (client), false=decap (server)
+    std::vector<uint8_t> encap_randomness;          ///< Optional randomness for encapsulation
+};
+
+// Pure ML-KEM key exchange result
+struct PureMLKEMKeyExchangeResult {
+    std::vector<uint8_t> public_key;                ///< Generated ML-KEM public key (if applicable)
+    std::vector<uint8_t> ciphertext;                ///< ML-KEM ciphertext (if encap)
+    std::vector<uint8_t> shared_secret;             ///< ML-KEM shared secret (32 bytes)
+};
+
 // Hybrid key exchange parameters (combining classical + PQ)
 struct HybridKeyExchangeParams {
     NamedGroup hybrid_group{NamedGroup::ECDHE_P256_MLKEM512};
@@ -405,6 +421,10 @@ public:
     virtual Result<std::vector<uint8_t>> 
         mlkem_decapsulate(const MLKEMDecapParams& params) = 0;
     
+    // Pure ML-KEM Key Exchange (draft-connolly-tls-mlkem-key-agreement-05)
+    virtual Result<PureMLKEMKeyExchangeResult>
+        perform_pure_mlkem_key_exchange(const PureMLKEMKeyExchangeParams& params) = 0;
+    
     // Hybrid Post-Quantum + Classical Key Exchange (draft-kwiatkowski-tls-ecdhe-mlkem-03)
     virtual Result<HybridKeyExchangeResult> 
         perform_hybrid_key_exchange(const HybridKeyExchangeParams& params) = 0;
@@ -436,6 +456,17 @@ public:
     virtual bool supports_named_group(NamedGroup group) const = 0;
     virtual bool supports_signature_scheme(SignatureScheme scheme) const = 0;
     virtual bool supports_hash_algorithm(HashAlgorithm hash) const = 0;
+    
+    // Pure ML-KEM utility functions
+    virtual bool supports_pure_mlkem_group(NamedGroup group) const {
+        return group == NamedGroup::MLKEM512 ||
+               group == NamedGroup::MLKEM768 ||
+               group == NamedGroup::MLKEM1024;
+    }
+    
+    virtual bool is_pure_mlkem_group(NamedGroup group) const {
+        return supports_pure_mlkem_group(group);
+    }
     
     // Hybrid PQC utility functions
     virtual bool supports_hybrid_group(NamedGroup group) const {
@@ -641,7 +672,7 @@ struct ProviderSelection {
     size_t max_consecutive_failures{3};
 };
 
-// Utility functions for hybrid PQC operations
+// Legacy namespace for hybrid PQC operations (for backward compatibility)
 namespace hybrid_pqc {
 
 /**
@@ -701,6 +732,22 @@ inline bool is_hybrid_pqc_group(NamedGroup group) {
 }
 
 /**
+ * Check if a named group is a pure ML-KEM group.
+ */
+inline bool is_pure_mlkem_group_internal(NamedGroup group) {
+    return group == NamedGroup::MLKEM512 ||
+           group == NamedGroup::MLKEM768 ||
+           group == NamedGroup::MLKEM1024;
+}
+
+/**
+ * Check if a named group is any kind of post-quantum group (pure ML-KEM or hybrid).
+ */
+inline bool is_pqc_group(NamedGroup group) {
+    return is_pure_mlkem_group_internal(group) || is_hybrid_pqc_group(group);
+}
+
+/**
  * Get the expected hybrid key share size for client (public keys only).
  */
 inline size_t get_hybrid_client_keyshare_size(NamedGroup hybrid_group) {
@@ -735,6 +782,62 @@ inline size_t get_hybrid_server_keyshare_size(NamedGroup hybrid_group) {
 }
 
 } // namespace hybrid_pqc
+
+// Utility functions for pure ML-KEM operations
+namespace pqc_utils {
+
+/**
+ * Check if a named group is a pure ML-KEM group.
+ */
+inline bool is_pure_mlkem_group(NamedGroup group) {
+    return hybrid_pqc::is_pure_mlkem_group_internal(group);
+}
+
+/**
+ * Get the ML-KEM parameter set for a pure ML-KEM named group.
+ */
+inline MLKEMParameterSet get_pure_mlkem_parameter_set(NamedGroup group) {
+    switch (group) {
+        case NamedGroup::MLKEM512: return MLKEMParameterSet::MLKEM512;
+        case NamedGroup::MLKEM768: return MLKEMParameterSet::MLKEM768;
+        case NamedGroup::MLKEM1024: return MLKEMParameterSet::MLKEM1024;
+        default: return MLKEMParameterSet::MLKEM512; // fallback
+    }
+}
+
+/**
+ * Get the expected key share size for pure ML-KEM (public key for client, ciphertext for server).
+ */
+inline size_t get_pure_mlkem_client_keyshare_size(NamedGroup group) {
+    if (!is_pure_mlkem_group(group)) return 0;
+    auto mlkem_sizes = hybrid_pqc::get_mlkem_sizes(get_pure_mlkem_parameter_set(group));
+    return mlkem_sizes.public_key_bytes;
+}
+
+inline size_t get_pure_mlkem_server_keyshare_size(NamedGroup group) {
+    if (!is_pure_mlkem_group(group)) return 0;
+    auto mlkem_sizes = hybrid_pqc::get_mlkem_sizes(get_pure_mlkem_parameter_set(group));
+    return mlkem_sizes.ciphertext_bytes;
+}
+
+/**
+ * Validate ML-KEM key sizes for pure ML-KEM groups.
+ */
+inline bool validate_pure_mlkem_public_key_size(NamedGroup group, size_t key_size) {
+    return is_pure_mlkem_group(group) && 
+           key_size == get_pure_mlkem_client_keyshare_size(group);
+}
+
+inline bool validate_pure_mlkem_ciphertext_size(NamedGroup group, size_t ciphertext_size) {
+    return is_pure_mlkem_group(group) && 
+           ciphertext_size == get_pure_mlkem_server_keyshare_size(group);
+}
+
+inline bool validate_pure_mlkem_shared_secret_size(size_t secret_size) {
+    return secret_size == 32; // ML-KEM always produces 32-byte shared secrets
+}
+
+} // namespace pqc_utils
 
 
 } // namespace crypto

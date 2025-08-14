@@ -2093,8 +2093,7 @@ OpenSSLProvider::generate_key_pair(NamedGroup group) {
         case NamedGroup::ECDHE_P384_MLKEM768:
         case NamedGroup::ECDHE_P521_MLKEM1024: {
             using ReturnType = std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>;
-            return Result<ReturnType>(DTLSError::OPERATION_NOT_SUPPORTED, 
-                "Hybrid PQC groups require separate key generation for classical and post-quantum components");
+            return Result<ReturnType>(DTLSError::OPERATION_NOT_SUPPORTED);
         }
             
         default:
@@ -3310,6 +3309,48 @@ Result<HybridKeyExchangeResult> OpenSSLProvider::perform_hybrid_key_exchange(con
     result.combined_shared_secret = *combined_result;
     
     return Result<HybridKeyExchangeResult>(std::move(result));
+}
+
+// Pure ML-KEM Key Exchange implementation (draft-connolly-tls-mlkem-key-agreement-05)
+Result<PureMLKEMKeyExchangeResult> dtls::v13::crypto::OpenSSLProvider::perform_pure_mlkem_key_exchange(const PureMLKEMKeyExchangeParams& params) {
+    if (!supports_pure_mlkem_group(params.mlkem_group)) {
+        return Result<PureMLKEMKeyExchangeResult>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+    
+    PureMLKEMKeyExchangeResult result;
+    
+    if (params.is_encapsulation) {
+        // Client side: perform ML-KEM encapsulation
+        MLKEMEncapParams encap_params;
+        encap_params.parameter_set = pqc_utils::get_pure_mlkem_parameter_set(params.mlkem_group);
+        encap_params.public_key = params.peer_public_key;
+        if (!params.encap_randomness.empty()) {
+            encap_params.randomness = params.encap_randomness;
+        }
+        
+        auto encap_result = mlkem_encapsulate(encap_params);
+        if (!encap_result) {
+            return Result<PureMLKEMKeyExchangeResult>(encap_result.error());
+        }
+        
+        result.ciphertext = encap_result->ciphertext;
+        result.shared_secret = encap_result->shared_secret;
+    } else {
+        // Server side: perform ML-KEM decapsulation
+        MLKEMDecapParams decap_params;
+        decap_params.parameter_set = pqc_utils::get_pure_mlkem_parameter_set(params.mlkem_group);
+        decap_params.private_key = params.private_key;
+        decap_params.ciphertext = params.peer_public_key; // This is actually the ciphertext in decap mode
+        
+        auto decap_result = mlkem_decapsulate(decap_params);
+        if (!decap_result) {
+            return Result<PureMLKEMKeyExchangeResult>(decap_result.error());
+        }
+        
+        result.shared_secret = *decap_result;
+    }
+    
+    return Result<PureMLKEMKeyExchangeResult>(std::move(result));
 }
 
 } // namespace crypto

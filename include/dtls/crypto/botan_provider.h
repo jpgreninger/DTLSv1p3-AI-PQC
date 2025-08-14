@@ -100,6 +100,10 @@ public:
     Result<std::vector<uint8_t>> 
         mlkem_decapsulate(const MLKEMDecapParams& params) override;
     
+    // Pure ML-KEM Key Exchange (draft-connolly-tls-mlkem-key-agreement-05)
+    Result<PureMLKEMKeyExchangeResult>
+        perform_pure_mlkem_key_exchange(const PureMLKEMKeyExchangeParams& params) override;
+    
     // Hybrid Post-Quantum + Classical Key Exchange
     Result<HybridKeyExchangeResult> 
         perform_hybrid_key_exchange(const HybridKeyExchangeParams& params) override;
