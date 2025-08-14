@@ -90,6 +90,20 @@ public:
     
     Result<std::vector<uint8_t>> perform_key_exchange(const KeyExchangeParams& params) override;
     
+    // ML-KEM Post-Quantum Key Encapsulation (FIPS 203)
+    Result<std::pair<std::vector<uint8_t>, std::vector<uint8_t>>> 
+        mlkem_generate_keypair(const MLKEMKeyGenParams& params) override;
+    
+    Result<MLKEMEncapResult> 
+        mlkem_encapsulate(const MLKEMEncapParams& params) override;
+    
+    Result<std::vector<uint8_t>> 
+        mlkem_decapsulate(const MLKEMDecapParams& params) override;
+    
+    // Hybrid Post-Quantum + Classical Key Exchange
+    Result<HybridKeyExchangeResult> 
+        perform_hybrid_key_exchange(const HybridKeyExchangeParams& params) override;
+    
     // Certificate operations
     Result<bool> validate_certificate_chain(const CertValidationParams& params) override;
     Result<std::unique_ptr<PublicKey>> extract_public_key(

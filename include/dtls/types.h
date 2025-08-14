@@ -172,7 +172,12 @@ enum class NamedGroup : uint16_t {
     FFDHE3072 = 257,
     FFDHE4096 = 258,
     FFDHE6144 = 259,
-    FFDHE8192 = 260
+    FFDHE8192 = 260,
+    
+    // Hybrid Post-Quantum + Classical Groups (draft-kwiatkowski-tls-ecdhe-mlkem-03)
+    ECDHE_P256_MLKEM512 = 0x1140,   ///< P-256 ECDHE + ML-KEM-512 hybrid group
+    ECDHE_P384_MLKEM768 = 0x1141,   ///< P-384 ECDHE + ML-KEM-768 hybrid group  
+    ECDHE_P521_MLKEM1024 = 0x1142   ///< P-521 ECDHE + ML-KEM-1024 hybrid group
 };
 
 // Signature algorithms

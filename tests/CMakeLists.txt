@@ -106,6 +106,11 @@ add_executable(dtls_crypto_test
     crypto/test_sequence_number_encryption.cpp
     crypto/test_crypto_dependency_reduction.cpp
     crypto/test_crypto_operations_abstraction.cpp
+    # Hybrid Post-Quantum Cryptography Tests (draft-kwiatkowski-tls-ecdhe-mlkem-03)
+    crypto/test_hybrid_pqc_mlkem_operations.cpp
+    crypto/test_hybrid_pqc_key_exchange.cpp
+    crypto/test_hybrid_pqc_compliance.cpp
+    crypto/test_hybrid_pqc_test_vectors.cpp
 )
 
 target_link_libraries(dtls_crypto_test PRIVATE ${DTLS_TEST_LIBRARIES})
@@ -169,6 +174,7 @@ add_executable(dtls_performance_test
     performance/throughput_benchmarks.cpp
     performance/resource_benchmarks.cpp
     performance/regression_testing.cpp
+    performance/test_hybrid_pqc_performance.cpp  # Hybrid PQC performance benchmarks
 )
 
 target_include_directories(dtls_performance_test PRIVATE 
@@ -228,6 +234,7 @@ set_tests_properties(DTLSErrorHandlingTest PROPERTIES
 # Security Tests
 add_executable(dtls_security_test
     security/dtls_security_test.cpp
+    security/test_hybrid_pqc_security.cpp  # Hybrid PQC security validation
 )
 
 target_link_libraries(dtls_security_test PRIVATE ${DTLS_TEST_LIBRARIES})
@@ -263,6 +270,7 @@ if(DTLS_BUILD_INTEROP_TESTS)
     # Legacy compatibility test
     add_executable(dtls_interop_test
         interoperability/dtls_interop_test.cpp
+        interoperability/test_hybrid_pqc_interop.cpp  # Hybrid PQC cross-provider testing
     )
     target_link_libraries(dtls_interop_test PRIVATE ${DTLS_TEST_LIBRARIES})
     target_compile_options(dtls_interop_test PRIVATE ${DTLS_TEST_COMPILE_OPTIONS})

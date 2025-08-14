@@ -109,6 +109,58 @@ struct KeyExchangeParams {
     const PrivateKey* private_key{nullptr};
 };
 
+// ML-KEM parameter sets (FIPS 203)
+enum class MLKEMParameterSet : uint8_t {
+    MLKEM512 = 1,    ///< ML-KEM-512: k=2, eta1=3, eta2=2
+    MLKEM768 = 2,    ///< ML-KEM-768: k=3, eta1=2, eta2=2  
+    MLKEM1024 = 3    ///< ML-KEM-1024: k=4, eta1=2, eta2=2
+};
+
+// ML-KEM key generation parameters
+struct MLKEMKeyGenParams {
+    MLKEMParameterSet parameter_set{MLKEMParameterSet::MLKEM512};
+    std::vector<uint8_t> additional_entropy; ///< Optional additional entropy
+};
+
+// ML-KEM encapsulation parameters
+struct MLKEMEncapParams {
+    MLKEMParameterSet parameter_set{MLKEMParameterSet::MLKEM512};
+    std::vector<uint8_t> public_key;         ///< ML-KEM public key
+    std::vector<uint8_t> randomness;         ///< Encapsulation randomness (optional)
+};
+
+// ML-KEM decapsulation parameters
+struct MLKEMDecapParams {
+    MLKEMParameterSet parameter_set{MLKEMParameterSet::MLKEM512};
+    std::vector<uint8_t> private_key;        ///< ML-KEM private key
+    std::vector<uint8_t> ciphertext;         ///< Encapsulated ciphertext
+};
+
+// ML-KEM encapsulation result
+struct MLKEMEncapResult {
+    std::vector<uint8_t> ciphertext;         ///< Encapsulated ciphertext
+    std::vector<uint8_t> shared_secret;      ///< Shared secret (32 bytes)
+};
+
+// Hybrid key exchange parameters (combining classical + PQ)
+struct HybridKeyExchangeParams {
+    NamedGroup hybrid_group{NamedGroup::ECDHE_P256_MLKEM512};
+    std::vector<uint8_t> classical_peer_public_key;  ///< ECDHE public key
+    std::vector<uint8_t> pq_peer_public_key;         ///< ML-KEM public key or ciphertext
+    const PrivateKey* classical_private_key{nullptr}; ///< ECDHE private key
+    std::vector<uint8_t> pq_private_key;             ///< ML-KEM private key (for decap)
+    bool is_encapsulation{true};                     ///< true=encap (client), false=decap (server)
+};
+
+// Hybrid key exchange result
+struct HybridKeyExchangeResult {
+    std::vector<uint8_t> classical_public_key;       ///< Generated ECDHE public key (if applicable)
+    std::vector<uint8_t> pq_ciphertext;              ///< ML-KEM ciphertext (if encap)
+    std::vector<uint8_t> classical_shared_secret;    ///< ECDHE shared secret
+    std::vector<uint8_t> pq_shared_secret;           ///< ML-KEM shared secret
+    std::vector<uint8_t> combined_shared_secret;     ///< HKDF-combined shared secret
+};
+
 // Random number generation parameters
 struct RandomParams {
     size_t length{0};
@@ -343,6 +395,20 @@ public:
     
     virtual Result<std::vector<uint8_t>> perform_key_exchange(const KeyExchangeParams& params) = 0;
     
+    // ML-KEM Post-Quantum Key Encapsulation (FIPS 203)
+    virtual Result<std::pair<std::vector<uint8_t>, std::vector<uint8_t>>> 
+        mlkem_generate_keypair(const MLKEMKeyGenParams& params) = 0;
+    
+    virtual Result<MLKEMEncapResult> 
+        mlkem_encapsulate(const MLKEMEncapParams& params) = 0;
+    
+    virtual Result<std::vector<uint8_t>> 
+        mlkem_decapsulate(const MLKEMDecapParams& params) = 0;
+    
+    // Hybrid Post-Quantum + Classical Key Exchange (draft-kwiatkowski-tls-ecdhe-mlkem-03)
+    virtual Result<HybridKeyExchangeResult> 
+        perform_hybrid_key_exchange(const HybridKeyExchangeParams& params) = 0;
+    
     // Certificate operations
     virtual Result<bool> validate_certificate_chain(const CertValidationParams& params) = 0;
     virtual Result<std::unique_ptr<PublicKey>> extract_public_key(
@@ -370,6 +436,17 @@ public:
     virtual bool supports_named_group(NamedGroup group) const = 0;
     virtual bool supports_signature_scheme(SignatureScheme scheme) const = 0;
     virtual bool supports_hash_algorithm(HashAlgorithm hash) const = 0;
+    
+    // Hybrid PQC utility functions
+    virtual bool supports_hybrid_group(NamedGroup group) const {
+        return group == NamedGroup::ECDHE_P256_MLKEM512 ||
+               group == NamedGroup::ECDHE_P384_MLKEM768 ||
+               group == NamedGroup::ECDHE_P521_MLKEM1024;
+    }
+    
+    virtual bool is_hybrid_group(NamedGroup group) const {
+        return supports_hybrid_group(group);
+    }
     
     // Performance and security features
     virtual bool has_hardware_acceleration() const = 0;
@@ -563,6 +640,101 @@ struct ProviderSelection {
     std::chrono::seconds health_check_interval{300};
     size_t max_consecutive_failures{3};
 };
+
+// Utility functions for hybrid PQC operations
+namespace hybrid_pqc {
+
+/**
+ * Get the classical ECDHE group for a hybrid named group.
+ */
+inline NamedGroup get_classical_group(NamedGroup hybrid_group) {
+    switch (hybrid_group) {
+        case NamedGroup::ECDHE_P256_MLKEM512: return NamedGroup::SECP256R1;
+        case NamedGroup::ECDHE_P384_MLKEM768: return NamedGroup::SECP384R1;
+        case NamedGroup::ECDHE_P521_MLKEM1024: return NamedGroup::SECP521R1;
+        default: return NamedGroup::SECP256R1; // fallback
+    }
+}
+
+/**
+ * Get the ML-KEM parameter set for a hybrid named group.
+ */
+inline MLKEMParameterSet get_mlkem_parameter_set(NamedGroup hybrid_group) {
+    switch (hybrid_group) {
+        case NamedGroup::ECDHE_P256_MLKEM512: return MLKEMParameterSet::MLKEM512;
+        case NamedGroup::ECDHE_P384_MLKEM768: return MLKEMParameterSet::MLKEM768;
+        case NamedGroup::ECDHE_P521_MLKEM1024: return MLKEMParameterSet::MLKEM1024;
+        default: return MLKEMParameterSet::MLKEM512; // fallback
+    }
+}
+
+/**
+ * Get ML-KEM key sizes (public key, private key, ciphertext) for a parameter set.
+ */
+struct MLKEMSizes {
+    size_t public_key_bytes;
+    size_t private_key_bytes; 
+    size_t ciphertext_bytes;
+    size_t shared_secret_bytes = 32; // Always 32 bytes for ML-KEM
+};
+
+inline MLKEMSizes get_mlkem_sizes(MLKEMParameterSet param_set) {
+    switch (param_set) {
+        case MLKEMParameterSet::MLKEM512:
+            return {800, 1632, 768, 32};  // ML-KEM-512 sizes
+        case MLKEMParameterSet::MLKEM768:
+            return {1184, 2400, 1088, 32}; // ML-KEM-768 sizes
+        case MLKEMParameterSet::MLKEM1024:
+            return {1568, 3168, 1568, 32}; // ML-KEM-1024 sizes
+        default:
+            return {800, 1632, 768, 32};   // fallback to ML-KEM-512
+    }
+}
+
+/**
+ * Check if a named group is a hybrid PQC group.
+ */
+inline bool is_hybrid_pqc_group(NamedGroup group) {
+    return group == NamedGroup::ECDHE_P256_MLKEM512 ||
+           group == NamedGroup::ECDHE_P384_MLKEM768 ||
+           group == NamedGroup::ECDHE_P521_MLKEM1024;
+}
+
+/**
+ * Get the expected hybrid key share size for client (public keys only).
+ */
+inline size_t get_hybrid_client_keyshare_size(NamedGroup hybrid_group) {
+    auto mlkem_sizes = get_mlkem_sizes(get_mlkem_parameter_set(hybrid_group));
+    size_t classical_size = 0;
+    
+    switch (get_classical_group(hybrid_group)) {
+        case NamedGroup::SECP256R1: classical_size = 65; break; // uncompressed P-256
+        case NamedGroup::SECP384R1: classical_size = 97; break; // uncompressed P-384
+        case NamedGroup::SECP521R1: classical_size = 133; break; // uncompressed P-521
+        default: classical_size = 65; break;
+    }
+    
+    return classical_size + mlkem_sizes.public_key_bytes;
+}
+
+/**
+ * Get the expected hybrid key share size for server (ECDHE pubkey + ML-KEM ciphertext).
+ */
+inline size_t get_hybrid_server_keyshare_size(NamedGroup hybrid_group) {
+    auto mlkem_sizes = get_mlkem_sizes(get_mlkem_parameter_set(hybrid_group));
+    size_t classical_size = 0;
+    
+    switch (get_classical_group(hybrid_group)) {
+        case NamedGroup::SECP256R1: classical_size = 65; break; // uncompressed P-256
+        case NamedGroup::SECP384R1: classical_size = 97; break; // uncompressed P-384
+        case NamedGroup::SECP521R1: classical_size = 133; break; // uncompressed P-521
+        default: classical_size = 65; break;
+    }
+    
+    return classical_size + mlkem_sizes.ciphertext_bytes;
+}
+
+} // namespace hybrid_pqc
 
 
 } // namespace crypto

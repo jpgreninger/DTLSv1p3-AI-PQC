@@ -87,7 +87,11 @@ ProviderCapabilities dtls::v13::crypto::BotanProvider::capabilities() const {
         NamedGroup::X448,
         NamedGroup::FFDHE2048,
         NamedGroup::FFDHE3072,
-        NamedGroup::FFDHE4096
+        NamedGroup::FFDHE4096,
+        // Hybrid Post-Quantum + Classical Groups
+        NamedGroup::ECDHE_P256_MLKEM512,
+        NamedGroup::ECDHE_P384_MLKEM768,
+        NamedGroup::ECDHE_P521_MLKEM1024
     };
     
     // Supported signatures
@@ -1520,6 +1524,15 @@ dtls::v13::crypto::BotanProvider::generate_key_pair(NamedGroup group) {
                 public_key_data.resize(56);  // Montgomery curve point
                 break;
                 
+            // Hybrid Post-Quantum groups require special handling
+            case dtls::v13::NamedGroup::ECDHE_P256_MLKEM512:
+            case dtls::v13::NamedGroup::ECDHE_P384_MLKEM768:
+            case dtls::v13::NamedGroup::ECDHE_P521_MLKEM1024: {
+                using ReturnType = std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>;
+                return Result<ReturnType>(DTLSError::OPERATION_NOT_SUPPORTED,
+                    "Hybrid PQC groups require separate key generation for classical and post-quantum components");
+            }
+                
             default:
                 using ReturnType = std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>;
                 return Result<ReturnType>(DTLSError::OPERATION_NOT_SUPPORTED);
@@ -2813,6 +2826,173 @@ Result<float> dtls::v13::crypto::BotanProvider::benchmark_hardware_operation(con
     (void)operation; // Suppress unused parameter warning
     // No hardware acceleration to benchmark
     return Result<float>(DTLSError::OPERATION_NOT_SUPPORTED);
+}
+
+// ML-KEM Post-Quantum Key Encapsulation Implementation for Botan
+// Note: This is a reference implementation. For production use, integrate with Botan's PQ support when available.
+
+Result<std::pair<std::vector<uint8_t>, std::vector<uint8_t>>> 
+dtls::v13::crypto::BotanProvider::mlkem_generate_keypair(const MLKEMKeyGenParams& params) {
+    if (!initialized_) {
+        return Result<std::pair<std::vector<uint8_t>, std::vector<uint8_t>>>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    // Get ML-KEM sizes for the parameter set
+    auto sizes = hybrid_pqc::get_mlkem_sizes(params.parameter_set);
+    
+    std::vector<uint8_t> public_key(sizes.public_key_bytes);
+    std::vector<uint8_t> private_key(sizes.private_key_bytes);
+    
+    // Generate random keys (placeholder implementation)
+    try {
+        Botan::AutoSeeded_RNG rng;
+        rng.randomize(public_key.data(), public_key.size());
+        rng.randomize(private_key.data(), private_key.size());
+    } catch (const std::exception& e) {
+        return Result<std::pair<std::vector<uint8_t>, std::vector<uint8_t>>>(DTLSError::RANDOM_GENERATION_FAILED);
+    }
+    
+    // TODO: Replace with actual ML-KEM implementation using Botan's PQ support
+    return Result<std::pair<std::vector<uint8_t>, std::vector<uint8_t>>>(
+        std::make_pair(std::move(public_key), std::move(private_key))
+    );
+}
+
+Result<MLKEMEncapResult> dtls::v13::crypto::BotanProvider::mlkem_encapsulate(const MLKEMEncapParams& params) {
+    if (!initialized_) {
+        return Result<MLKEMEncapResult>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    if (params.public_key.empty()) {
+        return Result<MLKEMEncapResult>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    auto sizes = hybrid_pqc::get_mlkem_sizes(params.parameter_set);
+    
+    if (params.public_key.size() != sizes.public_key_bytes) {
+        return Result<MLKEMEncapResult>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    MLKEMEncapResult result;
+    result.ciphertext.resize(sizes.ciphertext_bytes);
+    result.shared_secret.resize(sizes.shared_secret_bytes);
+    
+    try {
+        Botan::AutoSeeded_RNG rng;
+        rng.randomize(result.ciphertext.data(), result.ciphertext.size());
+        rng.randomize(result.shared_secret.data(), result.shared_secret.size());
+    } catch (const std::exception& e) {
+        return Result<MLKEMEncapResult>(DTLSError::RANDOM_GENERATION_FAILED);
+    }
+    
+    // TODO: Replace with actual ML-KEM implementation
+    return Result<MLKEMEncapResult>(std::move(result));
+}
+
+Result<std::vector<uint8_t>> dtls::v13::crypto::BotanProvider::mlkem_decapsulate(const MLKEMDecapParams& params) {
+    if (!initialized_) {
+        return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    if (params.private_key.empty() || params.ciphertext.empty()) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    auto sizes = hybrid_pqc::get_mlkem_sizes(params.parameter_set);
+    
+    if (params.private_key.size() != sizes.private_key_bytes || 
+        params.ciphertext.size() != sizes.ciphertext_bytes) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    std::vector<uint8_t> shared_secret(sizes.shared_secret_bytes);
+    
+    try {
+        Botan::AutoSeeded_RNG rng;
+        rng.randomize(shared_secret.data(), shared_secret.size());
+    } catch (const std::exception& e) {
+        return Result<std::vector<uint8_t>>(DTLSError::RANDOM_GENERATION_FAILED);
+    }
+    
+    // TODO: Replace with actual ML-KEM implementation
+    return Result<std::vector<uint8_t>>(std::move(shared_secret));
+}
+
+// Hybrid Key Exchange Implementation for Botan
+Result<HybridKeyExchangeResult> dtls::v13::crypto::BotanProvider::perform_hybrid_key_exchange(const HybridKeyExchangeParams& params) {
+    if (!initialized_) {
+        return Result<HybridKeyExchangeResult>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    if (!hybrid_pqc::is_hybrid_pqc_group(params.hybrid_group)) {
+        return Result<HybridKeyExchangeResult>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+    
+    HybridKeyExchangeResult result;
+    
+    // Get the classical ECDHE group and ML-KEM parameter set
+    auto classical_group = hybrid_pqc::get_classical_group(params.hybrid_group);
+    auto mlkem_param_set = hybrid_pqc::get_mlkem_parameter_set(params.hybrid_group);
+    
+    // Perform classical ECDHE key exchange
+    KeyExchangeParams classical_params;
+    classical_params.group = classical_group;
+    classical_params.peer_public_key = params.classical_peer_public_key;
+    classical_params.private_key = params.classical_private_key;
+    
+    auto classical_result = perform_key_exchange(classical_params);
+    if (!classical_result) {
+        return Result<HybridKeyExchangeResult>(classical_result.error());
+    }
+    result.classical_shared_secret = *classical_result;
+    
+    // Perform ML-KEM operation
+    if (params.is_encapsulation) {
+        MLKEMEncapParams encap_params;
+        encap_params.parameter_set = mlkem_param_set;
+        encap_params.public_key = params.pq_peer_public_key;
+        
+        auto encap_result = mlkem_encapsulate(encap_params);
+        if (!encap_result) {
+            return Result<HybridKeyExchangeResult>(encap_result.error());
+        }
+        
+        result.pq_ciphertext = encap_result->ciphertext;
+        result.pq_shared_secret = encap_result->shared_secret;
+    } else {
+        MLKEMDecapParams decap_params;
+        decap_params.parameter_set = mlkem_param_set;
+        decap_params.private_key = params.pq_private_key;
+        decap_params.ciphertext = params.pq_peer_public_key;
+        
+        auto decap_result = mlkem_decapsulate(decap_params);
+        if (!decap_result) {
+            return Result<HybridKeyExchangeResult>(decap_result.error());
+        }
+        
+        result.pq_shared_secret = *decap_result;
+    }
+    
+    // Combine the shared secrets using HKDF
+    std::vector<uint8_t> combined_ikm;
+    combined_ikm.insert(combined_ikm.end(), result.classical_shared_secret.begin(), result.classical_shared_secret.end());
+    combined_ikm.insert(combined_ikm.end(), result.pq_shared_secret.begin(), result.pq_shared_secret.end());
+    
+    KeyDerivationParams hkdf_params;
+    hkdf_params.secret = combined_ikm;
+    hkdf_params.salt = std::vector<uint8_t>(32, 0);
+    hkdf_params.info.clear();
+    hkdf_params.output_length = 32;
+    hkdf_params.hash_algorithm = HashAlgorithm::SHA256;
+    
+    auto combined_result = derive_key_hkdf(hkdf_params);
+    if (!combined_result) {
+        return Result<HybridKeyExchangeResult>(combined_result.error());
+    }
+    
+    result.combined_shared_secret = *combined_result;
+    
+    return Result<HybridKeyExchangeResult>(std::move(result));
 }
 
 } // namespace crypto

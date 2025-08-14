@@ -352,6 +352,28 @@ Result<std::vector<uint8_t>> HardwareAcceleratedProvider::perform_key_exchange(c
     return base_provider_->perform_key_exchange(params);
 }
 
+// ML-KEM Post-Quantum Key Encapsulation - delegate to base provider
+Result<std::pair<std::vector<uint8_t>, std::vector<uint8_t>>> 
+HardwareAcceleratedProvider::mlkem_generate_keypair(const MLKEMKeyGenParams& params) {
+    return base_provider_->mlkem_generate_keypair(params);
+}
+
+Result<MLKEMEncapResult> 
+HardwareAcceleratedProvider::mlkem_encapsulate(const MLKEMEncapParams& params) {
+    return base_provider_->mlkem_encapsulate(params);
+}
+
+Result<std::vector<uint8_t>> 
+HardwareAcceleratedProvider::mlkem_decapsulate(const MLKEMDecapParams& params) {
+    return base_provider_->mlkem_decapsulate(params);
+}
+
+// Hybrid Post-Quantum + Classical Key Exchange - delegate to base provider
+Result<HybridKeyExchangeResult> 
+HardwareAcceleratedProvider::perform_hybrid_key_exchange(const HybridKeyExchangeParams& params) {
+    return base_provider_->perform_hybrid_key_exchange(params);
+}
+
 Result<bool> HardwareAcceleratedProvider::validate_certificate_chain(const CertValidationParams& params) {
     return base_provider_->validate_certificate_chain(params);
 }
