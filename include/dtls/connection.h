@@ -567,6 +567,11 @@ private:
     // Error recovery state
     ErrorRecoveryState recovery_state_;
     mutable std::mutex recovery_mutex_;
+    
+    // Connection ID support (RFC 9147)
+    mutable ConnectionID local_connection_id_;
+    mutable ConnectionID peer_connection_id_;
+    mutable std::mutex connection_id_mutex_;
 };
 
 /**

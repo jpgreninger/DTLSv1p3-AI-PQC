@@ -30,34 +30,31 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -march=native")
 # Find required dependencies
 find_package(Threads REQUIRED)
 
-# OpenSSL (required) - Use system OpenSSL
-find_package(OpenSSL REQUIRED)
+# OpenSSL (required) - Use custom OpenSSL from /home/jgreninger/Work/openssl
+if(EXISTS "/home/jgreninger/Work/openssl")
+    set(OPENSSL_ROOT_DIR "/home/jgreninger/Work/openssl")
+    set(OPENSSL_INCLUDE_DIR "/home/jgreninger/Work/openssl/include")
+    set(OPENSSL_CRYPTO_LIBRARY "/home/jgreninger/Work/openssl/libcrypto.a")
+    set(OPENSSL_SSL_LIBRARY "/home/jgreninger/Work/openssl/libssl.a")
+    message(STATUS "Using custom OpenSSL at ${OPENSSL_ROOT_DIR}")
 
-# Commented out custom OpenSSL path that doesn't exist
-# if(EXISTS "/home/jgreninger/Work/openssl")
-#     set(OPENSSL_ROOT_DIR "/home/jgreninger/Work/openssl")
-#     set(OPENSSL_INCLUDE_DIR "/home/jgreninger/Work/openssl/include")
-#     set(OPENSSL_CRYPTO_LIBRARY "/home/jgreninger/Work/openssl/lib/libcrypto.a")
-#     set(OPENSSL_SSL_LIBRARY "/home/jgreninger/Work/openssl/lib/libssl.a")
-#     message(STATUS "Using custom OpenSSL at ${OPENSSL_ROOT_DIR}")
-#
-#     # Create OpenSSL targets manually for custom installation
-#     add_library(OpenSSL::Crypto STATIC IMPORTED)
-#     set_target_properties(OpenSSL::Crypto PROPERTIES
-#         IMPORTED_LOCATION "${OPENSSL_CRYPTO_LIBRARY}"
-#         INTERFACE_INCLUDE_DIRECTORIES "${OPENSSL_INCLUDE_DIR}")
-#
-#     add_library(OpenSSL::SSL STATIC IMPORTED)
-#     set_target_properties(OpenSSL::SSL PROPERTIES
-#         IMPORTED_LOCATION "${OPENSSL_SSL_LIBRARY}"
-#         INTERFACE_INCLUDE_DIRECTORIES "${OPENSSL_INCLUDE_DIR}"
-#         INTERFACE_LINK_LIBRARIES "OpenSSL::Crypto")
-#
-#     set(OPENSSL_FOUND TRUE)
-#     set(OPENSSL_VERSION "3.6.0")
-# else()
-#     find_package(OpenSSL REQUIRED)
-# endif()
+    # Create OpenSSL targets manually for custom installation
+    add_library(OpenSSL::Crypto STATIC IMPORTED)
+    set_target_properties(OpenSSL::Crypto PROPERTIES
+        IMPORTED_LOCATION "${OPENSSL_CRYPTO_LIBRARY}"
+        INTERFACE_INCLUDE_DIRECTORIES "${OPENSSL_INCLUDE_DIR}")
+
+    add_library(OpenSSL::SSL STATIC IMPORTED)
+    set_target_properties(OpenSSL::SSL PROPERTIES
+        IMPORTED_LOCATION "${OPENSSL_SSL_LIBRARY}"
+        INTERFACE_INCLUDE_DIRECTORIES "${OPENSSL_INCLUDE_DIR}"
+        INTERFACE_LINK_LIBRARIES "OpenSSL::Crypto")
+
+    set(OPENSSL_FOUND TRUE)
+    set(OPENSSL_VERSION "3.6.0")
+else()
+    find_package(OpenSSL REQUIRED)
+endif()
 
 if(OpenSSL_FOUND OR OPENSSL_FOUND)
     message(STATUS "Found OpenSSL ${OPENSSL_VERSION}")

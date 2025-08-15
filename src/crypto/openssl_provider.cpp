@@ -322,8 +322,68 @@ Result<std::vector<uint8_t>> OpenSSLProvider::derive_key_pbkdf2(const KeyDerivat
         return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
     }
     
-    // TODO: Implement PBKDF2 using OpenSSL PKCS5_PBKDF2_HMAC
-    return Result<std::vector<uint8_t>>(DTLSError::OPERATION_NOT_SUPPORTED);
+    // Validate parameters
+    if (params.secret.empty()) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    if (params.output_length == 0 || params.output_length > 4096) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Default iteration count (PBKDF2 doesn't use iterations from KeyDerivationParams)
+    uint32_t iterations = 10000;
+    
+    // Validate iteration count
+    if (iterations < 1000 || iterations > 1000000) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Determine hash function
+    const EVP_MD* md = nullptr;
+    switch (params.hash_algorithm) {
+        case HashAlgorithm::SHA1:
+            md = EVP_sha1();
+            break;
+        case HashAlgorithm::SHA256:
+            md = EVP_sha256();
+            break;
+        case HashAlgorithm::SHA384:
+            md = EVP_sha384();
+            break;
+        case HashAlgorithm::SHA512:
+            md = EVP_sha512();
+            break;
+        default:
+            return Result<std::vector<uint8_t>>(DTLSError::OPERATION_NOT_SUPPORTED);
+    }
+    
+    // Prepare output buffer
+    std::vector<uint8_t> output(params.output_length);
+    
+    // Use salt if provided, otherwise use empty salt
+    const unsigned char* salt_ptr = params.salt.empty() ? nullptr : params.salt.data();
+    int salt_len = static_cast<int>(params.salt.size());
+    
+    // Perform PBKDF2 derivation
+    int result = PKCS5_PBKDF2_HMAC(
+        reinterpret_cast<const char*>(params.secret.data()),
+        static_cast<int>(params.secret.size()),
+        salt_ptr,
+        salt_len,
+        static_cast<int>(iterations),
+        md,
+        static_cast<int>(params.output_length),
+        output.data()
+    );
+    
+    if (result != 1) {
+        // Clear output buffer on failure
+        secure_cleanup(output);
+        return Result<std::vector<uint8_t>>(DTLSError::CRYPTO_PROVIDER_ERROR);
+    }
+    
+    return Result<std::vector<uint8_t>>(std::move(output));
 }
 
 // AEAD encryption implementation
@@ -2414,11 +2474,190 @@ Result<std::vector<uint8_t>> OpenSSLProvider::perform_key_exchange(const KeyExch
 }
 
 Result<bool> OpenSSLProvider::validate_certificate_chain(const CertValidationParams& params) {
-    return Result<bool>(DTLSError::OPERATION_NOT_SUPPORTED);
+    if (!pimpl_->initialized_) {
+        return Result<bool>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    if (!params.chain || params.chain->certificate_count() == 0) {
+        return Result<bool>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Create X509_STORE for certificate verification
+    X509_STORE* store = X509_STORE_new();
+    if (!store) {
+        return Result<bool>(DTLSError::OUT_OF_MEMORY);
+    }
+    
+    // Load default trusted certificates
+    X509_STORE_set_default_paths(store);
+    
+    // Parse the certificate chain
+    std::vector<X509*> cert_chain;
+    
+    for (size_t i = 0; i < params.chain->certificate_count(); ++i) {
+        auto cert_data = params.chain->certificate_at(i);
+        BIO* bio = BIO_new_mem_buf(cert_data.data(), static_cast<int>(cert_data.size()));
+        if (!bio) {
+            X509_STORE_free(store);
+            for (X509* cert : cert_chain) {
+                X509_free(cert);
+            }
+            return Result<bool>(DTLSError::OUT_OF_MEMORY);
+        }
+        
+        X509* cert = nullptr;
+        
+        // Try DER format first
+        cert = d2i_X509_bio(bio, nullptr);
+        if (!cert) {
+            // Reset BIO and try PEM format
+            BIO_reset(bio);
+            cert = PEM_read_bio_X509(bio, nullptr, nullptr, nullptr);
+        }
+        
+        BIO_free(bio);
+        
+        if (!cert) {
+            X509_STORE_free(store);
+            for (X509* c : cert_chain) {
+                X509_free(c);
+            }
+            return Result<bool>(DTLSError::CERTIFICATE_UNKNOWN);
+        }
+        
+        cert_chain.push_back(cert);
+    }
+    
+    if (cert_chain.empty()) {
+        X509_STORE_free(store);
+        return Result<bool>(DTLSError::CERTIFICATE_UNKNOWN);
+    }
+    
+    // Create X509_STORE_CTX for verification
+    X509_STORE_CTX* ctx = X509_STORE_CTX_new();
+    if (!ctx) {
+        X509_STORE_free(store);
+        for (X509* cert : cert_chain) {
+            X509_free(cert);
+        }
+        return Result<bool>(DTLSError::OUT_OF_MEMORY);
+    }
+    
+    // Create certificate stack for intermediate certificates
+    STACK_OF(X509)* untrusted = nullptr;
+    if (cert_chain.size() > 1) {
+        untrusted = sk_X509_new_null();
+        if (!untrusted) {
+            X509_STORE_CTX_free(ctx);
+            X509_STORE_free(store);
+            for (X509* cert : cert_chain) {
+                X509_free(cert);
+            }
+            return Result<bool>(DTLSError::OUT_OF_MEMORY);
+        }
+        
+        // Add intermediate certificates to the untrusted stack
+        for (size_t i = 1; i < cert_chain.size(); ++i) {
+            sk_X509_push(untrusted, cert_chain[i]);
+        }
+    }
+    
+    // Initialize verification context
+    int init_result = X509_STORE_CTX_init(ctx, store, cert_chain[0], untrusted);
+    if (init_result != 1) {
+        if (untrusted) {
+            sk_X509_free(untrusted);
+        }
+        X509_STORE_CTX_free(ctx);
+        X509_STORE_free(store);
+        for (X509* cert : cert_chain) {
+            X509_free(cert);
+        }
+        return Result<bool>(DTLSError::CRYPTO_PROVIDER_ERROR);
+    }
+    
+    // Set verification flags based on parameters
+    unsigned long flags = 0;
+    if (!params.check_revocation) {
+        flags |= X509_V_FLAG_NO_CHECK_TIME;
+    }
+    
+    if (flags != 0) {
+        X509_STORE_CTX_set_flags(ctx, flags);
+    }
+    
+    // Perform certificate chain verification
+    int verify_result = X509_verify_cert(ctx);
+    bool is_valid = (verify_result == 1);
+    
+    // Get verification error if validation failed
+    if (!is_valid) {
+        int error = X509_STORE_CTX_get_error(ctx);
+        // Log the specific verification error for debugging
+        // const char* error_string = X509_verify_cert_error_string(error);
+        (void)error; // Suppress unused variable warning
+    }
+    
+    // Cleanup
+    if (untrusted) {
+        sk_X509_free(untrusted);
+    }
+    X509_STORE_CTX_free(ctx);
+    X509_STORE_free(store);
+    for (X509* cert : cert_chain) {
+        X509_free(cert);
+    }
+    
+    return Result<bool>(is_valid);
 }
 
 Result<std::unique_ptr<PublicKey>> OpenSSLProvider::extract_public_key(const std::vector<uint8_t>& certificate) {
-    return Result<std::unique_ptr<PublicKey>>(DTLSError::OPERATION_NOT_SUPPORTED);
+    if (!pimpl_->initialized_) {
+        return Result<std::unique_ptr<PublicKey>>(DTLSError::NOT_INITIALIZED);
+    }
+    
+    if (certificate.empty()) {
+        return Result<std::unique_ptr<PublicKey>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // Create BIO from certificate data
+    BIO* bio = BIO_new_mem_buf(certificate.data(), static_cast<int>(certificate.size()));
+    if (!bio) {
+        return Result<std::unique_ptr<PublicKey>>(DTLSError::OUT_OF_MEMORY);
+    }
+    
+    X509* cert = nullptr;
+    
+    // Try DER format first
+    cert = d2i_X509_bio(bio, nullptr);
+    if (!cert) {
+        // Reset BIO and try PEM format
+        BIO_reset(bio);
+        cert = PEM_read_bio_X509(bio, nullptr, nullptr, nullptr);
+    }
+    
+    BIO_free(bio);
+    
+    if (!cert) {
+        return Result<std::unique_ptr<PublicKey>>(DTLSError::CERTIFICATE_UNKNOWN);
+    }
+    
+    // Extract public key from certificate
+    EVP_PKEY* pkey = X509_get_pubkey(cert);
+    X509_free(cert);
+    
+    if (!pkey) {
+        return Result<std::unique_ptr<PublicKey>>(DTLSError::CERTIFICATE_UNKNOWN);
+    }
+    
+    // Create our public key wrapper
+    try {
+        auto public_key = std::make_unique<OpenSSLPublicKey>(pkey);
+        return Result<std::unique_ptr<PublicKey>>(std::move(public_key));
+    } catch (const std::exception&) {
+        EVP_PKEY_free(pkey);
+        return Result<std::unique_ptr<PublicKey>>(DTLSError::OUT_OF_MEMORY);
+    }
 }
 
 Result<std::unique_ptr<PrivateKey>> OpenSSLProvider::import_private_key(const std::vector<uint8_t>& key_data, const std::string& format) {

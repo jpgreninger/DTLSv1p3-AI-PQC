@@ -197,11 +197,17 @@ private:
     std::atomic<size_t> current_total_memory_{0};
     std::atomic<size_t> current_connection_count_{0};
     
+    // Timer management for blacklist and rate limit removal
+    mutable std::mutex timer_mutex_;
+    std::multimap<std::chrono::steady_clock::time_point, std::string> scheduled_blacklist_removals_;
+    std::multimap<std::chrono::steady_clock::time_point, std::pair<std::string, size_t>> scheduled_rate_limit_removals_;
+    
     // Internal methods
     bool is_ip_blacklisted(const std::string& ip) const;
     bool is_ip_rate_limited(const std::string& ip) const;
     void update_ip_usage_stats(const std::string& ip);
     void cleanup_old_tracking_data();
+    void process_scheduled_removals();
     AttackType analyze_ip_behavior(const IPResourceUsage& usage) const;
     double calculate_threat_level(const IPResourceUsage& usage) const;
     void apply_rate_limiting(const std::string& ip);

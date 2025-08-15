@@ -290,7 +290,12 @@ void DoSProtectionEngine::blacklist_ip(const std::string& ip, std::chrono::minut
     ip_usage.trust_score = 0.0;
     stats_.ips_blacklisted++;
     
-    // TODO: Implement timer to remove blacklist after duration
+    // Set timer to remove blacklist after duration
+    auto removal_time = std::chrono::steady_clock::now() + duration;
+    
+    // Add to scheduled removals
+    std::lock_guard<std::mutex> timer_lock(timer_mutex_);
+    scheduled_blacklist_removals_.emplace(removal_time, ip);
 }
 
 void DoSProtectionEngine::rate_limit_ip(const std::string& ip, size_t max_rate, 
@@ -300,7 +305,12 @@ void DoSProtectionEngine::rate_limit_ip(const std::string& ip, size_t max_rate,
     ip_usage.is_rate_limited = true;
     ip_usage.trust_score *= 0.5; // Reduce trust score
     
-    // TODO: Implement timer to remove rate limiting after duration
+    // Set timer to remove rate limiting after duration  
+    auto removal_time = std::chrono::steady_clock::now() + duration;
+    
+    // Add to scheduled removals
+    std::lock_guard<std::mutex> timer_lock(timer_mutex_);
+    scheduled_rate_limit_removals_.emplace(removal_time, std::make_pair(ip, max_rate));
 }
 
 void DoSProtectionEngine::trigger_emergency_mode() {
@@ -394,6 +404,49 @@ void DoSProtectionEngine::cleanup_old_tracking_data() {
                               }),
                 usage.packet_timestamps.end());
             ++it;
+        }
+    }
+    
+    // Process scheduled blacklist and rate limit removals
+    process_scheduled_removals();
+}
+
+void DoSProtectionEngine::process_scheduled_removals() {
+    auto now = std::chrono::steady_clock::now();
+    
+    // Process blacklist removals
+    {
+        std::lock_guard<std::mutex> timer_lock(timer_mutex_);
+        std::lock_guard<std::mutex> ip_lock(ip_tracking_mutex_);
+        
+        auto it = scheduled_blacklist_removals_.begin();
+        while (it != scheduled_blacklist_removals_.end() && it->first <= now) {
+            const auto& ip = it->second;
+            auto ip_it = ip_usage_map_.find(ip);
+            if (ip_it != ip_usage_map_.end()) {
+                ip_it->second.is_blacklisted = false;
+                // Restore partial trust score
+                ip_it->second.trust_score = std::min(0.5, ip_it->second.trust_score + 0.2);
+            }
+            it = scheduled_blacklist_removals_.erase(it);
+        }
+    }
+    
+    // Process rate limit removals
+    {
+        std::lock_guard<std::mutex> timer_lock(timer_mutex_);
+        std::lock_guard<std::mutex> ip_lock(ip_tracking_mutex_);
+        
+        auto it = scheduled_rate_limit_removals_.begin();
+        while (it != scheduled_rate_limit_removals_.end() && it->first <= now) {
+            const auto& ip = it->second.first;
+            auto ip_it = ip_usage_map_.find(ip);
+            if (ip_it != ip_usage_map_.end()) {
+                ip_it->second.is_rate_limited = false;
+                // Restore partial trust score
+                ip_it->second.trust_score = std::min(0.8, ip_it->second.trust_score + 0.1);
+            }
+            it = scheduled_rate_limit_removals_.erase(it);
         }
     }
 }

@@ -780,9 +780,29 @@ private:
             case AlertCondition::Operator::NOT_EQUALS:
                 return std::abs(current_value - condition.threshold_value) >= 0.001;
             case AlertCondition::Operator::RATE_INCREASE:
+                // For rate increase, check if current value increased by more than threshold
+                {
+                    auto history_it = metric_history_.find(condition.metric_name);
+                    if (history_it != metric_history_.end() && history_it->second.size() >= 2) {
+                        double current_rate = current_value;
+                        double previous_rate = history_it->second.rbegin()[1].value; // Second-to-last value
+                        double rate_change = current_rate - previous_rate;
+                        return rate_change > condition.threshold; // Positive change greater than threshold
+                    }
+                    return false; // Not enough history
+                }
             case AlertCondition::Operator::RATE_DECREASE:
-                // TODO: Implement rate-based conditions
-                return false;
+                // For rate decrease, check if current value decreased by more than threshold
+                {
+                    auto history_it = metric_history_.find(condition.metric_name);
+                    if (history_it != metric_history_.end() && history_it->second.size() >= 2) {
+                        double current_rate = current_value;
+                        double previous_rate = history_it->second.rbegin()[1].value; // Second-to-last value
+                        double rate_change = previous_rate - current_rate; // Note: reversed for decrease
+                        return rate_change > condition.threshold; // Decrease greater than threshold
+                    }
+                    return false; // Not enough history
+                }
             default:
                 return false;
         }
@@ -790,8 +810,52 @@ private:
 
     std::string format_alert_message(const AlertCondition& condition, double actual_value) {
         if (!condition.message_template.empty()) {
-            // TODO: Template variable substitution
-            return condition.message_template;
+            // Implement template variable substitution
+            std::string message = condition.message_template;
+            
+            // Replace common template variables
+            size_t pos = 0;
+            
+            // Replace {metric_name}
+            while ((pos = message.find("{metric_name}", pos)) != std::string::npos) {
+                message.replace(pos, 13, condition.metric_name);
+                pos += condition.metric_name.length();
+            }
+            
+            // Replace {value}
+            pos = 0;
+            std::string value_str = std::to_string(actual_value);
+            while ((pos = message.find("{value}", pos)) != std::string::npos) {
+                message.replace(pos, 7, value_str);
+                pos += value_str.length();
+            }
+            
+            // Replace {threshold}
+            pos = 0;
+            std::string threshold_str = std::to_string(condition.threshold_value);
+            while ((pos = message.find("{threshold}", pos)) != std::string::npos) {
+                message.replace(pos, 11, threshold_str);
+                pos += threshold_str.length();
+            }
+            
+            // Replace {operator}
+            pos = 0;
+            std::string operator_str;
+            switch (condition.op) {
+                case AlertCondition::Operator::GREATER_THAN: operator_str = ">"; break;
+                case AlertCondition::Operator::LESS_THAN: operator_str = "<"; break;
+                case AlertCondition::Operator::EQUALS: operator_str = "=="; break;
+                case AlertCondition::Operator::NOT_EQUALS: operator_str = "!="; break;
+                case AlertCondition::Operator::RATE_INCREASE: operator_str = "rate increase"; break;
+                case AlertCondition::Operator::RATE_DECREASE: operator_str = "rate decrease"; break;
+                default: operator_str = "unknown"; break;
+            }
+            while ((pos = message.find("{operator}", pos)) != std::string::npos) {
+                message.replace(pos, 10, operator_str);
+                pos += operator_str.length();
+            }
+            
+            return message;
         }
         
         return "Alert: " + condition.metric_name + " value " + std::to_string(actual_value) +
@@ -952,9 +1016,130 @@ public:
     }
 
     std::string export_custom(const std::string& format_name) const override {
-        // TODO: Implement custom format support
-        return export_json();
+        // Implement custom format support based on format name
+        if (format_name == "prometheus") {
+            return export_prometheus();
+        } else if (format_name == "csv") {
+            return export_csv();
+        } else if (format_name == "xml") {
+            return export_xml();
+        } else if (format_name == "json" || format_name.empty()) {
+            return export_json();
+        } else {
+            // Unknown format, return JSON as fallback
+            return export_json();
+        }
     }
+    
+private:
+    std::string export_prometheus() const {
+        std::ostringstream output;
+        
+        for (const auto& [name, value] : metrics_) {
+            switch (value.type) {
+                case MetricType::COUNTER:
+                    output << "# TYPE " << name << " counter\n";
+                    output << name << " " << value.counter_value << "\n";
+                    break;
+                case MetricType::GAUGE:
+                    output << "# TYPE " << name << " gauge\n";
+                    output << name << " " << value.gauge_value << "\n";
+                    break;
+                case MetricType::TIMER:
+                    output << "# TYPE " << name << "_total counter\n";
+                    output << name << "_total " << value.timer_value.total_time.count() << "\n";
+                    output << "# TYPE " << name << "_count counter\n";
+                    output << name << "_count " << value.timer_value.count << "\n";
+                    break;
+                case MetricType::HISTOGRAM:
+                    output << "# TYPE " << name << " histogram\n";
+                    for (size_t i = 0; i < value.histogram_value.buckets.size(); ++i) {
+                        output << name << "_bucket{le=\"" << (i + 1) * 10 << "\"} " 
+                               << value.histogram_value.buckets[i] << "\n";
+                    }
+                    break;
+            }
+        }
+        
+        return output.str();
+    }
+    
+    std::string export_csv() const {
+        std::ostringstream output;
+        output << "metric_name,metric_type,value,timestamp\n";
+        
+        for (const auto& [name, value] : metrics_) {
+            std::string type_str;
+            std::string value_str;
+            
+            switch (value.type) {
+                case MetricType::COUNTER:
+                    type_str = "counter";
+                    value_str = std::to_string(value.counter_value);
+                    break;
+                case MetricType::GAUGE:
+                    type_str = "gauge";
+                    value_str = std::to_string(value.gauge_value);
+                    break;
+                case MetricType::TIMER:
+                    type_str = "timer";
+                    value_str = std::to_string(value.timer_value.total_time.count());
+                    break;
+                case MetricType::HISTOGRAM:
+                    type_str = "histogram";
+                    value_str = std::to_string(value.histogram_value.buckets.size());
+                    break;
+            }
+            
+            output << name << "," << type_str << "," << value_str << "," 
+                   << std::chrono::duration_cast<std::chrono::seconds>(
+                       std::chrono::steady_clock::now().time_since_epoch()).count() << "\n";
+        }
+        
+        return output.str();
+    }
+    
+    std::string export_xml() const {
+        std::ostringstream output;
+        output << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+        output << "<metrics>\n";
+        
+        for (const auto& [name, value] : metrics_) {
+            output << "  <metric name=\"" << name << "\">\n";
+            output << "    <type>";
+            
+            switch (value.type) {
+                case MetricType::COUNTER:
+                    output << "counter</type>\n";
+                    output << "    <value>" << value.counter_value << "</value>\n";
+                    break;
+                case MetricType::GAUGE:
+                    output << "gauge</type>\n";
+                    output << "    <value>" << value.gauge_value << "</value>\n";
+                    break;
+                case MetricType::TIMER:
+                    output << "timer</type>\n";
+                    output << "    <total_time>" << value.timer_value.total_time.count() << "</total_time>\n";
+                    output << "    <count>" << value.timer_value.count << "</count>\n";
+                    break;
+                case MetricType::HISTOGRAM:
+                    output << "histogram</type>\n";
+                    output << "    <buckets>";
+                    for (size_t bucket : value.histogram_value.buckets) {
+                        output << bucket << ",";
+                    }
+                    output << "</buckets>\n";
+                    break;
+            }
+            
+            output << "  </metric>\n";
+        }
+        
+        output << "</metrics>\n";
+        return output.str();
+    }
+    
+public:
 
     Result<void> configure_export(const std::unordered_map<std::string, std::string>& config) override {
         export_config_ = config;
@@ -1081,7 +1266,22 @@ public:
             alert_score = std::max(0.0, 1.0 - (active_alerts.size() * 0.1));
         }
         
-        // TODO: Calculate performance and security scores based on metrics
+        // Calculate performance and security scores based on metrics
+        auto perf_metrics = performance_monitor_->get_current_metrics();
+        if (perf_metrics.connection_latency.count() > 100) { // > 100ms latency
+            performance_score *= 0.8;
+        }
+        if (perf_metrics.memory_usage > 0.8) { // > 80% memory usage
+            performance_score *= 0.7;
+        }
+        
+        auto sec_metrics = security_monitor_->get_current_metrics();
+        if (sec_metrics.failed_handshakes > 10) { // High failure rate
+            security_score *= 0.6;
+        }
+        if (sec_metrics.suspicious_events > 5) { // Security concerns
+            security_score *= 0.5;
+        }
         
         return (performance_score + security_score + alert_score) / 3.0;
     }
