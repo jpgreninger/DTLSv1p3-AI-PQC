@@ -15,7 +15,7 @@ This project provides a complete DTLS v1.3 protocol stack implementation with du
 
 ## Documentation
 
-
+https://jpgreninger.github.io/DTLSv1p3-AI-PQC/
 
 ## 🏆 **Key Features**
 
@@ -174,7 +174,7 @@ make systemc-test            # Run SystemC tests
 
 ### ✅ **IMPLEMENTATION COMPLETE** - Quantum-Resistant DTLS v1.3
 
-**🏆 PRODUCTION READY**: Full RFC 9147 compliance + World's first hybrid PQC support
+**🏆 PRODUCTION READY**: Full RFC 9147 compliance + hybrid PQC support
 
 - [x] **Requirements Analysis**: Complete PRD and system design
 - [x] **Core Implementation**: Production-ready C++ DTLS v1.3 library
