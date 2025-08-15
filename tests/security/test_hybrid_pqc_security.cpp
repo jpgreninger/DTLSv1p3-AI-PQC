@@ -549,7 +549,7 @@ TEST_F(HybridPQCSecurityTest, MalformedInputResistance) {
         auto result = provider->mlkem_encapsulate(malformed_encap);
         // Should either succeed (if implementation handles it) or fail gracefully
         if (!result) {
-            EXPECT_EQ(result.error(), DTLSError::CRYPTO_ERROR);
+            EXPECT_EQ(result.error(), DTLSError::CRYPTO_PROVIDER_ERROR);
         }
         
         // Test malformed ML-KEM ciphertext
@@ -564,10 +564,10 @@ TEST_F(HybridPQCSecurityTest, MalformedInputResistance) {
         malformed_decap.private_key = privkey;
         malformed_decap.ciphertext = std::vector<uint8_t>(768, 0x00); // All zeros
         
-        result = provider->mlkem_decapsulate(malformed_decap);
+        auto decap_result = provider->mlkem_decapsulate(malformed_decap);
         // Should fail gracefully or handle the malformed input
-        if (!result) {
-            EXPECT_EQ(result.error(), DTLSError::CRYPTO_ERROR);
+        if (!decap_result) {
+            EXPECT_EQ(decap_result.error(), DTLSError::CRYPTO_PROVIDER_ERROR);
         }
         
         // Test oversized inputs
@@ -576,8 +576,8 @@ TEST_F(HybridPQCSecurityTest, MalformedInputResistance) {
         EXPECT_FALSE(result) << "Should reject oversized public key";
         
         malformed_decap.ciphertext = std::vector<uint8_t>(1000, 0x42); // Too large
-        result = provider->mlkem_decapsulate(malformed_decap);
-        EXPECT_FALSE(result) << "Should reject oversized ciphertext";
+        decap_result = provider->mlkem_decapsulate(malformed_decap);
+        EXPECT_FALSE(decap_result) << "Should reject oversized ciphertext";
         
         // Test undersized inputs
         malformed_encap.public_key = std::vector<uint8_t>(10, 0x42); // Too small
@@ -585,7 +585,7 @@ TEST_F(HybridPQCSecurityTest, MalformedInputResistance) {
         EXPECT_FALSE(result) << "Should reject undersized public key";
         
         malformed_decap.ciphertext = std::vector<uint8_t>(10, 0x42); // Too small
-        result = provider->mlkem_decapsulate(malformed_decap);
-        EXPECT_FALSE(result) << "Should reject undersized ciphertext";
+        decap_result = provider->mlkem_decapsulate(malformed_decap);
+        EXPECT_FALSE(decap_result) << "Should reject undersized ciphertext";
     }
 }

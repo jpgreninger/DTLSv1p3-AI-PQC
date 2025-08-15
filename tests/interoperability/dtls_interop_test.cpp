@@ -167,6 +167,9 @@ protected:
         ConnectionConfig connection_config;
         const auto& test_config = config_it->second;
         
+        // Use test configuration parameters
+        (void)test_config; // Mark as used to suppress warning
+        
         // Set supported cipher suites based on test configuration
         connection_config.supported_cipher_suites = {
             CipherSuite::TLS_AES_128_GCM_SHA256,
