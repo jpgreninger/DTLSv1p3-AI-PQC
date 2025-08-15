@@ -138,6 +138,9 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1protocol_1_1Connec
 </div><!--header-->
 <div class="contents">
 
+<p><a class="el" href="classdtls_1_1v13_1_1Connection.html" title="DTLS v1.3 Connection implementation.">Connection</a> ID Manager for handling DTLS <a class="el" href="classdtls_1_1v13_1_1Connection.html" title="DTLS v1.3 Connection implementation.">Connection</a> IDs (RFC 9146)  
+ <a href="classdtls_1_1v13_1_1protocol_1_1ConnectionIDManager.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="record__layer_8h_source.html">record_layer.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -154,136 +157,36 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aa0b25120aa52992df29b0b16a5d7b33d" id="r_aa0b25120aa52992df29b0b16a5d7b33d"><td class="memItemLeft" align="right" valign="top"><a id="aa0b25120aa52992df29b0b16a5d7b33d" name="aa0b25120aa52992df29b0b16a5d7b33d"></a>
 <a class="el" href="classdtls_1_1v13_1_1protocol_1_1ConnectionIDManager.html">ConnectionIDManager</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classdtls_1_1v13_1_1protocol_1_1ConnectionIDManager.html">ConnectionIDManager</a> &amp;&amp;) noexcept=default</td></tr>
 <tr class="separator:aa0b25120aa52992df29b0b16a5d7b33d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aec2b38db93ef2fea0d964352f749b485" id="r_aec2b38db93ef2fea0d964352f749b485"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1ConnectionIDManager.html#aec2b38db93ef2fea0d964352f749b485">set_local_connection_id</a> (const ConnectionID &amp;cid)</td></tr>
+<tr class="memitem:aec2b38db93ef2fea0d964352f749b485" id="r_aec2b38db93ef2fea0d964352f749b485"><td class="memItemLeft" align="right" valign="top"><a id="aec2b38db93ef2fea0d964352f749b485" name="aec2b38db93ef2fea0d964352f749b485"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>set_local_connection_id</b> (const ConnectionID &amp;cid)</td></tr>
+<tr class="memdesc:aec2b38db93ef2fea0d964352f749b485"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set local connection ID. <br /></td></tr>
 <tr class="separator:aec2b38db93ef2fea0d964352f749b485"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4c1e741e84677f2e58ca3a671e2796d0" id="r_a4c1e741e84677f2e58ca3a671e2796d0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1ConnectionIDManager.html#a4c1e741e84677f2e58ca3a671e2796d0">set_peer_connection_id</a> (const ConnectionID &amp;cid)</td></tr>
+<tr class="memitem:a4c1e741e84677f2e58ca3a671e2796d0" id="r_a4c1e741e84677f2e58ca3a671e2796d0"><td class="memItemLeft" align="right" valign="top"><a id="a4c1e741e84677f2e58ca3a671e2796d0" name="a4c1e741e84677f2e58ca3a671e2796d0"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>set_peer_connection_id</b> (const ConnectionID &amp;cid)</td></tr>
+<tr class="memdesc:a4c1e741e84677f2e58ca3a671e2796d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set peer connection ID. <br /></td></tr>
 <tr class="separator:a4c1e741e84677f2e58ca3a671e2796d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a465a3c1278982531e83c7500eff30799" id="r_a465a3c1278982531e83c7500eff30799"><td class="memItemLeft" align="right" valign="top">const ConnectionID &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1ConnectionIDManager.html#a465a3c1278982531e83c7500eff30799">get_local_connection_id</a> () const</td></tr>
+<tr class="memitem:a465a3c1278982531e83c7500eff30799" id="r_a465a3c1278982531e83c7500eff30799"><td class="memItemLeft" align="right" valign="top"><a id="a465a3c1278982531e83c7500eff30799" name="a465a3c1278982531e83c7500eff30799"></a>
+const ConnectionID &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get_local_connection_id</b> () const</td></tr>
+<tr class="memdesc:a465a3c1278982531e83c7500eff30799"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get local connection ID. <br /></td></tr>
 <tr class="separator:a465a3c1278982531e83c7500eff30799"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af5332232617331d326ecdcb987df97d8" id="r_af5332232617331d326ecdcb987df97d8"><td class="memItemLeft" align="right" valign="top">const ConnectionID &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1ConnectionIDManager.html#af5332232617331d326ecdcb987df97d8">get_peer_connection_id</a> () const</td></tr>
+<tr class="memitem:af5332232617331d326ecdcb987df97d8" id="r_af5332232617331d326ecdcb987df97d8"><td class="memItemLeft" align="right" valign="top"><a id="af5332232617331d326ecdcb987df97d8" name="af5332232617331d326ecdcb987df97d8"></a>
+const ConnectionID &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get_peer_connection_id</b> () const</td></tr>
+<tr class="memdesc:af5332232617331d326ecdcb987df97d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get peer connection ID. <br /></td></tr>
 <tr class="separator:af5332232617331d326ecdcb987df97d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2baaa45957a4fa49a9ab34097698a2c0" id="r_a2baaa45957a4fa49a9ab34097698a2c0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1ConnectionIDManager.html#a2baaa45957a4fa49a9ab34097698a2c0">is_connection_id_enabled</a> () const</td></tr>
+<tr class="memitem:a2baaa45957a4fa49a9ab34097698a2c0" id="r_a2baaa45957a4fa49a9ab34097698a2c0"><td class="memItemLeft" align="right" valign="top"><a id="a2baaa45957a4fa49a9ab34097698a2c0" name="a2baaa45957a4fa49a9ab34097698a2c0"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_connection_id_enabled</b> () const</td></tr>
+<tr class="memdesc:a2baaa45957a4fa49a9ab34097698a2c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if connection ID is enabled. <br /></td></tr>
 <tr class="separator:a2baaa45957a4fa49a9ab34097698a2c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae5228db91e34e4f4525c3b75f246beff" id="r_ae5228db91e34e4f4525c3b75f246beff"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1ConnectionIDManager.html#ae5228db91e34e4f4525c3b75f246beff">is_valid_connection_id</a> (const ConnectionID &amp;cid) const</td></tr>
+<tr class="memitem:ae5228db91e34e4f4525c3b75f246beff" id="r_ae5228db91e34e4f4525c3b75f246beff"><td class="memItemLeft" align="right" valign="top"><a id="ae5228db91e34e4f4525c3b75f246beff" name="ae5228db91e34e4f4525c3b75f246beff"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_valid_connection_id</b> (const ConnectionID &amp;cid) const</td></tr>
+<tr class="memdesc:ae5228db91e34e4f4525c3b75f246beff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate incoming connection ID. <br /></td></tr>
 <tr class="separator:ae5228db91e34e4f4525c3b75f246beff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p><a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> ID Manager for handling DTLS <a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> IDs (RFC 9146) </p>
+<div class="textblock"><p><a class="el" href="classdtls_1_1v13_1_1Connection.html" title="DTLS v1.3 Connection implementation.">Connection</a> ID Manager for handling DTLS <a class="el" href="classdtls_1_1v13_1_1Connection.html" title="DTLS v1.3 Connection implementation.">Connection</a> IDs (RFC 9146) </p>
 
 <p class="definition">Definition at line <a class="el" href="record__layer_8h_source.html#l00192">192</a> of file <a class="el" href="record__layer_8h_source.html">record_layer.h</a>.</p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a465a3c1278982531e83c7500eff30799" name="a465a3c1278982531e83c7500eff30799"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a465a3c1278982531e83c7500eff30799">&#9670;&#160;</a></span>get_local_connection_id()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const ConnectionID &amp; dtls::v13::protocol::ConnectionIDManager::get_local_connection_id </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Get local connection ID </p>
-
-</div>
-</div>
-<a id="af5332232617331d326ecdcb987df97d8" name="af5332232617331d326ecdcb987df97d8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af5332232617331d326ecdcb987df97d8">&#9670;&#160;</a></span>get_peer_connection_id()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const ConnectionID &amp; dtls::v13::protocol::ConnectionIDManager::get_peer_connection_id </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Get peer connection ID </p>
-
-</div>
-</div>
-<a id="a2baaa45957a4fa49a9ab34097698a2c0" name="a2baaa45957a4fa49a9ab34097698a2c0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2baaa45957a4fa49a9ab34097698a2c0">&#9670;&#160;</a></span>is_connection_id_enabled()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool dtls::v13::protocol::ConnectionIDManager::is_connection_id_enabled </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Check if connection ID is enabled </p>
-
-</div>
-</div>
-<a id="ae5228db91e34e4f4525c3b75f246beff" name="ae5228db91e34e4f4525c3b75f246beff"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae5228db91e34e4f4525c3b75f246beff">&#9670;&#160;</a></span>is_valid_connection_id()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool dtls::v13::protocol::ConnectionIDManager::is_valid_connection_id </td>
-          <td>(</td>
-          <td class="paramtype">const ConnectionID &amp;&#160;</td>
-          <td class="paramname"><em>cid</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Validate incoming connection ID </p>
-
-</div>
-</div>
-<a id="aec2b38db93ef2fea0d964352f749b485" name="aec2b38db93ef2fea0d964352f749b485"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aec2b38db93ef2fea0d964352f749b485">&#9670;&#160;</a></span>set_local_connection_id()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void dtls::v13::protocol::ConnectionIDManager::set_local_connection_id </td>
-          <td>(</td>
-          <td class="paramtype">const ConnectionID &amp;&#160;</td>
-          <td class="paramname"><em>cid</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Set local connection ID </p>
-
-</div>
-</div>
-<a id="a4c1e741e84677f2e58ca3a671e2796d0" name="a4c1e741e84677f2e58ca3a671e2796d0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4c1e741e84677f2e58ca3a671e2796d0">&#9670;&#160;</a></span>set_peer_connection_id()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void dtls::v13::protocol::ConnectionIDManager::set_peer_connection_id </td>
-          <td>(</td>
-          <td class="paramtype">const ConnectionID &amp;&#160;</td>
-          <td class="paramname"><em>cid</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Set peer connection ID </p>
-
-</div>
-</div>
-<hr/>The documentation for this class was generated from the following file:<ul>
+</div><hr/>The documentation for this class was generated from the following file:<ul>
 <li>dtls/protocol/<a class="el" href="record__layer_8h_source.html">record_layer.h</a></li>
 </ul>
 </div><!-- contents -->

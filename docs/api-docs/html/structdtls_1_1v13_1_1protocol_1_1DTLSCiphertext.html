@@ -141,6 +141,9 @@ $(document).ready(function(){initNavTree('structdtls_1_1v13_1_1protocol_1_1DTLSC
 </div><!--header-->
 <div class="contents">
 
+<p><a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html" title="DTLSCiphertext structure as specified in RFC 9147 Section 4.1.2.">DTLSCiphertext</a> structure as specified in RFC 9147 Section 4.1.2.  
+ <a href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="dtls__records_8h_source.html">dtls_records.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -161,10 +164,13 @@ Public Member Functions</h2></td></tr>
 <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html">DTLSCiphertext</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html">DTLSCiphertext</a> &amp;&amp;other) noexcept=default</td></tr>
 <tr class="separator:ad502d50b4aad10e9c51b8baae9bd0814"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a41ed8174e180e72f512ae334df8e42b7" id="r_a41ed8174e180e72f512ae334df8e42b7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html#a41ed8174e180e72f512ae334df8e42b7">serialize</a> (<a class="el" href="classdtls_1_1v13_1_1memory_1_1ZeroCopyBuffer.html">memory::Buffer</a> &amp;buffer) const</td></tr>
+<tr class="memdesc:a41ed8174e180e72f512ae334df8e42b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serialize the <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html" title="DTLSCiphertext structure as specified in RFC 9147 Section 4.1.2.">DTLSCiphertext</a> structure to a buffer.  <br /></td></tr>
 <tr class="separator:a41ed8174e180e72f512ae334df8e42b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af8b2ba5df9d4bd6242732e045a6c1430" id="r_af8b2ba5df9d4bd6242732e045a6c1430"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html#af8b2ba5df9d4bd6242732e045a6c1430">is_valid</a> () const</td></tr>
+<tr class="memdesc:af8b2ba5df9d4bd6242732e045a6c1430"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate the <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html" title="DTLSCiphertext structure as specified in RFC 9147 Section 4.1.2.">DTLSCiphertext</a> structure.  <br /></td></tr>
 <tr class="separator:af8b2ba5df9d4bd6242732e045a6c1430"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6270a7cb5f3f2bfec6b16d4e57f14ba4" id="r_a6270a7cb5f3f2bfec6b16d4e57f14ba4"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html#a6270a7cb5f3f2bfec6b16d4e57f14ba4">total_size</a> () const</td></tr>
+<tr class="memdesc:a6270a7cb5f3f2bfec6b16d4e57f14ba4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get total size when serialized (header + encrypted_record + optional CID)  <br /></td></tr>
 <tr class="separator:a6270a7cb5f3f2bfec6b16d4e57f14ba4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a929b035cb55b4eaf5fe8b36c3b51e90a" id="r_a929b035cb55b4eaf5fe8b36c3b51e90a"><td class="memItemLeft" align="right" valign="top"><a id="a929b035cb55b4eaf5fe8b36c3b51e90a" name="a929b035cb55b4eaf5fe8b36c3b51e90a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>set_connection_id</b> (const uint8_t *cid, uint8_t cid_length)</td></tr>
@@ -211,6 +217,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_encrypted_record<
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a8782cb99a101c48a7b73a01bcd14d2b1" id="r_a8782cb99a101c48a7b73a01bcd14d2b1"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html">DTLSCiphertext</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html#a8782cb99a101c48a7b73a01bcd14d2b1">deserialize</a> (const <a class="el" href="classdtls_1_1v13_1_1memory_1_1ZeroCopyBuffer.html">memory::Buffer</a> &amp;buffer, size_t offset=0)</td></tr>
+<tr class="memdesc:a8782cb99a101c48a7b73a01bcd14d2b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deserialize <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html" title="DTLSCiphertext structure as specified in RFC 9147 Section 4.1.2.">DTLSCiphertext</a> from buffer.  <br /></td></tr>
 <tr class="separator:a8782cb99a101c48a7b73a01bcd14d2b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
@@ -244,7 +251,7 @@ Static Public Attributes</h2></td></tr>
 <tr class="separator:a07ea01585a542638564c828b23dbd160"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p><a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html">DTLSCiphertext</a> structure as specified in RFC 9147 Section 4.1.2</p>
+<div class="textblock"><p><a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html" title="DTLSCiphertext structure as specified in RFC 9147 Section 4.1.2.">DTLSCiphertext</a> structure as specified in RFC 9147 Section 4.1.2. </p>
 <p>This structure contains encrypted records with AEAD protection. The sequence number is encrypted using per-traffic-key encryption. </p>
 
 <p class="definition">Definition at line <a class="el" href="dtls__records_8h_source.html#l00128">128</a> of file <a class="el" href="dtls__records_8h_source.html">dtls_records.h</a>.</p>
@@ -282,14 +289,16 @@ Static Public Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Deserialize <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html">DTLSCiphertext</a> from buffer </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Deserialize <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html" title="DTLSCiphertext structure as specified in RFC 9147 Section 4.1.2.">DTLSCiphertext</a> from buffer. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">buffer</td><td>Input buffer containing serialized data </td></tr>
     <tr><td class="paramname">offset</td><td>Offset in buffer to start reading from </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Deserialized <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html">DTLSCiphertext</a> structure or error </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Deserialized <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html" title="DTLSCiphertext structure as specified in RFC 9147 Section 4.1.2.">DTLSCiphertext</a> structure or error </dd></dl>
 
 </div>
 </div>
@@ -550,7 +559,9 @@ Static Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Validate the <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html">DTLSCiphertext</a> structure </p><dl class="section return"><dt>Returns</dt><dd>true if valid, false otherwise </dd></dl>
+
+<p>Validate the <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html" title="DTLSCiphertext structure as specified in RFC 9147 Section 4.1.2.">DTLSCiphertext</a> structure. </p>
+<dl class="section return"><dt>Returns</dt><dd>true if valid, false otherwise </dd></dl>
 
 </div>
 </div>
@@ -569,7 +580,9 @@ Static Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Serialize the <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html">DTLSCiphertext</a> structure to a buffer </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Serialize the <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html" title="DTLSCiphertext structure as specified in RFC 9147 Section 4.1.2.">DTLSCiphertext</a> structure to a buffer. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">buffer</td><td>Output buffer to write serialized data <br  />
  </td></tr>
@@ -706,7 +719,9 @@ Static Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Get total size when serialized (header + encrypted_record + optional CID) </p><dl class="section return"><dt>Returns</dt><dd>Total serialized size in bytes </dd></dl>
+
+<p>Get total size when serialized (header + encrypted_record + optional CID) </p>
+<dl class="section return"><dt>Returns</dt><dd>Total serialized size in bytes </dd></dl>
 
 </div>
 </div>

@@ -138,6 +138,9 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1ConnectionManager.
 </div><!--header-->
 <div class="contents">
 
+<p><a class="el" href="classdtls_1_1v13_1_1Connection.html" title="DTLS v1.3 Connection implementation.">Connection</a> Manager for handling multiple connections.  
+ <a href="classdtls_1_1v13_1_1ConnectionManager.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="connection_8h_source.html">connection.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -154,177 +157,44 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ab8deb30ffaa7181c2785a6a3d16ea061" id="r_ab8deb30ffaa7181c2785a6a3d16ea061"><td class="memItemLeft" align="right" valign="top"><a id="ab8deb30ffaa7181c2785a6a3d16ea061" name="ab8deb30ffaa7181c2785a6a3d16ea061"></a>
 <a class="el" href="classdtls_1_1v13_1_1ConnectionManager.html">ConnectionManager</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classdtls_1_1v13_1_1ConnectionManager.html">ConnectionManager</a> &amp;&amp;) noexcept=default</td></tr>
 <tr class="separator:ab8deb30ffaa7181c2785a6a3d16ea061"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af8105a7c18a02a501c799524883aaf79" id="r_af8105a7c18a02a501c799524883aaf79"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1ConnectionManager.html#af8105a7c18a02a501c799524883aaf79">add_connection</a> (std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> &gt; connection)</td></tr>
+<tr class="memitem:af8105a7c18a02a501c799524883aaf79" id="r_af8105a7c18a02a501c799524883aaf79"><td class="memItemLeft" align="right" valign="top"><a id="af8105a7c18a02a501c799524883aaf79" name="af8105a7c18a02a501c799524883aaf79"></a>
+<a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>add_connection</b> (std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> &gt; connection)</td></tr>
+<tr class="memdesc:af8105a7c18a02a501c799524883aaf79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a connection to the manager. <br /></td></tr>
 <tr class="separator:af8105a7c18a02a501c799524883aaf79"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a648f0795225546527e7085cdfc257bc5" id="r_a648f0795225546527e7085cdfc257bc5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1ConnectionManager.html#a648f0795225546527e7085cdfc257bc5">remove_connection</a> (const ConnectionID &amp;connection_id)</td></tr>
+<tr class="memitem:a648f0795225546527e7085cdfc257bc5" id="r_a648f0795225546527e7085cdfc257bc5"><td class="memItemLeft" align="right" valign="top"><a id="a648f0795225546527e7085cdfc257bc5" name="a648f0795225546527e7085cdfc257bc5"></a>
+<a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>remove_connection</b> (const ConnectionID &amp;connection_id)</td></tr>
+<tr class="memdesc:a648f0795225546527e7085cdfc257bc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove a connection from the manager. <br /></td></tr>
 <tr class="separator:a648f0795225546527e7085cdfc257bc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab4bfac0a64a8cda3090d62bee8d1387d" id="r_ab4bfac0a64a8cda3090d62bee8d1387d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1ConnectionManager.html#ab4bfac0a64a8cda3090d62bee8d1387d">find_connection</a> (const ConnectionID &amp;connection_id)</td></tr>
+<tr class="memitem:ab4bfac0a64a8cda3090d62bee8d1387d" id="r_ab4bfac0a64a8cda3090d62bee8d1387d"><td class="memItemLeft" align="right" valign="top"><a id="ab4bfac0a64a8cda3090d62bee8d1387d" name="ab4bfac0a64a8cda3090d62bee8d1387d"></a>
+<a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>find_connection</b> (const ConnectionID &amp;connection_id)</td></tr>
+<tr class="memdesc:ab4bfac0a64a8cda3090d62bee8d1387d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find connection by connection ID. <br /></td></tr>
 <tr class="separator:ab4bfac0a64a8cda3090d62bee8d1387d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaa9b20825ac6cf482b99c1da4c5f9ad1" id="r_aaa9b20825ac6cf482b99c1da4c5f9ad1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1ConnectionManager.html#aaa9b20825ac6cf482b99c1da4c5f9ad1">find_connection</a> (const <a class="el" href="structdtls_1_1v13_1_1NetworkAddress.html">NetworkAddress</a> &amp;address)</td></tr>
+<tr class="memitem:aaa9b20825ac6cf482b99c1da4c5f9ad1" id="r_aaa9b20825ac6cf482b99c1da4c5f9ad1"><td class="memItemLeft" align="right" valign="top"><a id="aaa9b20825ac6cf482b99c1da4c5f9ad1" name="aaa9b20825ac6cf482b99c1da4c5f9ad1"></a>
+<a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>find_connection</b> (const <a class="el" href="structdtls_1_1v13_1_1NetworkAddress.html">NetworkAddress</a> &amp;address)</td></tr>
+<tr class="memdesc:aaa9b20825ac6cf482b99c1da4c5f9ad1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find connection by network address. <br /></td></tr>
 <tr class="separator:aaa9b20825ac6cf482b99c1da4c5f9ad1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af93d4340eb981ce0b5c675893766f0b0" id="r_af93d4340eb981ce0b5c675893766f0b0"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1ConnectionManager.html#af93d4340eb981ce0b5c675893766f0b0">get_all_connections</a> ()</td></tr>
+<tr class="memitem:af93d4340eb981ce0b5c675893766f0b0" id="r_af93d4340eb981ce0b5c675893766f0b0"><td class="memItemLeft" align="right" valign="top"><a id="af93d4340eb981ce0b5c675893766f0b0" name="af93d4340eb981ce0b5c675893766f0b0"></a>
+std::vector&lt; <a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>get_all_connections</b> ()</td></tr>
+<tr class="memdesc:af93d4340eb981ce0b5c675893766f0b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get all active connections. <br /></td></tr>
 <tr class="separator:af93d4340eb981ce0b5c675893766f0b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac3172c40263fe509424268ff3d265e1c" id="r_ac3172c40263fe509424268ff3d265e1c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1ConnectionManager.html#ac3172c40263fe509424268ff3d265e1c">close_all_connections</a> ()</td></tr>
+<tr class="memitem:ac3172c40263fe509424268ff3d265e1c" id="r_ac3172c40263fe509424268ff3d265e1c"><td class="memItemLeft" align="right" valign="top"><a id="ac3172c40263fe509424268ff3d265e1c" name="ac3172c40263fe509424268ff3d265e1c"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>close_all_connections</b> ()</td></tr>
+<tr class="memdesc:ac3172c40263fe509424268ff3d265e1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Close all connections. <br /></td></tr>
 <tr class="separator:ac3172c40263fe509424268ff3d265e1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab30bdf89ed98ddab10531bce180ff599" id="r_ab30bdf89ed98ddab10531bce180ff599"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1ConnectionManager.html#ab30bdf89ed98ddab10531bce180ff599">get_connection_count</a> () const</td></tr>
+<tr class="memitem:ab30bdf89ed98ddab10531bce180ff599" id="r_ab30bdf89ed98ddab10531bce180ff599"><td class="memItemLeft" align="right" valign="top"><a id="ab30bdf89ed98ddab10531bce180ff599" name="ab30bdf89ed98ddab10531bce180ff599"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_connection_count</b> () const</td></tr>
+<tr class="memdesc:ab30bdf89ed98ddab10531bce180ff599"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get connection count. <br /></td></tr>
 <tr class="separator:ab30bdf89ed98ddab10531bce180ff599"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a35abc39f0f1dcbbf3e84a57622393c1e" id="r_a35abc39f0f1dcbbf3e84a57622393c1e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1ConnectionManager.html#a35abc39f0f1dcbbf3e84a57622393c1e">cleanup_closed_connections</a> ()</td></tr>
+<tr class="memitem:a35abc39f0f1dcbbf3e84a57622393c1e" id="r_a35abc39f0f1dcbbf3e84a57622393c1e"><td class="memItemLeft" align="right" valign="top"><a id="a35abc39f0f1dcbbf3e84a57622393c1e" name="a35abc39f0f1dcbbf3e84a57622393c1e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>cleanup_closed_connections</b> ()</td></tr>
+<tr class="memdesc:a35abc39f0f1dcbbf3e84a57622393c1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cleanup closed connections. <br /></td></tr>
 <tr class="separator:a35abc39f0f1dcbbf3e84a57622393c1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p><a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> Manager for handling multiple connections </p>
+<div class="textblock"><p><a class="el" href="classdtls_1_1v13_1_1Connection.html" title="DTLS v1.3 Connection implementation.">Connection</a> Manager for handling multiple connections. </p>
 
 <p class="definition">Definition at line <a class="el" href="connection_8h_source.html#l00618">618</a> of file <a class="el" href="connection_8h_source.html">connection.h</a>.</p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="af8105a7c18a02a501c799524883aaf79" name="af8105a7c18a02a501c799524883aaf79"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af8105a7c18a02a501c799524883aaf79">&#9670;&#160;</a></span>add_connection()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; dtls::v13::ConnectionManager::add_connection </td>
-          <td>(</td>
-          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> &gt;&#160;</td>
-          <td class="paramname"><em>connection</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Add a connection to the manager </p>
-
-</div>
-</div>
-<a id="a35abc39f0f1dcbbf3e84a57622393c1e" name="a35abc39f0f1dcbbf3e84a57622393c1e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a35abc39f0f1dcbbf3e84a57622393c1e">&#9670;&#160;</a></span>cleanup_closed_connections()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void dtls::v13::ConnectionManager::cleanup_closed_connections </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Cleanup closed connections </p>
-
-</div>
-</div>
-<a id="ac3172c40263fe509424268ff3d265e1c" name="ac3172c40263fe509424268ff3d265e1c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac3172c40263fe509424268ff3d265e1c">&#9670;&#160;</a></span>close_all_connections()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void dtls::v13::ConnectionManager::close_all_connections </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Close all connections </p>
-
-</div>
-</div>
-<a id="ab4bfac0a64a8cda3090d62bee8d1387d" name="ab4bfac0a64a8cda3090d62bee8d1387d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab4bfac0a64a8cda3090d62bee8d1387d">&#9670;&#160;</a></span>find_connection() <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> * &gt; dtls::v13::ConnectionManager::find_connection </td>
-          <td>(</td>
-          <td class="paramtype">const ConnectionID &amp;&#160;</td>
-          <td class="paramname"><em>connection_id</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Find connection by connection ID </p>
-
-</div>
-</div>
-<a id="aaa9b20825ac6cf482b99c1da4c5f9ad1" name="aaa9b20825ac6cf482b99c1da4c5f9ad1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaa9b20825ac6cf482b99c1da4c5f9ad1">&#9670;&#160;</a></span>find_connection() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> * &gt; dtls::v13::ConnectionManager::find_connection </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="structdtls_1_1v13_1_1NetworkAddress.html">NetworkAddress</a> &amp;&#160;</td>
-          <td class="paramname"><em>address</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Find connection by network address </p>
-
-</div>
-</div>
-<a id="af93d4340eb981ce0b5c675893766f0b0" name="af93d4340eb981ce0b5c675893766f0b0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af93d4340eb981ce0b5c675893766f0b0">&#9670;&#160;</a></span>get_all_connections()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt; <a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> * &gt; dtls::v13::ConnectionManager::get_all_connections </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Get all active connections </p>
-
-</div>
-</div>
-<a id="ab30bdf89ed98ddab10531bce180ff599" name="ab30bdf89ed98ddab10531bce180ff599"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab30bdf89ed98ddab10531bce180ff599">&#9670;&#160;</a></span>get_connection_count()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">size_t dtls::v13::ConnectionManager::get_connection_count </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Get connection count </p>
-
-</div>
-</div>
-<a id="a648f0795225546527e7085cdfc257bc5" name="a648f0795225546527e7085cdfc257bc5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a648f0795225546527e7085cdfc257bc5">&#9670;&#160;</a></span>remove_connection()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; dtls::v13::ConnectionManager::remove_connection </td>
-          <td>(</td>
-          <td class="paramtype">const ConnectionID &amp;&#160;</td>
-          <td class="paramname"><em>connection_id</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Remove a connection from the manager </p>
-
-</div>
-</div>
-<hr/>The documentation for this class was generated from the following file:<ul>
+</div><hr/>The documentation for this class was generated from the following file:<ul>
 <li>dtls/<a class="el" href="connection_8h_source.html">connection.h</a></li>
 </ul>
 </div><!-- contents -->

@@ -139,11 +139,15 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1protocol_1_1Messag
 </div><!--header-->
 <div class="contents">
 
+<p>Main DTLS Message Layer.  
+ <a href="classdtls_1_1v13_1_1protocol_1_1MessageLayer.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="message__layer_8h_source.html">message_layer.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1protocol_1_1MessageLayer_1_1MessageLayerStats.html">MessageLayerStats</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get message layer statistics.  <a href="structdtls_1_1v13_1_1protocol_1_1MessageLayer_1_1MessageLayerStats.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -163,23 +167,41 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a764bdb446fe6a743f4538e4daa43f920" id="r_a764bdb446fe6a743f4538e4daa43f920"><td class="memItemLeft" align="right" valign="top"><a id="a764bdb446fe6a743f4538e4daa43f920" name="a764bdb446fe6a743f4538e4daa43f920"></a>
 <a class="el" href="classdtls_1_1v13_1_1protocol_1_1MessageLayer.html">MessageLayer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classdtls_1_1v13_1_1protocol_1_1MessageLayer.html">MessageLayer</a> &amp;&amp;) noexcept=default</td></tr>
 <tr class="separator:a764bdb446fe6a743f4538e4daa43f920"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8d2bdf2a3950503a7e4e62edfafbbc67" id="r_a8d2bdf2a3950503a7e4e62edfafbbc67"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1MessageLayer.html#a8d2bdf2a3950503a7e4e62edfafbbc67">initialize</a> ()</td></tr>
+<tr class="memitem:a8d2bdf2a3950503a7e4e62edfafbbc67" id="r_a8d2bdf2a3950503a7e4e62edfafbbc67"><td class="memItemLeft" align="right" valign="top"><a id="a8d2bdf2a3950503a7e4e62edfafbbc67" name="a8d2bdf2a3950503a7e4e62edfafbbc67"></a>
+<a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>initialize</b> ()</td></tr>
+<tr class="memdesc:a8d2bdf2a3950503a7e4e62edfafbbc67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the message layer. <br /></td></tr>
 <tr class="separator:a8d2bdf2a3950503a7e4e62edfafbbc67"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7c050fd515e4d89b8b56cf62f4c5a922" id="r_a7c050fd515e4d89b8b56cf62f4c5a922"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1MessageLayer.html#a7c050fd515e4d89b8b56cf62f4c5a922">send_handshake_message</a> (const <a class="el" href="classdtls_1_1v13_1_1protocol_1_1HandshakeMessage.html">HandshakeMessage</a> &amp;message)</td></tr>
+<tr class="memitem:a7c050fd515e4d89b8b56cf62f4c5a922" id="r_a7c050fd515e4d89b8b56cf62f4c5a922"><td class="memItemLeft" align="right" valign="top"><a id="a7c050fd515e4d89b8b56cf62f4c5a922" name="a7c050fd515e4d89b8b56cf62f4c5a922"></a>
+<a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>send_handshake_message</b> (const <a class="el" href="classdtls_1_1v13_1_1protocol_1_1HandshakeMessage.html">HandshakeMessage</a> &amp;message)</td></tr>
+<tr class="memdesc:a7c050fd515e4d89b8b56cf62f4c5a922"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send a handshake message (handles fragmentation automatically) <br /></td></tr>
 <tr class="separator:a7c050fd515e4d89b8b56cf62f4c5a922"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abdfd8b3e2e34a48fa6c46beb1d24e2b8" id="r_abdfd8b3e2e34a48fa6c46beb1d24e2b8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1MessageLayer.html#abdfd8b3e2e34a48fa6c46beb1d24e2b8">send_handshake_flight</a> (std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1protocol_1_1HandshakeFlight.html">HandshakeFlight</a> &gt; flight)</td></tr>
+<tr class="memitem:abdfd8b3e2e34a48fa6c46beb1d24e2b8" id="r_abdfd8b3e2e34a48fa6c46beb1d24e2b8"><td class="memItemLeft" align="right" valign="top"><a id="abdfd8b3e2e34a48fa6c46beb1d24e2b8" name="abdfd8b3e2e34a48fa6c46beb1d24e2b8"></a>
+<a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>send_handshake_flight</b> (std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1protocol_1_1HandshakeFlight.html">HandshakeFlight</a> &gt; flight)</td></tr>
+<tr class="memdesc:abdfd8b3e2e34a48fa6c46beb1d24e2b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send a complete flight of handshake messages. <br /></td></tr>
 <tr class="separator:abdfd8b3e2e34a48fa6c46beb1d24e2b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aed5e00276589c80ed17c1db357ff1ee8" id="r_aed5e00276589c80ed17c1db357ff1ee8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="classdtls_1_1v13_1_1protocol_1_1HandshakeMessage.html">HandshakeMessage</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1MessageLayer.html#aed5e00276589c80ed17c1db357ff1ee8">process_incoming_handshake_record</a> (const <a class="el" href="classdtls_1_1v13_1_1protocol_1_1PlaintextRecord.html">PlaintextRecord</a> &amp;record)</td></tr>
+<tr class="memitem:aed5e00276589c80ed17c1db357ff1ee8" id="r_aed5e00276589c80ed17c1db357ff1ee8"><td class="memItemLeft" align="right" valign="top"><a id="aed5e00276589c80ed17c1db357ff1ee8" name="aed5e00276589c80ed17c1db357ff1ee8"></a>
+<a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="classdtls_1_1v13_1_1protocol_1_1HandshakeMessage.html">HandshakeMessage</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>process_incoming_handshake_record</b> (const <a class="el" href="classdtls_1_1v13_1_1protocol_1_1PlaintextRecord.html">PlaintextRecord</a> &amp;record)</td></tr>
+<tr class="memdesc:aed5e00276589c80ed17c1db357ff1ee8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Process incoming handshake record (handles reassembly) <br /></td></tr>
 <tr class="separator:aed5e00276589c80ed17c1db357ff1ee8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9275686f1c0d8772c4653903f0c8d5cd" id="r_a9275686f1c0d8772c4653903f0c8d5cd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1MessageLayer.html#a9275686f1c0d8772c4653903f0c8d5cd">start_flight</a> (FlightType type)</td></tr>
+<tr class="memitem:a9275686f1c0d8772c4653903f0c8d5cd" id="r_a9275686f1c0d8772c4653903f0c8d5cd"><td class="memItemLeft" align="right" valign="top"><a id="a9275686f1c0d8772c4653903f0c8d5cd" name="a9275686f1c0d8772c4653903f0c8d5cd"></a>
+<a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>start_flight</b> (FlightType type)</td></tr>
+<tr class="memdesc:a9275686f1c0d8772c4653903f0c8d5cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start a new handshake flight. <br /></td></tr>
 <tr class="separator:a9275686f1c0d8772c4653903f0c8d5cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a02491518798bae97be14c39a4a90352c" id="r_a02491518798bae97be14c39a4a90352c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1MessageLayer.html#a02491518798bae97be14c39a4a90352c">add_to_current_flight</a> (<a class="el" href="classdtls_1_1v13_1_1protocol_1_1HandshakeMessage.html">HandshakeMessage</a> &amp;&amp;message)</td></tr>
+<tr class="memitem:a02491518798bae97be14c39a4a90352c" id="r_a02491518798bae97be14c39a4a90352c"><td class="memItemLeft" align="right" valign="top"><a id="a02491518798bae97be14c39a4a90352c" name="a02491518798bae97be14c39a4a90352c"></a>
+<a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>add_to_current_flight</b> (<a class="el" href="classdtls_1_1v13_1_1protocol_1_1HandshakeMessage.html">HandshakeMessage</a> &amp;&amp;message)</td></tr>
+<tr class="memdesc:a02491518798bae97be14c39a4a90352c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add message to current flight. <br /></td></tr>
 <tr class="separator:a02491518798bae97be14c39a4a90352c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a155cfe08adaee29ae4adeba69f7ba9da" id="r_a155cfe08adaee29ae4adeba69f7ba9da"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1MessageLayer.html#a155cfe08adaee29ae4adeba69f7ba9da">complete_and_send_flight</a> ()</td></tr>
+<tr class="memitem:a155cfe08adaee29ae4adeba69f7ba9da" id="r_a155cfe08adaee29ae4adeba69f7ba9da"><td class="memItemLeft" align="right" valign="top"><a id="a155cfe08adaee29ae4adeba69f7ba9da" name="a155cfe08adaee29ae4adeba69f7ba9da"></a>
+<a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>complete_and_send_flight</b> ()</td></tr>
+<tr class="memdesc:a155cfe08adaee29ae4adeba69f7ba9da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Complete and send current flight. <br /></td></tr>
 <tr class="separator:a155cfe08adaee29ae4adeba69f7ba9da"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a19c69c27fe4a67834fe571e8b14509f5" id="r_a19c69c27fe4a67834fe571e8b14509f5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1MessageLayer.html#a19c69c27fe4a67834fe571e8b14509f5">handle_retransmissions</a> ()</td></tr>
+<tr class="memitem:a19c69c27fe4a67834fe571e8b14509f5" id="r_a19c69c27fe4a67834fe571e8b14509f5"><td class="memItemLeft" align="right" valign="top"><a id="a19c69c27fe4a67834fe571e8b14509f5" name="a19c69c27fe4a67834fe571e8b14509f5"></a>
+<a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>handle_retransmissions</b> ()</td></tr>
+<tr class="memdesc:a19c69c27fe4a67834fe571e8b14509f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle retransmissions (should be called periodically) <br /></td></tr>
 <tr class="separator:a19c69c27fe4a67834fe571e8b14509f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a07aae6f50ee203678739563cfc4e3757" id="r_a07aae6f50ee203678739563cfc4e3757"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1MessageLayer.html#a07aae6f50ee203678739563cfc4e3757">set_max_fragment_size</a> (size_t size)</td></tr>
+<tr class="memitem:a07aae6f50ee203678739563cfc4e3757" id="r_a07aae6f50ee203678739563cfc4e3757"><td class="memItemLeft" align="right" valign="top"><a id="a07aae6f50ee203678739563cfc4e3757" name="a07aae6f50ee203678739563cfc4e3757"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>set_max_fragment_size</b> (size_t size)</td></tr>
+<tr class="memdesc:a07aae6f50ee203678739563cfc4e3757"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set message layer parameters. <br /></td></tr>
 <tr class="separator:a07aae6f50ee203678739563cfc4e3757"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5210333909aa3304df0b7de1142cadfa" id="r_a5210333909aa3304df0b7de1142cadfa"><td class="memItemLeft" align="right" valign="top"><a id="a5210333909aa3304df0b7de1142cadfa" name="a5210333909aa3304df0b7de1142cadfa"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>set_retransmission_timeout</b> (std::chrono::milliseconds timeout)</td></tr>
@@ -192,180 +214,11 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_max_retransmissio
 <tr class="separator:a7f9fca9209b600d92e2135dc0bbf46f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Main DTLS Message Layer</p>
+<div class="textblock"><p>Main DTLS Message Layer. </p>
 <p>Handles message fragmentation, reassembly, flight management, and reliable delivery for DTLS handshake messages. </p>
 
 <p class="definition">Definition at line <a class="el" href="message__layer_8h_source.html#l00254">254</a> of file <a class="el" href="message__layer_8h_source.html">message_layer.h</a>.</p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a02491518798bae97be14c39a4a90352c" name="a02491518798bae97be14c39a4a90352c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a02491518798bae97be14c39a4a90352c">&#9670;&#160;</a></span>add_to_current_flight()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; dtls::v13::protocol::MessageLayer::add_to_current_flight </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1HandshakeMessage.html">HandshakeMessage</a> &amp;&amp;&#160;</td>
-          <td class="paramname"><em>message</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Add message to current flight </p>
-
-</div>
-</div>
-<a id="a155cfe08adaee29ae4adeba69f7ba9da" name="a155cfe08adaee29ae4adeba69f7ba9da"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a155cfe08adaee29ae4adeba69f7ba9da">&#9670;&#160;</a></span>complete_and_send_flight()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; dtls::v13::protocol::MessageLayer::complete_and_send_flight </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Complete and send current flight </p>
-
-</div>
-</div>
-<a id="a19c69c27fe4a67834fe571e8b14509f5" name="a19c69c27fe4a67834fe571e8b14509f5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a19c69c27fe4a67834fe571e8b14509f5">&#9670;&#160;</a></span>handle_retransmissions()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; dtls::v13::protocol::MessageLayer::handle_retransmissions </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Handle retransmissions (should be called periodically) </p>
-
-</div>
-</div>
-<a id="a8d2bdf2a3950503a7e4e62edfafbbc67" name="a8d2bdf2a3950503a7e4e62edfafbbc67"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8d2bdf2a3950503a7e4e62edfafbbc67">&#9670;&#160;</a></span>initialize()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; dtls::v13::protocol::MessageLayer::initialize </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Initialize the message layer </p>
-
-</div>
-</div>
-<a id="aed5e00276589c80ed17c1db357ff1ee8" name="aed5e00276589c80ed17c1db357ff1ee8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aed5e00276589c80ed17c1db357ff1ee8">&#9670;&#160;</a></span>process_incoming_handshake_record()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="classdtls_1_1v13_1_1protocol_1_1HandshakeMessage.html">HandshakeMessage</a> &gt; &gt; dtls::v13::protocol::MessageLayer::process_incoming_handshake_record </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classdtls_1_1v13_1_1protocol_1_1PlaintextRecord.html">PlaintextRecord</a> &amp;&#160;</td>
-          <td class="paramname"><em>record</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Process incoming handshake record (handles reassembly) </p>
-
-</div>
-</div>
-<a id="abdfd8b3e2e34a48fa6c46beb1d24e2b8" name="abdfd8b3e2e34a48fa6c46beb1d24e2b8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abdfd8b3e2e34a48fa6c46beb1d24e2b8">&#9670;&#160;</a></span>send_handshake_flight()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; dtls::v13::protocol::MessageLayer::send_handshake_flight </td>
-          <td>(</td>
-          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1protocol_1_1HandshakeFlight.html">HandshakeFlight</a> &gt;&#160;</td>
-          <td class="paramname"><em>flight</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Send a complete flight of handshake messages </p>
-
-</div>
-</div>
-<a id="a7c050fd515e4d89b8b56cf62f4c5a922" name="a7c050fd515e4d89b8b56cf62f4c5a922"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7c050fd515e4d89b8b56cf62f4c5a922">&#9670;&#160;</a></span>send_handshake_message()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; dtls::v13::protocol::MessageLayer::send_handshake_message </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classdtls_1_1v13_1_1protocol_1_1HandshakeMessage.html">HandshakeMessage</a> &amp;&#160;</td>
-          <td class="paramname"><em>message</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Send a handshake message (handles fragmentation automatically) </p>
-
-</div>
-</div>
-<a id="a07aae6f50ee203678739563cfc4e3757" name="a07aae6f50ee203678739563cfc4e3757"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a07aae6f50ee203678739563cfc4e3757">&#9670;&#160;</a></span>set_max_fragment_size()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void dtls::v13::protocol::MessageLayer::set_max_fragment_size </td>
-          <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>size</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Set message layer parameters </p>
-
-</div>
-</div>
-<a id="a9275686f1c0d8772c4653903f0c8d5cd" name="a9275686f1c0d8772c4653903f0c8d5cd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9275686f1c0d8772c4653903f0c8d5cd">&#9670;&#160;</a></span>start_flight()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; dtls::v13::protocol::MessageLayer::start_flight </td>
-          <td>(</td>
-          <td class="paramtype">FlightType&#160;</td>
-          <td class="paramname"><em>type</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Start a new handshake flight </p>
-
-</div>
-</div>
-<hr/>The documentation for this class was generated from the following file:<ul>
+</div><hr/>The documentation for this class was generated from the following file:<ul>
 <li>dtls/protocol/<a class="el" href="message__layer_8h_source.html">message_layer.h</a></li>
 </ul>
 </div><!-- contents -->

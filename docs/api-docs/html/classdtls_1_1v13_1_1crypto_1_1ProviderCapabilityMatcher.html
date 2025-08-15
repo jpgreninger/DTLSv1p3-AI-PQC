@@ -138,23 +138,31 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1crypto_1_1Provider
 </div><!--header-->
 <div class="contents">
 
+<p>Provider capability matcher for intelligent provider selection.  
+ <a href="classdtls_1_1v13_1_1crypto_1_1ProviderCapabilityMatcher.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="operations__impl_8h_source.html">operations_impl.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a29e2f83e962be62fe2a324472e1e2a2d" id="r_a29e2f83e962be62fe2a324472e1e2a2d"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1ProviderCapabilityMatcher.html#a29e2f83e962be62fe2a324472e1e2a2d">find_best_provider</a> (const <a class="el" href="structdtls_1_1v13_1_1crypto_1_1ProviderSelection.html">ProviderSelection</a> &amp;criteria)</td></tr>
+<tr class="memdesc:a29e2f83e962be62fe2a324472e1e2a2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find the best provider for specific requirements.  <br /></td></tr>
 <tr class="separator:a29e2f83e962be62fe2a324472e1e2a2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adb95f8cff039648840241785aec385f4" id="r_adb95f8cff039648840241785aec385f4"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="structdtls_1_1v13_1_1crypto_1_1ProviderCompatibilityResult.html">ProviderCompatibilityResult</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1ProviderCapabilityMatcher.html#adb95f8cff039648840241785aec385f4">check_compatibility</a> (const std::string &amp;provider_name, const <a class="el" href="structdtls_1_1v13_1_1crypto_1_1ProviderSelection.html">ProviderSelection</a> &amp;criteria)</td></tr>
+<tr class="memdesc:adb95f8cff039648840241785aec385f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if provider meets requirements.  <br /></td></tr>
 <tr class="separator:adb95f8cff039648840241785aec385f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5d7e798176d12234100f03100e8c56da" id="r_a5d7e798176d12234100f03100e8c56da"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; std::pair&lt; std::string, double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1ProviderCapabilityMatcher.html#a5d7e798176d12234100f03100e8c56da">rank_providers</a> (const <a class="el" href="structdtls_1_1v13_1_1crypto_1_1ProviderSelection.html">ProviderSelection</a> &amp;criteria)</td></tr>
+<tr class="memdesc:a5d7e798176d12234100f03100e8c56da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rank all providers by compatibility score.  <br /></td></tr>
 <tr class="separator:a5d7e798176d12234100f03100e8c56da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae162cae2a12b6fd03355184078c52ed6" id="r_ae162cae2a12b6fd03355184078c52ed6"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1ProviderCapabilityMatcher.html#ae162cae2a12b6fd03355184078c52ed6">find_providers_with_capability</a> (const std::function&lt; bool(const <a class="el" href="structdtls_1_1v13_1_1crypto_1_1ProviderCapabilities.html">ProviderCapabilities</a> &amp;)&gt; &amp;capability_checker)</td></tr>
+<tr class="memdesc:ae162cae2a12b6fd03355184078c52ed6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find providers with specific capability.  <br /></td></tr>
 <tr class="separator:ae162cae2a12b6fd03355184078c52ed6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acffc5adea290e816d272931f10dbfc3c" id="r_acffc5adea290e816d272931f10dbfc3c"><td class="memItemLeft" align="right" valign="top">static std::unordered_map&lt; std::string, std::unordered_map&lt; size_t, double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1ProviderCapabilityMatcher.html#acffc5adea290e816d272931f10dbfc3c">create_compatibility_matrix</a> (const std::vector&lt; <a class="el" href="structdtls_1_1v13_1_1crypto_1_1ProviderSelection.html">ProviderSelection</a> &gt; &amp;criteria_list)</td></tr>
+<tr class="memdesc:acffc5adea290e816d272931f10dbfc3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create compatibility matrix for all providers.  <br /></td></tr>
 <tr class="separator:acffc5adea290e816d272931f10dbfc3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Provider capability matcher for intelligent provider selection </p>
+<div class="textblock"><p>Provider capability matcher for intelligent provider selection. </p>
 
 <p class="definition">Definition at line <a class="el" href="operations__impl_8h_source.html#l00445">445</a> of file <a class="el" href="operations__impl_8h_source.html">operations_impl.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
@@ -191,7 +199,8 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Check if provider meets requirements</p>
+
+<p>Check if provider meets requirements. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">provider_name</td><td>Provider to check </td></tr>
@@ -226,7 +235,8 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Create compatibility matrix for all providers</p>
+
+<p>Create compatibility matrix for all providers. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">criteria_list</td><td>List of criteria to test </td></tr>
@@ -260,7 +270,8 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Find the best provider for specific requirements</p>
+
+<p>Find the best provider for specific requirements. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">criteria</td><td>Selection criteria </td></tr>
@@ -294,7 +305,8 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Find providers with specific capability</p>
+
+<p>Find providers with specific capability. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">capability_checker</td><td>Function to check specific capability </td></tr>
@@ -328,7 +340,8 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Rank all providers by compatibility score</p>
+
+<p>Rank all providers by compatibility score. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">criteria</td><td>Selection criteria </td></tr>

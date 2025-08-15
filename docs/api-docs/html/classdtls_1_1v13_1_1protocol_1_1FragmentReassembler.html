@@ -139,11 +139,16 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1protocol_1_1Fragme
 </div><!--header-->
 <div class="contents">
 
+<p>Enhanced Fragment Reassembler with timeout management and security validation.  
+ <a href="classdtls_1_1v13_1_1protocol_1_1FragmentReassembler.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="fragment__reassembler_8h_source.html">fragment_reassembler.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a29f37c0f63b5574f380a78d196af94ab" id="r_a29f37c0f63b5574f380a78d196af94ab"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1FragmentReassembler.html#a29f37c0f63b5574f380a78d196af94ab">FragmentReassembler</a> (const <a class="el" href="structdtls_1_1v13_1_1protocol_1_1FragmentReassemblyConfig.html">FragmentReassemblyConfig</a> &amp;config=<a class="el" href="structdtls_1_1v13_1_1protocol_1_1FragmentReassemblyConfig.html">FragmentReassemblyConfig</a>{})</td></tr>
+<tr class="memitem:a29f37c0f63b5574f380a78d196af94ab" id="r_a29f37c0f63b5574f380a78d196af94ab"><td class="memItemLeft" align="right" valign="top"><a id="a29f37c0f63b5574f380a78d196af94ab" name="a29f37c0f63b5574f380a78d196af94ab"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>FragmentReassembler</b> (const <a class="el" href="structdtls_1_1v13_1_1protocol_1_1FragmentReassemblyConfig.html">FragmentReassemblyConfig</a> &amp;config=<a class="el" href="structdtls_1_1v13_1_1protocol_1_1FragmentReassemblyConfig.html">FragmentReassemblyConfig</a>{})</td></tr>
+<tr class="memdesc:a29f37c0f63b5574f380a78d196af94ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new fragment reassembler with the given configuration. <br /></td></tr>
 <tr class="separator:a29f37c0f63b5574f380a78d196af94ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae11b5a8b7914e0201e356937b0c31839" id="r_ae11b5a8b7914e0201e356937b0c31839"><td class="memItemLeft" align="right" valign="top"><a id="ae11b5a8b7914e0201e356937b0c31839" name="ae11b5a8b7914e0201e356937b0c31839"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>FragmentReassembler</b> (const <a class="el" href="classdtls_1_1v13_1_1protocol_1_1FragmentReassembler.html">FragmentReassembler</a> &amp;)=delete</td></tr>
@@ -158,28 +163,45 @@ Public Member Functions</h2></td></tr>
 <a class="el" href="classdtls_1_1v13_1_1protocol_1_1FragmentReassembler.html">FragmentReassembler</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classdtls_1_1v13_1_1protocol_1_1FragmentReassembler.html">FragmentReassembler</a> &amp;&amp;) noexcept=default</td></tr>
 <tr class="separator:ad4ca57b9ff4e9a807772c11c1c4a7e5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3b868f82946341a32421ca186463a30f" id="r_a3b868f82946341a32421ca186463a30f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1FragmentReassembler.html#a3b868f82946341a32421ca186463a30f">add_fragment</a> (uint16_t message_seq, uint32_t fragment_offset, uint32_t fragment_length, uint32_t total_message_length, const <a class="el" href="classdtls_1_1v13_1_1memory_1_1ZeroCopyBuffer.html">memory::ZeroCopyBuffer</a> &amp;fragment_data)</td></tr>
+<tr class="memdesc:a3b868f82946341a32421ca186463a30f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a handshake message fragment for reassembly.  <br /></td></tr>
 <tr class="separator:a3b868f82946341a32421ca186463a30f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3cee176565cb38ff7f9bb8782a8cd37c" id="r_a3cee176565cb38ff7f9bb8782a8cd37c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1FragmentReassembler.html#a3cee176565cb38ff7f9bb8782a8cd37c">is_message_complete</a> (uint16_t message_seq) const</td></tr>
+<tr class="memitem:a3cee176565cb38ff7f9bb8782a8cd37c" id="r_a3cee176565cb38ff7f9bb8782a8cd37c"><td class="memItemLeft" align="right" valign="top"><a id="a3cee176565cb38ff7f9bb8782a8cd37c" name="a3cee176565cb38ff7f9bb8782a8cd37c"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_message_complete</b> (uint16_t message_seq) const</td></tr>
+<tr class="memdesc:a3cee176565cb38ff7f9bb8782a8cd37c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if a message is completely reassembled. <br /></td></tr>
 <tr class="separator:a3cee176565cb38ff7f9bb8782a8cd37c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a39914b0c433389d57e4a438b01c8e68c" id="r_a39914b0c433389d57e4a438b01c8e68c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1memory_1_1ZeroCopyBuffer.html">memory::ZeroCopyBuffer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1FragmentReassembler.html#a39914b0c433389d57e4a438b01c8e68c">get_complete_message</a> (uint16_t message_seq)</td></tr>
+<tr class="memdesc:a39914b0c433389d57e4a438b01c8e68c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the complete reassembled message.  <br /></td></tr>
 <tr class="separator:a39914b0c433389d57e4a438b01c8e68c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a30eb3d28ea1059d683ac395ad301cf45" id="r_a30eb3d28ea1059d683ac395ad301cf45"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1FragmentReassembler.html#a30eb3d28ea1059d683ac395ad301cf45">remove_message</a> (uint16_t message_seq)</td></tr>
+<tr class="memitem:a30eb3d28ea1059d683ac395ad301cf45" id="r_a30eb3d28ea1059d683ac395ad301cf45"><td class="memItemLeft" align="right" valign="top"><a id="a30eb3d28ea1059d683ac395ad301cf45" name="a30eb3d28ea1059d683ac395ad301cf45"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>remove_message</b> (uint16_t message_seq)</td></tr>
+<tr class="memdesc:a30eb3d28ea1059d683ac395ad301cf45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove and cleanup a specific message reassembly. <br /></td></tr>
 <tr class="separator:a30eb3d28ea1059d683ac395ad301cf45"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa14b34df2af34e25d0c80753bd797433" id="r_aa14b34df2af34e25d0c80753bd797433"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1FragmentReassembler.html#aa14b34df2af34e25d0c80753bd797433">cleanup_timed_out_reassemblies</a> ()</td></tr>
+<tr class="memitem:aa14b34df2af34e25d0c80753bd797433" id="r_aa14b34df2af34e25d0c80753bd797433"><td class="memItemLeft" align="right" valign="top"><a id="aa14b34df2af34e25d0c80753bd797433" name="aa14b34df2af34e25d0c80753bd797433"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>cleanup_timed_out_reassemblies</b> ()</td></tr>
+<tr class="memdesc:aa14b34df2af34e25d0c80753bd797433"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clean up timed-out reassembly operations This should be called periodically to prevent memory leaks. <br /></td></tr>
 <tr class="separator:aa14b34df2af34e25d0c80753bd797433"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1f70307e40fea8a5679ce9b8bba9ca62" id="r_a1f70307e40fea8a5679ce9b8bba9ca62"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1FragmentReassembler.html#a1f70307e40fea8a5679ce9b8bba9ca62">clear_all_reassemblies</a> ()</td></tr>
+<tr class="memitem:a1f70307e40fea8a5679ce9b8bba9ca62" id="r_a1f70307e40fea8a5679ce9b8bba9ca62"><td class="memItemLeft" align="right" valign="top"><a id="a1f70307e40fea8a5679ce9b8bba9ca62" name="a1f70307e40fea8a5679ce9b8bba9ca62"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>clear_all_reassemblies</b> ()</td></tr>
+<tr class="memdesc:a1f70307e40fea8a5679ce9b8bba9ca62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Force cleanup of all reassembly operations. <br /></td></tr>
 <tr class="separator:a1f70307e40fea8a5679ce9b8bba9ca62"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a2430139ba1a2c06a35bca2f90bbf41" id="r_a0a2430139ba1a2c06a35bca2f90bbf41"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structdtls_1_1v13_1_1protocol_1_1FragmentReassemblyStats.html">FragmentReassemblyStats</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1FragmentReassembler.html#a0a2430139ba1a2c06a35bca2f90bbf41">get_stats</a> () const</td></tr>
+<tr class="memitem:a0a2430139ba1a2c06a35bca2f90bbf41" id="r_a0a2430139ba1a2c06a35bca2f90bbf41"><td class="memItemLeft" align="right" valign="top"><a id="a0a2430139ba1a2c06a35bca2f90bbf41" name="a0a2430139ba1a2c06a35bca2f90bbf41"></a>
+const <a class="el" href="structdtls_1_1v13_1_1protocol_1_1FragmentReassemblyStats.html">FragmentReassemblyStats</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get_stats</b> () const</td></tr>
+<tr class="memdesc:a0a2430139ba1a2c06a35bca2f90bbf41"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current reassembly statistics. <br /></td></tr>
 <tr class="separator:a0a2430139ba1a2c06a35bca2f90bbf41"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aae2a48f2a57fd8731f18bc272cc7a31d" id="r_aae2a48f2a57fd8731f18bc272cc7a31d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1FragmentReassembler.html#aae2a48f2a57fd8731f18bc272cc7a31d">reset_stats</a> ()</td></tr>
+<tr class="memitem:aae2a48f2a57fd8731f18bc272cc7a31d" id="r_aae2a48f2a57fd8731f18bc272cc7a31d"><td class="memItemLeft" align="right" valign="top"><a id="aae2a48f2a57fd8731f18bc272cc7a31d" name="aae2a48f2a57fd8731f18bc272cc7a31d"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>reset_stats</b> ()</td></tr>
+<tr class="memdesc:aae2a48f2a57fd8731f18bc272cc7a31d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset statistics counters. <br /></td></tr>
 <tr class="separator:aae2a48f2a57fd8731f18bc272cc7a31d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9a1bf142f4050dce07aa7827a0e7b94e" id="r_a9a1bf142f4050dce07aa7827a0e7b94e"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structdtls_1_1v13_1_1protocol_1_1FragmentReassemblyConfig.html">FragmentReassemblyConfig</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1FragmentReassembler.html#a9a1bf142f4050dce07aa7827a0e7b94e">get_config</a> () const</td></tr>
+<tr class="memdesc:a9a1bf142f4050dce07aa7827a0e7b94e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current configuration.  <br /></td></tr>
 <tr class="separator:a9a1bf142f4050dce07aa7827a0e7b94e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5bab29597fe6bc851380126c5d5034ff" id="r_a5bab29597fe6bc851380126c5d5034ff"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1FragmentReassembler.html#a5bab29597fe6bc851380126c5d5034ff">update_config</a> (const <a class="el" href="structdtls_1_1v13_1_1protocol_1_1FragmentReassemblyConfig.html">FragmentReassemblyConfig</a> &amp;new_config)</td></tr>
+<tr class="memitem:a5bab29597fe6bc851380126c5d5034ff" id="r_a5bab29597fe6bc851380126c5d5034ff"><td class="memItemLeft" align="right" valign="top"><a id="a5bab29597fe6bc851380126c5d5034ff" name="a5bab29597fe6bc851380126c5d5034ff"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>update_config</b> (const <a class="el" href="structdtls_1_1v13_1_1protocol_1_1FragmentReassemblyConfig.html">FragmentReassemblyConfig</a> &amp;new_config)</td></tr>
+<tr class="memdesc:a5bab29597fe6bc851380126c5d5034ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update configuration (thread-safe) <br /></td></tr>
 <tr class="separator:a5bab29597fe6bc851380126c5d5034ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Enhanced Fragment Reassembler with timeout management and security validation</p>
+<div class="textblock"><p>Enhanced Fragment Reassembler with timeout management and security validation. </p>
 <p>This class provides a robust fragment reassembly system with the following features:</p><ul>
 <li>Automatic timeout and cleanup of incomplete reassemblies</li>
 <li>Memory usage tracking and limits</li>
@@ -189,35 +211,7 @@ Public Member Functions</h2></td></tr>
 </ul>
 
 <p class="definition">Definition at line <a class="el" href="fragment__reassembler_8h_source.html#l00108">108</a> of file <a class="el" href="fragment__reassembler_8h_source.html">fragment_reassembler.h</a>.</p>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a29f37c0f63b5574f380a78d196af94ab" name="a29f37c0f63b5574f380a78d196af94ab"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a29f37c0f63b5574f380a78d196af94ab">&#9670;&#160;</a></span>FragmentReassembler()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">dtls::v13::protocol::FragmentReassembler::FragmentReassembler </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="structdtls_1_1v13_1_1protocol_1_1FragmentReassemblyConfig.html">FragmentReassemblyConfig</a> &amp;&#160;</td>
-          <td class="paramname"><em>config</em> = <code><a class="el" href="structdtls_1_1v13_1_1protocol_1_1FragmentReassemblyConfig.html">FragmentReassemblyConfig</a>{}</code></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Create a new fragment reassembler with the given configuration </p>
-
-</div>
-</div>
-<h2 class="groupheader">Member Function Documentation</h2>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a3b868f82946341a32421ca186463a30f" name="a3b868f82946341a32421ca186463a30f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3b868f82946341a32421ca186463a30f">&#9670;&#160;</a></span>add_fragment()</h2>
 
@@ -261,7 +255,8 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Add a handshake message fragment for reassembly</p>
+
+<p>Add a handshake message fragment for reassembly. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">message_seq</td><td>Message sequence number (identifies the message) </td></tr>
@@ -272,43 +267,7 @@ Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a> indicating success and whether message is now complete </dd></dl>
-
-</div>
-</div>
-<a id="aa14b34df2af34e25d0c80753bd797433" name="aa14b34df2af34e25d0c80753bd797433"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa14b34df2af34e25d0c80753bd797433">&#9670;&#160;</a></span>cleanup_timed_out_reassemblies()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void dtls::v13::protocol::FragmentReassembler::cleanup_timed_out_reassemblies </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Clean up timed-out reassembly operations This should be called periodically to prevent memory leaks </p>
-
-</div>
-</div>
-<a id="a1f70307e40fea8a5679ce9b8bba9ca62" name="a1f70307e40fea8a5679ce9b8bba9ca62"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1f70307e40fea8a5679ce9b8bba9ca62">&#9670;&#160;</a></span>clear_all_reassemblies()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void dtls::v13::protocol::FragmentReassembler::clear_all_reassemblies </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Force cleanup of all reassembly operations </p>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classdtls_1_1v13_1_1Result.html" title="Forward declaration for Result template class.">Result</a> indicating success and whether message is now complete </dd></dl>
 
 </div>
 </div>
@@ -327,7 +286,8 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Get the complete reassembled message</p>
+
+<p>Get the complete reassembled message. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">message_seq</td><td>Message sequence number </td></tr>
@@ -360,102 +320,10 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Get current configuration </p>
+
+<p>Get current configuration. </p>
 
 <p class="definition">Definition at line <a class="el" href="fragment__reassembler_8h_source.html#l00183">183</a> of file <a class="el" href="fragment__reassembler_8h_source.html">fragment_reassembler.h</a>.</p>
-
-</div>
-</div>
-<a id="a0a2430139ba1a2c06a35bca2f90bbf41" name="a0a2430139ba1a2c06a35bca2f90bbf41"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0a2430139ba1a2c06a35bca2f90bbf41">&#9670;&#160;</a></span>get_stats()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const <a class="el" href="structdtls_1_1v13_1_1protocol_1_1FragmentReassemblyStats.html">FragmentReassemblyStats</a> &amp; dtls::v13::protocol::FragmentReassembler::get_stats </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Get current reassembly statistics </p>
-
-</div>
-</div>
-<a id="a3cee176565cb38ff7f9bb8782a8cd37c" name="a3cee176565cb38ff7f9bb8782a8cd37c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3cee176565cb38ff7f9bb8782a8cd37c">&#9670;&#160;</a></span>is_message_complete()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool dtls::v13::protocol::FragmentReassembler::is_message_complete </td>
-          <td>(</td>
-          <td class="paramtype">uint16_t&#160;</td>
-          <td class="paramname"><em>message_seq</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Check if a message is completely reassembled </p>
-
-</div>
-</div>
-<a id="a30eb3d28ea1059d683ac395ad301cf45" name="a30eb3d28ea1059d683ac395ad301cf45"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a30eb3d28ea1059d683ac395ad301cf45">&#9670;&#160;</a></span>remove_message()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void dtls::v13::protocol::FragmentReassembler::remove_message </td>
-          <td>(</td>
-          <td class="paramtype">uint16_t&#160;</td>
-          <td class="paramname"><em>message_seq</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Remove and cleanup a specific message reassembly </p>
-
-</div>
-</div>
-<a id="aae2a48f2a57fd8731f18bc272cc7a31d" name="aae2a48f2a57fd8731f18bc272cc7a31d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aae2a48f2a57fd8731f18bc272cc7a31d">&#9670;&#160;</a></span>reset_stats()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void dtls::v13::protocol::FragmentReassembler::reset_stats </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Reset statistics counters </p>
-
-</div>
-</div>
-<a id="a5bab29597fe6bc851380126c5d5034ff" name="a5bab29597fe6bc851380126c5d5034ff"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5bab29597fe6bc851380126c5d5034ff">&#9670;&#160;</a></span>update_config()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void dtls::v13::protocol::FragmentReassembler::update_config </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="structdtls_1_1v13_1_1protocol_1_1FragmentReassemblyConfig.html">FragmentReassemblyConfig</a> &amp;&#160;</td>
-          <td class="paramname"><em>new_config</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Update configuration (thread-safe) </p>
 
 </div>
 </div>

@@ -138,6 +138,9 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1protocol_1_1Connec
 </div><!--header-->
 <div class="contents">
 
+<p>Connection-level fragment reassembly manager.  
+ <a href="classdtls_1_1v13_1_1protocol_1_1ConnectionFragmentManager.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="fragment__reassembler_8h_source.html">fragment_reassembler.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -157,19 +160,29 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a545abc62646e1bda84d07dd4fef1b136" id="r_a545abc62646e1bda84d07dd4fef1b136"><td class="memItemLeft" align="right" valign="top"><a id="a545abc62646e1bda84d07dd4fef1b136" name="a545abc62646e1bda84d07dd4fef1b136"></a>
 <a class="el" href="classdtls_1_1v13_1_1protocol_1_1ConnectionFragmentManager.html">ConnectionFragmentManager</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classdtls_1_1v13_1_1protocol_1_1ConnectionFragmentManager.html">ConnectionFragmentManager</a> &amp;&amp;) noexcept=default</td></tr>
 <tr class="separator:a545abc62646e1bda84d07dd4fef1b136"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6196b8204280901d04b46669f9c1a2ba" id="r_a6196b8204280901d04b46669f9c1a2ba"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1ConnectionFragmentManager.html#a6196b8204280901d04b46669f9c1a2ba">process_handshake_fragment</a> (const <a class="el" href="structdtls_1_1v13_1_1protocol_1_1HandshakeHeader.html">HandshakeHeader</a> &amp;header, const <a class="el" href="classdtls_1_1v13_1_1memory_1_1ZeroCopyBuffer.html">memory::ZeroCopyBuffer</a> &amp;fragment_data)</td></tr>
+<tr class="memitem:a6196b8204280901d04b46669f9c1a2ba" id="r_a6196b8204280901d04b46669f9c1a2ba"><td class="memItemLeft" align="right" valign="top"><a id="a6196b8204280901d04b46669f9c1a2ba" name="a6196b8204280901d04b46669f9c1a2ba"></a>
+<a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>process_handshake_fragment</b> (const <a class="el" href="structdtls_1_1v13_1_1protocol_1_1HandshakeHeader.html">HandshakeHeader</a> &amp;header, const <a class="el" href="classdtls_1_1v13_1_1memory_1_1ZeroCopyBuffer.html">memory::ZeroCopyBuffer</a> &amp;fragment_data)</td></tr>
+<tr class="memdesc:a6196b8204280901d04b46669f9c1a2ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Process an incoming handshake fragment. <br /></td></tr>
 <tr class="separator:a6196b8204280901d04b46669f9c1a2ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a095da705134cb42bc3a2f00022528403" id="r_a095da705134cb42bc3a2f00022528403"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1protocol_1_1HandshakeMessage.html">HandshakeMessage</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1ConnectionFragmentManager.html#a095da705134cb42bc3a2f00022528403">get_complete_handshake_message</a> (uint16_t message_seq)</td></tr>
+<tr class="memitem:a095da705134cb42bc3a2f00022528403" id="r_a095da705134cb42bc3a2f00022528403"><td class="memItemLeft" align="right" valign="top"><a id="a095da705134cb42bc3a2f00022528403" name="a095da705134cb42bc3a2f00022528403"></a>
+<a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1protocol_1_1HandshakeMessage.html">HandshakeMessage</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>get_complete_handshake_message</b> (uint16_t message_seq)</td></tr>
+<tr class="memdesc:a095da705134cb42bc3a2f00022528403"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a complete handshake message if available. <br /></td></tr>
 <tr class="separator:a095da705134cb42bc3a2f00022528403"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac806acf48d0a46d5e0ae38e9b2444c69" id="r_ac806acf48d0a46d5e0ae38e9b2444c69"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1ConnectionFragmentManager.html#ac806acf48d0a46d5e0ae38e9b2444c69">cleanup</a> ()</td></tr>
+<tr class="memitem:ac806acf48d0a46d5e0ae38e9b2444c69" id="r_ac806acf48d0a46d5e0ae38e9b2444c69"><td class="memItemLeft" align="right" valign="top"><a id="ac806acf48d0a46d5e0ae38e9b2444c69" name="ac806acf48d0a46d5e0ae38e9b2444c69"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>cleanup</b> ()</td></tr>
+<tr class="memdesc:ac806acf48d0a46d5e0ae38e9b2444c69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clean up resources (called on connection close) <br /></td></tr>
 <tr class="separator:ac806acf48d0a46d5e0ae38e9b2444c69"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a215694a3898a51ae315509b6912bf225" id="r_a215694a3898a51ae315509b6912bf225"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structdtls_1_1v13_1_1protocol_1_1FragmentReassemblyStats.html">FragmentReassemblyStats</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1ConnectionFragmentManager.html#a215694a3898a51ae315509b6912bf225">get_stats</a> () const</td></tr>
+<tr class="memitem:a215694a3898a51ae315509b6912bf225" id="r_a215694a3898a51ae315509b6912bf225"><td class="memItemLeft" align="right" valign="top"><a id="a215694a3898a51ae315509b6912bf225" name="a215694a3898a51ae315509b6912bf225"></a>
+const <a class="el" href="structdtls_1_1v13_1_1protocol_1_1FragmentReassemblyStats.html">FragmentReassemblyStats</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get_stats</b> () const</td></tr>
+<tr class="memdesc:a215694a3898a51ae315509b6912bf225"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get reassembly statistics. <br /></td></tr>
 <tr class="separator:a215694a3898a51ae315509b6912bf225"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa74abe621896f38e555823cc762b5ccc" id="r_aa74abe621896f38e555823cc762b5ccc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1ConnectionFragmentManager.html#aa74abe621896f38e555823cc762b5ccc">perform_maintenance</a> ()</td></tr>
+<tr class="memitem:aa74abe621896f38e555823cc762b5ccc" id="r_aa74abe621896f38e555823cc762b5ccc"><td class="memItemLeft" align="right" valign="top"><a id="aa74abe621896f38e555823cc762b5ccc" name="aa74abe621896f38e555823cc762b5ccc"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>perform_maintenance</b> ()</td></tr>
+<tr class="memdesc:aa74abe621896f38e555823cc762b5ccc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform periodic maintenance (cleanup timeouts) <br /></td></tr>
 <tr class="separator:aa74abe621896f38e555823cc762b5ccc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Connection-level fragment reassembly manager</p>
+<div class="textblock"><p>Connection-level fragment reassembly manager. </p>
 <p>Manages fragment reassembly for a specific DTLS connection with:</p><ul>
 <li>Per-connection reassembly isolation</li>
 <li>Automatic cleanup on connection close</li>
@@ -177,110 +190,7 @@ Public Member Functions</h2></td></tr>
 </ul>
 
 <p class="definition">Definition at line <a class="el" href="fragment__reassembler_8h_source.html#l00271">271</a> of file <a class="el" href="fragment__reassembler_8h_source.html">fragment_reassembler.h</a>.</p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="ac806acf48d0a46d5e0ae38e9b2444c69" name="ac806acf48d0a46d5e0ae38e9b2444c69"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac806acf48d0a46d5e0ae38e9b2444c69">&#9670;&#160;</a></span>cleanup()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void dtls::v13::protocol::ConnectionFragmentManager::cleanup </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Clean up resources (called on connection close) </p>
-
-</div>
-</div>
-<a id="a095da705134cb42bc3a2f00022528403" name="a095da705134cb42bc3a2f00022528403"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a095da705134cb42bc3a2f00022528403">&#9670;&#160;</a></span>get_complete_handshake_message()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1protocol_1_1HandshakeMessage.html">HandshakeMessage</a> &gt; dtls::v13::protocol::ConnectionFragmentManager::get_complete_handshake_message </td>
-          <td>(</td>
-          <td class="paramtype">uint16_t&#160;</td>
-          <td class="paramname"><em>message_seq</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Get a complete handshake message if available </p>
-
-</div>
-</div>
-<a id="a215694a3898a51ae315509b6912bf225" name="a215694a3898a51ae315509b6912bf225"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a215694a3898a51ae315509b6912bf225">&#9670;&#160;</a></span>get_stats()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const <a class="el" href="structdtls_1_1v13_1_1protocol_1_1FragmentReassemblyStats.html">FragmentReassemblyStats</a> &amp; dtls::v13::protocol::ConnectionFragmentManager::get_stats </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Get reassembly statistics </p>
-
-</div>
-</div>
-<a id="aa74abe621896f38e555823cc762b5ccc" name="aa74abe621896f38e555823cc762b5ccc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa74abe621896f38e555823cc762b5ccc">&#9670;&#160;</a></span>perform_maintenance()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void dtls::v13::protocol::ConnectionFragmentManager::perform_maintenance </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Perform periodic maintenance (cleanup timeouts) </p>
-
-</div>
-</div>
-<a id="a6196b8204280901d04b46669f9c1a2ba" name="a6196b8204280901d04b46669f9c1a2ba"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6196b8204280901d04b46669f9c1a2ba">&#9670;&#160;</a></span>process_handshake_fragment()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; bool &gt; dtls::v13::protocol::ConnectionFragmentManager::process_handshake_fragment </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="structdtls_1_1v13_1_1protocol_1_1HandshakeHeader.html">HandshakeHeader</a> &amp;&#160;</td>
-          <td class="paramname"><em>header</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classdtls_1_1v13_1_1memory_1_1ZeroCopyBuffer.html">memory::ZeroCopyBuffer</a> &amp;&#160;</td>
-          <td class="paramname"><em>fragment_data</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Process an incoming handshake fragment </p>
-
-</div>
-</div>
-<hr/>The documentation for this class was generated from the following file:<ul>
+</div><hr/>The documentation for this class was generated from the following file:<ul>
 <li>dtls/protocol/<a class="el" href="fragment__reassembler_8h_source.html">fragment_reassembler.h</a></li>
 </ul>
 </div><!-- contents -->

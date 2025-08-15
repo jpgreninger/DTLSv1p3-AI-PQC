@@ -164,19 +164,19 @@ Classes</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespacedtls" id="r_namespacedtls"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls.html">dtls</a></td></tr>
+<tr class="memdesc:namespacedtls"><td class="mdescLeft">&#160;</td><td class="mdescRight">DTLS v1.3 Cryptographic Provider System. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
 <tr class="memitem:gabc4372b1165cf4e20b612d50ff20e1bb" id="r_gabc4372b1165cf4e20b612d50ff20e1bb"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CoreTypes.html#gabc4372b1165cf4e20b612d50ff20e1bb">dtls::v13::ProtocolVersion</a> = uint16_t</td></tr>
-<tr class="memdesc:gabc4372b1165cf4e20b612d50ff20e1bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Protocol version identifier (network byte order)  <br /></td></tr>
+<tr class="memdesc:gabc4372b1165cf4e20b612d50ff20e1bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Protocol version identifier (network byte order).  <br /></td></tr>
 <tr class="separator:gabc4372b1165cf4e20b612d50ff20e1bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gace5e728a8418b8695b245902009ffa77" id="r_gace5e728a8418b8695b245902009ffa77"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CoreTypes.html#gace5e728a8418b8695b245902009ffa77">dtls::v13::Epoch</a> = uint16_t</td></tr>
-<tr class="memdesc:gace5e728a8418b8695b245902009ffa77"><td class="mdescLeft">&#160;</td><td class="mdescRight">Epoch number for key generation sequencing <br  />
-  <br /></td></tr>
+<tr class="memdesc:gace5e728a8418b8695b245902009ffa77"><td class="mdescLeft">&#160;</td><td class="mdescRight">Epoch number for key generation sequencing.  <br /></td></tr>
 <tr class="separator:gace5e728a8418b8695b245902009ffa77"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga50089dc7f9d67ec4e7563999a0e01a4b" id="r_ga50089dc7f9d67ec4e7563999a0e01a4b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CoreTypes.html#ga50089dc7f9d67ec4e7563999a0e01a4b">dtls::v13::SequenceNumber</a> = uint64_t</td></tr>
-<tr class="memdesc:ga50089dc7f9d67ec4e7563999a0e01a4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">64-bit sequence number for replay protection  <br /></td></tr>
+<tr class="memdesc:ga50089dc7f9d67ec4e7563999a0e01a4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">64-bit sequence number for replay protection.  <br /></td></tr>
 <tr class="separator:ga50089dc7f9d67ec4e7563999a0e01a4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga5d36692edd61bb4d7126a5401b5b50cb" id="r_ga5d36692edd61bb4d7126a5401b5b50cb"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CoreTypes.html#ga5d36692edd61bb4d7126a5401b5b50cb">dtls::v13::Length</a> = uint16_t</td></tr>
 <tr class="memdesc:ga5d36692edd61bb4d7126a5401b5b50cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generic length field for protocol messages.  <br /></td></tr>
@@ -482,15 +482,14 @@ Variables</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Core DTLS v1.3 Protocol Types and Constants. </p>
-<p>Defines fundamental data types, enumerations, and constants used throughout the DTLS v1.3 implementation following <a href="https://www.rfc-editor.org/rfc/rfc9147.html">RFC 9147</a> specifications.</p>
-<dl class="section user"><dt>Key Features:</dt><dd><ul>
-<li>🏗️ <b>Type Safety</b>: Strong typing for protocol elements</li>
-<li>📊 <b>RFC Compliance</b>: All types mapped to <a href="https://www.rfc-editor.org/rfc/rfc9147.html">RFC 9147</a> specifications <br  />
+<p>Defines fundamental data types, enumerations, and constants used throughout the DTLS v1.3 implementation following RFC 9147 specifications.</p>
+<p>Key Features:</p><ul>
+<li>Type Safety: Strong typing for protocol elements</li>
+<li>RFC Compliance: All types mapped to RFC 9147 specifications <br  />
 </li>
-<li>⚡ <b>Performance</b>: Optimized primitive types for high-speed operations</li>
-<li>🔧 <b>Extensibility</b>: Designed for future protocol extensions</li>
+<li>Performance: Optimized primitive types for high-speed operations</li>
+<li>Extensibility: Designed for future protocol extensions</li>
 </ul>
-</dd></dl>
 <dl class="section author"><dt>Author</dt><dd>DTLS v1.3 Implementation Team </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>v1.0.0 </dd></dl>
 
@@ -780,7 +779,7 @@ Variables</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="ab9c84107809224041465427557aafdeba0d895a0a05a7cce9b2c0c8bb252f78cc" name="ab9c84107809224041465427557aafdeba0d895a0a05a7cce9b2c0c8bb252f78cc"></a>HEARTBEAT&#160;</td><td class="fielddoc"><p>Heartbeat extension messages. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ab9c84107809224041465427557aafdebabb35aa992e751610da90ad678880a42d" name="ab9c84107809224041465427557aafdebabb35aa992e751610da90ad678880a42d"></a>TLS12_CID&#160;</td><td class="fielddoc"><p><a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> ID for DTLS 1.2 compatibility. </p>
+<tr><td class="fieldname"><a id="ab9c84107809224041465427557aafdebabb35aa992e751610da90ad678880a42d" name="ab9c84107809224041465427557aafdebabb35aa992e751610da90ad678880a42d"></a>TLS12_CID&#160;</td><td class="fielddoc"><p><a class="el" href="classdtls_1_1v13_1_1Connection.html" title="DTLS v1.3 Connection implementation.">Connection</a> ID for DTLS 1.2 compatibility. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="ab9c84107809224041465427557aafdeba0fc437bc317835cad5faafc12a83fad5" name="ab9c84107809224041465427557aafdeba0fc437bc317835cad5faafc12a83fad5"></a>ACK&#160;</td><td class="fielddoc"><p>Acknowledgment messages (DTLS 1.3 feature) </p>
 </td></tr>

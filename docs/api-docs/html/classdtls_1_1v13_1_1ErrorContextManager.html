@@ -139,6 +139,9 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1ErrorContextManage
 </div><!--header-->
 <div class="contents">
 
+<p><a class="el" href="classdtls_1_1v13_1_1ErrorContextManager.html" title="ErrorContextManager manages multiple error contexts and provides system-wide error correlation and an...">ErrorContextManager</a> manages multiple error contexts and provides system-wide error correlation and analysis capabilities.  
+ <a href="classdtls_1_1v13_1_1ErrorContextManager.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="error__context_8h_source.html">error_context.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
@@ -149,20 +152,26 @@ Classes</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ab447202bb30d128cdde2422d45f113f8" id="r_ab447202bb30d128cdde2422d45f113f8"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1ErrorContext.html">ErrorContext</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1ErrorContextManager.html#ab447202bb30d128cdde2422d45f113f8">create_context</a> (const std::string &amp;connection_id, const <a class="el" href="structdtls_1_1v13_1_1NetworkAddress.html">NetworkAddress</a> &amp;peer_address=<a class="el" href="structdtls_1_1v13_1_1NetworkAddress.html">NetworkAddress</a>{})</td></tr>
+<tr class="memdesc:ab447202bb30d128cdde2422d45f113f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create new error context.  <br /></td></tr>
 <tr class="separator:ab447202bb30d128cdde2422d45f113f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae826a0159c3c0680d3b33a64414f9ed2" id="r_ae826a0159c3c0680d3b33a64414f9ed2"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1ErrorContext.html">ErrorContext</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1ErrorContextManager.html#ae826a0159c3c0680d3b33a64414f9ed2">get_context</a> (const std::string &amp;connection_id)</td></tr>
+<tr class="memdesc:ae826a0159c3c0680d3b33a64414f9ed2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get existing error context.  <br /></td></tr>
 <tr class="separator:ae826a0159c3c0680d3b33a64414f9ed2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6332ae779d93a92b6a55911aa6f93a7a" id="r_a6332ae779d93a92b6a55911aa6f93a7a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1ErrorContextManager.html#a6332ae779d93a92b6a55911aa6f93a7a">remove_context</a> (const std::string &amp;connection_id)</td></tr>
+<tr class="memdesc:a6332ae779d93a92b6a55911aa6f93a7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove error context.  <br /></td></tr>
 <tr class="separator:a6332ae779d93a92b6a55911aa6f93a7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb97dd00c4c97879219194ab98e95b0a" id="r_acb97dd00c4c97879219194ab98e95b0a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1ErrorContextManager.html#acb97dd00c4c97879219194ab98e95b0a">analyze_coordinated_attacks</a> ()</td></tr>
+<tr class="memdesc:acb97dd00c4c97879219194ab98e95b0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform system-wide attack correlation analysis.  <br /></td></tr>
 <tr class="separator:acb97dd00c4c97879219194ab98e95b0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a81fdb148b11e1dcc58fc0552c335b09c" id="r_a81fdb148b11e1dcc58fc0552c335b09c"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1ErrorContextManager.html#a81fdb148b11e1dcc58fc0552c335b09c">cleanup_expired_contexts</a> (std::chrono::seconds max_age, size_t max_events)</td></tr>
+<tr class="memdesc:a81fdb148b11e1dcc58fc0552c335b09c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clean up expired contexts.  <br /></td></tr>
 <tr class="separator:a81fdb148b11e1dcc58fc0552c335b09c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad291f40efead2ed1fb73183343dd2d0f" id="r_ad291f40efead2ed1fb73183343dd2d0f"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structdtls_1_1v13_1_1ErrorContextManager_1_1GlobalMetrics.html">GlobalMetrics</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1ErrorContextManager.html#ad291f40efead2ed1fb73183343dd2d0f">get_global_metrics</a> () const</td></tr>
+<tr class="memdesc:ad291f40efead2ed1fb73183343dd2d0f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get global error metrics.  <br /></td></tr>
 <tr class="separator:ad291f40efead2ed1fb73183343dd2d0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p><a class="el" href="classdtls_1_1v13_1_1ErrorContextManager.html">ErrorContextManager</a> manages multiple error contexts and provides system-wide error correlation and analysis capabilities </p>
+<div class="textblock"><p><a class="el" href="classdtls_1_1v13_1_1ErrorContextManager.html" title="ErrorContextManager manages multiple error contexts and provides system-wide error correlation and an...">ErrorContextManager</a> manages multiple error contexts and provides system-wide error correlation and analysis capabilities. </p>
 
 <p class="definition">Definition at line <a class="el" href="error__context_8h_source.html#l00266">266</a> of file <a class="el" href="error__context_8h_source.html">error_context.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
@@ -180,7 +189,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Perform system-wide attack correlation analysis </p><dl class="section return"><dt>Returns</dt><dd>Vector of potentially coordinated attacks </dd></dl>
+
+<p>Perform system-wide attack correlation analysis. </p>
+<dl class="section return"><dt>Returns</dt><dd>Vector of potentially coordinated attacks </dd></dl>
 
 </div>
 </div>
@@ -209,7 +220,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Clean up expired contexts </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Clean up expired contexts. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">max_age</td><td>Maximum context age </td></tr>
     <tr><td class="paramname">max_events</td><td>Maximum events per context </td></tr>
@@ -245,9 +258,11 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Create new error context </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Create new error context. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">connection_id</td><td><a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> identifier </td></tr>
+    <tr><td class="paramname">connection_id</td><td><a class="el" href="classdtls_1_1v13_1_1Connection.html" title="DTLS v1.3 Connection implementation.">Connection</a> identifier </td></tr>
     <tr><td class="paramname">peer_address</td><td>Peer network address </td></tr>
   </table>
   </dd>
@@ -271,9 +286,11 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Get existing error context </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Get existing error context. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">connection_id</td><td><a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> identifier </td></tr>
+    <tr><td class="paramname">connection_id</td><td><a class="el" href="classdtls_1_1v13_1_1Connection.html" title="DTLS v1.3 Connection implementation.">Connection</a> identifier </td></tr>
   </table>
   </dd>
 </dl>
@@ -303,7 +320,9 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Get global error metrics </p><dl class="section return"><dt>Returns</dt><dd>Global metrics structure </dd></dl>
+
+<p>Get global error metrics. </p>
+<dl class="section return"><dt>Returns</dt><dd>Global metrics structure </dd></dl>
 
 <p class="definition">Definition at line <a class="el" href="error__context_8h_source.html#l00322">322</a> of file <a class="el" href="error__context_8h_source.html">error_context.h</a>.</p>
 
@@ -324,9 +343,11 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Remove error context </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Remove error context. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">connection_id</td><td><a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> identifier </td></tr>
+    <tr><td class="paramname">connection_id</td><td><a class="el" href="classdtls_1_1v13_1_1Connection.html" title="DTLS v1.3 Connection implementation.">Connection</a> identifier </td></tr>
   </table>
   </dd>
 </dl>

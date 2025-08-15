@@ -139,11 +139,15 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1protocol_1_1Flight
 </div><!--header-->
 <div class="contents">
 
+<p>Flight manager for handling DTLS handshake flights.  
+ <a href="classdtls_1_1v13_1_1protocol_1_1FlightManager.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="message__layer_8h_source.html">message_layer.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1protocol_1_1FlightManager_1_1FlightStats.html">FlightStats</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get flight statistics.  <a href="structdtls_1_1v13_1_1protocol_1_1FlightManager_1_1FlightStats.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -160,18 +164,28 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a214875208914814293e4c478a23f1822" id="r_a214875208914814293e4c478a23f1822"><td class="memItemLeft" align="right" valign="top"><a id="a214875208914814293e4c478a23f1822" name="a214875208914814293e4c478a23f1822"></a>
 <a class="el" href="classdtls_1_1v13_1_1protocol_1_1FlightManager.html">FlightManager</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classdtls_1_1v13_1_1protocol_1_1FlightManager.html">FlightManager</a> &amp;&amp;) noexcept=default</td></tr>
 <tr class="separator:a214875208914814293e4c478a23f1822"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7b74368980cb4504d22f00f007012cbd" id="r_a7b74368980cb4504d22f00f007012cbd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1FlightManager.html#a7b74368980cb4504d22f00f007012cbd">create_flight</a> (FlightType type)</td></tr>
+<tr class="memitem:a7b74368980cb4504d22f00f007012cbd" id="r_a7b74368980cb4504d22f00f007012cbd"><td class="memItemLeft" align="right" valign="top"><a id="a7b74368980cb4504d22f00f007012cbd" name="a7b74368980cb4504d22f00f007012cbd"></a>
+<a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create_flight</b> (FlightType type)</td></tr>
+<tr class="memdesc:a7b74368980cb4504d22f00f007012cbd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new flight. <br /></td></tr>
 <tr class="separator:a7b74368980cb4504d22f00f007012cbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae9ffd883f1d1f91b910ec8c0a21fc242" id="r_ae9ffd883f1d1f91b910ec8c0a21fc242"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1FlightManager.html#ae9ffd883f1d1f91b910ec8c0a21fc242">add_message_to_current_flight</a> (<a class="el" href="classdtls_1_1v13_1_1protocol_1_1HandshakeMessage.html">HandshakeMessage</a> &amp;&amp;message)</td></tr>
+<tr class="memitem:ae9ffd883f1d1f91b910ec8c0a21fc242" id="r_ae9ffd883f1d1f91b910ec8c0a21fc242"><td class="memItemLeft" align="right" valign="top"><a id="ae9ffd883f1d1f91b910ec8c0a21fc242" name="ae9ffd883f1d1f91b910ec8c0a21fc242"></a>
+<a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>add_message_to_current_flight</b> (<a class="el" href="classdtls_1_1v13_1_1protocol_1_1HandshakeMessage.html">HandshakeMessage</a> &amp;&amp;message)</td></tr>
+<tr class="memdesc:ae9ffd883f1d1f91b910ec8c0a21fc242"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add message to current flight. <br /></td></tr>
 <tr class="separator:ae9ffd883f1d1f91b910ec8c0a21fc242"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acd255379e8260b58cc3355d3e86804e4" id="r_acd255379e8260b58cc3355d3e86804e4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1protocol_1_1HandshakeFlight.html">HandshakeFlight</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1FlightManager.html#acd255379e8260b58cc3355d3e86804e4">complete_current_flight</a> ()</td></tr>
+<tr class="memitem:acd255379e8260b58cc3355d3e86804e4" id="r_acd255379e8260b58cc3355d3e86804e4"><td class="memItemLeft" align="right" valign="top"><a id="acd255379e8260b58cc3355d3e86804e4" name="acd255379e8260b58cc3355d3e86804e4"></a>
+<a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1protocol_1_1HandshakeFlight.html">HandshakeFlight</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>complete_current_flight</b> ()</td></tr>
+<tr class="memdesc:acd255379e8260b58cc3355d3e86804e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Complete current flight and prepare for transmission. <br /></td></tr>
 <tr class="separator:acd255379e8260b58cc3355d3e86804e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5bc97344fc97993437626e21a65c7b73" id="r_a5bc97344fc97993437626e21a65c7b73"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1FlightManager.html#a5bc97344fc97993437626e21a65c7b73">set_retransmission_timeout</a> (std::chrono::milliseconds timeout)</td></tr>
+<tr class="memitem:a5bc97344fc97993437626e21a65c7b73" id="r_a5bc97344fc97993437626e21a65c7b73"><td class="memItemLeft" align="right" valign="top"><a id="a5bc97344fc97993437626e21a65c7b73" name="a5bc97344fc97993437626e21a65c7b73"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>set_retransmission_timeout</b> (std::chrono::milliseconds timeout)</td></tr>
+<tr class="memdesc:a5bc97344fc97993437626e21a65c7b73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set retransmission parameters. <br /></td></tr>
 <tr class="separator:a5bc97344fc97993437626e21a65c7b73"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a74939a18ca700e4fd4f018356590dd21" id="r_a74939a18ca700e4fd4f018356590dd21"><td class="memItemLeft" align="right" valign="top"><a id="a74939a18ca700e4fd4f018356590dd21" name="a74939a18ca700e4fd4f018356590dd21"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>set_max_retransmissions</b> (size_t max_retries)</td></tr>
 <tr class="separator:a74939a18ca700e4fd4f018356590dd21"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ada52629477c0587c6992b3b2a3d59e81" id="r_ada52629477c0587c6992b3b2a3d59e81"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1FlightManager.html#ada52629477c0587c6992b3b2a3d59e81">should_retransmit</a> (FlightType flight) const</td></tr>
+<tr class="memitem:ada52629477c0587c6992b3b2a3d59e81" id="r_ada52629477c0587c6992b3b2a3d59e81"><td class="memItemLeft" align="right" valign="top"><a id="ada52629477c0587c6992b3b2a3d59e81" name="ada52629477c0587c6992b3b2a3d59e81"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>should_retransmit</b> (FlightType flight) const</td></tr>
+<tr class="memdesc:ada52629477c0587c6992b3b2a3d59e81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle flight retransmission. <br /></td></tr>
 <tr class="separator:ada52629477c0587c6992b3b2a3d59e81"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abbabf3a9c7cbb49d60aa97b6807e9970" id="r_abbabf3a9c7cbb49d60aa97b6807e9970"><td class="memItemLeft" align="right" valign="top"><a id="abbabf3a9c7cbb49d60aa97b6807e9970" name="abbabf3a9c7cbb49d60aa97b6807e9970"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>mark_flight_transmitted</b> (FlightType flight)</td></tr>
@@ -184,105 +198,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>mark_flight_acknowled
 <tr class="separator:a2d27c7352d6d1f690cbcad33fba8613c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Flight manager for handling DTLS handshake flights </p>
+<div class="textblock"><p>Flight manager for handling DTLS handshake flights. </p>
 
 <p class="definition">Definition at line <a class="el" href="message__layer_8h_source.html#l00177">177</a> of file <a class="el" href="message__layer_8h_source.html">message_layer.h</a>.</p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="ae9ffd883f1d1f91b910ec8c0a21fc242" name="ae9ffd883f1d1f91b910ec8c0a21fc242"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae9ffd883f1d1f91b910ec8c0a21fc242">&#9670;&#160;</a></span>add_message_to_current_flight()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; dtls::v13::protocol::FlightManager::add_message_to_current_flight </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1HandshakeMessage.html">HandshakeMessage</a> &amp;&amp;&#160;</td>
-          <td class="paramname"><em>message</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Add message to current flight </p>
-
-</div>
-</div>
-<a id="acd255379e8260b58cc3355d3e86804e4" name="acd255379e8260b58cc3355d3e86804e4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acd255379e8260b58cc3355d3e86804e4">&#9670;&#160;</a></span>complete_current_flight()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1protocol_1_1HandshakeFlight.html">HandshakeFlight</a> &gt; &gt; dtls::v13::protocol::FlightManager::complete_current_flight </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Complete current flight and prepare for transmission </p>
-
-</div>
-</div>
-<a id="a7b74368980cb4504d22f00f007012cbd" name="a7b74368980cb4504d22f00f007012cbd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7b74368980cb4504d22f00f007012cbd">&#9670;&#160;</a></span>create_flight()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; dtls::v13::protocol::FlightManager::create_flight </td>
-          <td>(</td>
-          <td class="paramtype">FlightType&#160;</td>
-          <td class="paramname"><em>type</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Create a new flight </p>
-
-</div>
-</div>
-<a id="a5bc97344fc97993437626e21a65c7b73" name="a5bc97344fc97993437626e21a65c7b73"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5bc97344fc97993437626e21a65c7b73">&#9670;&#160;</a></span>set_retransmission_timeout()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void dtls::v13::protocol::FlightManager::set_retransmission_timeout </td>
-          <td>(</td>
-          <td class="paramtype">std::chrono::milliseconds&#160;</td>
-          <td class="paramname"><em>timeout</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Set retransmission parameters </p>
-
-</div>
-</div>
-<a id="ada52629477c0587c6992b3b2a3d59e81" name="ada52629477c0587c6992b3b2a3d59e81"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ada52629477c0587c6992b3b2a3d59e81">&#9670;&#160;</a></span>should_retransmit()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool dtls::v13::protocol::FlightManager::should_retransmit </td>
-          <td>(</td>
-          <td class="paramtype">FlightType&#160;</td>
-          <td class="paramname"><em>flight</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Handle flight retransmission </p>
-
-</div>
-</div>
-<hr/>The documentation for this class was generated from the following file:<ul>
+</div><hr/>The documentation for this class was generated from the following file:<ul>
 <li>dtls/protocol/<a class="el" href="message__layer_8h_source.html">message_layer.h</a></li>
 </ul>
 </div><!-- contents -->

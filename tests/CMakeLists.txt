@@ -111,6 +111,10 @@ add_executable(dtls_crypto_test
     crypto/test_hybrid_pqc_key_exchange.cpp
     crypto/test_hybrid_pqc_compliance.cpp
     crypto/test_hybrid_pqc_test_vectors.cpp
+    # Pure ML-KEM Support Tests (draft-connolly-tls-mlkem-key-agreement-05)
+    crypto/test_pure_mlkem_support.cpp
+    crypto/test_mlkem_comprehensive.cpp
+    crypto/test_mlkem_security.cpp
 )
 
 target_link_libraries(dtls_crypto_test PRIVATE ${DTLS_TEST_LIBRARIES})
@@ -175,6 +179,7 @@ add_executable(dtls_performance_test
     performance/resource_benchmarks.cpp
     performance/regression_testing.cpp
     performance/test_hybrid_pqc_performance.cpp  # Hybrid PQC performance benchmarks
+    performance/test_mlkem_performance.cpp       # Pure ML-KEM performance benchmarks
 )
 
 target_include_directories(dtls_performance_test PRIVATE 
@@ -271,6 +276,7 @@ if(DTLS_BUILD_INTEROP_TESTS)
     add_executable(dtls_interop_test
         interoperability/dtls_interop_test.cpp
         interoperability/test_hybrid_pqc_interop.cpp  # Hybrid PQC cross-provider testing
+        interoperability/test_mlkem_interop.cpp       # Pure ML-KEM interoperability testing
     )
     target_link_libraries(dtls_interop_test PRIVATE ${DTLS_TEST_LIBRARIES})
     target_compile_options(dtls_interop_test PRIVATE ${DTLS_TEST_COMPILE_OPTIONS})

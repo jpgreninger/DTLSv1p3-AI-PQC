@@ -139,11 +139,15 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1security_1_1Secure
 </div><!--header-->
 <div class="contents">
 
+<p>Enhanced connection manager with integrated DoS protection.  
+ <a href="classdtls_1_1v13_1_1security_1_1SecureConnectionManager.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="secure__connection__manager_8h_source.html">secure_connection_manager.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1security_1_1SecureConnectionManager_1_1SourceConnectionStats.html">SourceConnectionStats</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get connection statistics per source.  <a href="structdtls_1_1v13_1_1security_1_1SecureConnectionManager_1_1SourceConnectionStats.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -164,58 +168,94 @@ Public Member Functions</h2></td></tr>
 <a class="el" href="classdtls_1_1v13_1_1security_1_1SecureConnectionManager.html">SecureConnectionManager</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classdtls_1_1v13_1_1security_1_1SecureConnectionManager.html">SecureConnectionManager</a> &amp;&amp;) noexcept=default</td></tr>
 <tr class="separator:a1da396a79fac89793fa260cd4164766e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aab9f31288feef66e6f9b1402d3513d27" id="r_aab9f31288feef66e6f9b1402d3513d27"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1SecureConnectionManager.html#aab9f31288feef66e6f9b1402d3513d27">create_secure_server_connection</a> (const <a class="el" href="structdtls_1_1v13_1_1ConnectionConfig.html">ConnectionConfig</a> &amp;config, std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1crypto_1_1CryptoProvider.html">crypto::CryptoProvider</a> &gt; crypto_provider, const <a class="el" href="structdtls_1_1v13_1_1NetworkAddress.html">NetworkAddress</a> &amp;client_address, size_t request_size=0, ConnectionEventCallback event_callback=nullptr)</td></tr>
+<tr class="memdesc:aab9f31288feef66e6f9b1402d3513d27"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new server connection with DoS protection.  <br /></td></tr>
 <tr class="separator:aab9f31288feef66e6f9b1402d3513d27"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a801fa4e22abc182c4e6ed1e253e4f65e" id="r_a801fa4e22abc182c4e6ed1e253e4f65e"><td class="memItemLeft" align="right" valign="top">DoSProtectionResult&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1SecureConnectionManager.html#a801fa4e22abc182c4e6ed1e253e4f65e">check_handshake_attempt</a> (const <a class="el" href="structdtls_1_1v13_1_1NetworkAddress.html">NetworkAddress</a> &amp;client_address, size_t handshake_size=0)</td></tr>
+<tr class="memdesc:a801fa4e22abc182c4e6ed1e253e4f65e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if handshake attempt should be allowed.  <br /></td></tr>
 <tr class="separator:a801fa4e22abc182c4e6ed1e253e4f65e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aca4ad472188a1acabf364f2889e8aff2" id="r_aca4ad472188a1acabf364f2889e8aff2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1SecureConnectionManager.html#aca4ad472188a1acabf364f2889e8aff2">record_handshake_success</a> (const <a class="el" href="structdtls_1_1v13_1_1NetworkAddress.html">NetworkAddress</a> &amp;client_address, const ConnectionID &amp;connection_id)</td></tr>
+<tr class="memdesc:aca4ad472188a1acabf364f2889e8aff2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Record successful handshake completion.  <br /></td></tr>
 <tr class="separator:aca4ad472188a1acabf364f2889e8aff2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae83c2c139cdbb5f7ca3c5fe16f7db0ed" id="r_ae83c2c139cdbb5f7ca3c5fe16f7db0ed"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1SecureConnectionManager.html#ae83c2c139cdbb5f7ca3c5fe16f7db0ed">record_handshake_failure</a> (const <a class="el" href="structdtls_1_1v13_1_1NetworkAddress.html">NetworkAddress</a> &amp;client_address, const std::string &amp;failure_reason)</td></tr>
+<tr class="memdesc:ae83c2c139cdbb5f7ca3c5fe16f7db0ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Record handshake failure.  <br /></td></tr>
 <tr class="separator:ae83c2c139cdbb5f7ca3c5fe16f7db0ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a721eed2a15035016e8a076ab87478919" id="r_a721eed2a15035016e8a076ab87478919"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1SecureConnectionManager.html#a721eed2a15035016e8a076ab87478919">add_connection</a> (std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> &gt; connection, const <a class="el" href="structdtls_1_1v13_1_1NetworkAddress.html">NetworkAddress</a> &amp;client_address)</td></tr>
+<tr class="memdesc:a721eed2a15035016e8a076ab87478919"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a connection to the manager.  <br /></td></tr>
 <tr class="separator:a721eed2a15035016e8a076ab87478919"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8a3768734a7c984c1e6a5b83197c3c18" id="r_a8a3768734a7c984c1e6a5b83197c3c18"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1SecureConnectionManager.html#a8a3768734a7c984c1e6a5b83197c3c18">remove_connection</a> (const ConnectionID &amp;connection_id)</td></tr>
+<tr class="memdesc:a8a3768734a7c984c1e6a5b83197c3c18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove a connection from the manager.  <br /></td></tr>
 <tr class="separator:a8a3768734a7c984c1e6a5b83197c3c18"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a710d2fb8b5591508826c6e65401d6436" id="r_a710d2fb8b5591508826c6e65401d6436"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1SecureConnectionManager.html#a710d2fb8b5591508826c6e65401d6436">find_connection</a> (const ConnectionID &amp;connection_id)</td></tr>
+<tr class="memdesc:a710d2fb8b5591508826c6e65401d6436"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find connection by connection ID.  <br /></td></tr>
 <tr class="separator:a710d2fb8b5591508826c6e65401d6436"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a392f78d9a39a547307a886bd3ac380b1" id="r_a392f78d9a39a547307a886bd3ac380b1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1SecureConnectionManager.html#a392f78d9a39a547307a886bd3ac380b1">find_connection</a> (const <a class="el" href="structdtls_1_1v13_1_1NetworkAddress.html">NetworkAddress</a> &amp;client_address)</td></tr>
+<tr class="memdesc:a392f78d9a39a547307a886bd3ac380b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find connection by client address.  <br /></td></tr>
 <tr class="separator:a392f78d9a39a547307a886bd3ac380b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ada48501a005db28452bce7bc0ddecf17" id="r_ada48501a005db28452bce7bc0ddecf17"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1SecureConnectionManager.html#ada48501a005db28452bce7bc0ddecf17">get_all_connections</a> ()</td></tr>
+<tr class="memdesc:ada48501a005db28452bce7bc0ddecf17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get all active connections.  <br /></td></tr>
 <tr class="separator:ada48501a005db28452bce7bc0ddecf17"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a44ae44b9ea144b4737252dc933d953ba" id="r_a44ae44b9ea144b4737252dc933d953ba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1SecureConnectionManager.html#a44ae44b9ea144b4737252dc933d953ba">close_all_connections</a> ()</td></tr>
+<tr class="memitem:a44ae44b9ea144b4737252dc933d953ba" id="r_a44ae44b9ea144b4737252dc933d953ba"><td class="memItemLeft" align="right" valign="top"><a id="a44ae44b9ea144b4737252dc933d953ba" name="a44ae44b9ea144b4737252dc933d953ba"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>close_all_connections</b> ()</td></tr>
+<tr class="memdesc:a44ae44b9ea144b4737252dc933d953ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Close all connections. <br /></td></tr>
 <tr class="separator:a44ae44b9ea144b4737252dc933d953ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af0182d2a8189cc7c39399c6890e60d6d" id="r_af0182d2a8189cc7c39399c6890e60d6d"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1SecureConnectionManager.html#af0182d2a8189cc7c39399c6890e60d6d">get_connection_count</a> () const</td></tr>
+<tr class="memdesc:af0182d2a8189cc7c39399c6890e60d6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get connection count.  <br /></td></tr>
 <tr class="separator:af0182d2a8189cc7c39399c6890e60d6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ada48a5993db5ff76db2b057527d10e7c" id="r_ada48a5993db5ff76db2b057527d10e7c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1SecureConnectionManager.html#ada48a5993db5ff76db2b057527d10e7c">cleanup_connections</a> ()</td></tr>
+<tr class="memitem:ada48a5993db5ff76db2b057527d10e7c" id="r_ada48a5993db5ff76db2b057527d10e7c"><td class="memItemLeft" align="right" valign="top"><a id="ada48a5993db5ff76db2b057527d10e7c" name="ada48a5993db5ff76db2b057527d10e7c"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>cleanup_connections</b> ()</td></tr>
+<tr class="memdesc:ada48a5993db5ff76db2b057527d10e7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cleanup closed connections and expired DoS protection entries. <br /></td></tr>
 <tr class="separator:ada48a5993db5ff76db2b057527d10e7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1a08f5a89312da36e63c690de57c0c29" id="r_a1a08f5a89312da36e63c690de57c0c29"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1SecureConnectionManager.html#a1a08f5a89312da36e63c690de57c0c29">record_security_violation</a> (const <a class="el" href="structdtls_1_1v13_1_1NetworkAddress.html">NetworkAddress</a> &amp;client_address, const std::string &amp;violation_type, const std::string &amp;severity=&quot;medium&quot;)</td></tr>
+<tr class="memdesc:a1a08f5a89312da36e63c690de57c0c29"><td class="mdescLeft">&#160;</td><td class="mdescRight">Record security violation.  <br /></td></tr>
 <tr class="separator:a1a08f5a89312da36e63c690de57c0c29"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:affdd439b0acbf3530a72a3b0904887f4" id="r_affdd439b0acbf3530a72a3b0904887f4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1SecureConnectionManager.html#affdd439b0acbf3530a72a3b0904887f4">add_to_whitelist</a> (const <a class="el" href="structdtls_1_1v13_1_1NetworkAddress.html">NetworkAddress</a> &amp;client_address)</td></tr>
+<tr class="memdesc:affdd439b0acbf3530a72a3b0904887f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add source to whitelist.  <br /></td></tr>
 <tr class="separator:affdd439b0acbf3530a72a3b0904887f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a908f403eb31622fdfaca5039dac5f43b" id="r_a908f403eb31622fdfaca5039dac5f43b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1SecureConnectionManager.html#a908f403eb31622fdfaca5039dac5f43b">remove_from_whitelist</a> (const <a class="el" href="structdtls_1_1v13_1_1NetworkAddress.html">NetworkAddress</a> &amp;client_address)</td></tr>
+<tr class="memdesc:a908f403eb31622fdfaca5039dac5f43b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove source from whitelist.  <br /></td></tr>
 <tr class="separator:a908f403eb31622fdfaca5039dac5f43b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaecd57653d1753b8ae010264bc16ea7b" id="r_aaecd57653d1753b8ae010264bc16ea7b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1SecureConnectionManager.html#aaecd57653d1753b8ae010264bc16ea7b">blacklist_source</a> (const <a class="el" href="structdtls_1_1v13_1_1NetworkAddress.html">NetworkAddress</a> &amp;client_address, std::chrono::seconds duration=std::chrono::seconds{0})</td></tr>
+<tr class="memdesc:aaecd57653d1753b8ae010264bc16ea7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Blacklist a source address.  <br /></td></tr>
 <tr class="separator:aaecd57653d1753b8ae010264bc16ea7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2587f5bafe750d96318c2a269025db73" id="r_a2587f5bafe750d96318c2a269025db73"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1SecureConnectionManager.html#a2587f5bafe750d96318c2a269025db73">remove_from_blacklist</a> (const <a class="el" href="structdtls_1_1v13_1_1NetworkAddress.html">NetworkAddress</a> &amp;client_address)</td></tr>
+<tr class="memdesc:a2587f5bafe750d96318c2a269025db73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove source from blacklist.  <br /></td></tr>
 <tr class="separator:a2587f5bafe750d96318c2a269025db73"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aefe3fbda6848dcd8c2f2dba6b405704e" id="r_aefe3fbda6848dcd8c2f2dba6b405704e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdtls_1_1v13_1_1security_1_1DoSProtectionStats.html">DoSProtectionStats</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1SecureConnectionManager.html#aefe3fbda6848dcd8c2f2dba6b405704e">get_dos_statistics</a> () const</td></tr>
+<tr class="memitem:aefe3fbda6848dcd8c2f2dba6b405704e" id="r_aefe3fbda6848dcd8c2f2dba6b405704e"><td class="memItemLeft" align="right" valign="top"><a id="aefe3fbda6848dcd8c2f2dba6b405704e" name="aefe3fbda6848dcd8c2f2dba6b405704e"></a>
+<a class="el" href="structdtls_1_1v13_1_1security_1_1DoSProtectionStats.html">DoSProtectionStats</a>&#160;</td><td class="memItemRight" valign="bottom"><b>get_dos_statistics</b> () const</td></tr>
+<tr class="memdesc:aefe3fbda6848dcd8c2f2dba6b405704e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get DoS protection statistics. <br /></td></tr>
 <tr class="separator:aefe3fbda6848dcd8c2f2dba6b405704e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac1d01c464a1a181fd544e61b09cf0b83" id="r_ac1d01c464a1a181fd544e61b09cf0b83"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdtls_1_1v13_1_1security_1_1RateLimiter_1_1OverallStats.html">RateLimiter::OverallStats</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1SecureConnectionManager.html#ac1d01c464a1a181fd544e61b09cf0b83">get_rate_limit_statistics</a> () const</td></tr>
+<tr class="memitem:ac1d01c464a1a181fd544e61b09cf0b83" id="r_ac1d01c464a1a181fd544e61b09cf0b83"><td class="memItemLeft" align="right" valign="top"><a id="ac1d01c464a1a181fd544e61b09cf0b83" name="ac1d01c464a1a181fd544e61b09cf0b83"></a>
+<a class="el" href="structdtls_1_1v13_1_1security_1_1RateLimiter_1_1OverallStats.html">RateLimiter::OverallStats</a>&#160;</td><td class="memItemRight" valign="bottom"><b>get_rate_limit_statistics</b> () const</td></tr>
+<tr class="memdesc:ac1d01c464a1a181fd544e61b09cf0b83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get rate limiting statistics. <br /></td></tr>
 <tr class="separator:ac1d01c464a1a181fd544e61b09cf0b83"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a584036b80175d17b80d720b8a7f5980c" id="r_a584036b80175d17b80d720b8a7f5980c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdtls_1_1v13_1_1security_1_1ResourceStats.html">ResourceStats</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1SecureConnectionManager.html#a584036b80175d17b80d720b8a7f5980c">get_resource_statistics</a> () const</td></tr>
+<tr class="memitem:a584036b80175d17b80d720b8a7f5980c" id="r_a584036b80175d17b80d720b8a7f5980c"><td class="memItemLeft" align="right" valign="top"><a id="a584036b80175d17b80d720b8a7f5980c" name="a584036b80175d17b80d720b8a7f5980c"></a>
+<a class="el" href="structdtls_1_1v13_1_1security_1_1ResourceStats.html">ResourceStats</a>&#160;</td><td class="memItemRight" valign="bottom"><b>get_resource_statistics</b> () const</td></tr>
+<tr class="memdesc:a584036b80175d17b80d720b8a7f5980c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get resource management statistics. <br /></td></tr>
 <tr class="separator:a584036b80175d17b80d720b8a7f5980c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af1b7e5c3ba4951d090faabb082f059ea" id="r_af1b7e5c3ba4951d090faabb082f059ea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdtls_1_1v13_1_1security_1_1DoSProtection_1_1SystemHealth.html">DoSProtection::SystemHealth</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1SecureConnectionManager.html#af1b7e5c3ba4951d090faabb082f059ea">get_system_health</a> () const</td></tr>
+<tr class="memitem:af1b7e5c3ba4951d090faabb082f059ea" id="r_af1b7e5c3ba4951d090faabb082f059ea"><td class="memItemLeft" align="right" valign="top"><a id="af1b7e5c3ba4951d090faabb082f059ea" name="af1b7e5c3ba4951d090faabb082f059ea"></a>
+<a class="el" href="structdtls_1_1v13_1_1security_1_1DoSProtection_1_1SystemHealth.html">DoSProtection::SystemHealth</a>&#160;</td><td class="memItemRight" valign="bottom"><b>get_system_health</b> () const</td></tr>
+<tr class="memdesc:af1b7e5c3ba4951d090faabb082f059ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get system health status. <br /></td></tr>
 <tr class="separator:af1b7e5c3ba4951d090faabb082f059ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2835fa83b09f85e56c87fc6fd596fce4" id="r_a2835fa83b09f85e56c87fc6fd596fce4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="structdtls_1_1v13_1_1security_1_1SecureConnectionManager_1_1SourceConnectionStats.html">SourceConnectionStats</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1SecureConnectionManager.html#a2835fa83b09f85e56c87fc6fd596fce4">get_source_statistics</a> (const <a class="el" href="structdtls_1_1v13_1_1NetworkAddress.html">NetworkAddress</a> &amp;client_address) const</td></tr>
+<tr class="memdesc:a2835fa83b09f85e56c87fc6fd596fce4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get connection statistics for a specific source.  <br /></td></tr>
 <tr class="separator:a2835fa83b09f85e56c87fc6fd596fce4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a78b76deb22079da1053aeda88c28c683" id="r_a78b76deb22079da1053aeda88c28c683"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structdtls_1_1v13_1_1NetworkAddress.html">NetworkAddress</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1SecureConnectionManager.html#a78b76deb22079da1053aeda88c28c683">get_high_connection_sources</a> (size_t threshold=10) const</td></tr>
+<tr class="memdesc:a78b76deb22079da1053aeda88c28c683"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get sources with high connection counts.  <br /></td></tr>
 <tr class="separator:a78b76deb22079da1053aeda88c28c683"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7d01982483deefeecf6814dc4237b1c5" id="r_a7d01982483deefeecf6814dc4237b1c5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1SecureConnectionManager.html#a7d01982483deefeecf6814dc4237b1c5">force_cleanup_and_health_check</a> ()</td></tr>
+<tr class="memitem:a7d01982483deefeecf6814dc4237b1c5" id="r_a7d01982483deefeecf6814dc4237b1c5"><td class="memItemLeft" align="right" valign="top"><a id="a7d01982483deefeecf6814dc4237b1c5" name="a7d01982483deefeecf6814dc4237b1c5"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>force_cleanup_and_health_check</b> ()</td></tr>
+<tr class="memdesc:a7d01982483deefeecf6814dc4237b1c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Force system cleanup and health check. <br /></td></tr>
 <tr class="separator:a7d01982483deefeecf6814dc4237b1c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1c7cb12c983c52bfc453010248971b9c" id="r_a1c7cb12c983c52bfc453010248971b9c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1SecureConnectionManager.html#a1c7cb12c983c52bfc453010248971b9c">update_dos_config</a> (const <a class="el" href="structdtls_1_1v13_1_1security_1_1DoSProtectionConfig.html">DoSProtectionConfig</a> &amp;new_config)</td></tr>
+<tr class="memdesc:a1c7cb12c983c52bfc453010248971b9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update DoS protection configuration.  <br /></td></tr>
 <tr class="separator:a1c7cb12c983c52bfc453010248971b9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a66e316a7b583d3cebc5d12ed5e50bd92" id="r_a66e316a7b583d3cebc5d12ed5e50bd92"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structdtls_1_1v13_1_1security_1_1DoSProtectionConfig.html">DoSProtectionConfig</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1SecureConnectionManager.html#a66e316a7b583d3cebc5d12ed5e50bd92">get_dos_config</a> () const</td></tr>
+<tr class="memitem:a66e316a7b583d3cebc5d12ed5e50bd92" id="r_a66e316a7b583d3cebc5d12ed5e50bd92"><td class="memItemLeft" align="right" valign="top"><a id="a66e316a7b583d3cebc5d12ed5e50bd92" name="a66e316a7b583d3cebc5d12ed5e50bd92"></a>
+const <a class="el" href="structdtls_1_1v13_1_1security_1_1DoSProtectionConfig.html">DoSProtectionConfig</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get_dos_config</b> () const</td></tr>
+<tr class="memdesc:a66e316a7b583d3cebc5d12ed5e50bd92"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current DoS protection configuration. <br /></td></tr>
 <tr class="separator:a66e316a7b583d3cebc5d12ed5e50bd92"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaa68d160286feab128a2c3cd9aeeda9f" id="r_aaa68d160286feab128a2c3cd9aeeda9f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1SecureConnectionManager.html#aaa68d160286feab128a2c3cd9aeeda9f">enable_cpu_monitoring</a> (bool enabled)</td></tr>
+<tr class="memitem:aaa68d160286feab128a2c3cd9aeeda9f" id="r_aaa68d160286feab128a2c3cd9aeeda9f"><td class="memItemLeft" align="right" valign="top"><a id="aaa68d160286feab128a2c3cd9aeeda9f" name="aaa68d160286feab128a2c3cd9aeeda9f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>enable_cpu_monitoring</b> (bool enabled)</td></tr>
+<tr class="memdesc:aaa68d160286feab128a2c3cd9aeeda9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable/disable specific protection features. <br /></td></tr>
 <tr class="separator:aaa68d160286feab128a2c3cd9aeeda9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad5b40d5ac2c0074b26559c0f11f80341" id="r_ad5b40d5ac2c0074b26559c0f11f80341"><td class="memItemLeft" align="right" valign="top"><a id="ad5b40d5ac2c0074b26559c0f11f80341" name="ad5b40d5ac2c0074b26559c0f11f80341"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>enable_proof_of_work</b> (bool enabled)</td></tr>
@@ -228,7 +268,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>enable_source_validat
 <tr class="separator:ab29544ada5521122a13e7334cf2afb00"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Enhanced connection manager with integrated DoS protection </p>
+<div class="textblock"><p>Enhanced connection manager with integrated DoS protection. </p>
 
 <p class="definition">Definition at line <a class="el" href="secure__connection__manager_8h_source.html#l00020">20</a> of file <a class="el" href="secure__connection__manager_8h_source.html">secure_connection_manager.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
@@ -257,14 +297,16 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>enable_source_validat
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Add a connection to the manager </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Add a connection to the manager. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">connection</td><td><a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> to add </td></tr>
+    <tr><td class="paramname">connection</td><td><a class="el" href="classdtls_1_1v13_1_1Connection.html" title="DTLS v1.3 Connection implementation.">Connection</a> to add </td></tr>
     <tr><td class="paramname">client_address</td><td>Client address </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a> of operation </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classdtls_1_1v13_1_1Result.html" title="Forward declaration for Result template class.">Result</a> of operation </dd></dl>
 
 </div>
 </div>
@@ -283,7 +325,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>enable_source_validat
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Add source to whitelist </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Add source to whitelist. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">client_address</td><td>Client address to whitelist </td></tr>
   </table>
@@ -317,7 +361,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>enable_source_validat
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Blacklist a source address </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Blacklist a source address. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">client_address</td><td>Client address to blacklist </td></tr>
     <tr><td class="paramname">duration</td><td>Blacklist duration (0 = use default) </td></tr>
@@ -352,7 +398,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>enable_source_validat
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Check if handshake attempt should be allowed </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Check if handshake attempt should be allowed. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">client_address</td><td>Client address </td></tr>
     <tr><td class="paramname">handshake_size</td><td>Size of handshake message </td></tr>
@@ -360,42 +408,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>enable_source_validat
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>DoS protection result </dd></dl>
-
-</div>
-</div>
-<a id="ada48a5993db5ff76db2b057527d10e7c" name="ada48a5993db5ff76db2b057527d10e7c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ada48a5993db5ff76db2b057527d10e7c">&#9670;&#160;</a></span>cleanup_connections()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void dtls::v13::security::SecureConnectionManager::cleanup_connections </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Cleanup closed connections and expired DoS protection entries </p>
-
-</div>
-</div>
-<a id="a44ae44b9ea144b4737252dc933d953ba" name="a44ae44b9ea144b4737252dc933d953ba"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a44ae44b9ea144b4737252dc933d953ba">&#9670;&#160;</a></span>close_all_connections()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void dtls::v13::security::SecureConnectionManager::close_all_connections </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Close all connections </p>
 
 </div>
 </div>
@@ -442,9 +454,11 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>enable_source_validat
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Create a new server connection with DoS protection </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Create a new server connection with DoS protection. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">config</td><td><a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> configuration </td></tr>
+    <tr><td class="paramname">config</td><td><a class="el" href="classdtls_1_1v13_1_1Connection.html" title="DTLS v1.3 Connection implementation.">Connection</a> configuration </td></tr>
     <tr><td class="paramname">crypto_provider</td><td>Cryptographic provider </td></tr>
     <tr><td class="paramname">client_address</td><td>Client address </td></tr>
     <tr><td class="paramname">request_size</td><td>Size of initial request (for DoS assessment) </td></tr>
@@ -452,26 +466,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>enable_source_validat
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> or error if DoS protection blocks </dd></dl>
-
-</div>
-</div>
-<a id="aaa68d160286feab128a2c3cd9aeeda9f" name="aaa68d160286feab128a2c3cd9aeeda9f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaa68d160286feab128a2c3cd9aeeda9f">&#9670;&#160;</a></span>enable_cpu_monitoring()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void dtls::v13::security::SecureConnectionManager::enable_cpu_monitoring </td>
-          <td>(</td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>enabled</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Enable/disable specific protection features </p>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classdtls_1_1v13_1_1Connection.html" title="DTLS v1.3 Connection implementation.">Connection</a> or error if DoS protection blocks </dd></dl>
 
 </div>
 </div>
@@ -490,13 +485,15 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>enable_source_validat
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Find connection by connection ID </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Find connection by connection ID. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">connection_id</td><td><a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> ID </td></tr>
+    <tr><td class="paramname">connection_id</td><td><a class="el" href="classdtls_1_1v13_1_1Connection.html" title="DTLS v1.3 Connection implementation.">Connection</a> ID </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> pointer or error </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classdtls_1_1v13_1_1Connection.html" title="DTLS v1.3 Connection implementation.">Connection</a> pointer or error </dd></dl>
 
 </div>
 </div>
@@ -515,31 +512,15 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>enable_source_validat
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Find connection by client address </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Find connection by client address. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">client_address</td><td>Client address </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> pointer or error </dd></dl>
-
-</div>
-</div>
-<a id="a7d01982483deefeecf6814dc4237b1c5" name="a7d01982483deefeecf6814dc4237b1c5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7d01982483deefeecf6814dc4237b1c5">&#9670;&#160;</a></span>force_cleanup_and_health_check()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void dtls::v13::security::SecureConnectionManager::force_cleanup_and_health_check </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Force system cleanup and health check </p>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classdtls_1_1v13_1_1Connection.html" title="DTLS v1.3 Connection implementation.">Connection</a> pointer or error </dd></dl>
 
 </div>
 </div>
@@ -557,7 +538,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>enable_source_validat
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Get all active connections </p><dl class="section return"><dt>Returns</dt><dd>Vector of connection pointers </dd></dl>
+
+<p>Get all active connections. </p>
+<dl class="section return"><dt>Returns</dt><dd>Vector of connection pointers </dd></dl>
 
 </div>
 </div>
@@ -575,43 +558,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>enable_source_validat
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Get connection count </p><dl class="section return"><dt>Returns</dt><dd>Number of active connections </dd></dl>
 
-</div>
-</div>
-<a id="a66e316a7b583d3cebc5d12ed5e50bd92" name="a66e316a7b583d3cebc5d12ed5e50bd92"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a66e316a7b583d3cebc5d12ed5e50bd92">&#9670;&#160;</a></span>get_dos_config()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const <a class="el" href="structdtls_1_1v13_1_1security_1_1DoSProtectionConfig.html">DoSProtectionConfig</a> &amp; dtls::v13::security::SecureConnectionManager::get_dos_config </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Get current DoS protection configuration </p>
-
-</div>
-</div>
-<a id="aefe3fbda6848dcd8c2f2dba6b405704e" name="aefe3fbda6848dcd8c2f2dba6b405704e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aefe3fbda6848dcd8c2f2dba6b405704e">&#9670;&#160;</a></span>get_dos_statistics()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="structdtls_1_1v13_1_1security_1_1DoSProtectionStats.html">DoSProtectionStats</a> dtls::v13::security::SecureConnectionManager::get_dos_statistics </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Get DoS protection statistics </p>
+<p>Get connection count. </p>
+<dl class="section return"><dt>Returns</dt><dd>Number of active connections </dd></dl>
 
 </div>
 </div>
@@ -630,49 +579,15 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>enable_source_validat
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Get sources with high connection counts </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Get sources with high connection counts. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">threshold</td><td><a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> count threshold </td></tr>
+    <tr><td class="paramname">threshold</td><td><a class="el" href="classdtls_1_1v13_1_1Connection.html" title="DTLS v1.3 Connection implementation.">Connection</a> count threshold </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>List of addresses with high connection counts </dd></dl>
-
-</div>
-</div>
-<a id="ac1d01c464a1a181fd544e61b09cf0b83" name="ac1d01c464a1a181fd544e61b09cf0b83"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac1d01c464a1a181fd544e61b09cf0b83">&#9670;&#160;</a></span>get_rate_limit_statistics()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="structdtls_1_1v13_1_1security_1_1RateLimiter_1_1OverallStats.html">RateLimiter::OverallStats</a> dtls::v13::security::SecureConnectionManager::get_rate_limit_statistics </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Get rate limiting statistics </p>
-
-</div>
-</div>
-<a id="a584036b80175d17b80d720b8a7f5980c" name="a584036b80175d17b80d720b8a7f5980c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a584036b80175d17b80d720b8a7f5980c">&#9670;&#160;</a></span>get_resource_statistics()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="structdtls_1_1v13_1_1security_1_1ResourceStats.html">ResourceStats</a> dtls::v13::security::SecureConnectionManager::get_resource_statistics </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Get resource management statistics </p>
 
 </div>
 </div>
@@ -691,31 +606,15 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>enable_source_validat
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Get connection statistics for a specific source </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Get connection statistics for a specific source. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">client_address</td><td>Client address </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Source statistics or error if not found </dd></dl>
-
-</div>
-</div>
-<a id="af1b7e5c3ba4951d090faabb082f059ea" name="af1b7e5c3ba4951d090faabb082f059ea"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af1b7e5c3ba4951d090faabb082f059ea">&#9670;&#160;</a></span>get_system_health()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="structdtls_1_1v13_1_1security_1_1DoSProtection_1_1SystemHealth.html">DoSProtection::SystemHealth</a> dtls::v13::security::SecureConnectionManager::get_system_health </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Get system health status </p>
 
 </div>
 </div>
@@ -744,7 +643,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>enable_source_validat
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Record handshake failure </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Record handshake failure. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">client_address</td><td>Client address </td></tr>
     <tr><td class="paramname">failure_reason</td><td>Reason for failure </td></tr>
@@ -779,10 +680,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>enable_source_validat
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Record successful handshake completion </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Record successful handshake completion. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">client_address</td><td>Client address </td></tr>
-    <tr><td class="paramname">connection_id</td><td><a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> identifier </td></tr>
+    <tr><td class="paramname">connection_id</td><td><a class="el" href="classdtls_1_1v13_1_1Connection.html" title="DTLS v1.3 Connection implementation.">Connection</a> identifier </td></tr>
   </table>
   </dd>
 </dl>
@@ -820,7 +723,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>enable_source_validat
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Record security violation </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Record security violation. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">client_address</td><td>Client address </td></tr>
     <tr><td class="paramname">violation_type</td><td>Type of violation </td></tr>
@@ -846,13 +751,15 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>enable_source_validat
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Remove a connection from the manager </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Remove a connection from the manager. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">connection_id</td><td><a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> ID </td></tr>
+    <tr><td class="paramname">connection_id</td><td><a class="el" href="classdtls_1_1v13_1_1Connection.html" title="DTLS v1.3 Connection implementation.">Connection</a> ID </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a> of operation </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classdtls_1_1v13_1_1Result.html" title="Forward declaration for Result template class.">Result</a> of operation </dd></dl>
 
 </div>
 </div>
@@ -871,7 +778,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>enable_source_validat
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Remove source from blacklist </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Remove source from blacklist. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">client_address</td><td>Client address to remove from blacklist </td></tr>
   </table>
@@ -895,7 +804,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>enable_source_validat
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Remove source from whitelist </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Remove source from whitelist. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">client_address</td><td>Client address to remove from whitelist </td></tr>
   </table>
@@ -919,7 +830,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>enable_source_validat
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Update DoS protection configuration </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Update DoS protection configuration. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">new_config</td><td>New DoS protection configuration </td></tr>
   </table>

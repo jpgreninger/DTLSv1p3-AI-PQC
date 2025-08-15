@@ -139,268 +139,69 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1protocol_1_1Reliab
 </div><!--header-->
 <div class="contents">
 
+<p>Reliability Manager.  
+ <a href="classdtls_1_1v13_1_1protocol_1_1ReliabilityManager.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="handshake__manager_8h_source.html">handshake_manager.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1protocol_1_1ReliabilityManager_1_1Config.html">Config</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configuration for reliability manager.  <a href="structdtls_1_1v13_1_1protocol_1_1ReliabilityManager_1_1Config.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aed08765389089a2638232f926a4f38d4" id="r_aed08765389089a2638232f926a4f38d4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1ReliabilityManager.html#aed08765389089a2638232f926a4f38d4">ReliabilityManager</a> ()</td></tr>
+<tr class="memitem:aed08765389089a2638232f926a4f38d4" id="r_aed08765389089a2638232f926a4f38d4"><td class="memItemLeft" align="right" valign="top"><a id="aed08765389089a2638232f926a4f38d4" name="aed08765389089a2638232f926a4f38d4"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>ReliabilityManager</b> ()</td></tr>
+<tr class="memdesc:aed08765389089a2638232f926a4f38d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. <br /></td></tr>
 <tr class="separator:aed08765389089a2638232f926a4f38d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae2ebd4fce98d4716a4c388926db40333" id="r_ae2ebd4fce98d4716a4c388926db40333"><td class="memItemLeft" align="right" valign="top"><a id="ae2ebd4fce98d4716a4c388926db40333" name="ae2ebd4fce98d4716a4c388926db40333"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>ReliabilityManager</b> (const <a class="el" href="structdtls_1_1v13_1_1protocol_1_1ReliabilityManager_1_1Config.html">Config</a> &amp;config)</td></tr>
 <tr class="separator:ae2ebd4fce98d4716a4c388926db40333"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af297bbef16af8f7a3fa4794f17016303" id="r_af297bbef16af8f7a3fa4794f17016303"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1ReliabilityManager.html#af297bbef16af8f7a3fa4794f17016303">add_outbound_message</a> (uint32_t sequence, HandshakeType type, std::chrono::milliseconds rto)</td></tr>
+<tr class="memitem:af297bbef16af8f7a3fa4794f17016303" id="r_af297bbef16af8f7a3fa4794f17016303"><td class="memItemLeft" align="right" valign="top"><a id="af297bbef16af8f7a3fa4794f17016303" name="af297bbef16af8f7a3fa4794f17016303"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>add_outbound_message</b> (uint32_t sequence, HandshakeType type, std::chrono::milliseconds rto)</td></tr>
+<tr class="memdesc:af297bbef16af8f7a3fa4794f17016303"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add outbound message for tracking. <br /></td></tr>
 <tr class="separator:af297bbef16af8f7a3fa4794f17016303"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a24600dedc0eda5bfa321ce4366ad42f6" id="r_a24600dedc0eda5bfa321ce4366ad42f6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1ReliabilityManager.html#a24600dedc0eda5bfa321ce4366ad42f6">process_ack_message</a> (const <a class="el" href="classdtls_1_1v13_1_1protocol_1_1ACK.html">ACK</a> &amp;ack_message)</td></tr>
+<tr class="memitem:a24600dedc0eda5bfa321ce4366ad42f6" id="r_a24600dedc0eda5bfa321ce4366ad42f6"><td class="memItemLeft" align="right" valign="top"><a id="a24600dedc0eda5bfa321ce4366ad42f6" name="a24600dedc0eda5bfa321ce4366ad42f6"></a>
+<a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>process_ack_message</b> (const <a class="el" href="classdtls_1_1v13_1_1protocol_1_1ACK.html">ACK</a> &amp;ack_message)</td></tr>
+<tr class="memdesc:a24600dedc0eda5bfa321ce4366ad42f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Process <a class="el" href="classdtls_1_1v13_1_1protocol_1_1ACK.html">ACK</a> message and update acknowledgments. <br /></td></tr>
 <tr class="separator:a24600dedc0eda5bfa321ce4366ad42f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acc45b7c69ae3256aff76ca1f526d0a5f" id="r_acc45b7c69ae3256aff76ca1f526d0a5f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; uint32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1ReliabilityManager.html#acc45b7c69ae3256aff76ca1f526d0a5f">check_timeouts</a> ()</td></tr>
+<tr class="memitem:acc45b7c69ae3256aff76ca1f526d0a5f" id="r_acc45b7c69ae3256aff76ca1f526d0a5f"><td class="memItemLeft" align="right" valign="top"><a id="acc45b7c69ae3256aff76ca1f526d0a5f" name="acc45b7c69ae3256aff76ca1f526d0a5f"></a>
+std::vector&lt; uint32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>check_timeouts</b> ()</td></tr>
+<tr class="memdesc:acc45b7c69ae3256aff76ca1f526d0a5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check for timeout and retransmission needs. <br /></td></tr>
 <tr class="separator:acc45b7c69ae3256aff76ca1f526d0a5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abc0b288708ba4e8463f70c795735230f" id="r_abc0b288708ba4e8463f70c795735230f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1ReliabilityManager.html#abc0b288708ba4e8463f70c795735230f">update_rtt</a> (uint32_t message_sequence, std::chrono::milliseconds rtt)</td></tr>
+<tr class="memitem:abc0b288708ba4e8463f70c795735230f" id="r_abc0b288708ba4e8463f70c795735230f"><td class="memItemLeft" align="right" valign="top"><a id="abc0b288708ba4e8463f70c795735230f" name="abc0b288708ba4e8463f70c795735230f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>update_rtt</b> (uint32_t message_sequence, std::chrono::milliseconds rtt)</td></tr>
+<tr class="memdesc:abc0b288708ba4e8463f70c795735230f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update RTT measurements. <br /></td></tr>
 <tr class="separator:abc0b288708ba4e8463f70c795735230f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a35c1db230089726d11faa27ada07c016" id="r_a35c1db230089726d11faa27ada07c016"><td class="memItemLeft" align="right" valign="top">std::chrono::milliseconds&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1ReliabilityManager.html#a35c1db230089726d11faa27ada07c016">get_current_rto</a> () const</td></tr>
+<tr class="memitem:a35c1db230089726d11faa27ada07c016" id="r_a35c1db230089726d11faa27ada07c016"><td class="memItemLeft" align="right" valign="top"><a id="a35c1db230089726d11faa27ada07c016" name="a35c1db230089726d11faa27ada07c016"></a>
+std::chrono::milliseconds&#160;</td><td class="memItemRight" valign="bottom"><b>get_current_rto</b> () const</td></tr>
+<tr class="memdesc:a35c1db230089726d11faa27ada07c016"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current RTO value. <br /></td></tr>
 <tr class="separator:a35c1db230089726d11faa27ada07c016"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a620d2715bb922640f1e8cda1f34a01f9" id="r_a620d2715bb922640f1e8cda1f34a01f9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1ReliabilityManager.html#a620d2715bb922640f1e8cda1f34a01f9">acknowledge_message</a> (uint32_t message_sequence)</td></tr>
+<tr class="memitem:a620d2715bb922640f1e8cda1f34a01f9" id="r_a620d2715bb922640f1e8cda1f34a01f9"><td class="memItemLeft" align="right" valign="top"><a id="a620d2715bb922640f1e8cda1f34a01f9" name="a620d2715bb922640f1e8cda1f34a01f9"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>acknowledge_message</b> (uint32_t message_sequence)</td></tr>
+<tr class="memdesc:a620d2715bb922640f1e8cda1f34a01f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mark message as acknowledged. <br /></td></tr>
 <tr class="separator:a620d2715bb922640f1e8cda1f34a01f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad9dcb5e64c1117ba07753a671c6d2bd6" id="r_ad9dcb5e64c1117ba07753a671c6d2bd6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1ReliabilityManager.html#ad9dcb5e64c1117ba07753a671c6d2bd6">acknowledge_message_range</a> (uint32_t start_sequence, uint32_t end_sequence)</td></tr>
+<tr class="memitem:ad9dcb5e64c1117ba07753a671c6d2bd6" id="r_ad9dcb5e64c1117ba07753a671c6d2bd6"><td class="memItemLeft" align="right" valign="top"><a id="ad9dcb5e64c1117ba07753a671c6d2bd6" name="ad9dcb5e64c1117ba07753a671c6d2bd6"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>acknowledge_message_range</b> (uint32_t start_sequence, uint32_t end_sequence)</td></tr>
+<tr class="memdesc:ad9dcb5e64c1117ba07753a671c6d2bd6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mark message range as acknowledged. <br /></td></tr>
 <tr class="separator:ad9dcb5e64c1117ba07753a671c6d2bd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aacc613e2bfb42ad00ddf6e99972d213e" id="r_aacc613e2bfb42ad00ddf6e99972d213e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; uint32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1ReliabilityManager.html#aacc613e2bfb42ad00ddf6e99972d213e">get_unacknowledged_messages</a> () const</td></tr>
+<tr class="memitem:aacc613e2bfb42ad00ddf6e99972d213e" id="r_aacc613e2bfb42ad00ddf6e99972d213e"><td class="memItemLeft" align="right" valign="top"><a id="aacc613e2bfb42ad00ddf6e99972d213e" name="aacc613e2bfb42ad00ddf6e99972d213e"></a>
+std::vector&lt; uint32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>get_unacknowledged_messages</b> () const</td></tr>
+<tr class="memdesc:aacc613e2bfb42ad00ddf6e99972d213e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get unacknowledged messages. <br /></td></tr>
 <tr class="separator:aacc613e2bfb42ad00ddf6e99972d213e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7ceff0c753e0dc7b224c4c6165ab52ea" id="r_a7ceff0c753e0dc7b224c4c6165ab52ea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1ReliabilityManager.html#a7ceff0c753e0dc7b224c4c6165ab52ea">reset</a> ()</td></tr>
+<tr class="memitem:a7ceff0c753e0dc7b224c4c6165ab52ea" id="r_a7ceff0c753e0dc7b224c4c6165ab52ea"><td class="memItemLeft" align="right" valign="top"><a id="a7ceff0c753e0dc7b224c4c6165ab52ea" name="a7ceff0c753e0dc7b224c4c6165ab52ea"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>reset</b> ()</td></tr>
+<tr class="memdesc:a7ceff0c753e0dc7b224c4c6165ab52ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset reliability state. <br /></td></tr>
 <tr class="separator:a7ceff0c753e0dc7b224c4c6165ab52ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Reliability Manager</p>
+<div class="textblock"><p>Reliability Manager. </p>
 <p>Handles retransmission logic, timeout calculation, and <a class="el" href="classdtls_1_1v13_1_1protocol_1_1ACK.html">ACK</a> processing for DTLS handshake reliability. </p>
 
 <p class="definition">Definition at line <a class="el" href="handshake__manager_8h_source.html#l00206">206</a> of file <a class="el" href="handshake__manager_8h_source.html">handshake_manager.h</a>.</p>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="aed08765389089a2638232f926a4f38d4" name="aed08765389089a2638232f926a4f38d4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aed08765389089a2638232f926a4f38d4">&#9670;&#160;</a></span>ReliabilityManager()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">dtls::v13::protocol::ReliabilityManager::ReliabilityManager </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Constructor </p>
-
-</div>
-</div>
-<h2 class="groupheader">Member Function Documentation</h2>
-<a id="a620d2715bb922640f1e8cda1f34a01f9" name="a620d2715bb922640f1e8cda1f34a01f9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a620d2715bb922640f1e8cda1f34a01f9">&#9670;&#160;</a></span>acknowledge_message()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void dtls::v13::protocol::ReliabilityManager::acknowledge_message </td>
-          <td>(</td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>message_sequence</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Mark message as acknowledged </p>
-
-</div>
-</div>
-<a id="ad9dcb5e64c1117ba07753a671c6d2bd6" name="ad9dcb5e64c1117ba07753a671c6d2bd6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad9dcb5e64c1117ba07753a671c6d2bd6">&#9670;&#160;</a></span>acknowledge_message_range()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void dtls::v13::protocol::ReliabilityManager::acknowledge_message_range </td>
-          <td>(</td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>start_sequence</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>end_sequence</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Mark message range as acknowledged </p>
-
-</div>
-</div>
-<a id="af297bbef16af8f7a3fa4794f17016303" name="af297bbef16af8f7a3fa4794f17016303"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af297bbef16af8f7a3fa4794f17016303">&#9670;&#160;</a></span>add_outbound_message()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void dtls::v13::protocol::ReliabilityManager::add_outbound_message </td>
-          <td>(</td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>sequence</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">HandshakeType&#160;</td>
-          <td class="paramname"><em>type</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::chrono::milliseconds&#160;</td>
-          <td class="paramname"><em>rto</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Add outbound message for tracking </p>
-
-</div>
-</div>
-<a id="acc45b7c69ae3256aff76ca1f526d0a5f" name="acc45b7c69ae3256aff76ca1f526d0a5f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acc45b7c69ae3256aff76ca1f526d0a5f">&#9670;&#160;</a></span>check_timeouts()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt; uint32_t &gt; dtls::v13::protocol::ReliabilityManager::check_timeouts </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Check for timeout and retransmission needs </p>
-
-</div>
-</div>
-<a id="a35c1db230089726d11faa27ada07c016" name="a35c1db230089726d11faa27ada07c016"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a35c1db230089726d11faa27ada07c016">&#9670;&#160;</a></span>get_current_rto()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::chrono::milliseconds dtls::v13::protocol::ReliabilityManager::get_current_rto </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Get current RTO value </p>
-
-</div>
-</div>
-<a id="aacc613e2bfb42ad00ddf6e99972d213e" name="aacc613e2bfb42ad00ddf6e99972d213e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aacc613e2bfb42ad00ddf6e99972d213e">&#9670;&#160;</a></span>get_unacknowledged_messages()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt; uint32_t &gt; dtls::v13::protocol::ReliabilityManager::get_unacknowledged_messages </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Get unacknowledged messages </p>
-
-</div>
-</div>
-<a id="a24600dedc0eda5bfa321ce4366ad42f6" name="a24600dedc0eda5bfa321ce4366ad42f6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a24600dedc0eda5bfa321ce4366ad42f6">&#9670;&#160;</a></span>process_ack_message()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; dtls::v13::protocol::ReliabilityManager::process_ack_message </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classdtls_1_1v13_1_1protocol_1_1ACK.html">ACK</a> &amp;&#160;</td>
-          <td class="paramname"><em>ack_message</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Process <a class="el" href="classdtls_1_1v13_1_1protocol_1_1ACK.html">ACK</a> message and update acknowledgments </p>
-
-</div>
-</div>
-<a id="a7ceff0c753e0dc7b224c4c6165ab52ea" name="a7ceff0c753e0dc7b224c4c6165ab52ea"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7ceff0c753e0dc7b224c4c6165ab52ea">&#9670;&#160;</a></span>reset()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void dtls::v13::protocol::ReliabilityManager::reset </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Reset reliability state </p>
-
-</div>
-</div>
-<a id="abc0b288708ba4e8463f70c795735230f" name="abc0b288708ba4e8463f70c795735230f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abc0b288708ba4e8463f70c795735230f">&#9670;&#160;</a></span>update_rtt()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void dtls::v13::protocol::ReliabilityManager::update_rtt </td>
-          <td>(</td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>message_sequence</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::chrono::milliseconds&#160;</td>
-          <td class="paramname"><em>rtt</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Update RTT measurements </p>
-
-</div>
-</div>
-<hr/>The documentation for this class was generated from the following file:<ul>
+</div><hr/>The documentation for this class was generated from the following file:<ul>
 <li>dtls/protocol/<a class="el" href="handshake__manager_8h_source.html">handshake_manager.h</a></li>
 </ul>
 </div><!-- contents -->

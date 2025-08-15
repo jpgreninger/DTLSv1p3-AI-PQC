@@ -824,12 +824,26 @@ bool is_supported_signature_scheme(SignatureScheme scheme) {
 
 bool is_supported_named_group(NamedGroup group) {
     switch (group) {
+        // Classical elliptic curve groups
         case NamedGroup::SECP256R1:
         case NamedGroup::SECP384R1:
         case NamedGroup::SECP521R1:
         case NamedGroup::X25519:
         case NamedGroup::X448:
             return true;
+            
+        // Pure ML-KEM post-quantum groups (draft-connolly-tls-mlkem-key-agreement-05)
+        case NamedGroup::MLKEM512:
+        case NamedGroup::MLKEM768:
+        case NamedGroup::MLKEM1024:
+            return true;
+            
+        // Hybrid post-quantum + classical groups
+        case NamedGroup::ECDHE_P256_MLKEM512:
+        case NamedGroup::ECDHE_P384_MLKEM768:
+        case NamedGroup::ECDHE_P521_MLKEM1024:
+            return true;
+            
         default:
             return false;
     }

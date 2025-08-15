@@ -141,6 +141,9 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1ErrorReporter.html
 </div><!--header-->
 <div class="contents">
 
+<p><a class="el" href="classdtls_1_1v13_1_1ErrorReporter.html" title="ErrorReporter provides secure diagnostic and logging capabilities that maintain RFC 9147 compliance a...">ErrorReporter</a> provides secure diagnostic and logging capabilities that maintain RFC 9147 compliance and security requirements:  
+ <a href="classdtls_1_1v13_1_1ErrorReporter.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="error__reporter_8h_source.html">error_reporter.h</a>&gt;</code></p>
 <div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
   <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Inheritance diagram for dtls::v13::ErrorReporter:</div>
@@ -210,33 +213,48 @@ Public Member Functions</h2></td></tr>
 <a class="el" href="classdtls_1_1v13_1_1ErrorReporter.html">ErrorReporter</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classdtls_1_1v13_1_1ErrorReporter.html">ErrorReporter</a> &amp;&amp;)=default</td></tr>
 <tr class="separator:abc10fc174a5ac98eb484a77e0dd3fffc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8ab9dd87ee5f0e709c18396e8f8696d0" id="r_a8ab9dd87ee5f0e709c18396e8f8696d0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1ErrorReporter.html#a8ab9dd87ee5f0e709c18396e8f8696d0">report_error</a> (LogLevel level, DTLSError error, const std::string &amp;category, const std::string &amp;message, std::shared_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1ErrorContext.html">ErrorContext</a> &gt; context=nullptr)</td></tr>
+<tr class="memdesc:a8ab9dd87ee5f0e709c18396e8f8696d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Report an error with full context.  <br /></td></tr>
 <tr class="separator:a8ab9dd87ee5f0e709c18396e8f8696d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4ca355672612ca5b0a6976b2f6e690d3" id="r_a4ca355672612ca5b0a6976b2f6e690d3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1ErrorReporter.html#a4ca355672612ca5b0a6976b2f6e690d3">report_security_incident</a> (DTLSError error, const std::string &amp;incident_type, double confidence, std::shared_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1ErrorContext.html">ErrorContext</a> &gt; context=nullptr)</td></tr>
+<tr class="memdesc:a4ca355672612ca5b0a6976b2f6e690d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Report security incident with enhanced tracking.  <br /></td></tr>
 <tr class="separator:a4ca355672612ca5b0a6976b2f6e690d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa9adb12bb6c1f6a170b73ef6feca1374" id="r_aa9adb12bb6c1f6a170b73ef6feca1374"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1ErrorReporter.html#aa9adb12bb6c1f6a170b73ef6feca1374">report_performance_issue</a> (DTLSError error, const std::string &amp;operation_name, std::chrono::microseconds duration, std::shared_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1ErrorContext.html">ErrorContext</a> &gt; context=nullptr)</td></tr>
+<tr class="memdesc:aa9adb12bb6c1f6a170b73ef6feca1374"><td class="mdescLeft">&#160;</td><td class="mdescRight">Report performance issue.  <br /></td></tr>
 <tr class="separator:aa9adb12bb6c1f6a170b73ef6feca1374"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a99c673418e7804ea105f3518d0f7ae77" id="r_a99c673418e7804ea105f3518d0f7ae77"><td class="memItemLeft" align="right" valign="top"><a id="a99c673418e7804ea105f3518d0f7ae77" name="a99c673418e7804ea105f3518d0f7ae77"></a>
 ReportBuilder&#160;</td><td class="memItemRight" valign="bottom"><b>create_report</b> (LogLevel level, DTLSError error)</td></tr>
 <tr class="separator:a99c673418e7804ea105f3518d0f7ae77"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6a4707855b2c4b9386eb66fee2ae9abf" id="r_a6a4707855b2c4b9386eb66fee2ae9abf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1ErrorReporter.html#a6a4707855b2c4b9386eb66fee2ae9abf">submit_report</a> (const <a class="el" href="structdtls_1_1v13_1_1ErrorReporter_1_1ErrorReport.html">ErrorReport</a> &amp;report)</td></tr>
+<tr class="memdesc:a6a4707855b2c4b9386eb66fee2ae9abf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Submit pre-built error report.  <br /></td></tr>
 <tr class="separator:a6a4707855b2c4b9386eb66fee2ae9abf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a67f8cf74cc30a6398a535ec04db596e0" id="r_a67f8cf74cc30a6398a535ec04db596e0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1ErrorReporter.html#a67f8cf74cc30a6398a535ec04db596e0">update_configuration</a> (const <a class="el" href="structdtls_1_1v13_1_1ErrorReporter_1_1ReportingConfig.html">ReportingConfig</a> &amp;config)</td></tr>
+<tr class="memdesc:a67f8cf74cc30a6398a535ec04db596e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update reporting configuration.  <br /></td></tr>
 <tr class="separator:a67f8cf74cc30a6398a535ec04db596e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a53e73296d63e52fb8b2cadc1a6e70188" id="r_a53e73296d63e52fb8b2cadc1a6e70188"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structdtls_1_1v13_1_1ErrorReporter_1_1ReportingConfig.html">ReportingConfig</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1ErrorReporter.html#a53e73296d63e52fb8b2cadc1a6e70188">get_configuration</a> () const</td></tr>
+<tr class="memdesc:a53e73296d63e52fb8b2cadc1a6e70188"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current configuration.  <br /></td></tr>
 <tr class="separator:a53e73296d63e52fb8b2cadc1a6e70188"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac3afdef7f00ddcc58814526361d28275" id="r_ac3afdef7f00ddcc58814526361d28275"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1ErrorReporter.html#ac3afdef7f00ddcc58814526361d28275">add_reporter_callback</a> (ReporterCallback callback)</td></tr>
+<tr class="memdesc:ac3afdef7f00ddcc58814526361d28275"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add custom reporter callback.  <br /></td></tr>
 <tr class="separator:ac3afdef7f00ddcc58814526361d28275"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aec6a5d00be45b30850be23d815fd069e" id="r_aec6a5d00be45b30850be23d815fd069e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1ErrorReporter.html#aec6a5d00be45b30850be23d815fd069e">clear_reporter_callbacks</a> ()</td></tr>
+<tr class="memitem:aec6a5d00be45b30850be23d815fd069e" id="r_aec6a5d00be45b30850be23d815fd069e"><td class="memItemLeft" align="right" valign="top"><a id="aec6a5d00be45b30850be23d815fd069e" name="aec6a5d00be45b30850be23d815fd069e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>clear_reporter_callbacks</b> ()</td></tr>
+<tr class="memdesc:aec6a5d00be45b30850be23d815fd069e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove all custom reporter callbacks. <br /></td></tr>
 <tr class="separator:aec6a5d00be45b30850be23d815fd069e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a012824359b3c9b11972dc1056070df85" id="r_a012824359b3c9b11972dc1056070df85"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1ErrorReporter.html#a012824359b3c9b11972dc1056070df85">rotate_logs</a> ()</td></tr>
+<tr class="memdesc:a012824359b3c9b11972dc1056070df85"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rotate log files manually.  <br /></td></tr>
 <tr class="separator:a012824359b3c9b11972dc1056070df85"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc05a9b77c7cd3ba414a9021a7c5ac69" id="r_adc05a9b77c7cd3ba414a9021a7c5ac69"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1ErrorReporter.html#adc05a9b77c7cd3ba414a9021a7c5ac69">cleanup_old_logs</a> ()</td></tr>
+<tr class="memdesc:adc05a9b77c7cd3ba414a9021a7c5ac69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clean up old log files according to retention policy.  <br /></td></tr>
 <tr class="separator:adc05a9b77c7cd3ba414a9021a7c5ac69"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9c692a00f2d56ca520d166403fef9b1" id="r_ad9c692a00f2d56ca520d166403fef9b1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1ErrorReporter.html#ad9c692a00f2d56ca520d166403fef9b1">flush_logs</a> ()</td></tr>
+<tr class="memdesc:ad9c692a00f2d56ca520d166403fef9b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flush all pending log entries.  <br /></td></tr>
 <tr class="separator:ad9c692a00f2d56ca520d166403fef9b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afdee96a49cddb2fa837253c22eb87108" id="r_afdee96a49cddb2fa837253c22eb87108"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structdtls_1_1v13_1_1ErrorReporter_1_1ReportingStatistics.html">ReportingStatistics</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1ErrorReporter.html#afdee96a49cddb2fa837253c22eb87108">get_statistics</a> () const</td></tr>
+<tr class="memdesc:afdee96a49cddb2fa837253c22eb87108"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get reporting statistics.  <br /></td></tr>
 <tr class="separator:afdee96a49cddb2fa837253c22eb87108"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4752e905298310a742d09d5c8ad8297a" id="r_a4752e905298310a742d09d5c8ad8297a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1ErrorReporter.html#a4752e905298310a742d09d5c8ad8297a">reset_statistics</a> ()</td></tr>
+<tr class="memitem:a4752e905298310a742d09d5c8ad8297a" id="r_a4752e905298310a742d09d5c8ad8297a"><td class="memItemLeft" align="right" valign="top"><a id="a4752e905298310a742d09d5c8ad8297a" name="a4752e905298310a742d09d5c8ad8297a"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>reset_statistics</b> ()</td></tr>
+<tr class="memdesc:a4752e905298310a742d09d5c8ad8297a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset reporting statistics. <br /></td></tr>
 <tr class="separator:a4752e905298310a742d09d5c8ad8297a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad3c1301e4f46c30af0a70a971d7d43ed" id="r_ad3c1301e4f46c30af0a70a971d7d43ed"><td class="memItemLeft" align="right" valign="top"><a id="ad3c1301e4f46c30af0a70a971d7d43ed" name="ad3c1301e4f46c30af0a70a971d7d43ed"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>ReportBuilder</b> (<a class="el" href="classdtls_1_1v13_1_1ErrorReporter.html">ErrorReporter</a> &amp;reporter, LogLevel level, DTLSError error)</td></tr>
@@ -275,28 +293,32 @@ ReportBuilder &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>perfor
 ReportBuilder &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>component</b> (const std::string &amp;comp)</td></tr>
 <tr class="separator:a8535d16c7434c47e89e2a7026600bd3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4db12dc2e9ecb03e1fa2c8af277c1964" id="r_a4db12dc2e9ecb03e1fa2c8af277c1964"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1ErrorReporter.html#a4db12dc2e9ecb03e1fa2c8af277c1964">submit</a> ()</td></tr>
+<tr class="memdesc:a4db12dc2e9ecb03e1fa2c8af277c1964"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build and submit the error report.  <br /></td></tr>
 <tr class="separator:a4db12dc2e9ecb03e1fa2c8af277c1964"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a90702040badf740fe16c81bb8cd6950a" id="r_a90702040badf740fe16c81bb8cd6950a"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1ErrorReporter.html#a90702040badf740fe16c81bb8cd6950a">log_level_to_string</a> (LogLevel level)</td></tr>
+<tr class="memdesc:a90702040badf740fe16c81bb8cd6950a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert log level to string.  <br /></td></tr>
 <tr class="separator:a90702040badf740fe16c81bb8cd6950a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af5ea96947afcb78a0fe471f62ce2e6bc" id="r_af5ea96947afcb78a0fe471f62ce2e6bc"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1ErrorReporter.html#af5ea96947afcb78a0fe471f62ce2e6bc">error_to_safe_description</a> (DTLSError error)</td></tr>
+<tr class="memdesc:af5ea96947afcb78a0fe471f62ce2e6bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert DTLS error to safe description.  <br /></td></tr>
 <tr class="separator:af5ea96947afcb78a0fe471f62ce2e6bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3ab0a8c31d849336b31406713911c498" id="r_a3ab0a8c31d849336b31406713911c498"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1ErrorReporter.html#a3ab0a8c31d849336b31406713911c498">anonymize_connection_id</a> (const std::string &amp;connection_id)</td></tr>
+<tr class="memdesc:a3ab0a8c31d849336b31406713911c498"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create anonymized connection identifier.  <br /></td></tr>
 <tr class="separator:a3ab0a8c31d849336b31406713911c498"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p><a class="el" href="classdtls_1_1v13_1_1ErrorReporter.html">ErrorReporter</a> provides secure diagnostic and logging capabilities that maintain RFC 9147 compliance and security requirements:</p>
+<div class="textblock"><p><a class="el" href="classdtls_1_1v13_1_1ErrorReporter.html" title="ErrorReporter provides secure diagnostic and logging capabilities that maintain RFC 9147 compliance a...">ErrorReporter</a> provides secure diagnostic and logging capabilities that maintain RFC 9147 compliance and security requirements: </p>
+<p>ReportBuilder provides fluent interface for constructing detailed error reports.</p>
 <ol type="1">
 <li>Never log sensitive cryptographic material (keys, plaintext, etc.)</li>
 <li>Optionally anonymize network addresses for privacy</li>
 <li>Provide structured logging for security analysis</li>
 <li>Support multiple output formats (JSON, syslog, custom)</li>
 <li>Rate limiting to prevent log flooding attacks</li>
-<li>Secure log rotation and retention policies</li>
+<li>Secure log rotation and retention policies </li>
 </ol>
-<p>ReportBuilder provides fluent interface for constructing detailed error reports </p>
 
 <p class="definition">Definition at line <a class="el" href="error__reporter_8h_source.html#l00033">33</a> of file <a class="el" href="error__reporter_8h_source.html">error_reporter.h</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
@@ -405,7 +427,9 @@ Static Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Add custom reporter callback </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Add custom reporter callback. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">callback</td><td>Custom reporting function </td></tr>
   </table>
@@ -437,7 +461,9 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Create anonymized connection identifier </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Create anonymized connection identifier. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">connection_id</td><td>Original connection ID </td></tr>
   </table>
@@ -461,25 +487,9 @@ Static Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Clean up old log files according to retention policy </p><dl class="section return"><dt>Returns</dt><dd>Number of files cleaned up </dd></dl>
 
-</div>
-</div>
-<a id="aec6a5d00be45b30850be23d815fd069e" name="aec6a5d00be45b30850be23d815fd069e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aec6a5d00be45b30850be23d815fd069e">&#9670;&#160;</a></span>clear_reporter_callbacks()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void dtls::v13::ErrorReporter::clear_reporter_callbacks </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Remove all custom reporter callbacks </p>
+<p>Clean up old log files according to retention policy. </p>
+<dl class="section return"><dt>Returns</dt><dd>Number of files cleaned up </dd></dl>
 
 </div>
 </div>
@@ -506,7 +516,9 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Convert DTLS error to safe description </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Convert DTLS error to safe description. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">error</td><td>DTLS error code </td></tr>
   </table>
@@ -530,7 +542,9 @@ Static Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Flush all pending log entries </p><dl class="section return"><dt>Returns</dt><dd><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a> of flush operation </dd></dl>
+
+<p>Flush all pending log entries. </p>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classdtls_1_1v13_1_1Result.html" title="Forward declaration for Result template class.">Result</a> of flush operation </dd></dl>
 
 </div>
 </div>
@@ -556,7 +570,9 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Get current configuration </p><dl class="section return"><dt>Returns</dt><dd>Current reporting configuration </dd></dl>
+
+<p>Get current configuration. </p>
+<dl class="section return"><dt>Returns</dt><dd>Current reporting configuration </dd></dl>
 
 <p class="definition">Definition at line <a class="el" href="error__reporter_8h_source.html#l00221">221</a> of file <a class="el" href="error__reporter_8h_source.html">error_reporter.h</a>.</p>
 
@@ -584,7 +600,9 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Get reporting statistics </p><dl class="section return"><dt>Returns</dt><dd>Current statistics </dd></dl>
+
+<p>Get reporting statistics. </p>
+<dl class="section return"><dt>Returns</dt><dd>Current statistics </dd></dl>
 
 <p class="definition">Definition at line <a class="el" href="error__reporter_8h_source.html#l00270">270</a> of file <a class="el" href="error__reporter_8h_source.html">error_reporter.h</a>.</p>
 
@@ -613,7 +631,9 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Convert log level to string </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Convert log level to string. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">level</td><td>Log level to convert </td></tr>
   </table>
@@ -666,7 +686,9 @@ Static Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Report an error with full context </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Report an error with full context. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">level</td><td>Log level for the report </td></tr>
     <tr><td class="paramname">error</td><td>DTLS error code </td></tr>
@@ -676,7 +698,7 @@ Static Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a> of report operation </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classdtls_1_1v13_1_1Result.html" title="Forward declaration for Result template class.">Result</a> of report operation </dd></dl>
 
 </div>
 </div>
@@ -717,7 +739,9 @@ Static Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Report performance issue </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Report performance issue. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">error</td><td>DTLS error code </td></tr>
     <tr><td class="paramname">operation_name</td><td>Name of slow operation </td></tr>
@@ -726,7 +750,7 @@ Static Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a> of report operation </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classdtls_1_1v13_1_1Result.html" title="Forward declaration for Result template class.">Result</a> of report operation </dd></dl>
 
 </div>
 </div>
@@ -767,7 +791,9 @@ Static Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Report security incident with enhanced tracking </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Report security incident with enhanced tracking. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">error</td><td>DTLS error code </td></tr>
     <tr><td class="paramname">incident_type</td><td>Type of security incident </td></tr>
@@ -776,25 +802,7 @@ Static Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a> of report operation </dd></dl>
-
-</div>
-</div>
-<a id="a4752e905298310a742d09d5c8ad8297a" name="a4752e905298310a742d09d5c8ad8297a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4752e905298310a742d09d5c8ad8297a">&#9670;&#160;</a></span>reset_statistics()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void dtls::v13::ErrorReporter::reset_statistics </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Reset reporting statistics </p>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classdtls_1_1v13_1_1Result.html" title="Forward declaration for Result template class.">Result</a> of report operation </dd></dl>
 
 </div>
 </div>
@@ -812,7 +820,9 @@ Static Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Rotate log files manually </p><dl class="section return"><dt>Returns</dt><dd><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a> of rotation operation </dd></dl>
+
+<p>Rotate log files manually. </p>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classdtls_1_1v13_1_1Result.html" title="Forward declaration for Result template class.">Result</a> of rotation operation </dd></dl>
 
 </div>
 </div>
@@ -830,7 +840,9 @@ Static Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Build and submit the error report </p><dl class="section return"><dt>Returns</dt><dd><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a> of report submission </dd></dl>
+
+<p>Build and submit the error report. </p>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classdtls_1_1v13_1_1Result.html" title="Forward declaration for Result template class.">Result</a> of report submission </dd></dl>
 
 </div>
 </div>
@@ -849,13 +861,15 @@ Static Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Submit pre-built error report </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Submit pre-built error report. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">report</td><td>Complete error report </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a> of report operation </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classdtls_1_1v13_1_1Result.html" title="Forward declaration for Result template class.">Result</a> of report operation </dd></dl>
 
 </div>
 </div>
@@ -874,13 +888,15 @@ Static Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Update reporting configuration </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Update reporting configuration. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">config</td><td>New configuration </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a> of configuration update </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classdtls_1_1v13_1_1Result.html" title="Forward declaration for Result template class.">Result</a> of configuration update </dd></dl>
 
 </div>
 </div>

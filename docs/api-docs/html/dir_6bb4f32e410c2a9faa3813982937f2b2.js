@@ -10,7 +10,6 @@ var dir_6bb4f32e410c2a9faa3813982937f2b2 =
     [ "security", "dir_cc3c8f2c55a3609eaef14a8db62bcb8a.html", "dir_cc3c8f2c55a3609eaef14a8db62bcb8a" ],
     [ "transport", "dir_7d6e6d3989d2a15563bf0018e0793dcd.html", "dir_7d6e6d3989d2a15563bf0018e0793dcd" ],
     [ "alert_manager.h", "alert__manager_8h_source.html", null ],
-    [ "config.h", "config_8h_source.html", null ],
     [ "connection.h", "connection_8h_source.html", null ],
     [ "crypto.h", "crypto_8h_source.html", null ],
     [ "error.h", "error_8h_source.html", null ],

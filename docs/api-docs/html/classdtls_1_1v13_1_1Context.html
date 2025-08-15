@@ -139,6 +139,9 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1Context.html','');
 </div><!--header-->
 <div class="contents">
 
+<p>Simple <a class="el" href="classdtls_1_1v13_1_1Context.html" title="Simple Context wrapper for DTLS connections.">Context</a> wrapper for DTLS connections.  
+ <a href="classdtls_1_1v13_1_1Context.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="connection_8h_source.html">connection.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -155,77 +158,32 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ab619e067aab9cc0581e89327e400b60f" id="r_ab619e067aab9cc0581e89327e400b60f"><td class="memItemLeft" align="right" valign="top"><a id="ab619e067aab9cc0581e89327e400b60f" name="ab619e067aab9cc0581e89327e400b60f"></a>
 <a class="el" href="classdtls_1_1v13_1_1Context.html">Context</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classdtls_1_1v13_1_1Context.html">Context</a> &amp;&amp;) noexcept=default</td></tr>
 <tr class="separator:ab619e067aab9cc0581e89327e400b60f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7493961b092733b9576bc765b6e9f3ba" id="r_a7493961b092733b9576bc765b6e9f3ba"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1Context.html#a7493961b092733b9576bc765b6e9f3ba">initialize</a> ()</td></tr>
+<tr class="memitem:a7493961b092733b9576bc765b6e9f3ba" id="r_a7493961b092733b9576bc765b6e9f3ba"><td class="memItemLeft" align="right" valign="top"><a id="a7493961b092733b9576bc765b6e9f3ba" name="a7493961b092733b9576bc765b6e9f3ba"></a>
+<a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>initialize</b> ()</td></tr>
+<tr class="memdesc:a7493961b092733b9576bc765b6e9f3ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the context. <br /></td></tr>
 <tr class="separator:a7493961b092733b9576bc765b6e9f3ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ab4c7c46a1eb16a9b304a743c2a91e3" id="r_a1ab4c7c46a1eb16a9b304a743c2a91e3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1Context.html#a1ab4c7c46a1eb16a9b304a743c2a91e3">get_connection</a> () const</td></tr>
+<tr class="memdesc:a1ab4c7c46a1eb16a9b304a743c2a91e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the underlying connection (for advanced usage)  <br /></td></tr>
 <tr class="separator:a1ab4c7c46a1eb16a9b304a743c2a91e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:aaddc02c64e27079719c25e20b53f878b" id="r_aaddc02c64e27079719c25e20b53f878b"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1Context.html">Context</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1Context.html#aaddc02c64e27079719c25e20b53f878b">create_client</a> ()</td></tr>
+<tr class="memitem:aaddc02c64e27079719c25e20b53f878b" id="r_aaddc02c64e27079719c25e20b53f878b"><td class="memItemLeft" align="right" valign="top"><a id="aaddc02c64e27079719c25e20b53f878b" name="aaddc02c64e27079719c25e20b53f878b"></a>
+static <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1Context.html">Context</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create_client</b> ()</td></tr>
+<tr class="memdesc:aaddc02c64e27079719c25e20b53f878b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a default client context. <br /></td></tr>
 <tr class="separator:aaddc02c64e27079719c25e20b53f878b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac1eb9da991fec1a13fc998f97f612537" id="r_ac1eb9da991fec1a13fc998f97f612537"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1Context.html">Context</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1Context.html#ac1eb9da991fec1a13fc998f97f612537">create_server</a> ()</td></tr>
+<tr class="memitem:ac1eb9da991fec1a13fc998f97f612537" id="r_ac1eb9da991fec1a13fc998f97f612537"><td class="memItemLeft" align="right" valign="top"><a id="ac1eb9da991fec1a13fc998f97f612537" name="ac1eb9da991fec1a13fc998f97f612537"></a>
+static <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1Context.html">Context</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create_server</b> ()</td></tr>
+<tr class="memdesc:ac1eb9da991fec1a13fc998f97f612537"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a default server context <br  />
+ <br /></td></tr>
 <tr class="separator:ac1eb9da991fec1a13fc998f97f612537"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Simple <a class="el" href="classdtls_1_1v13_1_1Context.html">Context</a> wrapper for DTLS connections</p>
-<p>Provides a simplified interface for testing and basic usage. This is essentially an alias/wrapper around <a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> with default configuration. </p>
+<div class="textblock"><p>Simple <a class="el" href="classdtls_1_1v13_1_1Context.html" title="Simple Context wrapper for DTLS connections.">Context</a> wrapper for DTLS connections. </p>
+<p>Provides a simplified interface for testing and basic usage. This is essentially an alias/wrapper around <a class="el" href="classdtls_1_1v13_1_1Connection.html" title="DTLS v1.3 Connection implementation.">Connection</a> with default configuration. </p>
 
 <p class="definition">Definition at line <a class="el" href="connection_8h_source.html#l00579">579</a> of file <a class="el" href="connection_8h_source.html">connection.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="aaddc02c64e27079719c25e20b53f878b" name="aaddc02c64e27079719c25e20b53f878b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaddc02c64e27079719c25e20b53f878b">&#9670;&#160;</a></span>create_client()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1Context.html">Context</a> &gt; &gt; dtls::v13::Context::create_client </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Create a default client context </p>
-
-</div>
-</div>
-<a id="ac1eb9da991fec1a13fc998f97f612537" name="ac1eb9da991fec1a13fc998f97f612537"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac1eb9da991fec1a13fc998f97f612537">&#9670;&#160;</a></span>create_server()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1Context.html">Context</a> &gt; &gt; dtls::v13::Context::create_server </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Create a default server context <br  />
- </p>
-
-</div>
-</div>
 <a id="a1ab4c7c46a1eb16a9b304a743c2a91e3" name="a1ab4c7c46a1eb16a9b304a743c2a91e3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1ab4c7c46a1eb16a9b304a743c2a91e3">&#9670;&#160;</a></span>get_connection()</h2>
 
@@ -248,27 +206,10 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
 <p>Get the underlying connection (for advanced usage) </p>
 
 <p class="definition">Definition at line <a class="el" href="connection_8h_source.html#l00607">607</a> of file <a class="el" href="connection_8h_source.html">connection.h</a>.</p>
-
-</div>
-</div>
-<a id="a7493961b092733b9576bc765b6e9f3ba" name="a7493961b092733b9576bc765b6e9f3ba"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7493961b092733b9576bc765b6e9f3ba">&#9670;&#160;</a></span>initialize()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; dtls::v13::Context::initialize </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Initialize the context </p>
 
 </div>
 </div>

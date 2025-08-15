@@ -83,7 +83,9 @@ var hierarchy =
     [ "dtls::v13::protocol::CookieConfig", "structdtls_1_1v13_1_1protocol_1_1CookieConfig.html", null ],
     [ "dtls::v13::protocol::CookieManager", "classdtls_1_1v13_1_1protocol_1_1CookieManager.html", null ],
     [ "dtls::v13::security::CPUMonitor", "classdtls_1_1v13_1_1security_1_1CPUMonitor.html", null ],
-    [ "dtls::v13::memory::CryptoBuffer", "classdtls_1_1v13_1_1memory_1_1CryptoBuffer.html", null ],
+    [ "dtls::v13::memory::CryptoBuffer", "classdtls_1_1v13_1_1memory_1_1CryptoBuffer.html", [
+      [ "dtls::v13::crypto::HardwareAcceleratedCryptoBuffer", "classdtls_1_1v13_1_1crypto_1_1HardwareAcceleratedCryptoBuffer.html", null ]
+    ] ],
     [ "dtls::v13::memory::CryptoBufferPool", "classdtls_1_1v13_1_1memory_1_1CryptoBufferPool.html", null ],
     [ "dtls::v13::crypto::CryptoHealthCheckResult", "structdtls_1_1v13_1_1crypto_1_1CryptoHealthCheckResult.html", null ],
     [ "dtls::v13::crypto::CryptoKey", "classdtls_1_1v13_1_1crypto_1_1CryptoKey.html", [
@@ -102,6 +104,7 @@ var hierarchy =
     [ "dtls::v13::memory::CryptoPerformanceStats", "structdtls_1_1v13_1_1memory_1_1CryptoPerformanceStats.html", null ],
     [ "dtls::v13::crypto::CryptoProvider", "classdtls_1_1v13_1_1crypto_1_1CryptoProvider.html", [
       [ "dtls::v13::crypto::BotanProvider", "classdtls_1_1v13_1_1crypto_1_1BotanProvider.html", null ],
+      [ "dtls::v13::crypto::HardwareAcceleratedProvider", "classdtls_1_1v13_1_1crypto_1_1HardwareAcceleratedProvider.html", null ],
       [ "dtls::v13::crypto::OpenSSLProvider", "classdtls_1_1v13_1_1crypto_1_1OpenSSLProvider.html", null ],
       [ "dtls::v13::crypto::advanced::AdvancedCryptoProvider", "classdtls_1_1v13_1_1crypto_1_1advanced_1_1AdvancedCryptoProvider.html", null ]
     ] ],
@@ -125,6 +128,7 @@ var hierarchy =
     [ "dtls::v13::crypto::DTLSCertificateVerifyParams", "structdtls_1_1v13_1_1crypto_1_1DTLSCertificateVerifyParams.html", null ],
     [ "dtls::v13::protocol::DTLSCiphertext", "structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html", null ],
     [ "dtls::v13::crypto::MACValidationParams::DTLSContext", "structdtls_1_1v13_1_1crypto_1_1MACValidationParams_1_1DTLSContext.html", null ],
+    [ "dtls::v13::crypto::DTLSHardwareRecordProcessor", "classdtls_1_1v13_1_1crypto_1_1DTLSHardwareRecordProcessor.html", null ],
     [ "dtls::v13::protocol::DTLSPlaintext", "structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html", null ],
     [ "dtls::v13::protocol::EarlyDataContext", "structdtls_1_1v13_1_1protocol_1_1EarlyDataContext.html", null ],
     [ "dtls::v13::protocol::EarlyDataExtension", "structdtls_1_1v13_1_1protocol_1_1EarlyDataExtension.html", null ],
@@ -170,12 +174,22 @@ var hierarchy =
     [ "dtls::v13::protocol::HandshakeHeader", "structdtls_1_1v13_1_1protocol_1_1HandshakeHeader.html", null ],
     [ "dtls::v13::protocol::HandshakeManager", "classdtls_1_1v13_1_1protocol_1_1HandshakeManager.html", null ],
     [ "dtls::v13::protocol::HandshakeMessage", "classdtls_1_1v13_1_1protocol_1_1HandshakeMessage.html", null ],
+    [ "dtls::v13::protocol::HardwareAcceleratedHandshakeProcessor::HandshakeMetrics", "structdtls_1_1v13_1_1protocol_1_1HardwareAcceleratedHandshakeProcessor_1_1HandshakeMetrics.html", null ],
     [ "dtls::v13::memory::HandshakeReassembly", "structdtls_1_1v13_1_1memory_1_1HandshakeReassembly.html", null ],
     [ "dtls::v13::protocol::VersionManager::HandshakeVersionContext", "structdtls_1_1v13_1_1protocol_1_1VersionManager_1_1HandshakeVersionContext.html", null ],
+    [ "dtls::v13::protocol::HardwareAcceleratedHandshakeProcessor", "classdtls_1_1v13_1_1protocol_1_1HardwareAcceleratedHandshakeProcessor.html", null ],
+    [ "dtls::v13::crypto::HardwareAcceleratedProviderFactory", "classdtls_1_1v13_1_1crypto_1_1HardwareAcceleratedProviderFactory.html", null ],
     [ "dtls::v13::crypto::HardwareAcceleratedProviderSelector", "classdtls_1_1v13_1_1crypto_1_1HardwareAcceleratedProviderSelector.html", null ],
+    [ "dtls::v13::protocol::HardwareAcceleratedRecordLayerFactory", "classdtls_1_1v13_1_1protocol_1_1HardwareAcceleratedRecordLayerFactory.html", null ],
     [ "dtls::v13::crypto::HardwareAccelerationDetector", "classdtls_1_1v13_1_1crypto_1_1HardwareAccelerationDetector.html", null ],
     [ "dtls::v13::crypto::HardwareAccelerationProfile", "structdtls_1_1v13_1_1crypto_1_1HardwareAccelerationProfile.html", null ],
     [ "dtls::v13::crypto::HardwareCapabilityStatus", "structdtls_1_1v13_1_1crypto_1_1HardwareCapabilityStatus.html", null ],
+    [ "dtls::v13::crypto::HardwareZeroCopyCrypto::HardwareConfig", "structdtls_1_1v13_1_1crypto_1_1HardwareZeroCopyCrypto_1_1HardwareConfig.html", null ],
+    [ "dtls::v13::protocol::HardwareAcceleratedRecordLayer::HardwareConfig", "structdtls_1_1v13_1_1protocol_1_1HardwareAcceleratedRecordLayer_1_1HardwareConfig.html", null ],
+    [ "dtls::v13::crypto::HardwareZeroCopyCrypto::HardwareMetrics", "structdtls_1_1v13_1_1crypto_1_1HardwareZeroCopyCrypto_1_1HardwareMetrics.html", null ],
+    [ "dtls::v13::protocol::HardwareAcceleratedRecordLayer::HardwareMetrics", "structdtls_1_1v13_1_1protocol_1_1HardwareAcceleratedRecordLayer_1_1HardwareMetrics.html", null ],
+    [ "dtls::v13::crypto::HardwareZeroCopyCrypto", "classdtls_1_1v13_1_1crypto_1_1HardwareZeroCopyCrypto.html", null ],
+    [ "dtls::v13::crypto::HardwareZeroCryptoFactory", "classdtls_1_1v13_1_1crypto_1_1HardwareZeroCryptoFactory.html", null ],
     [ "dtls::v13::crypto::HashContext", "classdtls_1_1v13_1_1crypto_1_1HashContext.html", null ],
     [ "dtls::v13::crypto::HashParams", "structdtls_1_1v13_1_1crypto_1_1HashParams.html", null ],
     [ "dtls::v13::connection::advanced::HealthMonitor", "classdtls_1_1v13_1_1connection_1_1advanced_1_1HealthMonitor.html", null ],
@@ -296,8 +310,12 @@ var hierarchy =
     [ "dtls::v13::protocol::MessageReassembler::ReassemblyStats", "structdtls_1_1v13_1_1protocol_1_1MessageReassembler_1_1ReassemblyStats.html", null ],
     [ "dtls::v13::memory::PoolAllocator< T >::rebind< U >", "structdtls_1_1v13_1_1memory_1_1PoolAllocator_1_1rebind.html", null ],
     [ "dtls::v13::protocol::RecordHeader", "structdtls_1_1v13_1_1protocol_1_1RecordHeader.html", null ],
+    [ "RecordLayerInterface", null, [
+      [ "dtls::v13::protocol::HardwareAcceleratedRecordLayer", "classdtls_1_1v13_1_1protocol_1_1HardwareAcceleratedRecordLayer.html", null ]
+    ] ],
     [ "dtls::v13::protocol::RecordLayerStats", "structdtls_1_1v13_1_1protocol_1_1RecordLayerStats.html", null ],
     [ "dtls::v13::crypto::RecordMACParams", "structdtls_1_1v13_1_1crypto_1_1RecordMACParams.html", null ],
+    [ "dtls::v13::crypto::DTLSHardwareRecordProcessor::RecordMetrics", "structdtls_1_1v13_1_1crypto_1_1DTLSHardwareRecordProcessor_1_1RecordMetrics.html", null ],
     [ "dtls::v13::memory::BufferRecyclingManager::RecyclingStats", "structdtls_1_1v13_1_1memory_1_1BufferRecyclingManager_1_1RecyclingStats.html", null ],
     [ "dtls::v13::protocol::ReliabilityManager", "classdtls_1_1v13_1_1protocol_1_1ReliabilityManager.html", null ],
     [ "ReportBuilder", null, [

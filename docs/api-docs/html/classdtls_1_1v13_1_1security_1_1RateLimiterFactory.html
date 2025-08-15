@@ -138,130 +138,35 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1security_1_1RateLi
 </div><!--header-->
 <div class="contents">
 
+<p>Rate limiter factory for different use cases.  
+ <a href="classdtls_1_1v13_1_1security_1_1RateLimiterFactory.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="rate__limiter_8h_source.html">rate_limiter.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a99302009fdfbb58a150f6c40288a7058" id="r_a99302009fdfbb58a150f6c40288a7058"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1security_1_1RateLimiter.html">RateLimiter</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1RateLimiterFactory.html#a99302009fdfbb58a150f6c40288a7058">create_development</a> ()</td></tr>
+<tr class="memitem:a99302009fdfbb58a150f6c40288a7058" id="r_a99302009fdfbb58a150f6c40288a7058"><td class="memItemLeft" align="right" valign="top"><a id="a99302009fdfbb58a150f6c40288a7058" name="a99302009fdfbb58a150f6c40288a7058"></a>
+static std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1security_1_1RateLimiter.html">RateLimiter</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create_development</b> ()</td></tr>
+<tr class="memdesc:a99302009fdfbb58a150f6c40288a7058"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create rate limiter for development/testing (permissive limits) <br /></td></tr>
 <tr class="separator:a99302009fdfbb58a150f6c40288a7058"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9f8085be2274fb361ecdb1de5dc8c012" id="r_a9f8085be2274fb361ecdb1de5dc8c012"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1security_1_1RateLimiter.html">RateLimiter</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1RateLimiterFactory.html#a9f8085be2274fb361ecdb1de5dc8c012">create_production</a> ()</td></tr>
+<tr class="memitem:a9f8085be2274fb361ecdb1de5dc8c012" id="r_a9f8085be2274fb361ecdb1de5dc8c012"><td class="memItemLeft" align="right" valign="top"><a id="a9f8085be2274fb361ecdb1de5dc8c012" name="a9f8085be2274fb361ecdb1de5dc8c012"></a>
+static std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1security_1_1RateLimiter.html">RateLimiter</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create_production</b> ()</td></tr>
+<tr class="memdesc:a9f8085be2274fb361ecdb1de5dc8c012"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create rate limiter for production (strict limits) <br /></td></tr>
 <tr class="separator:a9f8085be2274fb361ecdb1de5dc8c012"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac0cfcffcb529438ed8c6d473a7448021" id="r_ac0cfcffcb529438ed8c6d473a7448021"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1security_1_1RateLimiter.html">RateLimiter</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1RateLimiterFactory.html#ac0cfcffcb529438ed8c6d473a7448021">create_high_security</a> ()</td></tr>
+<tr class="memitem:ac0cfcffcb529438ed8c6d473a7448021" id="r_ac0cfcffcb529438ed8c6d473a7448021"><td class="memItemLeft" align="right" valign="top"><a id="ac0cfcffcb529438ed8c6d473a7448021" name="ac0cfcffcb529438ed8c6d473a7448021"></a>
+static std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1security_1_1RateLimiter.html">RateLimiter</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create_high_security</b> ()</td></tr>
+<tr class="memdesc:ac0cfcffcb529438ed8c6d473a7448021"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create rate limiter for high-security environments (very strict) <br /></td></tr>
 <tr class="separator:ac0cfcffcb529438ed8c6d473a7448021"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a79e79658ddd296aa32f74e2c6990a7c5" id="r_a79e79658ddd296aa32f74e2c6990a7c5"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1security_1_1RateLimiter.html">RateLimiter</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1RateLimiterFactory.html#a79e79658ddd296aa32f74e2c6990a7c5">create_custom</a> (const <a class="el" href="structdtls_1_1v13_1_1security_1_1RateLimitConfig.html">RateLimitConfig</a> &amp;config)</td></tr>
+<tr class="memitem:a79e79658ddd296aa32f74e2c6990a7c5" id="r_a79e79658ddd296aa32f74e2c6990a7c5"><td class="memItemLeft" align="right" valign="top"><a id="a79e79658ddd296aa32f74e2c6990a7c5" name="a79e79658ddd296aa32f74e2c6990a7c5"></a>
+static std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1security_1_1RateLimiter.html">RateLimiter</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create_custom</b> (const <a class="el" href="structdtls_1_1v13_1_1security_1_1RateLimitConfig.html">RateLimitConfig</a> &amp;config)</td></tr>
+<tr class="memdesc:a79e79658ddd296aa32f74e2c6990a7c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create rate limiter with custom configuration. <br /></td></tr>
 <tr class="separator:a79e79658ddd296aa32f74e2c6990a7c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Rate limiter factory for different use cases </p>
+<div class="textblock"><p>Rate limiter factory for different use cases. </p>
 
 <p class="definition">Definition at line <a class="el" href="rate__limiter_8h_source.html#l00330">330</a> of file <a class="el" href="rate__limiter_8h_source.html">rate_limiter.h</a>.</p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a79e79658ddd296aa32f74e2c6990a7c5" name="a79e79658ddd296aa32f74e2c6990a7c5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a79e79658ddd296aa32f74e2c6990a7c5">&#9670;&#160;</a></span>create_custom()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1security_1_1RateLimiter.html">RateLimiter</a> &gt; dtls::v13::security::RateLimiterFactory::create_custom </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="structdtls_1_1v13_1_1security_1_1RateLimitConfig.html">RateLimitConfig</a> &amp;&#160;</td>
-          <td class="paramname"><em>config</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Create rate limiter with custom configuration </p>
-
-</div>
-</div>
-<a id="a99302009fdfbb58a150f6c40288a7058" name="a99302009fdfbb58a150f6c40288a7058"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a99302009fdfbb58a150f6c40288a7058">&#9670;&#160;</a></span>create_development()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1security_1_1RateLimiter.html">RateLimiter</a> &gt; dtls::v13::security::RateLimiterFactory::create_development </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Create rate limiter for development/testing (permissive limits) </p>
-
-</div>
-</div>
-<a id="ac0cfcffcb529438ed8c6d473a7448021" name="ac0cfcffcb529438ed8c6d473a7448021"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac0cfcffcb529438ed8c6d473a7448021">&#9670;&#160;</a></span>create_high_security()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1security_1_1RateLimiter.html">RateLimiter</a> &gt; dtls::v13::security::RateLimiterFactory::create_high_security </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Create rate limiter for high-security environments (very strict) </p>
-
-</div>
-</div>
-<a id="a9f8085be2274fb361ecdb1de5dc8c012" name="a9f8085be2274fb361ecdb1de5dc8c012"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9f8085be2274fb361ecdb1de5dc8c012">&#9670;&#160;</a></span>create_production()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1security_1_1RateLimiter.html">RateLimiter</a> &gt; dtls::v13::security::RateLimiterFactory::create_production </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Create rate limiter for production (strict limits) </p>
-
-</div>
-</div>
-<hr/>The documentation for this class was generated from the following file:<ul>
+</div><hr/>The documentation for this class was generated from the following file:<ul>
 <li>dtls/security/<a class="el" href="rate__limiter_8h_source.html">rate_limiter.h</a></li>
 </ul>
 </div><!-- contents -->

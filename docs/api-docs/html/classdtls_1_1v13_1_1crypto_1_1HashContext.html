@@ -138,171 +138,42 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1crypto_1_1HashCont
 </div><!--header-->
 <div class="contents">
 
+<p>Hash <a class="el" href="classdtls_1_1v13_1_1Context.html" title="Simple Context wrapper for DTLS connections.">Context</a> Interface.  
+ <a href="classdtls_1_1v13_1_1crypto_1_1HashContext.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="hash_8h_source.html">hash.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a25e0a44fc5f89a639c984a5b25a48346" id="r_a25e0a44fc5f89a639c984a5b25a48346"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1HashContext.html#a25e0a44fc5f89a639c984a5b25a48346">update</a> (const void *data, size_t length)=0</td></tr>
+<tr class="memitem:a25e0a44fc5f89a639c984a5b25a48346" id="r_a25e0a44fc5f89a639c984a5b25a48346"><td class="memItemLeft" align="right" valign="top"><a id="a25e0a44fc5f89a639c984a5b25a48346" name="a25e0a44fc5f89a639c984a5b25a48346"></a>
+virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>update</b> (const void *data, size_t length)=0</td></tr>
+<tr class="memdesc:a25e0a44fc5f89a639c984a5b25a48346"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update hash with data. <br /></td></tr>
 <tr class="separator:a25e0a44fc5f89a639c984a5b25a48346"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a22921a41be2c294ee4dd055530f9c7c0" id="r_a22921a41be2c294ee4dd055530f9c7c0"><td class="memItemLeft" align="right" valign="top"><a id="a22921a41be2c294ee4dd055530f9c7c0" name="a22921a41be2c294ee4dd055530f9c7c0"></a>
 virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>update</b> (const <a class="el" href="classdtls_1_1v13_1_1memory_1_1ZeroCopyBuffer.html">memory::Buffer</a> &amp;buffer)=0</td></tr>
 <tr class="separator:a22921a41be2c294ee4dd055530f9c7c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae8d4bb0adc71be6b5f6333fa8f722bb1" id="r_ae8d4bb0adc71be6b5f6333fa8f722bb1"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1memory_1_1ZeroCopyBuffer.html">memory::Buffer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1HashContext.html#ae8d4bb0adc71be6b5f6333fa8f722bb1">finalize</a> ()=0</td></tr>
+<tr class="memitem:ae8d4bb0adc71be6b5f6333fa8f722bb1" id="r_ae8d4bb0adc71be6b5f6333fa8f722bb1"><td class="memItemLeft" align="right" valign="top"><a id="ae8d4bb0adc71be6b5f6333fa8f722bb1" name="ae8d4bb0adc71be6b5f6333fa8f722bb1"></a>
+virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1memory_1_1ZeroCopyBuffer.html">memory::Buffer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>finalize</b> ()=0</td></tr>
+<tr class="memdesc:ae8d4bb0adc71be6b5f6333fa8f722bb1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finalize hash and get digest. <br /></td></tr>
 <tr class="separator:ae8d4bb0adc71be6b5f6333fa8f722bb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae701d3b619f6c19d8309c05782ddfe70" id="r_ae701d3b619f6c19d8309c05782ddfe70"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1HashContext.html#ae701d3b619f6c19d8309c05782ddfe70">reset</a> ()=0</td></tr>
+<tr class="memitem:ae701d3b619f6c19d8309c05782ddfe70" id="r_ae701d3b619f6c19d8309c05782ddfe70"><td class="memItemLeft" align="right" valign="top"><a id="ae701d3b619f6c19d8309c05782ddfe70" name="ae701d3b619f6c19d8309c05782ddfe70"></a>
+virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>reset</b> ()=0</td></tr>
+<tr class="memdesc:ae701d3b619f6c19d8309c05782ddfe70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset context for reuse. <br /></td></tr>
 <tr class="separator:ae701d3b619f6c19d8309c05782ddfe70"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae568fbc98a5024fb39e4462140617c9e" id="r_ae568fbc98a5024fb39e4462140617c9e"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacedtls_1_1v13_1_1crypto.html#a1635c49120dc869b1fb1d7c938aa594f">HashAlgorithm</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1HashContext.html#ae568fbc98a5024fb39e4462140617c9e">algorithm</a> () const =0</td></tr>
+<tr class="memitem:ae568fbc98a5024fb39e4462140617c9e" id="r_ae568fbc98a5024fb39e4462140617c9e"><td class="memItemLeft" align="right" valign="top"><a id="ae568fbc98a5024fb39e4462140617c9e" name="ae568fbc98a5024fb39e4462140617c9e"></a>
+virtual <a class="el" href="namespacedtls_1_1v13_1_1crypto.html#a1635c49120dc869b1fb1d7c938aa594f">HashAlgorithm</a>&#160;</td><td class="memItemRight" valign="bottom"><b>algorithm</b> () const =0</td></tr>
+<tr class="memdesc:ae568fbc98a5024fb39e4462140617c9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get hash algorithm. <br /></td></tr>
 <tr class="separator:ae568fbc98a5024fb39e4462140617c9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6a537e11d8705029f424c3da65e9772a" id="r_a6a537e11d8705029f424c3da65e9772a"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1HashContext.html#a6a537e11d8705029f424c3da65e9772a">digest_size</a> () const =0</td></tr>
+<tr class="memitem:a6a537e11d8705029f424c3da65e9772a" id="r_a6a537e11d8705029f424c3da65e9772a"><td class="memItemLeft" align="right" valign="top"><a id="a6a537e11d8705029f424c3da65e9772a" name="a6a537e11d8705029f424c3da65e9772a"></a>
+virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><b>digest_size</b> () const =0</td></tr>
+<tr class="memdesc:a6a537e11d8705029f424c3da65e9772a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get expected digest size. <br /></td></tr>
 <tr class="separator:a6a537e11d8705029f424c3da65e9772a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Hash <a class="el" href="classdtls_1_1v13_1_1Context.html">Context</a> Interface </p>
+<div class="textblock"><p>Hash <a class="el" href="classdtls_1_1v13_1_1Context.html" title="Simple Context wrapper for DTLS connections.">Context</a> Interface. </p>
 
 <p class="definition">Definition at line <a class="el" href="hash_8h_source.html#l00045">45</a> of file <a class="el" href="hash_8h_source.html">hash.h</a>.</p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="ae568fbc98a5024fb39e4462140617c9e" name="ae568fbc98a5024fb39e4462140617c9e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae568fbc98a5024fb39e4462140617c9e">&#9670;&#160;</a></span>algorithm()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual <a class="el" href="namespacedtls_1_1v13_1_1crypto.html#a1635c49120dc869b1fb1d7c938aa594f">HashAlgorithm</a> dtls::v13::crypto::HashContext::algorithm </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Get hash algorithm </p>
-
-</div>
-</div>
-<a id="a6a537e11d8705029f424c3da65e9772a" name="a6a537e11d8705029f424c3da65e9772a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6a537e11d8705029f424c3da65e9772a">&#9670;&#160;</a></span>digest_size()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual size_t dtls::v13::crypto::HashContext::digest_size </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Get expected digest size </p>
-
-</div>
-</div>
-<a id="ae8d4bb0adc71be6b5f6333fa8f722bb1" name="ae8d4bb0adc71be6b5f6333fa8f722bb1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae8d4bb0adc71be6b5f6333fa8f722bb1">&#9670;&#160;</a></span>finalize()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1memory_1_1ZeroCopyBuffer.html">memory::Buffer</a> &gt; dtls::v13::crypto::HashContext::finalize </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Finalize hash and get digest </p>
-
-</div>
-</div>
-<a id="ae701d3b619f6c19d8309c05782ddfe70" name="ae701d3b619f6c19d8309c05782ddfe70"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae701d3b619f6c19d8309c05782ddfe70">&#9670;&#160;</a></span>reset()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; dtls::v13::crypto::HashContext::reset </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Reset context for reuse </p>
-
-</div>
-</div>
-<a id="a25e0a44fc5f89a639c984a5b25a48346" name="a25e0a44fc5f89a639c984a5b25a48346"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a25e0a44fc5f89a639c984a5b25a48346">&#9670;&#160;</a></span>update()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; dtls::v13::crypto::HashContext::update </td>
-          <td>(</td>
-          <td class="paramtype">const void *&#160;</td>
-          <td class="paramname"><em>data</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>length</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Update hash with data </p>
-
-</div>
-</div>
-<hr/>The documentation for this class was generated from the following file:<ul>
+</div><hr/>The documentation for this class was generated from the following file:<ul>
 <li>dtls/crypto/<a class="el" href="hash_8h_source.html">hash.h</a></li>
 </ul>
 </div><!-- contents -->

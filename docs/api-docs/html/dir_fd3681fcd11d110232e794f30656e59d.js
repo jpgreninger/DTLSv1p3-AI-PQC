@@ -6,6 +6,7 @@ var dir_fd3681fcd11d110232e794f30656e59d =
     [ "fragment_reassembler.h", "fragment__reassembler_8h_source.html", null ],
     [ "handshake.h", "handshake_8h_source.html", null ],
     [ "handshake_manager.h", "handshake__manager_8h_source.html", null ],
+    [ "hardware_accelerated_record_layer.h", "hardware__accelerated__record__layer_8h_source.html", null ],
     [ "message_layer.h", "message__layer_8h_source.html", null ],
     [ "record.h", "record_8h_source.html", null ],
     [ "record_layer.h", "record__layer_8h_source.html", null ],

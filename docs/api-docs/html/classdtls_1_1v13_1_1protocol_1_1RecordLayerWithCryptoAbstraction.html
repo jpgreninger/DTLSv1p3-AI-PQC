@@ -138,6 +138,9 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1protocol_1_1Record
 </div><!--header-->
 <div class="contents">
 
+<p>Record Layer Implementation with Crypto Operations Abstraction.  
+ <a href="classdtls_1_1v13_1_1protocol_1_1RecordLayerWithCryptoAbstraction.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="record__layer__crypto__abstraction_8h_source.html">record_layer_crypto_abstraction.h</a>&gt;</code></p>
 <div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
   <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Inheritance diagram for dtls::v13::protocol::RecordLayerWithCryptoAbstraction:</div>
@@ -147,15 +150,17 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1protocol_1_1Record
  <div class="center">
   <img src="classdtls_1_1v13_1_1protocol_1_1RecordLayerWithCryptoAbstraction.png" usemap="#dtls::v13::protocol::RecordLayerWithCryptoAbstraction_map" alt=""/>
   <map id="dtls::v13::protocol::RecordLayerWithCryptoAbstraction_map" name="dtls::v13::protocol::RecordLayerWithCryptoAbstraction_map">
-<area href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerInterface.html" alt="dtls::v13::protocol::IRecordLayerInterface" shape="rect" coords="0,0,316,24"/>
+<area href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerInterface.html" title="Abstract Record Layer Interface." alt="dtls::v13::protocol::IRecordLayerInterface" shape="rect" coords="0,0,316,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ad8fb3558bcd8ee746cb8eddba7141394" id="r_ad8fb3558bcd8ee746cb8eddba7141394"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerWithCryptoAbstraction.html#ad8fb3558bcd8ee746cb8eddba7141394">RecordLayerWithCryptoAbstraction</a> (std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1crypto_1_1ICryptoOperations.html">crypto::ICryptoOperations</a> &gt; crypto_ops)</td></tr>
+<tr class="memdesc:ad8fb3558bcd8ee746cb8eddba7141394"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor with crypto operations interface.  <br /></td></tr>
 <tr class="separator:ad8fb3558bcd8ee746cb8eddba7141394"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79b2607a9dee7ce79cd3cfd0b72519c0" id="r_a79b2607a9dee7ce79cd3cfd0b72519c0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerWithCryptoAbstraction.html#a79b2607a9dee7ce79cd3cfd0b72519c0">RecordLayerWithCryptoAbstraction</a> (std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1crypto_1_1CryptoOperationsManager.html">crypto::CryptoOperationsManager</a> &gt; crypto_manager)</td></tr>
+<tr class="memdesc:a79b2607a9dee7ce79cd3cfd0b72519c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor with crypto operations manager.  <br /></td></tr>
 <tr class="separator:a79b2607a9dee7ce79cd3cfd0b72519c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2e2f5159f478faa8fc85a3d03cce9d03" id="r_a2e2f5159f478faa8fc85a3d03cce9d03"><td class="memItemLeft" align="right" valign="top"><a id="a2e2f5159f478faa8fc85a3d03cce9d03" name="a2e2f5159f478faa8fc85a3d03cce9d03"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>RecordLayerWithCryptoAbstraction</b> (const <a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerWithCryptoAbstraction.html">RecordLayerWithCryptoAbstraction</a> &amp;)=delete</td></tr>
@@ -170,46 +175,65 @@ Public Member Functions</h2></td></tr>
 <a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerWithCryptoAbstraction.html">RecordLayerWithCryptoAbstraction</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerWithCryptoAbstraction.html">RecordLayerWithCryptoAbstraction</a> &amp;&amp;) noexcept</td></tr>
 <tr class="separator:a99dd4a5d31edede069a8dbf7d48e0625"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afc38465c223791351b07d1052d50b122" id="r_afc38465c223791351b07d1052d50b122"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerWithCryptoAbstraction.html#afc38465c223791351b07d1052d50b122">initialize</a> () override</td></tr>
+<tr class="memdesc:afc38465c223791351b07d1052d50b122"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the record layer.  <br /></td></tr>
 <tr class="separator:afc38465c223791351b07d1052d50b122"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a88da69d05d4ad54f189329376bfa3d84" id="r_a88da69d05d4ad54f189329376bfa3d84"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerWithCryptoAbstraction.html#a88da69d05d4ad54f189329376bfa3d84">set_cipher_suite</a> (CipherSuite suite) override</td></tr>
+<tr class="memdesc:a88da69d05d4ad54f189329376bfa3d84"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set cipher suite for current epoch.  <br /></td></tr>
 <tr class="separator:a88da69d05d4ad54f189329376bfa3d84"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa852d63371459635156f72c68d571ac2" id="r_aa852d63371459635156f72c68d571ac2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html">DTLSCiphertext</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerWithCryptoAbstraction.html#aa852d63371459635156f72c68d571ac2">protect_record</a> (const <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html">DTLSPlaintext</a> &amp;plaintext) override</td></tr>
+<tr class="memdesc:aa852d63371459635156f72c68d571ac2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Protect a plaintext record (encrypt)  <br /></td></tr>
 <tr class="separator:aa852d63371459635156f72c68d571ac2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a814177851bb4af031c6b1ae80d73e39b" id="r_a814177851bb4af031c6b1ae80d73e39b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html">DTLSPlaintext</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerWithCryptoAbstraction.html#a814177851bb4af031c6b1ae80d73e39b">unprotect_record</a> (const <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html">DTLSCiphertext</a> &amp;ciphertext) override</td></tr>
+<tr class="memdesc:a814177851bb4af031c6b1ae80d73e39b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unprotect a ciphertext record (decrypt)  <br /></td></tr>
 <tr class="separator:a814177851bb4af031c6b1ae80d73e39b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aad4b98d4c0f0c0046deb8e116d7762c3" id="r_aad4b98d4c0f0c0046deb8e116d7762c3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html">DTLSPlaintext</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerWithCryptoAbstraction.html#aad4b98d4c0f0c0046deb8e116d7762c3">process_incoming_record</a> (const <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html">DTLSCiphertext</a> &amp;ciphertext) override</td></tr>
+<tr class="memdesc:aad4b98d4c0f0c0046deb8e116d7762c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Process incoming record (includes anti-replay check)  <br /></td></tr>
 <tr class="separator:aad4b98d4c0f0c0046deb8e116d7762c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acf5c0390e5cb5dd1e3a2682bf29ff885" id="r_acf5c0390e5cb5dd1e3a2682bf29ff885"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html">DTLSCiphertext</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerWithCryptoAbstraction.html#acf5c0390e5cb5dd1e3a2682bf29ff885">prepare_outgoing_record</a> (const <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html">DTLSPlaintext</a> &amp;plaintext) override</td></tr>
+<tr class="memdesc:acf5c0390e5cb5dd1e3a2682bf29ff885"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepare outgoing record (includes sequence number assignment)  <br /></td></tr>
 <tr class="separator:acf5c0390e5cb5dd1e3a2682bf29ff885"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af6b6e2de9d17036207b4cef85a7c4be2" id="r_af6b6e2de9d17036207b4cef85a7c4be2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1protocol_1_1CiphertextRecord.html">CiphertextRecord</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerWithCryptoAbstraction.html#af6b6e2de9d17036207b4cef85a7c4be2">protect_record_legacy</a> (const <a class="el" href="classdtls_1_1v13_1_1protocol_1_1PlaintextRecord.html">PlaintextRecord</a> &amp;plaintext) override</td></tr>
+<tr class="memdesc:af6b6e2de9d17036207b4cef85a7c4be2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Protect record using legacy format.  <br /></td></tr>
 <tr class="separator:af6b6e2de9d17036207b4cef85a7c4be2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1fad4a585be735e1541d7a1e536e238e" id="r_a1fad4a585be735e1541d7a1e536e238e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1protocol_1_1PlaintextRecord.html">PlaintextRecord</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerWithCryptoAbstraction.html#a1fad4a585be735e1541d7a1e536e238e">unprotect_record_legacy</a> (const <a class="el" href="classdtls_1_1v13_1_1protocol_1_1CiphertextRecord.html">CiphertextRecord</a> &amp;ciphertext) override</td></tr>
+<tr class="memdesc:a1fad4a585be735e1541d7a1e536e238e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unprotect record using legacy format.  <br /></td></tr>
 <tr class="separator:a1fad4a585be735e1541d7a1e536e238e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a399037ad7680e69aafef175e1c96e241" id="r_a399037ad7680e69aafef175e1c96e241"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerWithCryptoAbstraction.html#a399037ad7680e69aafef175e1c96e241">advance_epoch</a> (const std::vector&lt; uint8_t &gt; &amp;read_key, const std::vector&lt; uint8_t &gt; &amp;write_key, const std::vector&lt; uint8_t &gt; &amp;read_iv, const std::vector&lt; uint8_t &gt; &amp;write_iv) override</td></tr>
+<tr class="memdesc:a399037ad7680e69aafef175e1c96e241"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance to next epoch with new keys.  <br /></td></tr>
 <tr class="separator:a399037ad7680e69aafef175e1c96e241"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1f326a258e3f449f58356fa5bce69626" id="r_a1f326a258e3f449f58356fa5bce69626"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerWithCryptoAbstraction.html#a1f326a258e3f449f58356fa5bce69626">update_traffic_keys</a> () override</td></tr>
+<tr class="memdesc:a1f326a258e3f449f58356fa5bce69626"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update traffic keys (RFC 9147 Section 4.6.3)  <br /></td></tr>
 <tr class="separator:a1f326a258e3f449f58356fa5bce69626"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3daaa7d9ce789c863ef02b1aa8adb5fe" id="r_a3daaa7d9ce789c863ef02b1aa8adb5fe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerWithCryptoAbstraction.html#a3daaa7d9ce789c863ef02b1aa8adb5fe">update_traffic_keys</a> (const <a class="el" href="structdtls_1_1v13_1_1crypto_1_1KeySchedule.html">crypto::KeySchedule</a> &amp;new_keys) override</td></tr>
+<tr class="memdesc:a3daaa7d9ce789c863ef02b1aa8adb5fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update traffic keys with provided key schedule.  <br /></td></tr>
 <tr class="separator:a3daaa7d9ce789c863ef02b1aa8adb5fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af41b639e076392ed3dcc6d5977f9eff2" id="r_af41b639e076392ed3dcc6d5977f9eff2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerWithCryptoAbstraction.html#af41b639e076392ed3dcc6d5977f9eff2">needs_key_update</a> (uint64_t max_records=(1ULL&lt;&lt; 24), std::chrono::seconds max_time=std::chrono::hours(24)) const override</td></tr>
+<tr class="memdesc:af41b639e076392ed3dcc6d5977f9eff2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if key update is needed.  <br /></td></tr>
 <tr class="separator:af41b639e076392ed3dcc6d5977f9eff2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a729e667e9a8fa8e982fa6bac674a5322" id="r_a729e667e9a8fa8e982fa6bac674a5322"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerWithCryptoAbstraction.html#a729e667e9a8fa8e982fa6bac674a5322">enable_connection_id</a> (const ConnectionID &amp;local_cid, const ConnectionID &amp;peer_cid) override</td></tr>
+<tr class="memdesc:a729e667e9a8fa8e982fa6bac674a5322"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable connection ID support.  <br /></td></tr>
 <tr class="separator:a729e667e9a8fa8e982fa6bac674a5322"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac43d3a3bb105b8118c1e5a9b66c61d21" id="r_ac43d3a3bb105b8118c1e5a9b66c61d21"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdtls_1_1v13_1_1protocol_1_1RecordLayerStats.html">RecordLayerStats</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerWithCryptoAbstraction.html#ac43d3a3bb105b8118c1e5a9b66c61d21">get_stats</a> () const override</td></tr>
+<tr class="memdesc:ac43d3a3bb105b8118c1e5a9b66c61d21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current record layer statistics.  <br /></td></tr>
 <tr class="separator:ac43d3a3bb105b8118c1e5a9b66c61d21"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3247ac788332552448287058d0243d93" id="r_a3247ac788332552448287058d0243d93"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdtls_1_1v13_1_1protocol_1_1KeyUpdateStats.html">KeyUpdateStats</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerWithCryptoAbstraction.html#a3247ac788332552448287058d0243d93">get_key_update_stats</a> () const override</td></tr>
+<tr class="memdesc:a3247ac788332552448287058d0243d93"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current key update statistics.  <br /></td></tr>
 <tr class="separator:a3247ac788332552448287058d0243d93"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a89a1e3576ad09ece968429c2600bccc6" id="r_a89a1e3576ad09ece968429c2600bccc6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1ICryptoOperations.html">crypto::ICryptoOperations</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerWithCryptoAbstraction.html#a89a1e3576ad09ece968429c2600bccc6">crypto_operations</a> () const</td></tr>
+<tr class="memdesc:a89a1e3576ad09ece968429c2600bccc6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current crypto operations interface.  <br /></td></tr>
 <tr class="separator:a89a1e3576ad09ece968429c2600bccc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a76fae3979059baf3a2d131cdad62df70" id="r_a76fae3979059baf3a2d131cdad62df70"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerWithCryptoAbstraction.html#a76fae3979059baf3a2d131cdad62df70">switch_crypto_operations</a> (std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1crypto_1_1ICryptoOperations.html">crypto::ICryptoOperations</a> &gt; new_crypto_ops)</td></tr>
+<tr class="memdesc:a76fae3979059baf3a2d131cdad62df70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Switch to different crypto operations implementation.  <br /></td></tr>
 <tr class="separator:a76fae3979059baf3a2d131cdad62df70"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab3d0880969c7ba6f4b47a073febb41ee" id="r_ab3d0880969c7ba6f4b47a073febb41ee"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdtls_1_1v13_1_1crypto_1_1ProviderCapabilities.html">crypto::ProviderCapabilities</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerWithCryptoAbstraction.html#ab3d0880969c7ba6f4b47a073febb41ee">crypto_capabilities</a> () const</td></tr>
+<tr class="memdesc:ab3d0880969c7ba6f4b47a073febb41ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get crypto provider capabilities.  <br /></td></tr>
 <tr class="separator:ab3d0880969c7ba6f4b47a073febb41ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab79751c6f963e9708909df94d428c8ce" id="r_ab79751c6f963e9708909df94d428c8ce"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerWithCryptoAbstraction.html#ab79751c6f963e9708909df94d428c8ce">supports_cipher_suite</a> (CipherSuite cipher_suite) const</td></tr>
+<tr class="memdesc:ab79751c6f963e9708909df94d428c8ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if crypto operation is supported.  <br /></td></tr>
 <tr class="separator:ab79751c6f963e9708909df94d428c8ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Record Layer Implementation with Crypto Operations Abstraction</p>
+<div class="textblock"><p>Record Layer Implementation with Crypto Operations Abstraction. </p>
 <p>This class demonstrates the crypto dependency reduction by using the ICryptoOperations interface instead of direct CryptoProvider dependency. This provides better testability and modularity. </p>
 
 <p class="definition">Definition at line <a class="el" href="record__layer__crypto__abstraction_8h_source.html#l00020">20</a> of file <a class="el" href="record__layer__crypto__abstraction_8h_source.html">record_layer_crypto_abstraction.h</a>.</p>
@@ -237,7 +261,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Constructor with crypto operations interface</p>
+
+<p>Constructor with crypto operations interface. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">crypto_ops</td><td>Crypto operations implementation </td></tr>
@@ -270,7 +295,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Constructor with crypto operations manager</p>
+
+<p>Constructor with crypto operations manager. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">crypto_manager</td><td>Crypto operations manager for failover support </td></tr>
@@ -326,7 +352,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Advance to next epoch with new keys</p>
+
+<p>Advance to next epoch with new keys. </p>
 <p>Transitions to a new cryptographic epoch with updated keying material. Resets sequence numbers and anti-replay windows as required by RFC 9147.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -358,7 +385,8 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Get crypto provider capabilities</p>
+
+<p>Get crypto provider capabilities. </p>
 <dl class="section return"><dt>Returns</dt><dd>Current crypto provider capabilities </dd></dl>
 
 </div>
@@ -377,7 +405,8 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Get current crypto operations interface</p>
+
+<p>Get current crypto operations interface. </p>
 <dl class="section return"><dt>Returns</dt><dd>Pointer to current crypto operations (for testing/debugging) </dd></dl>
 
 </div>
@@ -415,8 +444,9 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Enable connection ID support</p>
-<p>Configures the record layer to use <a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> IDs for NAT traversal and connection migration as specified in RFC 9146.</p>
+
+<p>Enable connection ID support. </p>
+<p>Configures the record layer to use <a class="el" href="classdtls_1_1v13_1_1Connection.html" title="DTLS v1.3 Connection implementation.">Connection</a> IDs for NAT traversal and connection migration as specified in RFC 9146.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">local_cid</td><td>Local connection identifier </td></tr>
@@ -453,7 +483,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Get current key update statistics</p>
+
+<p>Get current key update statistics. </p>
 <p>Returns statistics specific to key update operations for security monitoring and compliance verification.</p>
 <dl class="section return"><dt>Returns</dt><dd>Current key update statistics </dd></dl>
 
@@ -483,7 +514,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Get current record layer statistics</p>
+
+<p>Get current record layer statistics. </p>
 <p>Returns comprehensive statistics for monitoring record layer performance, security events, and operational status.</p>
 <dl class="section return"><dt>Returns</dt><dd>Current statistics snapshot </dd></dl>
 
@@ -513,7 +545,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Initialize the record layer</p>
+
+<p>Initialize the record layer. </p>
 <p>Prepares the record layer for operation, including crypto provider initialization and internal state setup.</p>
 <dl class="section return"><dt>Returns</dt><dd>Success result or error details </dd></dl>
 
@@ -554,7 +587,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Check if key update is needed</p>
+
+<p>Check if key update is needed. </p>
 <p>Evaluates whether a key update should be performed based on record count, time elapsed, or other security criteria.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -592,7 +626,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Prepare outgoing record (includes sequence number assignment)</p>
+
+<p>Prepare outgoing record (includes sequence number assignment) </p>
 <p>Complete processing pipeline for outgoing records including:</p><ul>
 <li>Sequence number assignment</li>
 <li>Record encryption and authentication</li>
@@ -633,7 +668,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Process incoming record (includes anti-replay check)</p>
+
+<p>Process incoming record (includes anti-replay check) </p>
 <p>Complete processing pipeline for incoming records including:</p><ul>
 <li>Anti-replay window validation</li>
 <li>Sequence number verification <br  />
@@ -676,7 +712,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Protect a plaintext record (encrypt)</p>
+
+<p>Protect a plaintext record (encrypt) </p>
 <p>Encrypts and authenticates a plaintext record according to RFC 9147 specifications. Handles sequence number assignment and AEAD encryption.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -713,7 +750,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Protect record using legacy format</p>
+
+<p>Protect record using legacy format. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">plaintext</td><td>Legacy plaintext record </td></tr>
@@ -749,7 +787,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Set cipher suite for current epoch</p>
+
+<p>Set cipher suite for current epoch. </p>
 <p>Configures the cryptographic algorithms used for record protection. Must be called before processing any protected records.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -778,7 +817,8 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Check if crypto operation is supported</p>
+
+<p>Check if crypto operation is supported. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cipher_suite</td><td>Cipher suite to check </td></tr>
@@ -804,7 +844,8 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Switch to different crypto operations implementation</p>
+
+<p>Switch to different crypto operations implementation. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">new_crypto_ops</td><td>New crypto operations implementation </td></tr>
@@ -838,7 +879,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Unprotect a ciphertext record (decrypt)</p>
+
+<p>Unprotect a ciphertext record (decrypt) </p>
 <p>Decrypts and verifies a ciphertext record according to RFC 9147 specifications. Performs AEAD decryption and authenticity verification.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -875,7 +917,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Unprotect record using legacy format</p>
+
+<p>Unprotect record using legacy format. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ciphertext</td><td>Legacy ciphertext record </td></tr>
@@ -910,7 +953,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Update traffic keys (RFC 9147 Section 4.6.3)</p>
+
+<p>Update traffic keys (RFC 9147 Section 4.6.3) </p>
 <p>Generates new read/write keys from current keys using HKDF-Expand-Label to provide forward secrecy without full handshake.</p>
 <dl class="section return"><dt>Returns</dt><dd>Success result or error details </dd></dl>
 
@@ -941,7 +985,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Update traffic keys with provided key schedule</p>
+
+<p>Update traffic keys with provided key schedule. </p>
 <p>Used for coordinated key updates across multiple layers with externally derived keying material.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">

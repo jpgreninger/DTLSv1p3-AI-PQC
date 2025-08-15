@@ -26,9 +26,9 @@ var NAVTREE =
 [
   [ "DTLS v1.3 Implementation", "index.html", [
     [ "DTLS v1.3 API Documentation", "index.html", "index" ],
-    [ "Security Notes", "security.html", null ],
     [ "Algorithmic Complexity", "complexity.html", null ],
     [ "Performance Notes", "performance.html", null ],
+    [ "Security Notes", "security.html", null ],
     [ "Topics", "topics.html", "topics" ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
@@ -62,11 +62,11 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "adaptive__pools_8h_source.html",
-"classdtls_1_1v13_1_1connection_1_1advanced_1_1LoadBalancer.html#aca6818347c4227a8e5a1b6aa9a065b32",
-"classdtls_1_1v13_1_1memory_1_1HighPerformancePoolOptimizer.html",
-"classdtls_1_1v13_1_1protocol_1_1MockRecordLayerWithCryptoAbstraction.html#af683714efec1990ac9e6ffdf3b7ccbd0",
-"dtls12__compat_8h.html#a2483fa8b6e569bbc788391432f957b29",
-"structdtls_1_1v13_1_1crypto_1_1advanced_1_1SecurityAssessment.html"
+"classdtls_1_1v13_1_1connection_1_1advanced_1_1HealthMonitor.html#aa89ab7b1f9aa95362409b213eeec63e1",
+"classdtls_1_1v13_1_1crypto_1_1PublicKey.html",
+"classdtls_1_1v13_1_1protocol_1_1HandshakeManager.html#ab7f159ba04d2e2365e5eb8a49b52566e",
+"classdtls_1_1v13_1_1security_1_1SecureConnectionManager.html#a7d01982483deefeecf6814dc4237b1c5",
+"structdtls_1_1v13_1_1AlertManager_1_1AlertMessage.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

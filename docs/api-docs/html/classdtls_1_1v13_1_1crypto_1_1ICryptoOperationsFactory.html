@@ -138,6 +138,9 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1crypto_1_1ICryptoO
 </div><!--header-->
 <div class="contents">
 
+<p>Crypto Operations Factory Interface.  
+ <a href="classdtls_1_1v13_1_1crypto_1_1ICryptoOperationsFactory.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="operations_8h_source.html">operations.h</a>&gt;</code></p>
 <div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
   <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Inheritance diagram for dtls::v13::crypto::ICryptoOperationsFactory:</div>
@@ -147,21 +150,24 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1crypto_1_1ICryptoO
  <div class="center">
   <img src="classdtls_1_1v13_1_1crypto_1_1ICryptoOperationsFactory.png" usemap="#dtls::v13::crypto::ICryptoOperationsFactory_map" alt=""/>
   <map id="dtls::v13::crypto::ICryptoOperationsFactory_map" name="dtls::v13::crypto::ICryptoOperationsFactory_map">
-<area href="classdtls_1_1v13_1_1crypto_1_1CryptoOperationsFactory.html" alt="dtls::v13::crypto::CryptoOperationsFactory" shape="rect" coords="0,56,253,80"/>
+<area href="classdtls_1_1v13_1_1crypto_1_1CryptoOperationsFactory.html" title="Enhanced crypto operations factory with dependency reduction features." alt="dtls::v13::crypto::CryptoOperationsFactory" shape="rect" coords="0,56,253,80"/>
   </map>
 </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:abb2bf9a1b1079a5bca67a34340fb2686" id="r_abb2bf9a1b1079a5bca67a34340fb2686"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1crypto_1_1ICryptoOperations.html">ICryptoOperations</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1ICryptoOperationsFactory.html#abb2bf9a1b1079a5bca67a34340fb2686">create_operations</a> (const std::string &amp;provider_name=&quot;&quot;)=0</td></tr>
+<tr class="memdesc:abb2bf9a1b1079a5bca67a34340fb2686"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create crypto operations with specific provider.  <br /></td></tr>
 <tr class="separator:abb2bf9a1b1079a5bca67a34340fb2686"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9515b747f0a3f77efaf0c17c58832274" id="r_a9515b747f0a3f77efaf0c17c58832274"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1crypto_1_1ICryptoOperations.html">ICryptoOperations</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1ICryptoOperationsFactory.html#a9515b747f0a3f77efaf0c17c58832274">create_operations</a> (const <a class="el" href="structdtls_1_1v13_1_1crypto_1_1ProviderSelection.html">ProviderSelection</a> &amp;criteria)=0</td></tr>
+<tr class="memdesc:a9515b747f0a3f77efaf0c17c58832274"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create crypto operations with selection criteria.  <br /></td></tr>
 <tr class="separator:a9515b747f0a3f77efaf0c17c58832274"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5e75c4f7c2cd46690efa9bf55119b740" id="r_a5e75c4f7c2cd46690efa9bf55119b740"><td class="memItemLeft" align="right" valign="top">virtual std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1crypto_1_1ICryptoOperations.html">ICryptoOperations</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1ICryptoOperationsFactory.html#a5e75c4f7c2cd46690efa9bf55119b740">create_mock_operations</a> ()=0</td></tr>
+<tr class="memdesc:a5e75c4f7c2cd46690efa9bf55119b740"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create mock crypto operations for testing.  <br /></td></tr>
 <tr class="separator:a5e75c4f7c2cd46690efa9bf55119b740"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Crypto Operations Factory Interface</p>
+<div class="textblock"><p>Crypto Operations Factory Interface. </p>
 <p>Factory for creating crypto operations instances with different underlying providers and configurations. </p>
 
 <p class="definition">Definition at line <a class="el" href="operations_8h_source.html#l00382">382</a> of file <a class="el" href="operations_8h_source.html">operations.h</a>.</p>
@@ -188,7 +194,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Create mock crypto operations for testing</p>
+
+<p>Create mock crypto operations for testing. </p>
 <dl class="section return"><dt>Returns</dt><dd>Mock crypto operations instance </dd></dl>
 
 <p>Implemented in <a class="el" href="classdtls_1_1v13_1_1crypto_1_1CryptoOperationsFactory.html#a6790b26d19c95c56f7e5245bd1ff003a">dtls::v13::crypto::CryptoOperationsFactory</a>.</p>
@@ -218,7 +225,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Create crypto operations with selection criteria</p>
+
+<p>Create crypto operations with selection criteria. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">criteria</td><td>Provider selection criteria </td></tr>
@@ -254,7 +262,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Create crypto operations with specific provider</p>
+
+<p>Create crypto operations with specific provider. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">provider_name</td><td>Name of crypto provider to use </td></tr>

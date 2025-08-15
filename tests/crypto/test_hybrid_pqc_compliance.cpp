@@ -387,21 +387,21 @@ TEST_F(HybridPQCComplianceTest, ErrorHandlingCompliance) {
         MLKEMEncapParams invalid_encap;
         invalid_encap.parameter_set = MLKEMParameterSet::MLKEM512;
         invalid_encap.public_key = std::vector<uint8_t>(100, 0x42); // Wrong size
-        result = provider->mlkem_encapsulate(invalid_encap);
-        EXPECT_FALSE(result) << "Should reject invalid public key size";
+        auto encap_result = provider->mlkem_encapsulate(invalid_encap);
+        EXPECT_FALSE(encap_result) << "Should reject invalid public key size";
         
         MLKEMDecapParams invalid_decap;
         invalid_decap.parameter_set = MLKEMParameterSet::MLKEM512;
         invalid_decap.private_key = std::vector<uint8_t>(100, 0x42); // Wrong size
         invalid_decap.ciphertext = std::vector<uint8_t>(768, 0x42);
-        result = provider->mlkem_decapsulate(invalid_decap);
-        EXPECT_FALSE(result) << "Should reject invalid private key size";
+        auto decap_result = provider->mlkem_decapsulate(invalid_decap);
+        EXPECT_FALSE(decap_result) << "Should reject invalid private key size";
         
         // Test parameter set mismatch
         invalid_encap.parameter_set = MLKEMParameterSet::MLKEM512;
         invalid_encap.public_key = std::vector<uint8_t>(1184, 0x42); // ML-KEM-768 size
-        result = provider->mlkem_encapsulate(invalid_encap);
-        EXPECT_FALSE(result) << "Should reject mismatched parameter set and key size";
+        encap_result = provider->mlkem_encapsulate(invalid_encap);
+        EXPECT_FALSE(encap_result) << "Should reject mismatched parameter set and key size";
     }
 }
 

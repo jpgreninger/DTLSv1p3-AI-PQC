@@ -138,6 +138,9 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1protocol_1_1Record
 </div><!--header-->
 <div class="contents">
 
+<p>Main Record Layer implementation.  
+ <a href="classdtls_1_1v13_1_1protocol_1_1RecordLayer.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="record__layer_8h_source.html">record_layer.h</a>&gt;</code></p>
 <div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
   <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Inheritance diagram for dtls::v13::protocol::RecordLayer:</div>
@@ -147,7 +150,7 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1protocol_1_1Record
  <div class="center">
   <img src="classdtls_1_1v13_1_1protocol_1_1RecordLayer.png" usemap="#dtls::v13::protocol::RecordLayer_map" alt=""/>
   <map id="dtls::v13::protocol::RecordLayer_map" name="dtls::v13::protocol::RecordLayer_map">
-<area href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerInterface.html" alt="dtls::v13::protocol::IRecordLayerInterface" shape="rect" coords="0,0,243,24"/>
+<area href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerInterface.html" title="Abstract Record Layer Interface." alt="dtls::v13::protocol::IRecordLayerInterface" shape="rect" coords="0,0,243,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -169,40 +172,55 @@ Public Member Functions</h2></td></tr>
 <a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayer.html">RecordLayer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayer.html">RecordLayer</a> &amp;&amp;) noexcept=default</td></tr>
 <tr class="separator:a85528e885a61853971627b76b885a1ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aececdadb53267c442fe88faad6b05647" id="r_aececdadb53267c442fe88faad6b05647"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayer.html#aececdadb53267c442fe88faad6b05647">initialize</a> () override</td></tr>
+<tr class="memdesc:aececdadb53267c442fe88faad6b05647"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the record layer.  <br /></td></tr>
 <tr class="separator:aececdadb53267c442fe88faad6b05647"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa29ac5ddafd37eed694714004d1f7d15" id="r_aa29ac5ddafd37eed694714004d1f7d15"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayer.html#aa29ac5ddafd37eed694714004d1f7d15">set_cipher_suite</a> (CipherSuite suite) override</td></tr>
+<tr class="memdesc:aa29ac5ddafd37eed694714004d1f7d15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set cipher suite for current epoch.  <br /></td></tr>
 <tr class="separator:aa29ac5ddafd37eed694714004d1f7d15"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae7c87a7e8cec1b5f9d3c1a8a1a88f237" id="r_ae7c87a7e8cec1b5f9d3c1a8a1a88f237"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html">DTLSCiphertext</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayer.html#ae7c87a7e8cec1b5f9d3c1a8a1a88f237">protect_record</a> (const <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html">DTLSPlaintext</a> &amp;plaintext) override</td></tr>
+<tr class="memdesc:ae7c87a7e8cec1b5f9d3c1a8a1a88f237"><td class="mdescLeft">&#160;</td><td class="mdescRight">Protect a plaintext record (encrypt) - RFC 9147 compliance.  <br /></td></tr>
 <tr class="separator:ae7c87a7e8cec1b5f9d3c1a8a1a88f237"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab3fc1a476dc1720cc8a5c64457ce66d8" id="r_ab3fc1a476dc1720cc8a5c64457ce66d8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html">DTLSPlaintext</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayer.html#ab3fc1a476dc1720cc8a5c64457ce66d8">unprotect_record</a> (const <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html">DTLSCiphertext</a> &amp;ciphertext) override</td></tr>
+<tr class="memdesc:ab3fc1a476dc1720cc8a5c64457ce66d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unprotect a ciphertext record (decrypt) - RFC 9147 compliance.  <br /></td></tr>
 <tr class="separator:ab3fc1a476dc1720cc8a5c64457ce66d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a812efd3dced8d782fb7ac86cf053132f" id="r_a812efd3dced8d782fb7ac86cf053132f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html">DTLSPlaintext</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayer.html#a812efd3dced8d782fb7ac86cf053132f">process_incoming_record</a> (const <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html">DTLSCiphertext</a> &amp;ciphertext) override</td></tr>
+<tr class="memdesc:a812efd3dced8d782fb7ac86cf053132f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Process incoming record (includes anti-replay check)  <br /></td></tr>
 <tr class="separator:a812efd3dced8d782fb7ac86cf053132f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0c7e8bcf31360c4b52d429ce9036d6f2" id="r_a0c7e8bcf31360c4b52d429ce9036d6f2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html">DTLSCiphertext</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayer.html#a0c7e8bcf31360c4b52d429ce9036d6f2">prepare_outgoing_record</a> (const <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html">DTLSPlaintext</a> &amp;plaintext) override</td></tr>
+<tr class="memdesc:a0c7e8bcf31360c4b52d429ce9036d6f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepare outgoing record (includes sequence number assignment)  <br /></td></tr>
 <tr class="separator:a0c7e8bcf31360c4b52d429ce9036d6f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad0fb5bcddcfe37cecbaa97c6e4d6eaea" id="r_ad0fb5bcddcfe37cecbaa97c6e4d6eaea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1protocol_1_1CiphertextRecord.html">CiphertextRecord</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayer.html#ad0fb5bcddcfe37cecbaa97c6e4d6eaea">protect_record_legacy</a> (const <a class="el" href="classdtls_1_1v13_1_1protocol_1_1PlaintextRecord.html">PlaintextRecord</a> &amp;plaintext) override</td></tr>
+<tr class="memdesc:ad0fb5bcddcfe37cecbaa97c6e4d6eaea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Protect record using legacy format.  <br /></td></tr>
 <tr class="separator:ad0fb5bcddcfe37cecbaa97c6e4d6eaea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a68658b8a2bba4c7ca1579fc045288a8c" id="r_a68658b8a2bba4c7ca1579fc045288a8c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1protocol_1_1PlaintextRecord.html">PlaintextRecord</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayer.html#a68658b8a2bba4c7ca1579fc045288a8c">unprotect_record_legacy</a> (const <a class="el" href="classdtls_1_1v13_1_1protocol_1_1CiphertextRecord.html">CiphertextRecord</a> &amp;ciphertext) override</td></tr>
+<tr class="memdesc:a68658b8a2bba4c7ca1579fc045288a8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unprotect record using legacy format.  <br /></td></tr>
 <tr class="separator:a68658b8a2bba4c7ca1579fc045288a8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac18b5227fcaaae772b5a10c0a0f91932" id="r_ac18b5227fcaaae772b5a10c0a0f91932"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayer.html#ac18b5227fcaaae772b5a10c0a0f91932">advance_epoch</a> (const std::vector&lt; uint8_t &gt; &amp;read_key, const std::vector&lt; uint8_t &gt; &amp;write_key, const std::vector&lt; uint8_t &gt; &amp;read_iv, const std::vector&lt; uint8_t &gt; &amp;write_iv) override</td></tr>
+<tr class="memdesc:ac18b5227fcaaae772b5a10c0a0f91932"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance to next epoch with new keys.  <br /></td></tr>
 <tr class="separator:ac18b5227fcaaae772b5a10c0a0f91932"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af81c44daf58e31adce1bcd0ea48171b0" id="r_af81c44daf58e31adce1bcd0ea48171b0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayer.html#af81c44daf58e31adce1bcd0ea48171b0">update_traffic_keys</a> () override</td></tr>
+<tr class="memdesc:af81c44daf58e31adce1bcd0ea48171b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update traffic keys (RFC 9147 Section 4.6.3) Generates new read/write keys from current keys using HKDF-Expand-Label.  <br /></td></tr>
 <tr class="separator:af81c44daf58e31adce1bcd0ea48171b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aadba22bf134654111d1290a639ea7b5c" id="r_aadba22bf134654111d1290a639ea7b5c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayer.html#aadba22bf134654111d1290a639ea7b5c">update_traffic_keys</a> (const <a class="el" href="structdtls_1_1v13_1_1crypto_1_1KeySchedule.html">crypto::KeySchedule</a> &amp;new_keys) override</td></tr>
+<tr class="memdesc:aadba22bf134654111d1290a639ea7b5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update traffic keys with provided key schedule Used for coordinated key updates across multiple layers.  <br /></td></tr>
 <tr class="separator:aadba22bf134654111d1290a639ea7b5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a59c0a68ceaf9a418da320a8e2328a222" id="r_a59c0a68ceaf9a418da320a8e2328a222"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayer.html#a59c0a68ceaf9a418da320a8e2328a222">needs_key_update</a> (uint64_t max_records=(1ULL&lt;&lt; 24), std::chrono::seconds max_time=std::chrono::hours(24)) const override</td></tr>
+<tr class="memdesc:a59c0a68ceaf9a418da320a8e2328a222"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if key update is needed based on record count or time.  <br /></td></tr>
 <tr class="separator:a59c0a68ceaf9a418da320a8e2328a222"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac5b32a8ef276fd2788e1ea2bd7d1fb9f" id="r_ac5b32a8ef276fd2788e1ea2bd7d1fb9f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdtls_1_1v13_1_1protocol_1_1KeyUpdateStats.html">KeyUpdateStats</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayer.html#ac5b32a8ef276fd2788e1ea2bd7d1fb9f">get_key_update_stats</a> () const override</td></tr>
+<tr class="memdesc:ac5b32a8ef276fd2788e1ea2bd7d1fb9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current key update statistics.  <br /></td></tr>
 <tr class="separator:ac5b32a8ef276fd2788e1ea2bd7d1fb9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a34528ad6f741451c28fc08a2a58ee553" id="r_a34528ad6f741451c28fc08a2a58ee553"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayer.html#a34528ad6f741451c28fc08a2a58ee553">enable_connection_id</a> (const ConnectionID &amp;local_cid, const ConnectionID &amp;peer_cid) override</td></tr>
+<tr class="memdesc:a34528ad6f741451c28fc08a2a58ee553"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable connection ID support.  <br /></td></tr>
 <tr class="separator:a34528ad6f741451c28fc08a2a58ee553"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7b833997404ff2ec58d161387c891d30" id="r_a7b833997404ff2ec58d161387c891d30"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdtls_1_1v13_1_1protocol_1_1RecordLayerStats.html">RecordLayerStats</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayer.html#a7b833997404ff2ec58d161387c891d30">get_stats</a> () const override</td></tr>
+<tr class="memdesc:a7b833997404ff2ec58d161387c891d30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current record layer statistics.  <br /></td></tr>
 <tr class="separator:a7b833997404ff2ec58d161387c891d30"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Main Record Layer implementation</p>
+<div class="textblock"><p>Main Record Layer implementation. </p>
 <p>Handles record protection/unprotection, sequence number management, epoch handling, and anti-replay protection for DTLS v1.3.</p>
-<p>Implements <a class="el" href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerInterface.html">IRecordLayerInterface</a> for modular design and testability. </p>
+<p>Implements <a class="el" href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerInterface.html" title="Abstract Record Layer Interface.">IRecordLayerInterface</a> for modular design and testability. </p>
 
 <p class="definition">Definition at line <a class="el" href="record__layer_8h_source.html#l00248">248</a> of file <a class="el" href="record__layer_8h_source.html">record_layer.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
@@ -251,7 +269,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Advance to next epoch with new keys </p>
+
+<p>Advance to next epoch with new keys. </p>
 
 <p>Implements <a class="el" href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerInterface.html#a650a072af5a1bc26f2e4baa43cec2127">dtls::v13::protocol::IRecordLayerInterface</a>.</p>
 
@@ -290,7 +309,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Enable connection ID support </p>
+
+<p>Enable connection ID support. </p>
 
 <p>Implements <a class="el" href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerInterface.html#a67396428d6e0b96b34ae53fe72ba5d71">dtls::v13::protocol::IRecordLayerInterface</a>.</p>
 
@@ -318,7 +338,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Get current key update statistics </p>
+
+<p>Get current key update statistics. </p>
 
 <p>Implements <a class="el" href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerInterface.html#a28bc2cb154e22174c9c14951d45b1db3">dtls::v13::protocol::IRecordLayerInterface</a>.</p>
 
@@ -346,7 +367,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Get current record layer statistics </p>
+
+<p>Get current record layer statistics. </p>
 
 <p>Implements <a class="el" href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerInterface.html#a2744d21f971170090ca34a46e4f4e088">dtls::v13::protocol::IRecordLayerInterface</a>.</p>
 
@@ -374,7 +396,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Initialize the record layer </p>
+
+<p>Initialize the record layer. </p>
 
 <p>Implements <a class="el" href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerInterface.html#ae835f094bb08894955524f409088b6dc">dtls::v13::protocol::IRecordLayerInterface</a>.</p>
 
@@ -413,7 +436,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Check if key update is needed based on record count or time </p>
+
+<p>Check if key update is needed based on record count or time. </p>
 
 <p>Implements <a class="el" href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerInterface.html#acf99782ba9c2909806b99e172ca9f128">dtls::v13::protocol::IRecordLayerInterface</a>.</p>
 
@@ -442,6 +466,7 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
 <p>Prepare outgoing record (includes sequence number assignment) </p>
 
 <p>Implements <a class="el" href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerInterface.html#a04329aa3beca10a4360cd363fdd7fad2">dtls::v13::protocol::IRecordLayerInterface</a>.</p>
@@ -471,6 +496,7 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
 <p>Process incoming record (includes anti-replay check) </p>
 
 <p>Implements <a class="el" href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerInterface.html#a413c7f6aa3dd948fe8882a72ddde9457">dtls::v13::protocol::IRecordLayerInterface</a>.</p>
@@ -500,7 +526,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Protect a plaintext record (encrypt) - RFC 9147 compliance </p>
+
+<p>Protect a plaintext record (encrypt) - RFC 9147 compliance. </p>
 
 <p>Implements <a class="el" href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerInterface.html#aba2f647a7a72c3c348e7d2812d71ad59">dtls::v13::protocol::IRecordLayerInterface</a>.</p>
 
@@ -529,7 +556,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Protect record using legacy format</p>
+
+<p>Protect record using legacy format. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">plaintext</td><td>Legacy plaintext record </td></tr>
@@ -565,7 +593,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Set cipher suite for current epoch </p>
+
+<p>Set cipher suite for current epoch. </p>
 
 <p>Implements <a class="el" href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerInterface.html#a98d2ccd5bd2c7ca6a225a63ded3409ce">dtls::v13::protocol::IRecordLayerInterface</a>.</p>
 
@@ -594,7 +623,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Unprotect a ciphertext record (decrypt) - RFC 9147 compliance </p>
+
+<p>Unprotect a ciphertext record (decrypt) - RFC 9147 compliance. </p>
 
 <p>Implements <a class="el" href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerInterface.html#ac104a1f83b7309b54226892169557007">dtls::v13::protocol::IRecordLayerInterface</a>.</p>
 
@@ -623,7 +653,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Unprotect record using legacy format</p>
+
+<p>Unprotect record using legacy format. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ciphertext</td><td>Legacy ciphertext record </td></tr>
@@ -658,7 +689,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Update traffic keys (RFC 9147 Section 4.6.3) Generates new read/write keys from current keys using HKDF-Expand-Label </p>
+
+<p>Update traffic keys (RFC 9147 Section 4.6.3) Generates new read/write keys from current keys using HKDF-Expand-Label. </p>
 
 <p>Implements <a class="el" href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerInterface.html#a95012b184602a2140a81a3f64f05af1c">dtls::v13::protocol::IRecordLayerInterface</a>.</p>
 
@@ -687,7 +719,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Update traffic keys with provided key schedule Used for coordinated key updates across multiple layers </p>
+
+<p>Update traffic keys with provided key schedule Used for coordinated key updates across multiple layers. </p>
 
 <p>Implements <a class="el" href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerInterface.html#a8f3b3e8083941ca06e14da19fc7cc67b">dtls::v13::protocol::IRecordLayerInterface</a>.</p>
 

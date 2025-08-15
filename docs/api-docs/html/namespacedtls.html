@@ -134,8 +134,12 @@ $(document).ready(function(){initNavTree('namespacedtls.html',''); initResizable
   <div class="headertitle"><div class="title">dtls Namespace Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>DTLS v1.3 Cryptographic Provider System.  
+<a href="namespacedtls.html#details">More...</a></p>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>DTLS v1.3 Cryptographic Provider System</p>
+<div class="textblock"><p>DTLS v1.3 Cryptographic Provider System. </p>
+<p>DTLS v1.3 Memory Management System.</p>
 <p>This header provides access to the complete cryptographic subsystem for DTLS v1.3, including:</p>
 <ul>
 <li>Abstract crypto provider interface</li>
@@ -150,11 +154,10 @@ $(document).ready(function(){initNavTree('namespacedtls.html',''); initResizable
 </ul>
 <p>Usage: #include &lt;<a class="el" href="crypto_8h_source.html">dtls/crypto.h</a>&gt;</p>
 <p>Basic usage example:</p>
-<p>using namespace <a class="el" href="namespacedtls_1_1v13_1_1crypto.html">dtls::v13::crypto</a>;</p>
+<p>using namespace <a class="el" href="namespacedtls_1_1v13_1_1crypto.html" title="Crypto namespace contains all cryptographic functionality for DTLS v1.3 implementation.">dtls::v13::crypto</a>;</p>
 <p>// Create a crypto provider auto provider_result = create_best_crypto_provider(); if (!provider_result) { // Handle error return provider_result.error(); } auto provider = std::move(*provider_result);</p>
 <p>// Initialize the provider auto init_result = provider-&gt;initialize(); if (!init_result) { // Handle initialization error return init_result.error(); }</p>
 <p>// Use the provider for crypto operations RandomParams params{.length = 32, .cryptographically_secure = true}; auto random_result = provider-&gt;generate_random(params); if (random_result) { auto random_bytes = std::move(*random_result); // Use random bytes... }</p>
-<p>DTLS v1.3 Memory Management System</p>
 <p>This header provides access to the complete memory management subsystem for DTLS v1.3, including:</p>
 <ul>
 <li>Zero-copy buffer management</li>
@@ -166,7 +169,7 @@ $(document).ready(function(){initNavTree('namespacedtls.html',''); initResizable
 </ul>
 <p>Usage: #include &lt;<a class="el" href="memory_8h_source.html">dtls/memory.h</a>&gt;</p>
 <p>Basic usage example:</p>
-<p>using namespace <a class="el" href="namespacedtls_1_1v13_1_1memory.html">dtls::v13::memory</a>;</p>
+<p>using namespace <a class="el" href="namespacedtls_1_1v13_1_1memory.html" title="Memory namespace contains all memory management functionality for DTLS v1.3 implementation.">dtls::v13::memory</a>;</p>
 <p>// Create a pooled buffer for efficient reuse auto buffer = make_pooled_buffer(1024); if (buffer) { // Use the buffer auto result = buffer-&gt;append(data, length);</p>
 <p>// Buffer automatically returns to pool when destroyed }</p>
 <p>// Or use zero-copy buffers directly ZeroCopyBuffer my_buffer(512); my_buffer.append(some_data, data_length);</p>

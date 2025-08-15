@@ -140,11 +140,15 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1protocol_1_1AntiRe
 </div><!--header-->
 <div class="contents">
 
+<p>Anti-Replay Window for detecting duplicate packets.  
+ <a href="classdtls_1_1v13_1_1protocol_1_1AntiReplayWindow.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="record__layer_8h_source.html">record_layer.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1protocol_1_1AntiReplayWindow_1_1WindowStats.html">WindowStats</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current window statistics.  <a href="structdtls_1_1v13_1_1protocol_1_1AntiReplayWindow_1_1WindowStats.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -165,12 +169,17 @@ Public Member Functions</h2></td></tr>
 <a class="el" href="classdtls_1_1v13_1_1protocol_1_1AntiReplayWindow.html">AntiReplayWindow</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classdtls_1_1v13_1_1protocol_1_1AntiReplayWindow.html">AntiReplayWindow</a> &amp;&amp;) noexcept=default</td></tr>
 <tr class="separator:a612344e137413740e02e3cb7975060b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a55ad4b5a8f4be7ef30c493eeb4593021" id="r_a55ad4b5a8f4be7ef30c493eeb4593021"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1AntiReplayWindow.html#a55ad4b5a8f4be7ef30c493eeb4593021">is_valid_sequence_number</a> (uint64_t sequence_number)</td></tr>
+<tr class="memdesc:a55ad4b5a8f4be7ef30c493eeb4593021"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if sequence number is valid (not a replay)  <br /></td></tr>
 <tr class="separator:a55ad4b5a8f4be7ef30c493eeb4593021"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a40b6e16ad19b48effc20619514aba6a5" id="r_a40b6e16ad19b48effc20619514aba6a5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1AntiReplayWindow.html#a40b6e16ad19b48effc20619514aba6a5">mark_received</a> (uint64_t sequence_number)</td></tr>
+<tr class="memdesc:a40b6e16ad19b48effc20619514aba6a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mark sequence number as received.  <br /></td></tr>
 <tr class="separator:a40b6e16ad19b48effc20619514aba6a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1f13108b5b5c9397f141244fc7faad7e" id="r_a1f13108b5b5c9397f141244fc7faad7e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1AntiReplayWindow.html#a1f13108b5b5c9397f141244fc7faad7e">check_and_update</a> (uint64_t sequence_number)</td></tr>
+<tr class="memdesc:a1f13108b5b5c9397f141244fc7faad7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check and update in single operation (preferred method)  <br /></td></tr>
 <tr class="separator:a1f13108b5b5c9397f141244fc7faad7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6b9f16f23645aed3c5e0cb4b4f978fa0" id="r_a6b9f16f23645aed3c5e0cb4b4f978fa0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1AntiReplayWindow.html#a6b9f16f23645aed3c5e0cb4b4f978fa0">reset</a> ()</td></tr>
+<tr class="memitem:a6b9f16f23645aed3c5e0cb4b4f978fa0" id="r_a6b9f16f23645aed3c5e0cb4b4f978fa0"><td class="memItemLeft" align="right" valign="top"><a id="a6b9f16f23645aed3c5e0cb4b4f978fa0" name="a6b9f16f23645aed3c5e0cb4b4f978fa0"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>reset</b> ()</td></tr>
+<tr class="memdesc:a6b9f16f23645aed3c5e0cb4b4f978fa0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset the window (for epoch changes) <br /></td></tr>
 <tr class="separator:a6b9f16f23645aed3c5e0cb4b4f978fa0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a426028157c9524b023e8942e1dc16f36" id="r_a426028157c9524b023e8942e1dc16f36"><td class="memItemLeft" align="right" valign="top"><a id="a426028157c9524b023e8942e1dc16f36" name="a426028157c9524b023e8942e1dc16f36"></a>
 <a class="el" href="structdtls_1_1v13_1_1protocol_1_1AntiReplayWindow_1_1WindowStats.html">WindowStats</a>&#160;</td><td class="memItemRight" valign="bottom"><b>get_stats</b> () const</td></tr>
@@ -182,7 +191,7 @@ Static Public Attributes</h2></td></tr>
 <tr class="separator:a2d3f9b7bd125bb5373004d705d40f1a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Anti-Replay Window for detecting duplicate packets</p>
+<div class="textblock"><p>Anti-Replay Window for detecting duplicate packets. </p>
 <p>Implements sliding window algorithm as specified in RFC 9147 to protect against replay attacks by tracking received sequence numbers. </p>
 
 <p class="definition">Definition at line <a class="el" href="record__layer_8h_source.html#l00027">27</a> of file <a class="el" href="record__layer_8h_source.html">record_layer.h</a>.</p>
@@ -202,7 +211,9 @@ Static Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Check and update in single operation (preferred method) </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Check and update in single operation (preferred method) </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">sequence_number</td><td>The sequence number to check and mark </td></tr>
   </table>
@@ -227,7 +238,9 @@ Static Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Check if sequence number is valid (not a replay) </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Check if sequence number is valid (not a replay) </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">sequence_number</td><td>The sequence number to check </td></tr>
   </table>
@@ -252,30 +265,14 @@ Static Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Mark sequence number as received </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Mark sequence number as received. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">sequence_number</td><td>The sequence number to mark </td></tr>
   </table>
   </dd>
 </dl>
-
-</div>
-</div>
-<a id="a6b9f16f23645aed3c5e0cb4b4f978fa0" name="a6b9f16f23645aed3c5e0cb4b4f978fa0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6b9f16f23645aed3c5e0cb4b4f978fa0">&#9670;&#160;</a></span>reset()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void dtls::v13::protocol::AntiReplayWindow::reset </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Reset the window (for epoch changes) </p>
 
 </div>
 </div>

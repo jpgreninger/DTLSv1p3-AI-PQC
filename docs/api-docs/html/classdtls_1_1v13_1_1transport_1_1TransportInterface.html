@@ -138,284 +138,57 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1transport_1_1Trans
 </div><!--header-->
 <div class="contents">
 
+<p>UDP Transport implementation for DTLS v1.3.  
+ <a href="classdtls_1_1v13_1_1transport_1_1TransportInterface.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="udp__transport_8h_source.html">udp_transport.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a445ade2c5a90a544f8f102161118449a" id="r_a445ade2c5a90a544f8f102161118449a"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1transport_1_1TransportInterface.html#a445ade2c5a90a544f8f102161118449a">bind</a> ()=0</td></tr>
+<tr class="memitem:a445ade2c5a90a544f8f102161118449a" id="r_a445ade2c5a90a544f8f102161118449a"><td class="memItemLeft" align="right" valign="top"><a id="a445ade2c5a90a544f8f102161118449a" name="a445ade2c5a90a544f8f102161118449a"></a>
+virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>bind</b> ()=0</td></tr>
+<tr class="memdesc:a445ade2c5a90a544f8f102161118449a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind to local address/port. <br /></td></tr>
 <tr class="separator:a445ade2c5a90a544f8f102161118449a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee1b19527b4705cdd847923dfac81571" id="r_aee1b19527b4705cdd847923dfac81571"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1transport_1_1TransportInterface.html#aee1b19527b4705cdd847923dfac81571">connect</a> (const std::string &amp;remote_addr, uint16_t remote_port)=0</td></tr>
+<tr class="memitem:aee1b19527b4705cdd847923dfac81571" id="r_aee1b19527b4705cdd847923dfac81571"><td class="memItemLeft" align="right" valign="top"><a id="aee1b19527b4705cdd847923dfac81571" name="aee1b19527b4705cdd847923dfac81571"></a>
+virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>connect</b> (const std::string &amp;remote_addr, uint16_t remote_port)=0</td></tr>
+<tr class="memdesc:aee1b19527b4705cdd847923dfac81571"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connect to remote endpoint. <br /></td></tr>
 <tr class="separator:aee1b19527b4705cdd847923dfac81571"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2b3861731a27f9ee8374a451be6fed47" id="r_a2b3861731a27f9ee8374a451be6fed47"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1transport_1_1TransportInterface.html#a2b3861731a27f9ee8374a451be6fed47">send</a> (const std::vector&lt; uint8_t &gt; &amp;data)=0</td></tr>
+<tr class="memitem:a2b3861731a27f9ee8374a451be6fed47" id="r_a2b3861731a27f9ee8374a451be6fed47"><td class="memItemLeft" align="right" valign="top"><a id="a2b3861731a27f9ee8374a451be6fed47" name="a2b3861731a27f9ee8374a451be6fed47"></a>
+virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>send</b> (const std::vector&lt; uint8_t &gt; &amp;data)=0</td></tr>
+<tr class="memdesc:a2b3861731a27f9ee8374a451be6fed47"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send data to connected endpoint. <br /></td></tr>
 <tr class="separator:a2b3861731a27f9ee8374a451be6fed47"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab091c5a963581efc590c8dd2b66bcdfd" id="r_ab091c5a963581efc590c8dd2b66bcdfd"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::vector&lt; uint8_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1transport_1_1TransportInterface.html#ab091c5a963581efc590c8dd2b66bcdfd">receive</a> (std::chrono::milliseconds timeout)=0</td></tr>
+<tr class="memitem:ab091c5a963581efc590c8dd2b66bcdfd" id="r_ab091c5a963581efc590c8dd2b66bcdfd"><td class="memItemLeft" align="right" valign="top"><a id="ab091c5a963581efc590c8dd2b66bcdfd" name="ab091c5a963581efc590c8dd2b66bcdfd"></a>
+virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::vector&lt; uint8_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>receive</b> (std::chrono::milliseconds timeout)=0</td></tr>
+<tr class="memdesc:ab091c5a963581efc590c8dd2b66bcdfd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Receive data from connected endpoint. <br /></td></tr>
 <tr class="separator:ab091c5a963581efc590c8dd2b66bcdfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae9d561667dd35665a5c6a4b15682c203" id="r_ae9d561667dd35665a5c6a4b15682c203"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1transport_1_1TransportInterface.html#ae9d561667dd35665a5c6a4b15682c203">shutdown</a> ()=0</td></tr>
+<tr class="memitem:ae9d561667dd35665a5c6a4b15682c203" id="r_ae9d561667dd35665a5c6a4b15682c203"><td class="memItemLeft" align="right" valign="top"><a id="ae9d561667dd35665a5c6a4b15682c203" name="ae9d561667dd35665a5c6a4b15682c203"></a>
+virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>shutdown</b> ()=0</td></tr>
+<tr class="memdesc:ae9d561667dd35665a5c6a4b15682c203"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shutdown the transport. <br /></td></tr>
 <tr class="separator:ae9d561667dd35665a5c6a4b15682c203"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6b98a8482fff6e600c64d0d193b64ab8" id="r_a6b98a8482fff6e600c64d0d193b64ab8"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1transport_1_1TransportInterface.html#a6b98a8482fff6e600c64d0d193b64ab8">is_bound</a> () const =0</td></tr>
+<tr class="memitem:a6b98a8482fff6e600c64d0d193b64ab8" id="r_a6b98a8482fff6e600c64d0d193b64ab8"><td class="memItemLeft" align="right" valign="top"><a id="a6b98a8482fff6e600c64d0d193b64ab8" name="a6b98a8482fff6e600c64d0d193b64ab8"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_bound</b> () const =0</td></tr>
+<tr class="memdesc:a6b98a8482fff6e600c64d0d193b64ab8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if transport is bound. <br /></td></tr>
 <tr class="separator:a6b98a8482fff6e600c64d0d193b64ab8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af968d34ed05344f87c9774f1c48ba146" id="r_af968d34ed05344f87c9774f1c48ba146"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1transport_1_1TransportInterface.html#af968d34ed05344f87c9774f1c48ba146">is_connected</a> () const =0</td></tr>
+<tr class="memitem:af968d34ed05344f87c9774f1c48ba146" id="r_af968d34ed05344f87c9774f1c48ba146"><td class="memItemLeft" align="right" valign="top"><a id="af968d34ed05344f87c9774f1c48ba146" name="af968d34ed05344f87c9774f1c48ba146"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_connected</b> () const =0</td></tr>
+<tr class="memdesc:af968d34ed05344f87c9774f1c48ba146"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if transport is connected. <br /></td></tr>
 <tr class="separator:af968d34ed05344f87c9774f1c48ba146"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adb57e10c5f717892cd385eb319333f30" id="r_adb57e10c5f717892cd385eb319333f30"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1transport_1_1TransportInterface.html#adb57e10c5f717892cd385eb319333f30">get_local_address</a> () const =0</td></tr>
+<tr class="memitem:adb57e10c5f717892cd385eb319333f30" id="r_adb57e10c5f717892cd385eb319333f30"><td class="memItemLeft" align="right" valign="top"><a id="adb57e10c5f717892cd385eb319333f30" name="adb57e10c5f717892cd385eb319333f30"></a>
+virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><b>get_local_address</b> () const =0</td></tr>
+<tr class="memdesc:adb57e10c5f717892cd385eb319333f30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get local address. <br /></td></tr>
 <tr class="separator:adb57e10c5f717892cd385eb319333f30"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a24a9745c3385b0ef8f4fb8403064234b" id="r_a24a9745c3385b0ef8f4fb8403064234b"><td class="memItemLeft" align="right" valign="top">virtual uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1transport_1_1TransportInterface.html#a24a9745c3385b0ef8f4fb8403064234b">get_local_port</a> () const =0</td></tr>
+<tr class="memitem:a24a9745c3385b0ef8f4fb8403064234b" id="r_a24a9745c3385b0ef8f4fb8403064234b"><td class="memItemLeft" align="right" valign="top"><a id="a24a9745c3385b0ef8f4fb8403064234b" name="a24a9745c3385b0ef8f4fb8403064234b"></a>
+virtual uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_local_port</b> () const =0</td></tr>
+<tr class="memdesc:a24a9745c3385b0ef8f4fb8403064234b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get local port. <br /></td></tr>
 <tr class="separator:a24a9745c3385b0ef8f4fb8403064234b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>UDP Transport implementation for DTLS v1.3</p>
+<div class="textblock"><p>UDP Transport implementation for DTLS v1.3. </p>
 <p>Provides multi-threaded UDP socket handling with event-driven processing, connection multiplexing, and comprehensive error handling. Abstract transport interface for DTLS</p>
 <p>Provides a common interface for different transport implementations to be used by the DTLS protocol layer and in testing. </p>
 
 <p class="definition">Definition at line <a class="el" href="udp__transport_8h_source.html#l00181">181</a> of file <a class="el" href="udp__transport_8h_source.html">udp_transport.h</a>.</p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a445ade2c5a90a544f8f102161118449a" name="a445ade2c5a90a544f8f102161118449a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a445ade2c5a90a544f8f102161118449a">&#9670;&#160;</a></span>bind()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; dtls::v13::transport::TransportInterface::bind </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Bind to local address/port </p>
-
-</div>
-</div>
-<a id="aee1b19527b4705cdd847923dfac81571" name="aee1b19527b4705cdd847923dfac81571"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aee1b19527b4705cdd847923dfac81571">&#9670;&#160;</a></span>connect()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; dtls::v13::transport::TransportInterface::connect </td>
-          <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>remote_addr</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint16_t&#160;</td>
-          <td class="paramname"><em>remote_port</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Connect to remote endpoint </p>
-
-</div>
-</div>
-<a id="adb57e10c5f717892cd385eb319333f30" name="adb57e10c5f717892cd385eb319333f30"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adb57e10c5f717892cd385eb319333f30">&#9670;&#160;</a></span>get_local_address()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual std::string dtls::v13::transport::TransportInterface::get_local_address </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Get local address </p>
-
-</div>
-</div>
-<a id="a24a9745c3385b0ef8f4fb8403064234b" name="a24a9745c3385b0ef8f4fb8403064234b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a24a9745c3385b0ef8f4fb8403064234b">&#9670;&#160;</a></span>get_local_port()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual uint16_t dtls::v13::transport::TransportInterface::get_local_port </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Get local port </p>
-
-</div>
-</div>
-<a id="a6b98a8482fff6e600c64d0d193b64ab8" name="a6b98a8482fff6e600c64d0d193b64ab8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6b98a8482fff6e600c64d0d193b64ab8">&#9670;&#160;</a></span>is_bound()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual bool dtls::v13::transport::TransportInterface::is_bound </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Check if transport is bound </p>
-
-</div>
-</div>
-<a id="af968d34ed05344f87c9774f1c48ba146" name="af968d34ed05344f87c9774f1c48ba146"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af968d34ed05344f87c9774f1c48ba146">&#9670;&#160;</a></span>is_connected()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual bool dtls::v13::transport::TransportInterface::is_connected </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Check if transport is connected </p>
-
-</div>
-</div>
-<a id="ab091c5a963581efc590c8dd2b66bcdfd" name="ab091c5a963581efc590c8dd2b66bcdfd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab091c5a963581efc590c8dd2b66bcdfd">&#9670;&#160;</a></span>receive()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::vector&lt; uint8_t &gt; &gt; dtls::v13::transport::TransportInterface::receive </td>
-          <td>(</td>
-          <td class="paramtype">std::chrono::milliseconds&#160;</td>
-          <td class="paramname"><em>timeout</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Receive data from connected endpoint </p>
-
-</div>
-</div>
-<a id="a2b3861731a27f9ee8374a451be6fed47" name="a2b3861731a27f9ee8374a451be6fed47"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2b3861731a27f9ee8374a451be6fed47">&#9670;&#160;</a></span>send()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; size_t &gt; dtls::v13::transport::TransportInterface::send </td>
-          <td>(</td>
-          <td class="paramtype">const std::vector&lt; uint8_t &gt; &amp;&#160;</td>
-          <td class="paramname"><em>data</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Send data to connected endpoint </p>
-
-</div>
-</div>
-<a id="ae9d561667dd35665a5c6a4b15682c203" name="ae9d561667dd35665a5c6a4b15682c203"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae9d561667dd35665a5c6a4b15682c203">&#9670;&#160;</a></span>shutdown()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; dtls::v13::transport::TransportInterface::shutdown </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Shutdown the transport </p>
-
-</div>
-</div>
-<hr/>The documentation for this class was generated from the following file:<ul>
+</div><hr/>The documentation for this class was generated from the following file:<ul>
 <li>dtls/transport/<a class="el" href="udp__transport_8h_source.html">udp_transport.h</a></li>
 </ul>
 </div><!-- contents -->

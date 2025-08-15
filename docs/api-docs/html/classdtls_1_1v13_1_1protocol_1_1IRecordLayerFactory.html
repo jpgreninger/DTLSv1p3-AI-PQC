@@ -138,6 +138,9 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1protocol_1_1IRecor
 </div><!--header-->
 <div class="contents">
 
+<p>Record Layer Factory Interface.  
+ <a href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerFactory.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="record__layer__interface_8h_source.html">record_layer_interface.h</a>&gt;</code></p>
 <div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
   <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Inheritance diagram for dtls::v13::protocol::IRecordLayerFactory:</div>
@@ -147,20 +150,22 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1protocol_1_1IRecor
  <div class="center">
   <img src="classdtls_1_1v13_1_1protocol_1_1IRecordLayerFactory.png" usemap="#dtls::v13::protocol::IRecordLayerFactory_map" alt=""/>
   <map id="dtls::v13::protocol::IRecordLayerFactory_map" name="dtls::v13::protocol::IRecordLayerFactory_map">
-<area href="classdtls_1_1v13_1_1protocol_1_1RecordLayerCryptoAbstractionFactory.html" alt="dtls::v13::protocol::RecordLayerCryptoAbstractionFactory" shape="rect" coords="0,56,336,80"/>
-<area href="classdtls_1_1v13_1_1protocol_1_1RecordLayerFactory.html" alt="dtls::v13::protocol::RecordLayerFactory" shape="rect" coords="346,56,682,80"/>
+<area href="classdtls_1_1v13_1_1protocol_1_1RecordLayerCryptoAbstractionFactory.html" title="Factory for creating record layers with crypto abstraction." alt="dtls::v13::protocol::RecordLayerCryptoAbstractionFactory" shape="rect" coords="0,56,336,80"/>
+<area href="classdtls_1_1v13_1_1protocol_1_1RecordLayerFactory.html" title="Standard Record Layer Factory Implementation." alt="dtls::v13::protocol::RecordLayerFactory" shape="rect" coords="346,56,682,80"/>
   </map>
 </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:adc931d91b1580596791f3f23855ef9c8" id="r_adc931d91b1580596791f3f23855ef9c8"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerInterface.html">IRecordLayerInterface</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerFactory.html#adc931d91b1580596791f3f23855ef9c8">create_record_layer</a> (std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1crypto_1_1CryptoProvider.html">crypto::CryptoProvider</a> &gt; crypto_provider)=0</td></tr>
+<tr class="memdesc:adc931d91b1580596791f3f23855ef9c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a record layer implementation.  <br /></td></tr>
 <tr class="separator:adc931d91b1580596791f3f23855ef9c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab1c4e9ad7504909a853a9daf8a4d43f4" id="r_ab1c4e9ad7504909a853a9daf8a4d43f4"><td class="memItemLeft" align="right" valign="top">virtual std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerInterface.html">IRecordLayerInterface</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerFactory.html#ab1c4e9ad7504909a853a9daf8a4d43f4">create_mock_record_layer</a> ()=0</td></tr>
+<tr class="memdesc:ab1c4e9ad7504909a853a9daf8a4d43f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a mock record layer for testing.  <br /></td></tr>
 <tr class="separator:ab1c4e9ad7504909a853a9daf8a4d43f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Record Layer Factory Interface</p>
+<div class="textblock"><p>Record Layer Factory Interface. </p>
 <p>Provides factory methods for creating record layer implementations with proper dependency injection and configuration. </p>
 
 <p class="definition">Definition at line <a class="el" href="record__layer__interface_8h_source.html#l00256">256</a> of file <a class="el" href="record__layer__interface_8h_source.html">record_layer_interface.h</a>.</p>
@@ -187,7 +192,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Create a mock record layer for testing</p>
+
+<p>Create a mock record layer for testing. </p>
 <dl class="section return"><dt>Returns</dt><dd>Mock record layer implementation </dd></dl>
 
 <p>Implemented in <a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerCryptoAbstractionFactory.html#af4832341fc7e12367ccfd57e3e190011">dtls::v13::protocol::RecordLayerCryptoAbstractionFactory</a>, and <a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerFactory.html#a45896b0c62ae18a6f64244296b80d807">dtls::v13::protocol::RecordLayerFactory</a>.</p>
@@ -217,7 +223,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Create a record layer implementation</p>
+
+<p>Create a record layer implementation. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">crypto_provider</td><td>The crypto provider to use </td></tr>

@@ -139,11 +139,15 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1protocol_1_1EpochM
 </div><!--header-->
 <div class="contents">
 
+<p>Epoch Manager for handling DTLS epochs.  
+ <a href="classdtls_1_1v13_1_1protocol_1_1EpochManager.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="record__layer_8h_source.html">record_layer.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1protocol_1_1EpochManager_1_1EpochCryptoParams.html">EpochCryptoParams</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get crypto parameters for an epoch.  <a href="structdtls_1_1v13_1_1protocol_1_1EpochManager_1_1EpochCryptoParams.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -160,43 +164,34 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a00fdace22386c6bef7704d827899b010" id="r_a00fdace22386c6bef7704d827899b010"><td class="memItemLeft" align="right" valign="top"><a id="a00fdace22386c6bef7704d827899b010" name="a00fdace22386c6bef7704d827899b010"></a>
 <a class="el" href="classdtls_1_1v13_1_1protocol_1_1EpochManager.html">EpochManager</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classdtls_1_1v13_1_1protocol_1_1EpochManager.html">EpochManager</a> &amp;&amp;) noexcept=default</td></tr>
 <tr class="separator:a00fdace22386c6bef7704d827899b010"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a67d871a5761ea65207135c8d361d5dc6" id="r_a67d871a5761ea65207135c8d361d5dc6"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1EpochManager.html#a67d871a5761ea65207135c8d361d5dc6">get_current_epoch</a> () const</td></tr>
+<tr class="memitem:a67d871a5761ea65207135c8d361d5dc6" id="r_a67d871a5761ea65207135c8d361d5dc6"><td class="memItemLeft" align="right" valign="top"><a id="a67d871a5761ea65207135c8d361d5dc6" name="a67d871a5761ea65207135c8d361d5dc6"></a>
+uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_current_epoch</b> () const</td></tr>
+<tr class="memdesc:a67d871a5761ea65207135c8d361d5dc6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current epoch. <br /></td></tr>
 <tr class="separator:a67d871a5761ea65207135c8d361d5dc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af48c87297dfdd45f960cb7cb02ca7ea8" id="r_af48c87297dfdd45f960cb7cb02ca7ea8"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1EpochManager.html#af48c87297dfdd45f960cb7cb02ca7ea8">current_epoch</a> () const</td></tr>
+<tr class="memdesc:af48c87297dfdd45f960cb7cb02ca7ea8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current epoch (alias for get_current_epoch)  <br /></td></tr>
 <tr class="separator:af48c87297dfdd45f960cb7cb02ca7ea8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad3c88627b718c85d783446f8575cbd4b" id="r_ad3c88627b718c85d783446f8575cbd4b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; uint16_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1EpochManager.html#ad3c88627b718c85d783446f8575cbd4b">advance_epoch</a> ()</td></tr>
+<tr class="memitem:ad3c88627b718c85d783446f8575cbd4b" id="r_ad3c88627b718c85d783446f8575cbd4b"><td class="memItemLeft" align="right" valign="top"><a id="ad3c88627b718c85d783446f8575cbd4b" name="ad3c88627b718c85d783446f8575cbd4b"></a>
+<a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; uint16_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>advance_epoch</b> ()</td></tr>
+<tr class="memdesc:ad3c88627b718c85d783446f8575cbd4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance to next epoch. <br /></td></tr>
 <tr class="separator:ad3c88627b718c85d783446f8575cbd4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aff3eeb72fff1f8eaeb79f1eb9be6cfc9" id="r_aff3eeb72fff1f8eaeb79f1eb9be6cfc9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1EpochManager.html#aff3eeb72fff1f8eaeb79f1eb9be6cfc9">is_valid_epoch</a> (uint16_t epoch) const</td></tr>
+<tr class="memitem:aff3eeb72fff1f8eaeb79f1eb9be6cfc9" id="r_aff3eeb72fff1f8eaeb79f1eb9be6cfc9"><td class="memItemLeft" align="right" valign="top"><a id="aff3eeb72fff1f8eaeb79f1eb9be6cfc9" name="aff3eeb72fff1f8eaeb79f1eb9be6cfc9"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_valid_epoch</b> (uint16_t epoch) const</td></tr>
+<tr class="memdesc:aff3eeb72fff1f8eaeb79f1eb9be6cfc9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if epoch is valid for receiving. <br /></td></tr>
 <tr class="separator:aff3eeb72fff1f8eaeb79f1eb9be6cfc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa52a15f3e57b2424ee6c7c67e02d7829" id="r_aa52a15f3e57b2424ee6c7c67e02d7829"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1EpochManager.html#aa52a15f3e57b2424ee6c7c67e02d7829">set_epoch_keys</a> (uint16_t epoch, const std::vector&lt; uint8_t &gt; &amp;read_key, const std::vector&lt; uint8_t &gt; &amp;write_key, const std::vector&lt; uint8_t &gt; &amp;read_iv, const std::vector&lt; uint8_t &gt; &amp;write_iv)</td></tr>
+<tr class="memitem:aa52a15f3e57b2424ee6c7c67e02d7829" id="r_aa52a15f3e57b2424ee6c7c67e02d7829"><td class="memItemLeft" align="right" valign="top"><a id="aa52a15f3e57b2424ee6c7c67e02d7829" name="aa52a15f3e57b2424ee6c7c67e02d7829"></a>
+<a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>set_epoch_keys</b> (uint16_t epoch, const std::vector&lt; uint8_t &gt; &amp;read_key, const std::vector&lt; uint8_t &gt; &amp;write_key, const std::vector&lt; uint8_t &gt; &amp;read_iv, const std::vector&lt; uint8_t &gt; &amp;write_iv)</td></tr>
+<tr class="memdesc:aa52a15f3e57b2424ee6c7c67e02d7829"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set crypto keys for an epoch. <br /></td></tr>
 <tr class="separator:aa52a15f3e57b2424ee6c7c67e02d7829"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a885f8b2a9cd6d98174483d52fd579a68" id="r_a885f8b2a9cd6d98174483d52fd579a68"><td class="memItemLeft" align="right" valign="top"><a id="a885f8b2a9cd6d98174483d52fd579a68" name="a885f8b2a9cd6d98174483d52fd579a68"></a>
 <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="structdtls_1_1v13_1_1protocol_1_1EpochManager_1_1EpochCryptoParams.html">EpochCryptoParams</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>get_epoch_crypto_params</b> (uint16_t epoch) const</td></tr>
 <tr class="separator:a885f8b2a9cd6d98174483d52fd579a68"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Epoch Manager for handling DTLS epochs </p>
+<div class="textblock"><p>Epoch Manager for handling DTLS epochs. </p>
 
 <p class="definition">Definition at line <a class="el" href="record__layer_8h_source.html#l00128">128</a> of file <a class="el" href="record__layer_8h_source.html">record_layer.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="ad3c88627b718c85d783446f8575cbd4b" name="ad3c88627b718c85d783446f8575cbd4b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad3c88627b718c85d783446f8575cbd4b">&#9670;&#160;</a></span>advance_epoch()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; uint16_t &gt; dtls::v13::protocol::EpochManager::advance_epoch </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Advance to next epoch </p>
-
-</div>
-</div>
 <a id="af48c87297dfdd45f960cb7cb02ca7ea8" name="af48c87297dfdd45f960cb7cb02ca7ea8"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af48c87297dfdd45f960cb7cb02ca7ea8">&#9670;&#160;</a></span>current_epoch()</h2>
 
@@ -219,93 +214,10 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
 <p>Get current epoch (alias for get_current_epoch) </p>
 
 <p class="definition">Definition at line <a class="el" href="record__layer_8h_source.html#l00147">147</a> of file <a class="el" href="record__layer_8h_source.html">record_layer.h</a>.</p>
-
-</div>
-</div>
-<a id="a67d871a5761ea65207135c8d361d5dc6" name="a67d871a5761ea65207135c8d361d5dc6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a67d871a5761ea65207135c8d361d5dc6">&#9670;&#160;</a></span>get_current_epoch()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint16_t dtls::v13::protocol::EpochManager::get_current_epoch </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Get current epoch </p>
-
-</div>
-</div>
-<a id="aff3eeb72fff1f8eaeb79f1eb9be6cfc9" name="aff3eeb72fff1f8eaeb79f1eb9be6cfc9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aff3eeb72fff1f8eaeb79f1eb9be6cfc9">&#9670;&#160;</a></span>is_valid_epoch()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool dtls::v13::protocol::EpochManager::is_valid_epoch </td>
-          <td>(</td>
-          <td class="paramtype">uint16_t&#160;</td>
-          <td class="paramname"><em>epoch</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Check if epoch is valid for receiving </p>
-
-</div>
-</div>
-<a id="aa52a15f3e57b2424ee6c7c67e02d7829" name="aa52a15f3e57b2424ee6c7c67e02d7829"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa52a15f3e57b2424ee6c7c67e02d7829">&#9670;&#160;</a></span>set_epoch_keys()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; dtls::v13::protocol::EpochManager::set_epoch_keys </td>
-          <td>(</td>
-          <td class="paramtype">uint16_t&#160;</td>
-          <td class="paramname"><em>epoch</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::vector&lt; uint8_t &gt; &amp;&#160;</td>
-          <td class="paramname"><em>read_key</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::vector&lt; uint8_t &gt; &amp;&#160;</td>
-          <td class="paramname"><em>write_key</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::vector&lt; uint8_t &gt; &amp;&#160;</td>
-          <td class="paramname"><em>read_iv</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::vector&lt; uint8_t &gt; &amp;&#160;</td>
-          <td class="paramname"><em>write_iv</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Set crypto keys for an epoch </p>
 
 </div>
 </div>

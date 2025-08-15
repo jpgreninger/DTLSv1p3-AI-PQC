@@ -139,6 +139,9 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1protocol_1_1Record
 </div><!--header-->
 <div class="contents">
 
+<p>Standard Record Layer Factory Implementation.  
+ <a href="classdtls_1_1v13_1_1protocol_1_1RecordLayerFactory.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="record__layer__factory_8h_source.html">record_layer_factory.h</a>&gt;</code></p>
 <div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
   <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Inheritance diagram for dtls::v13::protocol::RecordLayerFactory:</div>
@@ -148,7 +151,7 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1protocol_1_1Record
  <div class="center">
   <img src="classdtls_1_1v13_1_1protocol_1_1RecordLayerFactory.png" usemap="#dtls::v13::protocol::RecordLayerFactory_map" alt=""/>
   <map id="dtls::v13::protocol::RecordLayerFactory_map" name="dtls::v13::protocol::RecordLayerFactory_map">
-<area href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerFactory.html" alt="dtls::v13::protocol::IRecordLayerFactory" shape="rect" coords="0,0,237,24"/>
+<area href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerFactory.html" title="Record Layer Factory Interface." alt="dtls::v13::protocol::IRecordLayerFactory" shape="rect" coords="0,0,237,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -167,17 +170,20 @@ Public Member Functions</h2></td></tr>
 <a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerFactory.html">RecordLayerFactory</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerFactory.html">RecordLayerFactory</a> &amp;&amp;) noexcept=default</td></tr>
 <tr class="separator:a0892cdf3a1071fcd168566e7e933dce9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a506ec77938c1a4bf074e1844cd200962" id="r_a506ec77938c1a4bf074e1844cd200962"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerInterface.html">IRecordLayerInterface</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerFactory.html#a506ec77938c1a4bf074e1844cd200962">create_record_layer</a> (std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1crypto_1_1CryptoProvider.html">crypto::CryptoProvider</a> &gt; crypto_provider) override</td></tr>
+<tr class="memdesc:a506ec77938c1a4bf074e1844cd200962"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a production record layer implementation.  <br /></td></tr>
 <tr class="separator:a506ec77938c1a4bf074e1844cd200962"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a45896b0c62ae18a6f64244296b80d807" id="r_a45896b0c62ae18a6f64244296b80d807"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerInterface.html">IRecordLayerInterface</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerFactory.html#a45896b0c62ae18a6f64244296b80d807">create_mock_record_layer</a> () override</td></tr>
+<tr class="memdesc:a45896b0c62ae18a6f64244296b80d807"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a mock record layer for testing.  <br /></td></tr>
 <tr class="separator:a45896b0c62ae18a6f64244296b80d807"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a52d7946585de55122769a30008cbe6c6" id="r_a52d7946585de55122769a30008cbe6c6"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerFactory.html">RecordLayerFactory</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerFactory.html#a52d7946585de55122769a30008cbe6c6">instance</a> ()</td></tr>
+<tr class="memdesc:a52d7946585de55122769a30008cbe6c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get singleton factory instance.  <br /></td></tr>
 <tr class="separator:a52d7946585de55122769a30008cbe6c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Standard Record Layer Factory Implementation</p>
+<div class="textblock"><p>Standard Record Layer Factory Implementation. </p>
 <p>Creates record layer instances with proper dependency injection and configuration management. Supports both production implementations and mock implementations for testing. </p>
 
 <p class="definition">Definition at line <a class="el" href="record__layer__factory_8h_source.html#l00022">22</a> of file <a class="el" href="record__layer__factory_8h_source.html">record_layer_factory.h</a>.</p>
@@ -204,7 +210,8 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Create a mock record layer for testing</p>
+
+<p>Create a mock record layer for testing. </p>
 <p>Creates a mock implementation suitable for unit testing connection layer logic without actual crypto operations.</p>
 <dl class="section return"><dt>Returns</dt><dd>Mock record layer implementation </dd></dl>
 
@@ -235,8 +242,9 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Create a production record layer implementation</p>
-<p>Creates a fully functional <a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayer.html">RecordLayer</a> instance with the provided crypto provider. The crypto provider is moved into the record layer.</p>
+
+<p>Create a production record layer implementation. </p>
+<p>Creates a fully functional <a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayer.html" title="Main Record Layer implementation.">RecordLayer</a> instance with the provided crypto provider. The crypto provider is moved into the record layer.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">crypto_provider</td><td>The crypto provider to use for operations </td></tr>
@@ -271,7 +279,8 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Get singleton factory instance</p>
+
+<p>Get singleton factory instance. </p>
 <dl class="section return"><dt>Returns</dt><dd>Reference to singleton factory </dd></dl>
 
 </div>

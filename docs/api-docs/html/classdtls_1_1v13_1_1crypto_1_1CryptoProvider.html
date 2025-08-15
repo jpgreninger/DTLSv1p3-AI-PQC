@@ -138,6 +138,9 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1crypto_1_1CryptoPr
 </div><!--header-->
 <div class="contents">
 
+<p>Abstract base class for cryptographic providers.  
+ <a href="classdtls_1_1v13_1_1crypto_1_1CryptoProvider.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="provider_8h_source.html">provider.h</a>&gt;</code></p>
 <div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
   <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Inheritance diagram for dtls::v13::crypto::CryptoProvider:</div>
@@ -147,40 +150,41 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1crypto_1_1CryptoPr
  <div class="center">
   <img src="classdtls_1_1v13_1_1crypto_1_1CryptoProvider.png" usemap="#dtls::v13::crypto::CryptoProvider_map" alt=""/>
   <map id="dtls::v13::crypto::CryptoProvider_map" name="dtls::v13::crypto::CryptoProvider_map">
-<area href="classdtls_1_1v13_1_1crypto_1_1BotanProvider.html" alt="dtls::v13::crypto::BotanProvider" shape="rect" coords="0,56,313,80"/>
-<area href="classdtls_1_1v13_1_1crypto_1_1OpenSSLProvider.html" alt="dtls::v13::crypto::OpenSSLProvider" shape="rect" coords="323,56,636,80"/>
-<area href="classdtls_1_1v13_1_1crypto_1_1advanced_1_1AdvancedCryptoProvider.html" title="Advanced crypto provider interface." alt="dtls::v13::crypto::advanced::AdvancedCryptoProvider" shape="rect" coords="646,56,959,80"/>
+<area href="classdtls_1_1v13_1_1crypto_1_1BotanProvider.html" title="Botan-based cryptographic provider implementation." alt="dtls::v13::crypto::BotanProvider" shape="rect" coords="0,56,313,80"/>
+<area href="classdtls_1_1v13_1_1crypto_1_1HardwareAcceleratedProvider.html" title="Hardware-accelerated crypto provider wrapper." alt="dtls::v13::crypto::HardwareAcceleratedProvider" shape="rect" coords="323,56,636,80"/>
+<area href="classdtls_1_1v13_1_1crypto_1_1OpenSSLProvider.html" title="OpenSSL-based cryptographic provider implementation." alt="dtls::v13::crypto::OpenSSLProvider" shape="rect" coords="646,56,959,80"/>
+<area href="classdtls_1_1v13_1_1crypto_1_1advanced_1_1AdvancedCryptoProvider.html" title="Advanced crypto provider interface." alt="dtls::v13::crypto::advanced::AdvancedCryptoProvider" shape="rect" coords="969,56,1282,80"/>
   </map>
 </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a3f058c19a8761c5b58f3f2d49873242b" id="r_a3f058c19a8761c5b58f3f2d49873242b"><td class="memItemLeft" align="right" valign="top"><a id="a3f058c19a8761c5b58f3f2d49873242b" name="a3f058c19a8761c5b58f3f2d49873242b"></a>
-virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><b>name</b> () const =0</td></tr>
+<tr class="memitem:a3f058c19a8761c5b58f3f2d49873242b" id="r_a3f058c19a8761c5b58f3f2d49873242b"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1CryptoProvider.html#a3f058c19a8761c5b58f3f2d49873242b">name</a> () const =0</td></tr>
+<tr class="memdesc:a3f058c19a8761c5b58f3f2d49873242b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the name of this crypto provider.  <br /></td></tr>
 <tr class="separator:a3f058c19a8761c5b58f3f2d49873242b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9032a4466d0f94a7c557bfc79dc7e4b7" id="r_a9032a4466d0f94a7c557bfc79dc7e4b7"><td class="memItemLeft" align="right" valign="top"><a id="a9032a4466d0f94a7c557bfc79dc7e4b7" name="a9032a4466d0f94a7c557bfc79dc7e4b7"></a>
-virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><b>version</b> () const =0</td></tr>
+<tr class="memitem:a9032a4466d0f94a7c557bfc79dc7e4b7" id="r_a9032a4466d0f94a7c557bfc79dc7e4b7"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1CryptoProvider.html#a9032a4466d0f94a7c557bfc79dc7e4b7">version</a> () const =0</td></tr>
+<tr class="memdesc:a9032a4466d0f94a7c557bfc79dc7e4b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the version string of this crypto provider.  <br /></td></tr>
 <tr class="separator:a9032a4466d0f94a7c557bfc79dc7e4b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab5e06b283897d5333d61eb20dbaf1555" id="r_ab5e06b283897d5333d61eb20dbaf1555"><td class="memItemLeft" align="right" valign="top"><a id="ab5e06b283897d5333d61eb20dbaf1555" name="ab5e06b283897d5333d61eb20dbaf1555"></a>
-virtual <a class="el" href="structdtls_1_1v13_1_1crypto_1_1ProviderCapabilities.html">ProviderCapabilities</a>&#160;</td><td class="memItemRight" valign="bottom"><b>capabilities</b> () const =0</td></tr>
+<tr class="memitem:ab5e06b283897d5333d61eb20dbaf1555" id="r_ab5e06b283897d5333d61eb20dbaf1555"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="structdtls_1_1v13_1_1crypto_1_1ProviderCapabilities.html">ProviderCapabilities</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1CryptoProvider.html#ab5e06b283897d5333d61eb20dbaf1555">capabilities</a> () const =0</td></tr>
+<tr class="memdesc:ab5e06b283897d5333d61eb20dbaf1555"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the capabilities supported by this provider.  <br /></td></tr>
 <tr class="separator:ab5e06b283897d5333d61eb20dbaf1555"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab04e7e692fe02ed76dbf3b7042f60944" id="r_ab04e7e692fe02ed76dbf3b7042f60944"><td class="memItemLeft" align="right" valign="top"><a id="ab04e7e692fe02ed76dbf3b7042f60944" name="ab04e7e692fe02ed76dbf3b7042f60944"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_available</b> () const =0</td></tr>
+<tr class="memitem:ab04e7e692fe02ed76dbf3b7042f60944" id="r_ab04e7e692fe02ed76dbf3b7042f60944"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1CryptoProvider.html#ab04e7e692fe02ed76dbf3b7042f60944">is_available</a> () const =0</td></tr>
+<tr class="memdesc:ab04e7e692fe02ed76dbf3b7042f60944"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if this provider is available for use.  <br /></td></tr>
 <tr class="separator:ab04e7e692fe02ed76dbf3b7042f60944"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a779d79dfc1a009e66e57bc32df9b1f03" id="r_a779d79dfc1a009e66e57bc32df9b1f03"><td class="memItemLeft" align="right" valign="top"><a id="a779d79dfc1a009e66e57bc32df9b1f03" name="a779d79dfc1a009e66e57bc32df9b1f03"></a>
-virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>initialize</b> ()=0</td></tr>
+<tr class="memitem:a779d79dfc1a009e66e57bc32df9b1f03" id="r_a779d79dfc1a009e66e57bc32df9b1f03"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1CryptoProvider.html#a779d79dfc1a009e66e57bc32df9b1f03">initialize</a> ()=0</td></tr>
+<tr class="memdesc:a779d79dfc1a009e66e57bc32df9b1f03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the crypto provider.  <br /></td></tr>
 <tr class="separator:a779d79dfc1a009e66e57bc32df9b1f03"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ace97c71df578d4eebae46cae83083084" id="r_ace97c71df578d4eebae46cae83083084"><td class="memItemLeft" align="right" valign="top"><a id="ace97c71df578d4eebae46cae83083084" name="ace97c71df578d4eebae46cae83083084"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>cleanup</b> ()=0</td></tr>
+<tr class="memitem:ace97c71df578d4eebae46cae83083084" id="r_ace97c71df578d4eebae46cae83083084"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1CryptoProvider.html#ace97c71df578d4eebae46cae83083084">cleanup</a> ()=0</td></tr>
+<tr class="memdesc:ace97c71df578d4eebae46cae83083084"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cleans up provider resources.  <br /></td></tr>
 <tr class="separator:ace97c71df578d4eebae46cae83083084"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7d1c83ddae520d699ff7534337d26478" id="r_a7d1c83ddae520d699ff7534337d26478"><td class="memItemLeft" align="right" valign="top"><a id="a7d1c83ddae520d699ff7534337d26478" name="a7d1c83ddae520d699ff7534337d26478"></a>
-virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::vector&lt; uint8_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>generate_random</b> (const <a class="el" href="structdtls_1_1v13_1_1crypto_1_1RandomParams.html">RandomParams</a> &amp;params)=0</td></tr>
+<tr class="memitem:a7d1c83ddae520d699ff7534337d26478" id="r_a7d1c83ddae520d699ff7534337d26478"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::vector&lt; uint8_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1CryptoProvider.html#a7d1c83ddae520d699ff7534337d26478">generate_random</a> (const <a class="el" href="structdtls_1_1v13_1_1crypto_1_1RandomParams.html">RandomParams</a> &amp;params)=0</td></tr>
+<tr class="memdesc:a7d1c83ddae520d699ff7534337d26478"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates cryptographically secure random bytes.  <br /></td></tr>
 <tr class="separator:a7d1c83ddae520d699ff7534337d26478"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9a76dea08a473586b4521771927b88e9" id="r_a9a76dea08a473586b4521771927b88e9"><td class="memItemLeft" align="right" valign="top"><a id="a9a76dea08a473586b4521771927b88e9" name="a9a76dea08a473586b4521771927b88e9"></a>
-virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::vector&lt; uint8_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>derive_key_hkdf</b> (const <a class="el" href="structdtls_1_1v13_1_1crypto_1_1KeyDerivationParams.html">KeyDerivationParams</a> &amp;params)=0</td></tr>
+<tr class="memitem:a9a76dea08a473586b4521771927b88e9" id="r_a9a76dea08a473586b4521771927b88e9"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::vector&lt; uint8_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1CryptoProvider.html#a9a76dea08a473586b4521771927b88e9">derive_key_hkdf</a> (const <a class="el" href="structdtls_1_1v13_1_1crypto_1_1KeyDerivationParams.html">KeyDerivationParams</a> &amp;params)=0</td></tr>
+<tr class="memdesc:a9a76dea08a473586b4521771927b88e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Derives key material using HKDF (RFC 5869).  <br /></td></tr>
 <tr class="separator:a9a76dea08a473586b4521771927b88e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad1c734989d525fed0d34716a99d80ff0" id="r_ad1c734989d525fed0d34716a99d80ff0"><td class="memItemLeft" align="right" valign="top"><a id="ad1c734989d525fed0d34716a99d80ff0" name="ad1c734989d525fed0d34716a99d80ff0"></a>
-virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::vector&lt; uint8_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>derive_key_pbkdf2</b> (const <a class="el" href="structdtls_1_1v13_1_1crypto_1_1KeyDerivationParams.html">KeyDerivationParams</a> &amp;params)=0</td></tr>
+<tr class="memitem:ad1c734989d525fed0d34716a99d80ff0" id="r_ad1c734989d525fed0d34716a99d80ff0"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::vector&lt; uint8_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1CryptoProvider.html#ad1c734989d525fed0d34716a99d80ff0">derive_key_pbkdf2</a> (const <a class="el" href="structdtls_1_1v13_1_1crypto_1_1KeyDerivationParams.html">KeyDerivationParams</a> &amp;params)=0</td></tr>
+<tr class="memdesc:ad1c734989d525fed0d34716a99d80ff0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Derives key material using PBKDF2 (RFC 2898).  <br /></td></tr>
 <tr class="separator:ad1c734989d525fed0d34716a99d80ff0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f4cc8124cc780731603f82af38a00c5" id="r_a5f4cc8124cc780731603f82af38a00c5"><td class="memItemLeft" align="right" valign="top"><a id="a5f4cc8124cc780731603f82af38a00c5" name="a5f4cc8124cc780731603f82af38a00c5"></a>
 virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::vector&lt; uint8_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>aead_encrypt</b> (const <a class="el" href="structdtls_1_1v13_1_1crypto_1_1AEADParams.html">AEADParams</a> &amp;params, const std::vector&lt; uint8_t &gt; &amp;plaintext)=0</td></tr>
@@ -301,13 +305,126 @@ virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void
 <tr class="separator:abf4e9d6fa36b2711a7ff4395ec557dc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a27f4eec4009d886c94693f0bb3799156" id="r_a27f4eec4009d886c94693f0bb3799156"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::future&lt; std::vector&lt; uint8_t &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1CryptoProvider.html#a27f4eec4009d886c94693f0bb3799156">async_decrypt_aead</a> (const <a class="el" href="structdtls_1_1v13_1_1crypto_1_1AEADDecryptionParams.html">AEADDecryptionParams</a> &amp;params)</td></tr>
 <tr class="separator:a27f4eec4009d886c94693f0bb3799156"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a306a6e539b34e72b02cfcdd47ca1320c" id="r_a306a6e539b34e72b02cfcdd47ca1320c"><td class="memItemLeft" align="right" valign="top"><a id="a306a6e539b34e72b02cfcdd47ca1320c" name="a306a6e539b34e72b02cfcdd47ca1320c"></a>
+virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="structdtls_1_1v13_1_1crypto_1_1HardwareAccelerationProfile.html">HardwareAccelerationProfile</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>get_hardware_profile</b> () const =0</td></tr>
+<tr class="separator:a306a6e539b34e72b02cfcdd47ca1320c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad711ddf6a0d5d206915743332f569ed0" id="r_ad711ddf6a0d5d206915743332f569ed0"><td class="memItemLeft" align="right" valign="top"><a id="ad711ddf6a0d5d206915743332f569ed0" name="ad711ddf6a0d5d206915743332f569ed0"></a>
+virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>enable_hardware_acceleration</b> (<a class="el" href="namespacedtls_1_1v13_1_1crypto.html#a6fd77827090257f043c04ba9a6133f74">HardwareCapability</a> capability)=0</td></tr>
+<tr class="separator:ad711ddf6a0d5d206915743332f569ed0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad52e134d7d708a6bdbbba14dadbc0d48" id="r_ad52e134d7d708a6bdbbba14dadbc0d48"><td class="memItemLeft" align="right" valign="top"><a id="ad52e134d7d708a6bdbbba14dadbc0d48" name="ad52e134d7d708a6bdbbba14dadbc0d48"></a>
+virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>disable_hardware_acceleration</b> (<a class="el" href="namespacedtls_1_1v13_1_1crypto.html#a6fd77827090257f043c04ba9a6133f74">HardwareCapability</a> capability)=0</td></tr>
+<tr class="separator:ad52e134d7d708a6bdbbba14dadbc0d48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af486d9489b2c7df0b653f6fab5a20e7a" id="r_af486d9489b2c7df0b653f6fab5a20e7a"><td class="memItemLeft" align="right" valign="top"><a id="af486d9489b2c7df0b653f6fab5a20e7a" name="af486d9489b2c7df0b653f6fab5a20e7a"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_hardware_accelerated</b> (const std::string &amp;operation) const =0</td></tr>
+<tr class="separator:af486d9489b2c7df0b653f6fab5a20e7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac72febe0e313d2bdab86f9a5dc89f7e2" id="r_ac72febe0e313d2bdab86f9a5dc89f7e2"><td class="memItemLeft" align="right" valign="top"><a id="ac72febe0e313d2bdab86f9a5dc89f7e2" name="ac72febe0e313d2bdab86f9a5dc89f7e2"></a>
+virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>benchmark_hardware_operation</b> (const std::string &amp;operation)=0</td></tr>
+<tr class="separator:ac72febe0e313d2bdab86f9a5dc89f7e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeea110469538343ca8869af192b57b87" id="r_aeea110469538343ca8869af192b57b87"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1CryptoProvider.html#aeea110469538343ca8869af192b57b87">aead_encrypt_inplace</a> (const <a class="el" href="structdtls_1_1v13_1_1crypto_1_1AEADParams.html">AEADParams</a> &amp;params, std::vector&lt; uint8_t &gt; &amp;data, size_t plaintext_len)</td></tr>
+<tr class="separator:aeea110469538343ca8869af192b57b87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acffc84166f475496737f36647b08174f" id="r_acffc84166f475496737f36647b08174f"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1CryptoProvider.html#acffc84166f475496737f36647b08174f">aead_decrypt_inplace</a> (const <a class="el" href="structdtls_1_1v13_1_1crypto_1_1AEADParams.html">AEADParams</a> &amp;params, std::vector&lt; uint8_t &gt; &amp;data, size_t ciphertext_len)</td></tr>
+<tr class="separator:acffc84166f475496737f36647b08174f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a868774caf5fe109599ff150c1d22dffa" id="r_a868774caf5fe109599ff150c1d22dffa"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structdtls_1_1v13_1_1crypto_1_1AEADEncryptionOutput.html">AEADEncryptionOutput</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1CryptoProvider.html#a868774caf5fe109599ff150c1d22dffa">batch_encrypt_aead</a> (const std::vector&lt; <a class="el" href="structdtls_1_1v13_1_1crypto_1_1AEADEncryptionParams.html">AEADEncryptionParams</a> &gt; &amp;params_batch)</td></tr>
+<tr class="separator:a868774caf5fe109599ff150c1d22dffa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc5ff970303edf4cade05ebc968397ee" id="r_afc5ff970303edf4cade05ebc968397ee"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::vector&lt; std::vector&lt; uint8_t &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1CryptoProvider.html#afc5ff970303edf4cade05ebc968397ee">batch_decrypt_aead</a> (const std::vector&lt; <a class="el" href="structdtls_1_1v13_1_1crypto_1_1AEADDecryptionParams.html">AEADDecryptionParams</a> &gt; &amp;params_batch)</td></tr>
+<tr class="separator:afc5ff970303edf4cade05ebc968397ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Abstract base class for cryptographic providers</p>
-<p>This interface defines all cryptographic operations required for DTLS v1.3. Implementations provide backend-specific crypto functionality (OpenSSL, Botan, etc.) </p>
+<div class="textblock"><p>Abstract base class for cryptographic providers. </p>
+<p>This interface defines all cryptographic operations required for DTLS v1.3. Implementations provide backend-specific crypto functionality (OpenSSL, Botan, etc.)</p>
+<dl class="section note"><dt>Note</dt><dd>This class is thread-safe when properly implemented by concrete providers. </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classdtls_1_1v13_1_1crypto_1_1OpenSSLProvider.html" title="OpenSSL-based cryptographic provider implementation.">OpenSSLProvider</a>, <a class="el" href="classdtls_1_1v13_1_1crypto_1_1BotanProvider.html" title="Botan-based cryptographic provider implementation.">BotanProvider</a> for concrete implementations. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="provider_8h_source.html#l00218">218</a> of file <a class="el" href="provider_8h_source.html">provider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="provider_8h_source.html#l00239">239</a> of file <a class="el" href="provider_8h_source.html">provider.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="acffc84166f475496737f36647b08174f" name="acffc84166f475496737f36647b08174f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acffc84166f475496737f36647b08174f">&#9670;&#160;</a></span>aead_decrypt_inplace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; dtls::v13::crypto::CryptoProvider::aead_decrypt_inplace </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structdtls_1_1v13_1_1crypto_1_1AEADParams.html">AEADParams</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; uint8_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>ciphertext_len</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="provider_8h_source.html#l00427">427</a> of file <a class="el" href="provider_8h_source.html">provider.h</a>.</p>
+
+</div>
+</div>
+<a id="aeea110469538343ca8869af192b57b87" name="aeea110469538343ca8869af192b57b87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeea110469538343ca8869af192b57b87">&#9670;&#160;</a></span>aead_encrypt_inplace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; dtls::v13::crypto::CryptoProvider::aead_encrypt_inplace </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structdtls_1_1v13_1_1crypto_1_1AEADParams.html">AEADParams</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; uint8_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>plaintext_len</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="provider_8h_source.html#l00419">419</a> of file <a class="el" href="provider_8h_source.html">provider.h</a>.</p>
+
+</div>
+</div>
 <a id="a27f4eec4009d886c94693f0bb3799156" name="a27f4eec4009d886c94693f0bb3799156"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a27f4eec4009d886c94693f0bb3799156">&#9670;&#160;</a></span>async_decrypt_aead()</h2>
 
@@ -332,7 +449,7 @@ virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="provider_8h_source.html#l00343">343</a> of file <a class="el" href="provider_8h_source.html">provider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="provider_8h_source.html#l00405">405</a> of file <a class="el" href="provider_8h_source.html">provider.h</a>.</p>
 
 </div>
 </div>
@@ -360,7 +477,7 @@ virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="provider_8h_source.html#l00333">333</a> of file <a class="el" href="provider_8h_source.html">provider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="provider_8h_source.html#l00395">395</a> of file <a class="el" href="provider_8h_source.html">provider.h</a>.</p>
 
 </div>
 </div>
@@ -388,7 +505,323 @@ virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="provider_8h_source.html#l00338">338</a> of file <a class="el" href="provider_8h_source.html">provider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="provider_8h_source.html#l00400">400</a> of file <a class="el" href="provider_8h_source.html">provider.h</a>.</p>
+
+</div>
+</div>
+<a id="afc5ff970303edf4cade05ebc968397ee" name="afc5ff970303edf4cade05ebc968397ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc5ff970303edf4cade05ebc968397ee">&#9670;&#160;</a></span>batch_decrypt_aead()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::vector&lt; std::vector&lt; uint8_t &gt; &gt; &gt; dtls::v13::crypto::CryptoProvider::batch_decrypt_aead </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structdtls_1_1v13_1_1crypto_1_1AEADDecryptionParams.html">AEADDecryptionParams</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>params_batch</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="provider_8h_source.html#l00442">442</a> of file <a class="el" href="provider_8h_source.html">provider.h</a>.</p>
+
+</div>
+</div>
+<a id="a868774caf5fe109599ff150c1d22dffa" name="a868774caf5fe109599ff150c1d22dffa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a868774caf5fe109599ff150c1d22dffa">&#9670;&#160;</a></span>batch_encrypt_aead()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structdtls_1_1v13_1_1crypto_1_1AEADEncryptionOutput.html">AEADEncryptionOutput</a> &gt; &gt; dtls::v13::crypto::CryptoProvider::batch_encrypt_aead </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structdtls_1_1v13_1_1crypto_1_1AEADEncryptionParams.html">AEADEncryptionParams</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>params_batch</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="provider_8h_source.html#l00436">436</a> of file <a class="el" href="provider_8h_source.html">provider.h</a>.</p>
+
+</div>
+</div>
+<a id="ab5e06b283897d5333d61eb20dbaf1555" name="ab5e06b283897d5333d61eb20dbaf1555"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5e06b283897d5333d61eb20dbaf1555">&#9670;&#160;</a></span>capabilities()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="structdtls_1_1v13_1_1crypto_1_1ProviderCapabilities.html">ProviderCapabilities</a> dtls::v13::crypto::CryptoProvider::capabilities </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the capabilities supported by this provider. </p>
+<dl class="section return"><dt>Returns</dt><dd>Provider capabilities structure </dd></dl>
+
+<p>Implemented in <a class="el" href="classdtls_1_1v13_1_1crypto_1_1BotanProvider.html#ab5982ec469d9a9082a1275bae798e945">dtls::v13::crypto::BotanProvider</a>, <a class="el" href="classdtls_1_1v13_1_1crypto_1_1HardwareAcceleratedProvider.html#a336cafec4f7623b5460a60539cfa9b35">dtls::v13::crypto::HardwareAcceleratedProvider</a>, and <a class="el" href="classdtls_1_1v13_1_1crypto_1_1OpenSSLProvider.html#a382cacbe62e3aba251ac4be2954bb68d">dtls::v13::crypto::OpenSSLProvider</a>.</p>
+
+</div>
+</div>
+<a id="ace97c71df578d4eebae46cae83083084" name="ace97c71df578d4eebae46cae83083084"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace97c71df578d4eebae46cae83083084">&#9670;&#160;</a></span>cleanup()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void dtls::v13::crypto::CryptoProvider::cleanup </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Cleans up provider resources. </p>
+
+<p>Implemented in <a class="el" href="classdtls_1_1v13_1_1crypto_1_1BotanProvider.html#a906d7a8fc12fc3c0b1dc3cc82e857aff">dtls::v13::crypto::BotanProvider</a>, <a class="el" href="classdtls_1_1v13_1_1crypto_1_1HardwareAcceleratedProvider.html#ad24dcef200af076f580c442acfba0077">dtls::v13::crypto::HardwareAcceleratedProvider</a>, and <a class="el" href="classdtls_1_1v13_1_1crypto_1_1OpenSSLProvider.html#ad4e32e8a7e427f4ffaba4b1a9b739a2a">dtls::v13::crypto::OpenSSLProvider</a>.</p>
+
+</div>
+</div>
+<a id="a9a76dea08a473586b4521771927b88e9" name="a9a76dea08a473586b4521771927b88e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a76dea08a473586b4521771927b88e9">&#9670;&#160;</a></span>derive_key_hkdf()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::vector&lt; uint8_t &gt; &gt; dtls::v13::crypto::CryptoProvider::derive_key_hkdf </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structdtls_1_1v13_1_1crypto_1_1KeyDerivationParams.html">KeyDerivationParams</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Derives key material using HKDF (RFC 5869). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">params</td><td>Key derivation parameters including secret, salt, and info </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Derived key material or error details </dd></dl>
+
+<p>Implemented in <a class="el" href="classdtls_1_1v13_1_1crypto_1_1BotanProvider.html#ae8eb6ed332127ac2b1a75b9036363b88">dtls::v13::crypto::BotanProvider</a>, <a class="el" href="classdtls_1_1v13_1_1crypto_1_1HardwareAcceleratedProvider.html#a53aaa95da99045e7cb8a53667d9480c8">dtls::v13::crypto::HardwareAcceleratedProvider</a>, and <a class="el" href="classdtls_1_1v13_1_1crypto_1_1OpenSSLProvider.html#a72cebb5de1dd47f223e4b1d364c58535">dtls::v13::crypto::OpenSSLProvider</a>.</p>
+
+</div>
+</div>
+<a id="ad1c734989d525fed0d34716a99d80ff0" name="ad1c734989d525fed0d34716a99d80ff0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1c734989d525fed0d34716a99d80ff0">&#9670;&#160;</a></span>derive_key_pbkdf2()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::vector&lt; uint8_t &gt; &gt; dtls::v13::crypto::CryptoProvider::derive_key_pbkdf2 </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structdtls_1_1v13_1_1crypto_1_1KeyDerivationParams.html">KeyDerivationParams</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Derives key material using PBKDF2 (RFC 2898). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">params</td><td>Key derivation parameters including password and salt </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Derived key material or error details </dd></dl>
+
+<p>Implemented in <a class="el" href="classdtls_1_1v13_1_1crypto_1_1BotanProvider.html#ab216e79e79a6f25533d87419c3aada0c">dtls::v13::crypto::BotanProvider</a>, <a class="el" href="classdtls_1_1v13_1_1crypto_1_1HardwareAcceleratedProvider.html#abb4f4d561fea539cf4f7f36180b2fce5">dtls::v13::crypto::HardwareAcceleratedProvider</a>, and <a class="el" href="classdtls_1_1v13_1_1crypto_1_1OpenSSLProvider.html#a284fd68d155deb82689bf7de7ae39daf">dtls::v13::crypto::OpenSSLProvider</a>.</p>
+
+</div>
+</div>
+<a id="a7d1c83ddae520d699ff7534337d26478" name="a7d1c83ddae520d699ff7534337d26478"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d1c83ddae520d699ff7534337d26478">&#9670;&#160;</a></span>generate_random()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::vector&lt; uint8_t &gt; &gt; dtls::v13::crypto::CryptoProvider::generate_random </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structdtls_1_1v13_1_1crypto_1_1RandomParams.html">RandomParams</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Generates cryptographically secure random bytes. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">params</td><td>Random generation parameters </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Generated random bytes or error details </dd></dl>
+
+<p>Implemented in <a class="el" href="classdtls_1_1v13_1_1crypto_1_1BotanProvider.html#a23b287658d206721f39e17ca0a131fe2">dtls::v13::crypto::BotanProvider</a>, <a class="el" href="classdtls_1_1v13_1_1crypto_1_1HardwareAcceleratedProvider.html#a99f6eb3e61c99e34aef4c28dd1e4b1ce">dtls::v13::crypto::HardwareAcceleratedProvider</a>, and <a class="el" href="classdtls_1_1v13_1_1crypto_1_1OpenSSLProvider.html#a9184bd5cc82a23f315c99294c0862a52">dtls::v13::crypto::OpenSSLProvider</a>.</p>
+
+</div>
+</div>
+<a id="a779d79dfc1a009e66e57bc32df9b1f03" name="a779d79dfc1a009e66e57bc32df9b1f03"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a779d79dfc1a009e66e57bc32df9b1f03">&#9670;&#160;</a></span>initialize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; dtls::v13::crypto::CryptoProvider::initialize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Initializes the crypto provider. </p>
+<dl class="section return"><dt>Returns</dt><dd>Success result or error details </dd></dl>
+
+<p>Implemented in <a class="el" href="classdtls_1_1v13_1_1crypto_1_1BotanProvider.html#af52bdef924e247451a39da7e26edd483">dtls::v13::crypto::BotanProvider</a>, <a class="el" href="classdtls_1_1v13_1_1crypto_1_1HardwareAcceleratedProvider.html#a8f4ff8a8f2b042ecfbf288c841af0ea0">dtls::v13::crypto::HardwareAcceleratedProvider</a>, and <a class="el" href="classdtls_1_1v13_1_1crypto_1_1OpenSSLProvider.html#a39e2806b1879504485a05ebdced8f4d6">dtls::v13::crypto::OpenSSLProvider</a>.</p>
+
+</div>
+</div>
+<a id="ab04e7e692fe02ed76dbf3b7042f60944" name="ab04e7e692fe02ed76dbf3b7042f60944"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab04e7e692fe02ed76dbf3b7042f60944">&#9670;&#160;</a></span>is_available()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool dtls::v13::crypto::CryptoProvider::is_available </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Checks if this provider is available for use. </p>
+<dl class="section return"><dt>Returns</dt><dd>true if provider is available, false otherwise </dd></dl>
+
+<p>Implemented in <a class="el" href="classdtls_1_1v13_1_1crypto_1_1BotanProvider.html#a5e76db68dd877add35929d9ed34d5bb0">dtls::v13::crypto::BotanProvider</a>, <a class="el" href="classdtls_1_1v13_1_1crypto_1_1HardwareAcceleratedProvider.html#ac1cd25bbe8ca2e00547cf23d232c82ad">dtls::v13::crypto::HardwareAcceleratedProvider</a>, and <a class="el" href="classdtls_1_1v13_1_1crypto_1_1OpenSSLProvider.html#a6634199f578c68b4c121f74e443762e8">dtls::v13::crypto::OpenSSLProvider</a>.</p>
+
+</div>
+</div>
+<a id="a3f058c19a8761c5b58f3f2d49873242b" name="a3f058c19a8761c5b58f3f2d49873242b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f058c19a8761c5b58f3f2d49873242b">&#9670;&#160;</a></span>name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string dtls::v13::crypto::CryptoProvider::name </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the name of this crypto provider. </p>
+<dl class="section return"><dt>Returns</dt><dd>Provider name (e.g., "OpenSSL", "Botan") </dd></dl>
+
+<p>Implemented in <a class="el" href="classdtls_1_1v13_1_1crypto_1_1BotanProvider.html#ad5179182a8d39d782ec8378e5fd261ba">dtls::v13::crypto::BotanProvider</a>, <a class="el" href="classdtls_1_1v13_1_1crypto_1_1HardwareAcceleratedProvider.html#a191021e4e958c27f8a01818fa44c7c87">dtls::v13::crypto::HardwareAcceleratedProvider</a>, and <a class="el" href="classdtls_1_1v13_1_1crypto_1_1OpenSSLProvider.html#a9461cc6afcb2082cfc01733fb7b28b85">dtls::v13::crypto::OpenSSLProvider</a>.</p>
 
 </div>
 </div>
@@ -415,7 +848,37 @@ virtual <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="provider_8h_source.html#l00332">332</a> of file <a class="el" href="provider_8h_source.html">provider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="provider_8h_source.html#l00394">394</a> of file <a class="el" href="provider_8h_source.html">provider.h</a>.</p>
+
+</div>
+</div>
+<a id="a9032a4466d0f94a7c557bfc79dc7e4b7" name="a9032a4466d0f94a7c557bfc79dc7e4b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9032a4466d0f94a7c557bfc79dc7e4b7">&#9670;&#160;</a></span>version()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string dtls::v13::crypto::CryptoProvider::version </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the version string of this crypto provider. </p>
+<dl class="section return"><dt>Returns</dt><dd>Provider version string </dd></dl>
+
+<p>Implemented in <a class="el" href="classdtls_1_1v13_1_1crypto_1_1BotanProvider.html#a083702d7e2714eab0451a8551134ef8a">dtls::v13::crypto::BotanProvider</a>, <a class="el" href="classdtls_1_1v13_1_1crypto_1_1HardwareAcceleratedProvider.html#a87eb11f86a82568c8e40fcad52a09a46">dtls::v13::crypto::HardwareAcceleratedProvider</a>, and <a class="el" href="classdtls_1_1v13_1_1crypto_1_1OpenSSLProvider.html#ae452ca837dad13c8725c8d4723516595">dtls::v13::crypto::OpenSSLProvider</a>.</p>
 
 </div>
 </div>

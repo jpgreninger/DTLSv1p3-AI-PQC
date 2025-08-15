@@ -139,6 +139,9 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1protocol_1_1Record
 </div><!--header-->
 <div class="contents">
 
+<p>Factory for creating record layers with crypto abstraction.  
+ <a href="classdtls_1_1v13_1_1protocol_1_1RecordLayerCryptoAbstractionFactory.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="record__layer__crypto__abstraction_8h_source.html">record_layer_crypto_abstraction.h</a>&gt;</code></p>
 <div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
   <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Inheritance diagram for dtls::v13::protocol::RecordLayerCryptoAbstractionFactory:</div>
@@ -148,19 +151,23 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1protocol_1_1Record
  <div class="center">
   <img src="classdtls_1_1v13_1_1protocol_1_1RecordLayerCryptoAbstractionFactory.png" usemap="#dtls::v13::protocol::RecordLayerCryptoAbstractionFactory_map" alt=""/>
   <map id="dtls::v13::protocol::RecordLayerCryptoAbstractionFactory_map" name="dtls::v13::protocol::RecordLayerCryptoAbstractionFactory_map">
-<area href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerFactory.html" alt="dtls::v13::protocol::IRecordLayerFactory" shape="rect" coords="0,0,336,24"/>
+<area href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerFactory.html" title="Record Layer Factory Interface." alt="dtls::v13::protocol::IRecordLayerFactory" shape="rect" coords="0,0,336,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:af82b29f1d56c1285db4693fe8e5d7af8" id="r_af82b29f1d56c1285db4693fe8e5d7af8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerInterface.html">IRecordLayerInterface</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerCryptoAbstractionFactory.html#af82b29f1d56c1285db4693fe8e5d7af8">create_record_layer_with_crypto_ops</a> (std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1crypto_1_1ICryptoOperations.html">crypto::ICryptoOperations</a> &gt; crypto_ops)</td></tr>
+<tr class="memdesc:af82b29f1d56c1285db4693fe8e5d7af8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create record layer with specific crypto operations.  <br /></td></tr>
 <tr class="separator:af82b29f1d56c1285db4693fe8e5d7af8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a69657d0eba6c0211144a007f26e1554d" id="r_a69657d0eba6c0211144a007f26e1554d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerInterface.html">IRecordLayerInterface</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerCryptoAbstractionFactory.html#a69657d0eba6c0211144a007f26e1554d">create_record_layer_with_manager</a> (const <a class="el" href="structdtls_1_1v13_1_1crypto_1_1ProviderSelection.html">crypto::ProviderSelection</a> &amp;criteria={})</td></tr>
+<tr class="memdesc:a69657d0eba6c0211144a007f26e1554d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create record layer with crypto operations manager.  <br /></td></tr>
 <tr class="separator:a69657d0eba6c0211144a007f26e1554d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae3a356255513aa760de8a483be82ecdf" id="r_ae3a356255513aa760de8a483be82ecdf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerInterface.html">IRecordLayerInterface</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerCryptoAbstractionFactory.html#ae3a356255513aa760de8a483be82ecdf">create_record_layer</a> (std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1crypto_1_1CryptoProvider.html">crypto::CryptoProvider</a> &gt; crypto_provider) override</td></tr>
+<tr class="memdesc:ae3a356255513aa760de8a483be82ecdf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a record layer implementation.  <br /></td></tr>
 <tr class="separator:ae3a356255513aa760de8a483be82ecdf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af4832341fc7e12367ccfd57e3e190011" id="r_af4832341fc7e12367ccfd57e3e190011"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerInterface.html">IRecordLayerInterface</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerCryptoAbstractionFactory.html#af4832341fc7e12367ccfd57e3e190011">create_mock_record_layer</a> () override</td></tr>
+<tr class="memdesc:af4832341fc7e12367ccfd57e3e190011"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a mock record layer for testing.  <br /></td></tr>
 <tr class="separator:af4832341fc7e12367ccfd57e3e190011"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
@@ -170,7 +177,7 @@ static <a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerCryptoAbst
 <tr class="separator:a9d387ed7bb45c0e523b17e2bfdf595ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Factory for creating record layers with crypto abstraction </p>
+<div class="textblock"><p>Factory for creating record layers with crypto abstraction. </p>
 
 <p class="definition">Definition at line <a class="el" href="record__layer__crypto__abstraction_8h_source.html#l00187">187</a> of file <a class="el" href="record__layer__crypto__abstraction_8h_source.html">record_layer_crypto_abstraction.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
@@ -196,7 +203,8 @@ static <a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerCryptoAbst
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Create a mock record layer for testing</p>
+
+<p>Create a mock record layer for testing. </p>
 <dl class="section return"><dt>Returns</dt><dd>Mock record layer implementation </dd></dl>
 
 <p>Implements <a class="el" href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerFactory.html#ab1c4e9ad7504909a853a9daf8a4d43f4">dtls::v13::protocol::IRecordLayerFactory</a>.</p>
@@ -226,7 +234,8 @@ static <a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerCryptoAbst
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Create a record layer implementation</p>
+
+<p>Create a record layer implementation. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">crypto_provider</td><td>The crypto provider to use </td></tr>
@@ -254,7 +263,8 @@ static <a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerCryptoAbst
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Create record layer with specific crypto operations</p>
+
+<p>Create record layer with specific crypto operations. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">crypto_ops</td><td>Crypto operations implementation to use </td></tr>
@@ -280,7 +290,8 @@ static <a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayerCryptoAbst
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Create record layer with crypto operations manager</p>
+
+<p>Create record layer with crypto operations manager. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">criteria</td><td>Provider selection criteria </td></tr>

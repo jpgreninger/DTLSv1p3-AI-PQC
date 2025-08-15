@@ -138,6 +138,9 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1protocol_1_1Sequen
 </div><!--header-->
 <div class="contents">
 
+<p>Sequence Number Manager for tracking and generating sequence numbers.  
+ <a href="classdtls_1_1v13_1_1protocol_1_1SequenceNumberManager.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="record__layer_8h_source.html">record_layer.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -154,93 +157,28 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a8c64e2369660f828fdf9472741c338b9" id="r_a8c64e2369660f828fdf9472741c338b9"><td class="memItemLeft" align="right" valign="top"><a id="a8c64e2369660f828fdf9472741c338b9" name="a8c64e2369660f828fdf9472741c338b9"></a>
 <a class="el" href="classdtls_1_1v13_1_1protocol_1_1SequenceNumberManager.html">SequenceNumberManager</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classdtls_1_1v13_1_1protocol_1_1SequenceNumberManager.html">SequenceNumberManager</a> &amp;&amp;) noexcept=default</td></tr>
 <tr class="separator:a8c64e2369660f828fdf9472741c338b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad0258d9c4a2adafcf2d5ad370b62dbc0" id="r_ad0258d9c4a2adafcf2d5ad370b62dbc0"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1SequenceNumberManager.html#ad0258d9c4a2adafcf2d5ad370b62dbc0">get_next_sequence_number</a> ()</td></tr>
+<tr class="memitem:ad0258d9c4a2adafcf2d5ad370b62dbc0" id="r_ad0258d9c4a2adafcf2d5ad370b62dbc0"><td class="memItemLeft" align="right" valign="top"><a id="ad0258d9c4a2adafcf2d5ad370b62dbc0" name="ad0258d9c4a2adafcf2d5ad370b62dbc0"></a>
+uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_next_sequence_number</b> ()</td></tr>
+<tr class="memdesc:ad0258d9c4a2adafcf2d5ad370b62dbc0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get next sequence number for sending. <br /></td></tr>
 <tr class="separator:ad0258d9c4a2adafcf2d5ad370b62dbc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3cffcefcc807fc4869837b183f63ae2b" id="r_a3cffcefcc807fc4869837b183f63ae2b"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1SequenceNumberManager.html#a3cffcefcc807fc4869837b183f63ae2b">get_current_sequence_number</a> () const</td></tr>
+<tr class="memitem:a3cffcefcc807fc4869837b183f63ae2b" id="r_a3cffcefcc807fc4869837b183f63ae2b"><td class="memItemLeft" align="right" valign="top"><a id="a3cffcefcc807fc4869837b183f63ae2b" name="a3cffcefcc807fc4869837b183f63ae2b"></a>
+uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_current_sequence_number</b> () const</td></tr>
+<tr class="memdesc:a3cffcefcc807fc4869837b183f63ae2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current sequence number (last generated) <br /></td></tr>
 <tr class="separator:a3cffcefcc807fc4869837b183f63ae2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a64d059e366820523d6775579bf35bbd4" id="r_a64d059e366820523d6775579bf35bbd4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1SequenceNumberManager.html#a64d059e366820523d6775579bf35bbd4">reset</a> ()</td></tr>
+<tr class="memitem:a64d059e366820523d6775579bf35bbd4" id="r_a64d059e366820523d6775579bf35bbd4"><td class="memItemLeft" align="right" valign="top"><a id="a64d059e366820523d6775579bf35bbd4" name="a64d059e366820523d6775579bf35bbd4"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>reset</b> ()</td></tr>
+<tr class="memdesc:a64d059e366820523d6775579bf35bbd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset sequence numbers (for epoch change) <br /></td></tr>
 <tr class="separator:a64d059e366820523d6775579bf35bbd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a37fd75fa6f4865ed8eaf25654cc6b5e5" id="r_a37fd75fa6f4865ed8eaf25654cc6b5e5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1SequenceNumberManager.html#a37fd75fa6f4865ed8eaf25654cc6b5e5">would_overflow</a> () const</td></tr>
+<tr class="memitem:a37fd75fa6f4865ed8eaf25654cc6b5e5" id="r_a37fd75fa6f4865ed8eaf25654cc6b5e5"><td class="memItemLeft" align="right" valign="top"><a id="a37fd75fa6f4865ed8eaf25654cc6b5e5" name="a37fd75fa6f4865ed8eaf25654cc6b5e5"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>would_overflow</b> () const</td></tr>
+<tr class="memdesc:a37fd75fa6f4865ed8eaf25654cc6b5e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if sequence number would overflow. <br /></td></tr>
 <tr class="separator:a37fd75fa6f4865ed8eaf25654cc6b5e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Sequence Number Manager for tracking and generating sequence numbers </p>
+<div class="textblock"><p>Sequence Number Manager for tracking and generating sequence numbers. </p>
 
 <p class="definition">Definition at line <a class="el" href="record__layer_8h_source.html#l00087">87</a> of file <a class="el" href="record__layer_8h_source.html">record_layer.h</a>.</p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a3cffcefcc807fc4869837b183f63ae2b" name="a3cffcefcc807fc4869837b183f63ae2b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3cffcefcc807fc4869837b183f63ae2b">&#9670;&#160;</a></span>get_current_sequence_number()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint64_t dtls::v13::protocol::SequenceNumberManager::get_current_sequence_number </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Get current sequence number (last generated) </p>
-
-</div>
-</div>
-<a id="ad0258d9c4a2adafcf2d5ad370b62dbc0" name="ad0258d9c4a2adafcf2d5ad370b62dbc0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad0258d9c4a2adafcf2d5ad370b62dbc0">&#9670;&#160;</a></span>get_next_sequence_number()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint64_t dtls::v13::protocol::SequenceNumberManager::get_next_sequence_number </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Get next sequence number for sending </p>
-
-</div>
-</div>
-<a id="a64d059e366820523d6775579bf35bbd4" name="a64d059e366820523d6775579bf35bbd4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a64d059e366820523d6775579bf35bbd4">&#9670;&#160;</a></span>reset()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void dtls::v13::protocol::SequenceNumberManager::reset </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Reset sequence numbers (for epoch change) </p>
-
-</div>
-</div>
-<a id="a37fd75fa6f4865ed8eaf25654cc6b5e5" name="a37fd75fa6f4865ed8eaf25654cc6b5e5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a37fd75fa6f4865ed8eaf25654cc6b5e5">&#9670;&#160;</a></span>would_overflow()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool dtls::v13::protocol::SequenceNumberManager::would_overflow </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Check if sequence number would overflow </p>
-
-</div>
-</div>
-<hr/>The documentation for this class was generated from the following file:<ul>
+</div><hr/>The documentation for this class was generated from the following file:<ul>
 <li>dtls/protocol/<a class="el" href="record__layer_8h_source.html">record_layer.h</a></li>
 </ul>
 </div><!-- contents -->

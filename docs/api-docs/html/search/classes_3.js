@@ -16,5 +16,6 @@ var searchData=
   ['dtlscontext_13',['DTLSContext',['../structdtls_1_1v13_1_1crypto_1_1MACValidationParams_1_1DTLSContext.html',1,'dtls::v13::crypto::MACValidationParams']]],
   ['dtlserrorcategory_14',['DTLSErrorCategory',['../classdtls_1_1v13_1_1DTLSErrorCategory.html',1,'dtls::v13']]],
   ['dtlsexception_15',['DTLSException',['../classdtls_1_1v13_1_1DTLSException.html',1,'dtls::v13']]],
-  ['dtlsplaintext_16',['DTLSPlaintext',['../structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html',1,'dtls::v13::protocol']]]
+  ['dtlshardwarerecordprocessor_16',['DTLSHardwareRecordProcessor',['../classdtls_1_1v13_1_1crypto_1_1DTLSHardwareRecordProcessor.html',1,'dtls::v13::crypto']]],
+  ['dtlsplaintext_17',['DTLSPlaintext',['../structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html',1,'dtls::v13::protocol']]]
 ];

@@ -138,6 +138,9 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1security_1_1Slidin
 </div><!--header-->
 <div class="contents">
 
+<p>Sliding window for burst detection.  
+ <a href="classdtls_1_1v13_1_1security_1_1SlidingWindow.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="rate__limiter_8h_source.html">rate_limiter.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -146,14 +149,19 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><b>SlidingWindow</b> (std::chrono::milliseconds window_size)</td></tr>
 <tr class="separator:ad1ee6a85b4b3961ea18de83b081d5e04"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab0eedf1e1e49ed7c797ae61d0acc96dd" id="r_ab0eedf1e1e49ed7c797ae61d0acc96dd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1SlidingWindow.html#ab0eedf1e1e49ed7c797ae61d0acc96dd">add_event_and_check_burst</a> (size_t max_events)</td></tr>
+<tr class="memdesc:ab0eedf1e1e49ed7c797ae61d0acc96dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Record an event and check if burst threshold exceeded.  <br /></td></tr>
 <tr class="separator:ab0eedf1e1e49ed7c797ae61d0acc96dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9692181f531bf17e0db9e2c892575c9d" id="r_a9692181f531bf17e0db9e2c892575c9d"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1SlidingWindow.html#a9692181f531bf17e0db9e2c892575c9d">get_event_count</a> () const</td></tr>
+<tr class="memitem:a9692181f531bf17e0db9e2c892575c9d" id="r_a9692181f531bf17e0db9e2c892575c9d"><td class="memItemLeft" align="right" valign="top"><a id="a9692181f531bf17e0db9e2c892575c9d" name="a9692181f531bf17e0db9e2c892575c9d"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_event_count</b> () const</td></tr>
+<tr class="memdesc:a9692181f531bf17e0db9e2c892575c9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current event count in window. <br /></td></tr>
 <tr class="separator:a9692181f531bf17e0db9e2c892575c9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acb62cdb23c9299d1390ec762713ab67c" id="r_acb62cdb23c9299d1390ec762713ab67c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1SlidingWindow.html#acb62cdb23c9299d1390ec762713ab67c">clear</a> ()</td></tr>
+<tr class="memitem:acb62cdb23c9299d1390ec762713ab67c" id="r_acb62cdb23c9299d1390ec762713ab67c"><td class="memItemLeft" align="right" valign="top"><a id="acb62cdb23c9299d1390ec762713ab67c" name="acb62cdb23c9299d1390ec762713ab67c"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>clear</b> ()</td></tr>
+<tr class="memdesc:acb62cdb23c9299d1390ec762713ab67c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear all events. <br /></td></tr>
 <tr class="separator:acb62cdb23c9299d1390ec762713ab67c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Sliding window for burst detection </p>
+<div class="textblock"><p>Sliding window for burst detection. </p>
 
 <p class="definition">Definition at line <a class="el" href="rate__limiter_8h_source.html#l00121">121</a> of file <a class="el" href="rate__limiter_8h_source.html">rate_limiter.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
@@ -172,49 +180,15 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Record an event and check if burst threshold exceeded </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Record an event and check if burst threshold exceeded. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">max_events</td><td>Maximum events allowed in window </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if burst threshold exceeded </dd></dl>
-
-</div>
-</div>
-<a id="acb62cdb23c9299d1390ec762713ab67c" name="acb62cdb23c9299d1390ec762713ab67c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acb62cdb23c9299d1390ec762713ab67c">&#9670;&#160;</a></span>clear()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void dtls::v13::security::SlidingWindow::clear </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Clear all events </p>
-
-</div>
-</div>
-<a id="a9692181f531bf17e0db9e2c892575c9d" name="a9692181f531bf17e0db9e2c892575c9d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9692181f531bf17e0db9e2c892575c9d">&#9670;&#160;</a></span>get_event_count()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">size_t dtls::v13::security::SlidingWindow::get_event_count </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Get current event count in window </p>
 
 </div>
 </div>

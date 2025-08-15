@@ -138,6 +138,9 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1security_1_1TokenB
 </div><!--header-->
 <div class="contents">
 
+<p>Token bucket for individual source rate limiting.  
+ <a href="classdtls_1_1v13_1_1security_1_1TokenBucket.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="rate__limiter_8h_source.html">rate_limiter.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -146,18 +149,25 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><b>TokenBucket</b> (size_t max_tokens, size_t tokens_per_second)</td></tr>
 <tr class="separator:ad4258d40bd4f618f2efab53c5253c50d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae89af9167db1601ea3d21b4a74dbd4be" id="r_ae89af9167db1601ea3d21b4a74dbd4be"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1TokenBucket.html#ae89af9167db1601ea3d21b4a74dbd4be">try_consume</a> (size_t tokens=1)</td></tr>
+<tr class="memdesc:ae89af9167db1601ea3d21b4a74dbd4be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Try to consume tokens from bucket.  <br /></td></tr>
 <tr class="separator:ae89af9167db1601ea3d21b4a74dbd4be"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae040f6d588fe3f28ec418a94a18fbf9f" id="r_ae040f6d588fe3f28ec418a94a18fbf9f"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1TokenBucket.html#ae040f6d588fe3f28ec418a94a18fbf9f">get_token_count</a> () const</td></tr>
+<tr class="memitem:ae040f6d588fe3f28ec418a94a18fbf9f" id="r_ae040f6d588fe3f28ec418a94a18fbf9f"><td class="memItemLeft" align="right" valign="top"><a id="ae040f6d588fe3f28ec418a94a18fbf9f" name="ae040f6d588fe3f28ec418a94a18fbf9f"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_token_count</b> () const</td></tr>
+<tr class="memdesc:ae040f6d588fe3f28ec418a94a18fbf9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current token count. <br /></td></tr>
 <tr class="separator:ae040f6d588fe3f28ec418a94a18fbf9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4996d21f9a99487f911904e72bd033f2" id="r_a4996d21f9a99487f911904e72bd033f2"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1TokenBucket.html#a4996d21f9a99487f911904e72bd033f2">get_capacity</a> () const</td></tr>
+<tr class="memdesc:a4996d21f9a99487f911904e72bd033f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get bucket capacity.  <br /></td></tr>
 <tr class="separator:a4996d21f9a99487f911904e72bd033f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad1e63f144593b4a9f3ffd217373671a8" id="r_ad1e63f144593b4a9f3ffd217373671a8"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1TokenBucket.html#ad1e63f144593b4a9f3ffd217373671a8">get_refill_rate</a> () const</td></tr>
+<tr class="memdesc:ad1e63f144593b4a9f3ffd217373671a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get refill rate.  <br /></td></tr>
 <tr class="separator:ad1e63f144593b4a9f3ffd217373671a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a66a63040a94d8add5ee4df8ca472a0a3" id="r_a66a63040a94d8add5ee4df8ca472a0a3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1TokenBucket.html#a66a63040a94d8add5ee4df8ca472a0a3">reset</a> ()</td></tr>
+<tr class="memitem:a66a63040a94d8add5ee4df8ca472a0a3" id="r_a66a63040a94d8add5ee4df8ca472a0a3"><td class="memItemLeft" align="right" valign="top"><a id="a66a63040a94d8add5ee4df8ca472a0a3" name="a66a63040a94d8add5ee4df8ca472a0a3"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>reset</b> ()</td></tr>
+<tr class="memdesc:a66a63040a94d8add5ee4df8ca472a0a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset bucket to full capacity. <br /></td></tr>
 <tr class="separator:a66a63040a94d8add5ee4df8ca472a0a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Token bucket for individual source rate limiting </p>
+<div class="textblock"><p>Token bucket for individual source rate limiting. </p>
 
 <p class="definition">Definition at line <a class="el" href="rate__limiter_8h_source.html#l00077">77</a> of file <a class="el" href="rate__limiter_8h_source.html">rate_limiter.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
@@ -183,7 +193,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Get bucket capacity </p>
+
+<p>Get bucket capacity. </p>
 
 <p class="definition">Definition at line <a class="el" href="rate__limiter_8h_source.html#l00096">96</a> of file <a class="el" href="rate__limiter_8h_source.html">rate_limiter.h</a>.</p>
 
@@ -211,45 +222,10 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Get refill rate </p>
+
+<p>Get refill rate. </p>
 
 <p class="definition">Definition at line <a class="el" href="rate__limiter_8h_source.html#l00101">101</a> of file <a class="el" href="rate__limiter_8h_source.html">rate_limiter.h</a>.</p>
-
-</div>
-</div>
-<a id="ae040f6d588fe3f28ec418a94a18fbf9f" name="ae040f6d588fe3f28ec418a94a18fbf9f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae040f6d588fe3f28ec418a94a18fbf9f">&#9670;&#160;</a></span>get_token_count()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">size_t dtls::v13::security::TokenBucket::get_token_count </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Get current token count </p>
-
-</div>
-</div>
-<a id="a66a63040a94d8add5ee4df8ca472a0a3" name="a66a63040a94d8add5ee4df8ca472a0a3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a66a63040a94d8add5ee4df8ca472a0a3">&#9670;&#160;</a></span>reset()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void dtls::v13::security::TokenBucket::reset </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Reset bucket to full capacity </p>
 
 </div>
 </div>
@@ -268,7 +244,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Try to consume tokens from bucket </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Try to consume tokens from bucket. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">tokens</td><td>Number of tokens to consume </td></tr>
   </table>

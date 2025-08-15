@@ -138,6 +138,9 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1protocol_1_1MockRe
 </div><!--header-->
 <div class="contents">
 
+<p>Mock Record Layer for testing with crypto operations abstraction.  
+ <a href="classdtls_1_1v13_1_1protocol_1_1MockRecordLayerWithCryptoAbstraction.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="record__layer__crypto__abstraction_8h_source.html">record_layer_crypto_abstraction.h</a>&gt;</code></p>
 <div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
   <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Inheritance diagram for dtls::v13::protocol::MockRecordLayerWithCryptoAbstraction:</div>
@@ -147,7 +150,7 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1protocol_1_1MockRe
  <div class="center">
   <img src="classdtls_1_1v13_1_1protocol_1_1MockRecordLayerWithCryptoAbstraction.png" usemap="#dtls::v13::protocol::MockRecordLayerWithCryptoAbstraction_map" alt=""/>
   <map id="dtls::v13::protocol::MockRecordLayerWithCryptoAbstraction_map" name="dtls::v13::protocol::MockRecordLayerWithCryptoAbstraction_map">
-<area href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerInterface.html" alt="dtls::v13::protocol::IRecordLayerInterface" shape="rect" coords="0,0,347,24"/>
+<area href="classdtls_1_1v13_1_1protocol_1_1IRecordLayerInterface.html" title="Abstract Record Layer Interface." alt="dtls::v13::protocol::IRecordLayerInterface" shape="rect" coords="0,0,347,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -180,38 +183,53 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>reset_call_counts</b>
 <a class="el" href="classdtls_1_1v13_1_1crypto_1_1MockCryptoOperations.html">crypto::MockCryptoOperations</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>mock_crypto_operations</b> () const</td></tr>
 <tr class="separator:aadc8d261040e3c2daae9afd715ebf48e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5696e2a379ef09ebfc2390c3172ca6f7" id="r_a5696e2a379ef09ebfc2390c3172ca6f7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1MockRecordLayerWithCryptoAbstraction.html#a5696e2a379ef09ebfc2390c3172ca6f7">initialize</a> () override</td></tr>
+<tr class="memdesc:a5696e2a379ef09ebfc2390c3172ca6f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the record layer.  <br /></td></tr>
 <tr class="separator:a5696e2a379ef09ebfc2390c3172ca6f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acda72a3b0426bb256e2b2724ad26d647" id="r_acda72a3b0426bb256e2b2724ad26d647"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1MockRecordLayerWithCryptoAbstraction.html#acda72a3b0426bb256e2b2724ad26d647">set_cipher_suite</a> (CipherSuite suite) override</td></tr>
+<tr class="memdesc:acda72a3b0426bb256e2b2724ad26d647"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set cipher suite for current epoch.  <br /></td></tr>
 <tr class="separator:acda72a3b0426bb256e2b2724ad26d647"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a39ebcadc787d4d89a3fd8db241e78e86" id="r_a39ebcadc787d4d89a3fd8db241e78e86"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html">DTLSCiphertext</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1MockRecordLayerWithCryptoAbstraction.html#a39ebcadc787d4d89a3fd8db241e78e86">protect_record</a> (const <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html">DTLSPlaintext</a> &amp;plaintext) override</td></tr>
+<tr class="memdesc:a39ebcadc787d4d89a3fd8db241e78e86"><td class="mdescLeft">&#160;</td><td class="mdescRight">Protect a plaintext record (encrypt)  <br /></td></tr>
 <tr class="separator:a39ebcadc787d4d89a3fd8db241e78e86"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af6244505effb1728092566800745e509" id="r_af6244505effb1728092566800745e509"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html">DTLSPlaintext</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1MockRecordLayerWithCryptoAbstraction.html#af6244505effb1728092566800745e509">unprotect_record</a> (const <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html">DTLSCiphertext</a> &amp;ciphertext) override</td></tr>
+<tr class="memdesc:af6244505effb1728092566800745e509"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unprotect a ciphertext record (decrypt)  <br /></td></tr>
 <tr class="separator:af6244505effb1728092566800745e509"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa934c5490eca1c4622ace35def099de2" id="r_aa934c5490eca1c4622ace35def099de2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html">DTLSPlaintext</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1MockRecordLayerWithCryptoAbstraction.html#aa934c5490eca1c4622ace35def099de2">process_incoming_record</a> (const <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html">DTLSCiphertext</a> &amp;ciphertext) override</td></tr>
+<tr class="memdesc:aa934c5490eca1c4622ace35def099de2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Process incoming record (includes anti-replay check)  <br /></td></tr>
 <tr class="separator:aa934c5490eca1c4622ace35def099de2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acf0108b2980c80208ff9eb027dd56804" id="r_acf0108b2980c80208ff9eb027dd56804"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html">DTLSCiphertext</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1MockRecordLayerWithCryptoAbstraction.html#acf0108b2980c80208ff9eb027dd56804">prepare_outgoing_record</a> (const <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html">DTLSPlaintext</a> &amp;plaintext) override</td></tr>
+<tr class="memdesc:acf0108b2980c80208ff9eb027dd56804"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepare outgoing record (includes sequence number assignment)  <br /></td></tr>
 <tr class="separator:acf0108b2980c80208ff9eb027dd56804"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9987fba6f9356fbe6cba8cc70453e1fc" id="r_a9987fba6f9356fbe6cba8cc70453e1fc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1protocol_1_1CiphertextRecord.html">CiphertextRecord</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1MockRecordLayerWithCryptoAbstraction.html#a9987fba6f9356fbe6cba8cc70453e1fc">protect_record_legacy</a> (const <a class="el" href="classdtls_1_1v13_1_1protocol_1_1PlaintextRecord.html">PlaintextRecord</a> &amp;plaintext) override</td></tr>
+<tr class="memdesc:a9987fba6f9356fbe6cba8cc70453e1fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Protect record using legacy format.  <br /></td></tr>
 <tr class="separator:a9987fba6f9356fbe6cba8cc70453e1fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad32a27bf88adc1d5d3e11cf8939730ab" id="r_ad32a27bf88adc1d5d3e11cf8939730ab"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1protocol_1_1PlaintextRecord.html">PlaintextRecord</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1MockRecordLayerWithCryptoAbstraction.html#ad32a27bf88adc1d5d3e11cf8939730ab">unprotect_record_legacy</a> (const <a class="el" href="classdtls_1_1v13_1_1protocol_1_1CiphertextRecord.html">CiphertextRecord</a> &amp;ciphertext) override</td></tr>
+<tr class="memdesc:ad32a27bf88adc1d5d3e11cf8939730ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unprotect record using legacy format.  <br /></td></tr>
 <tr class="separator:ad32a27bf88adc1d5d3e11cf8939730ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0913a25295ad36f26084660952762739" id="r_a0913a25295ad36f26084660952762739"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1MockRecordLayerWithCryptoAbstraction.html#a0913a25295ad36f26084660952762739">advance_epoch</a> (const std::vector&lt; uint8_t &gt; &amp;read_key, const std::vector&lt; uint8_t &gt; &amp;write_key, const std::vector&lt; uint8_t &gt; &amp;read_iv, const std::vector&lt; uint8_t &gt; &amp;write_iv) override</td></tr>
+<tr class="memdesc:a0913a25295ad36f26084660952762739"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance to next epoch with new keys.  <br /></td></tr>
 <tr class="separator:a0913a25295ad36f26084660952762739"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7cb51daeeac8f69c9fe0b19d7641a413" id="r_a7cb51daeeac8f69c9fe0b19d7641a413"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1MockRecordLayerWithCryptoAbstraction.html#a7cb51daeeac8f69c9fe0b19d7641a413">update_traffic_keys</a> () override</td></tr>
+<tr class="memdesc:a7cb51daeeac8f69c9fe0b19d7641a413"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update traffic keys (RFC 9147 Section 4.6.3)  <br /></td></tr>
 <tr class="separator:a7cb51daeeac8f69c9fe0b19d7641a413"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af3b056a9a28256a382e8996ea7bec5f1" id="r_af3b056a9a28256a382e8996ea7bec5f1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1MockRecordLayerWithCryptoAbstraction.html#af3b056a9a28256a382e8996ea7bec5f1">update_traffic_keys</a> (const <a class="el" href="structdtls_1_1v13_1_1crypto_1_1KeySchedule.html">crypto::KeySchedule</a> &amp;new_keys) override</td></tr>
+<tr class="memdesc:af3b056a9a28256a382e8996ea7bec5f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update traffic keys with provided key schedule.  <br /></td></tr>
 <tr class="separator:af3b056a9a28256a382e8996ea7bec5f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af683714efec1990ac9e6ffdf3b7ccbd0" id="r_af683714efec1990ac9e6ffdf3b7ccbd0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1MockRecordLayerWithCryptoAbstraction.html#af683714efec1990ac9e6ffdf3b7ccbd0">needs_key_update</a> (uint64_t max_records=(1ULL&lt;&lt; 24), std::chrono::seconds max_time=std::chrono::hours(24)) const override</td></tr>
+<tr class="memdesc:af683714efec1990ac9e6ffdf3b7ccbd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if key update is needed.  <br /></td></tr>
 <tr class="separator:af683714efec1990ac9e6ffdf3b7ccbd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa4a612bea7259ac54057dbe7b65708fd" id="r_aa4a612bea7259ac54057dbe7b65708fd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1MockRecordLayerWithCryptoAbstraction.html#aa4a612bea7259ac54057dbe7b65708fd">enable_connection_id</a> (const ConnectionID &amp;local_cid, const ConnectionID &amp;peer_cid) override</td></tr>
+<tr class="memdesc:aa4a612bea7259ac54057dbe7b65708fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable connection ID support.  <br /></td></tr>
 <tr class="separator:aa4a612bea7259ac54057dbe7b65708fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a969e0b36141ff4624885b6fe5ec26f42" id="r_a969e0b36141ff4624885b6fe5ec26f42"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdtls_1_1v13_1_1protocol_1_1RecordLayerStats.html">RecordLayerStats</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1MockRecordLayerWithCryptoAbstraction.html#a969e0b36141ff4624885b6fe5ec26f42">get_stats</a> () const override</td></tr>
+<tr class="memdesc:a969e0b36141ff4624885b6fe5ec26f42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current record layer statistics.  <br /></td></tr>
 <tr class="separator:a969e0b36141ff4624885b6fe5ec26f42"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adb99961038a21d0af8258ed75f664fd8" id="r_adb99961038a21d0af8258ed75f664fd8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdtls_1_1v13_1_1protocol_1_1KeyUpdateStats.html">KeyUpdateStats</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1MockRecordLayerWithCryptoAbstraction.html#adb99961038a21d0af8258ed75f664fd8">get_key_update_stats</a> () const override</td></tr>
+<tr class="memdesc:adb99961038a21d0af8258ed75f664fd8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current key update statistics.  <br /></td></tr>
 <tr class="separator:adb99961038a21d0af8258ed75f664fd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Mock Record Layer for testing with crypto operations abstraction</p>
+<div class="textblock"><p>Mock Record Layer for testing with crypto operations abstraction. </p>
 <p>This class provides a mock record layer that uses mock crypto operations for unit testing without requiring actual cryptographic computations. </p>
 
 <p class="definition">Definition at line <a class="el" href="record__layer__crypto__abstraction_8h_source.html#l00231">231</a> of file <a class="el" href="record__layer__crypto__abstraction_8h_source.html">record_layer_crypto_abstraction.h</a>.</p>
@@ -261,7 +279,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>reset_call_counts</b>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Advance to next epoch with new keys</p>
+
+<p>Advance to next epoch with new keys. </p>
 <p>Transitions to a new cryptographic epoch with updated keying material. Resets sequence numbers and anti-replay windows as required by RFC 9147.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -339,8 +358,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>reset_call_counts</b>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Enable connection ID support</p>
-<p>Configures the record layer to use <a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> IDs for NAT traversal and connection migration as specified in RFC 9146.</p>
+
+<p>Enable connection ID support. </p>
+<p>Configures the record layer to use <a class="el" href="classdtls_1_1v13_1_1Connection.html" title="DTLS v1.3 Connection implementation.">Connection</a> IDs for NAT traversal and connection migration as specified in RFC 9146.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">local_cid</td><td>Local connection identifier </td></tr>
@@ -377,7 +397,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>reset_call_counts</b>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Get current key update statistics</p>
+
+<p>Get current key update statistics. </p>
 <p>Returns statistics specific to key update operations for security monitoring and compliance verification.</p>
 <dl class="section return"><dt>Returns</dt><dd>Current key update statistics </dd></dl>
 
@@ -407,7 +428,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>reset_call_counts</b>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Get current record layer statistics</p>
+
+<p>Get current record layer statistics. </p>
 <p>Returns comprehensive statistics for monitoring record layer performance, security events, and operational status.</p>
 <dl class="section return"><dt>Returns</dt><dd>Current statistics snapshot </dd></dl>
 
@@ -437,7 +459,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>reset_call_counts</b>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Initialize the record layer</p>
+
+<p>Initialize the record layer. </p>
 <p>Prepares the record layer for operation, including crypto provider initialization and internal state setup.</p>
 <dl class="section return"><dt>Returns</dt><dd>Success result or error details </dd></dl>
 
@@ -505,7 +528,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>reset_call_counts</b>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Check if key update is needed</p>
+
+<p>Check if key update is needed. </p>
 <p>Evaluates whether a key update should be performed based on record count, time elapsed, or other security criteria.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -543,7 +567,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>reset_call_counts</b>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Prepare outgoing record (includes sequence number assignment)</p>
+
+<p>Prepare outgoing record (includes sequence number assignment) </p>
 <p>Complete processing pipeline for outgoing records including:</p><ul>
 <li>Sequence number assignment</li>
 <li>Record encryption and authentication</li>
@@ -584,7 +609,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>reset_call_counts</b>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Process incoming record (includes anti-replay check)</p>
+
+<p>Process incoming record (includes anti-replay check) </p>
 <p>Complete processing pipeline for incoming records including:</p><ul>
 <li>Anti-replay window validation</li>
 <li>Sequence number verification <br  />
@@ -654,7 +680,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>reset_call_counts</b>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Protect a plaintext record (encrypt)</p>
+
+<p>Protect a plaintext record (encrypt) </p>
 <p>Encrypts and authenticates a plaintext record according to RFC 9147 specifications. Handles sequence number assignment and AEAD encryption.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -691,7 +718,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>reset_call_counts</b>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Protect record using legacy format</p>
+
+<p>Protect record using legacy format. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">plaintext</td><td>Legacy plaintext record </td></tr>
@@ -727,7 +755,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>reset_call_counts</b>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Set cipher suite for current epoch</p>
+
+<p>Set cipher suite for current epoch. </p>
 <p>Configures the cryptographic algorithms used for record protection. Must be called before processing any protected records.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -791,7 +820,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>reset_call_counts</b>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Unprotect a ciphertext record (decrypt)</p>
+
+<p>Unprotect a ciphertext record (decrypt) </p>
 <p>Decrypts and verifies a ciphertext record according to RFC 9147 specifications. Performs AEAD decryption and authenticity verification.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -828,7 +858,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>reset_call_counts</b>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Unprotect record using legacy format</p>
+
+<p>Unprotect record using legacy format. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ciphertext</td><td>Legacy ciphertext record </td></tr>
@@ -863,7 +894,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>reset_call_counts</b>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Update traffic keys (RFC 9147 Section 4.6.3)</p>
+
+<p>Update traffic keys (RFC 9147 Section 4.6.3) </p>
 <p>Generates new read/write keys from current keys using HKDF-Expand-Label to provide forward secrecy without full handshake.</p>
 <dl class="section return"><dt>Returns</dt><dd>Success result or error details </dd></dl>
 
@@ -894,7 +926,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>reset_call_counts</b>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Update traffic keys with provided key schedule</p>
+
+<p>Update traffic keys with provided key schedule. </p>
 <p>Used for coordinated key updates across multiple layers with externally derived keying material.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">

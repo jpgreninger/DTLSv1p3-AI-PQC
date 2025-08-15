@@ -138,6 +138,9 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1crypto_1_1Agnostic
 </div><!--header-->
 <div class="contents">
 
+<p>Provider-agnostic crypto operation wrapper.  
+ <a href="classdtls_1_1v13_1_1crypto_1_1AgnosticCryptoOperations.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="operations_8h_source.html">operations.h</a>&gt;</code></p>
 <div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
   <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Inheritance diagram for dtls::v13::crypto::AgnosticCryptoOperations:</div>
@@ -147,68 +150,95 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1crypto_1_1Agnostic
  <div class="center">
   <img src="classdtls_1_1v13_1_1crypto_1_1AgnosticCryptoOperations.png" usemap="#dtls::v13::crypto::AgnosticCryptoOperations_map" alt=""/>
   <map id="dtls::v13::crypto::AgnosticCryptoOperations_map" name="dtls::v13::crypto::AgnosticCryptoOperations_map">
-<area href="classdtls_1_1v13_1_1crypto_1_1ICryptoOperations.html" alt="dtls::v13::crypto::ICryptoOperations" shape="rect" coords="0,0,255,24"/>
+<area href="classdtls_1_1v13_1_1crypto_1_1ICryptoOperations.html" title="Abstract Crypto Operations Interface." alt="dtls::v13::crypto::ICryptoOperations" shape="rect" coords="0,0,255,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a64a4579bf427a27e6f797c8a43c0c435" id="r_a64a4579bf427a27e6f797c8a43c0c435"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1AgnosticCryptoOperations.html#a64a4579bf427a27e6f797c8a43c0c435">AgnosticCryptoOperations</a> (const <a class="el" href="structdtls_1_1v13_1_1crypto_1_1ProviderSelection.html">ProviderSelection</a> &amp;default_criteria={}, bool enable_per_operation_selection=false)</td></tr>
+<tr class="memdesc:a64a4579bf427a27e6f797c8a43c0c435"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create agnostic crypto operations with automatic provider selection.  <br /></td></tr>
 <tr class="separator:a64a4579bf427a27e6f797c8a43c0c435"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afad85665690a0f63916ba862fc798ebe" id="r_afad85665690a0f63916ba862fc798ebe"><td class="memItemLeft" align="right" valign="top"><a id="afad85665690a0f63916ba862fc798ebe" name="afad85665690a0f63916ba862fc798ebe"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>set_operation_provider_preference</b> (const std::string &amp;operation_category, const <a class="el" href="structdtls_1_1v13_1_1crypto_1_1ProviderSelection.html">ProviderSelection</a> &amp;criteria)</td></tr>
 <tr class="separator:afad85665690a0f63916ba862fc798ebe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeba6b861efd9ab7c5762af89ef7aefad" id="r_aeba6b861efd9ab7c5762af89ef7aefad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::vector&lt; uint8_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1AgnosticCryptoOperations.html#aeba6b861efd9ab7c5762af89ef7aefad">generate_random</a> (size_t length, const std::vector&lt; uint8_t &gt; &amp;additional_entropy={}) override</td></tr>
+<tr class="memdesc:aeba6b861efd9ab7c5762af89ef7aefad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate cryptographically secure random bytes.  <br /></td></tr>
 <tr class="separator:aeba6b861efd9ab7c5762af89ef7aefad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a65422ad980905b65380c586ca6a777e0" id="r_a65422ad980905b65380c586ca6a777e0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; Random &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1AgnosticCryptoOperations.html#a65422ad980905b65380c586ca6a777e0">generate_dtls_random</a> () override</td></tr>
+<tr class="memdesc:a65422ad980905b65380c586ca6a777e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate DTLS random structure (32 bytes)  <br /></td></tr>
 <tr class="separator:a65422ad980905b65380c586ca6a777e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a09353712ae99ef4f0f00dd7b4fa3d940" id="r_a09353712ae99ef4f0f00dd7b4fa3d940"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::vector&lt; uint8_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1AgnosticCryptoOperations.html#a09353712ae99ef4f0f00dd7b4fa3d940">generate_session_id</a> (size_t length=32) override</td></tr>
+<tr class="memdesc:a09353712ae99ef4f0f00dd7b4fa3d940"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate session ID.  <br /></td></tr>
 <tr class="separator:a09353712ae99ef4f0f00dd7b4fa3d940"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad56bafbc8ae1bbc531ee869343309266" id="r_ad56bafbc8ae1bbc531ee869343309266"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; ConnectionID &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1AgnosticCryptoOperations.html#ad56bafbc8ae1bbc531ee869343309266">generate_connection_id</a> (size_t length=8) override</td></tr>
+<tr class="memdesc:ad56bafbc8ae1bbc531ee869343309266"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate connection ID for DTLS v1.3.  <br /></td></tr>
 <tr class="separator:ad56bafbc8ae1bbc531ee869343309266"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1284711b5547fbf487893477d3e90b1a" id="r_a1284711b5547fbf487893477d3e90b1a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::vector&lt; uint8_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1AgnosticCryptoOperations.html#a1284711b5547fbf487893477d3e90b1a">hkdf_expand_label</a> (const std::vector&lt; uint8_t &gt; &amp;secret, const std::string &amp;label, const std::vector&lt; uint8_t &gt; &amp;context, size_t length, <a class="el" href="namespacedtls_1_1v13_1_1crypto.html#a1635c49120dc869b1fb1d7c938aa594f">HashAlgorithm</a> hash_algo=HashAlgorithm::SHA256) override</td></tr>
+<tr class="memdesc:a1284711b5547fbf487893477d3e90b1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Derive key using HKDF-Expand-Label (RFC 8446)  <br /></td></tr>
 <tr class="separator:a1284711b5547fbf487893477d3e90b1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae6d00d09b138011c8e7009d45044d68b" id="r_ae6d00d09b138011c8e7009d45044d68b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="structdtls_1_1v13_1_1crypto_1_1KeySchedule.html">KeySchedule</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1AgnosticCryptoOperations.html#ae6d00d09b138011c8e7009d45044d68b">derive_traffic_keys</a> (const std::vector&lt; uint8_t &gt; &amp;master_secret, CipherSuite cipher_suite, const std::vector&lt; uint8_t &gt; &amp;context) override</td></tr>
+<tr class="memdesc:ae6d00d09b138011c8e7009d45044d68b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Derive traffic keys for current epoch.  <br /></td></tr>
 <tr class="separator:ae6d00d09b138011c8e7009d45044d68b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1f58c58c0f9123a3e52b32ded55ddbc8" id="r_a1f58c58c0f9123a3e52b32ded55ddbc8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="structdtls_1_1v13_1_1crypto_1_1AEADEncryptionOutput.html">AEADEncryptionOutput</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1AgnosticCryptoOperations.html#a1f58c58c0f9123a3e52b32ded55ddbc8">aead_encrypt</a> (const std::vector&lt; uint8_t &gt; &amp;plaintext, const std::vector&lt; uint8_t &gt; &amp;key, const std::vector&lt; uint8_t &gt; &amp;nonce, const std::vector&lt; uint8_t &gt; &amp;additional_data, AEADCipher cipher) override</td></tr>
+<tr class="memdesc:a1f58c58c0f9123a3e52b32ded55ddbc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">AEAD encrypt with integrated authentication.  <br /></td></tr>
 <tr class="separator:a1f58c58c0f9123a3e52b32ded55ddbc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af921cfbc9b0d21491707acfa4413ad19" id="r_af921cfbc9b0d21491707acfa4413ad19"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::vector&lt; uint8_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1AgnosticCryptoOperations.html#af921cfbc9b0d21491707acfa4413ad19">aead_decrypt</a> (const std::vector&lt; uint8_t &gt; &amp;ciphertext, const std::vector&lt; uint8_t &gt; &amp;tag, const std::vector&lt; uint8_t &gt; &amp;key, const std::vector&lt; uint8_t &gt; &amp;nonce, const std::vector&lt; uint8_t &gt; &amp;additional_data, AEADCipher cipher) override</td></tr>
+<tr class="memdesc:af921cfbc9b0d21491707acfa4413ad19"><td class="mdescLeft">&#160;</td><td class="mdescRight">AEAD decrypt with authentication verification.  <br /></td></tr>
 <tr class="separator:af921cfbc9b0d21491707acfa4413ad19"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7e75116e9872ba034431f5213fc07fe8" id="r_a7e75116e9872ba034431f5213fc07fe8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::vector&lt; uint8_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1AgnosticCryptoOperations.html#a7e75116e9872ba034431f5213fc07fe8">compute_hash</a> (const std::vector&lt; uint8_t &gt; &amp;data, <a class="el" href="namespacedtls_1_1v13_1_1crypto.html#a1635c49120dc869b1fb1d7c938aa594f">HashAlgorithm</a> algorithm=HashAlgorithm::SHA256) override</td></tr>
+<tr class="memdesc:a7e75116e9872ba034431f5213fc07fe8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute cryptographic hash.  <br /></td></tr>
 <tr class="separator:a7e75116e9872ba034431f5213fc07fe8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2fb7619c8651e4eb0a2ddc98a070e1bd" id="r_a2fb7619c8651e4eb0a2ddc98a070e1bd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::vector&lt; uint8_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1AgnosticCryptoOperations.html#a2fb7619c8651e4eb0a2ddc98a070e1bd">compute_hmac</a> (const std::vector&lt; uint8_t &gt; &amp;key, const std::vector&lt; uint8_t &gt; &amp;data, <a class="el" href="namespacedtls_1_1v13_1_1crypto.html#a1635c49120dc869b1fb1d7c938aa594f">HashAlgorithm</a> algorithm=HashAlgorithm::SHA256) override</td></tr>
+<tr class="memdesc:a2fb7619c8651e4eb0a2ddc98a070e1bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute HMAC with timing-attack resistance.  <br /></td></tr>
 <tr class="separator:a2fb7619c8651e4eb0a2ddc98a070e1bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a767d1e237735a294b841771ecc7d69f0" id="r_a767d1e237735a294b841771ecc7d69f0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1AgnosticCryptoOperations.html#a767d1e237735a294b841771ecc7d69f0">verify_hmac</a> (const std::vector&lt; uint8_t &gt; &amp;key, const std::vector&lt; uint8_t &gt; &amp;data, const std::vector&lt; uint8_t &gt; &amp;expected_mac, <a class="el" href="namespacedtls_1_1v13_1_1crypto.html#a1635c49120dc869b1fb1d7c938aa594f">HashAlgorithm</a> algorithm=HashAlgorithm::SHA256) override</td></tr>
+<tr class="memdesc:a767d1e237735a294b841771ecc7d69f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Verify HMAC with constant-time comparison.  <br /></td></tr>
 <tr class="separator:a767d1e237735a294b841771ecc7d69f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a545d0f5a41ce42b1e72047b5d7ae35e8" id="r_a545d0f5a41ce42b1e72047b5d7ae35e8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::vector&lt; uint8_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1AgnosticCryptoOperations.html#a545d0f5a41ce42b1e72047b5d7ae35e8">sign_data</a> (const std::vector&lt; uint8_t &gt; &amp;data, const <a class="el" href="classdtls_1_1v13_1_1crypto_1_1PrivateKey.html">PrivateKey</a> &amp;private_key, SignatureScheme scheme) override</td></tr>
+<tr class="memdesc:a545d0f5a41ce42b1e72047b5d7ae35e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate digital signature.  <br /></td></tr>
 <tr class="separator:a545d0f5a41ce42b1e72047b5d7ae35e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2fbca12bbd6239a75248a161f68e35d0" id="r_a2fbca12bbd6239a75248a161f68e35d0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1AgnosticCryptoOperations.html#a2fbca12bbd6239a75248a161f68e35d0">verify_signature</a> (const std::vector&lt; uint8_t &gt; &amp;data, const std::vector&lt; uint8_t &gt; &amp;signature, const <a class="el" href="classdtls_1_1v13_1_1crypto_1_1PublicKey.html">PublicKey</a> &amp;public_key, SignatureScheme scheme) override</td></tr>
+<tr class="memdesc:a2fbca12bbd6239a75248a161f68e35d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Verify digital signature.  <br /></td></tr>
 <tr class="separator:a2fbca12bbd6239a75248a161f68e35d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb80ca500b056fbcb4fa14c3c6dd30c2" id="r_acb80ca500b056fbcb4fa14c3c6dd30c2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1AgnosticCryptoOperations.html#acb80ca500b056fbcb4fa14c3c6dd30c2">verify_certificate_signature</a> (const std::vector&lt; uint8_t &gt; &amp;transcript_hash, const std::vector&lt; uint8_t &gt; &amp;signature, const <a class="el" href="classdtls_1_1v13_1_1crypto_1_1PublicKey.html">PublicKey</a> &amp;public_key, SignatureScheme scheme, bool is_server_context=true) override</td></tr>
+<tr class="memdesc:acb80ca500b056fbcb4fa14c3c6dd30c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Verify DTLS Certificate signature (RFC 9147 Section 4.2.3)  <br /></td></tr>
 <tr class="separator:acb80ca500b056fbcb4fa14c3c6dd30c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2c00cd53b5b549550309947f05e52314" id="r_a2c00cd53b5b549550309947f05e52314"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::pair&lt; std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1crypto_1_1PrivateKey.html">PrivateKey</a> &gt;, std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1crypto_1_1PublicKey.html">PublicKey</a> &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1AgnosticCryptoOperations.html#a2c00cd53b5b549550309947f05e52314">generate_key_pair</a> (NamedGroup group) override</td></tr>
+<tr class="memdesc:a2c00cd53b5b549550309947f05e52314"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate key pair for key exchange.  <br /></td></tr>
 <tr class="separator:a2c00cd53b5b549550309947f05e52314"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a50f9699056a6581d8b240a62acc53488" id="r_a50f9699056a6581d8b240a62acc53488"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::vector&lt; uint8_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1AgnosticCryptoOperations.html#a50f9699056a6581d8b240a62acc53488">key_exchange</a> (const <a class="el" href="classdtls_1_1v13_1_1crypto_1_1PrivateKey.html">PrivateKey</a> &amp;private_key, const std::vector&lt; uint8_t &gt; &amp;peer_public_key, NamedGroup group) override</td></tr>
+<tr class="memdesc:a50f9699056a6581d8b240a62acc53488"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform Diffie-Hellman key exchange.  <br /></td></tr>
 <tr class="separator:a50f9699056a6581d8b240a62acc53488"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8e268befc0ad4736679279496adae81f" id="r_a8e268befc0ad4736679279496adae81f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1AgnosticCryptoOperations.html#a8e268befc0ad4736679279496adae81f">validate_certificate_chain</a> (const <a class="el" href="classdtls_1_1v13_1_1crypto_1_1CertificateChain.html">CertificateChain</a> &amp;chain, const std::vector&lt; uint8_t &gt; &amp;root_ca_store, const std::string &amp;hostname=&quot;&quot;, bool check_revocation=true) override</td></tr>
+<tr class="memdesc:a8e268befc0ad4736679279496adae81f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate certificate chain.  <br /></td></tr>
 <tr class="separator:a8e268befc0ad4736679279496adae81f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad4b3725030d83a8ab954a1590333dd30" id="r_ad4b3725030d83a8ab954a1590333dd30"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1crypto_1_1PublicKey.html">PublicKey</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1AgnosticCryptoOperations.html#ad4b3725030d83a8ab954a1590333dd30">extract_public_key</a> (const std::vector&lt; uint8_t &gt; &amp;certificate_der) override</td></tr>
+<tr class="memdesc:ad4b3725030d83a8ab954a1590333dd30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extract public key from certificate.  <br /></td></tr>
 <tr class="separator:ad4b3725030d83a8ab954a1590333dd30"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb8e8ec94a2839a967fca7e7fe1a8dd6" id="r_acb8e8ec94a2839a967fca7e7fe1a8dd6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::vector&lt; uint8_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1AgnosticCryptoOperations.html#acb8e8ec94a2839a967fca7e7fe1a8dd6">encrypt_sequence_number</a> (uint64_t sequence_number, const std::vector&lt; uint8_t &gt; &amp;key, const std::vector&lt; uint8_t &gt; &amp;sample) override</td></tr>
+<tr class="memdesc:acb8e8ec94a2839a967fca7e7fe1a8dd6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encrypt sequence number (RFC 9147 Section 4.2.2)  <br /></td></tr>
 <tr class="separator:acb8e8ec94a2839a967fca7e7fe1a8dd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a198359ffc144530b06d9547adb749bc5" id="r_a198359ffc144530b06d9547adb749bc5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; uint64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1AgnosticCryptoOperations.html#a198359ffc144530b06d9547adb749bc5">decrypt_sequence_number</a> (const std::vector&lt; uint8_t &gt; &amp;encrypted_sequence_number, const std::vector&lt; uint8_t &gt; &amp;key, const std::vector&lt; uint8_t &gt; &amp;sample) override</td></tr>
+<tr class="memdesc:a198359ffc144530b06d9547adb749bc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decrypt sequence number (RFC 9147 Section 4.2.2)  <br /></td></tr>
 <tr class="separator:a198359ffc144530b06d9547adb749bc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade43296d4f389c0c98ef41036db01a39" id="r_ade43296d4f389c0c98ef41036db01a39"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1AgnosticCryptoOperations.html#ade43296d4f389c0c98ef41036db01a39">validate_record_mac</a> (const std::vector&lt; uint8_t &gt; &amp;mac_key, const std::vector&lt; uint8_t &gt; &amp;sequence_number_key, const std::vector&lt; uint8_t &gt; &amp;record_header, const std::vector&lt; uint8_t &gt; &amp;plaintext, const std::vector&lt; uint8_t &gt; &amp;expected_mac, <a class="el" href="types_8h.html#ab9c84107809224041465427557aafdeb">ContentType</a> content_type, <a class="el" href="group__CoreTypes.html#gace5e728a8418b8695b245902009ffa77">Epoch</a> epoch, <a class="el" href="group__CoreTypes.html#ga50089dc7f9d67ec4e7563999a0e01a4b">SequenceNumber</a> sequence_number) override</td></tr>
+<tr class="memdesc:ade43296d4f389c0c98ef41036db01a39"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate record MAC for DTLS v1.3 (RFC 9147 Section 4.2.1)  <br /></td></tr>
 <tr class="separator:ade43296d4f389c0c98ef41036db01a39"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ace6d161ccc7662441ba313a07e8454d8" id="r_ace6d161ccc7662441ba313a07e8454d8"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1AgnosticCryptoOperations.html#ace6d161ccc7662441ba313a07e8454d8">provider_name</a> () const override</td></tr>
+<tr class="memdesc:ace6d161ccc7662441ba313a07e8454d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get provider name.  <br /></td></tr>
 <tr class="separator:ace6d161ccc7662441ba313a07e8454d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa2b5733887eb4b7a3b0203230b6f078d" id="r_aa2b5733887eb4b7a3b0203230b6f078d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdtls_1_1v13_1_1crypto_1_1ProviderCapabilities.html">ProviderCapabilities</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1AgnosticCryptoOperations.html#aa2b5733887eb4b7a3b0203230b6f078d">capabilities</a> () const override</td></tr>
+<tr class="memdesc:aa2b5733887eb4b7a3b0203230b6f078d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get provider capabilities.  <br /></td></tr>
 <tr class="separator:aa2b5733887eb4b7a3b0203230b6f078d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5642fdbf3e0cbba5339f2f7576c3fe5c" id="r_a5642fdbf3e0cbba5339f2f7576c3fe5c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1AgnosticCryptoOperations.html#a5642fdbf3e0cbba5339f2f7576c3fe5c">supports_cipher_suite</a> (CipherSuite cipher_suite) const override</td></tr>
+<tr class="memdesc:a5642fdbf3e0cbba5339f2f7576c3fe5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if operation is supported.  <br /></td></tr>
 <tr class="separator:a5642fdbf3e0cbba5339f2f7576c3fe5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a097e77b4bcdc7ca5ea52f3f1823ba164" id="r_a097e77b4bcdc7ca5ea52f3f1823ba164"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1AgnosticCryptoOperations.html#a097e77b4bcdc7ca5ea52f3f1823ba164">supports_named_group</a> (NamedGroup group) const override</td></tr>
+<tr class="memdesc:a097e77b4bcdc7ca5ea52f3f1823ba164"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if named group is supported.  <br /></td></tr>
 <tr class="separator:a097e77b4bcdc7ca5ea52f3f1823ba164"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1e2a8ac5290a17d1c249c3953599cebd" id="r_a1e2a8ac5290a17d1c249c3953599cebd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1AgnosticCryptoOperations.html#a1e2a8ac5290a17d1c249c3953599cebd">supports_signature_scheme</a> (SignatureScheme scheme) const override</td></tr>
+<tr class="memdesc:a1e2a8ac5290a17d1c249c3953599cebd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if signature scheme is supported.  <br /></td></tr>
 <tr class="separator:a1e2a8ac5290a17d1c249c3953599cebd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0144fd12a9054c656297c3a1c872afd5" id="r_a0144fd12a9054c656297c3a1c872afd5"><td class="memItemLeft" align="right" valign="top"><a id="a0144fd12a9054c656297c3a1c872afd5" name="a0144fd12a9054c656297c3a1c872afd5"></a>
 std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>get_active_providers</b> () const</td></tr>
@@ -222,7 +252,7 @@ std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bott
 <tr class="separator:a76bcd98658303eab0ba61041f615ca5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Provider-agnostic crypto operation wrapper</p>
+<div class="textblock"><p>Provider-agnostic crypto operation wrapper. </p>
 <p>This class provides a completely provider-agnostic interface that can automatically select the best provider for each operation, reducing coupling to specific crypto implementations. </p>
 
 <p class="definition">Definition at line <a class="el" href="operations_8h_source.html#l00614">614</a> of file <a class="el" href="operations_8h_source.html">operations.h</a>.</p>
@@ -260,7 +290,8 @@ std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bott
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Create agnostic crypto operations with automatic provider selection</p>
+
+<p>Create agnostic crypto operations with automatic provider selection. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">default_criteria</td><td>Default provider selection criteria </td></tr>
@@ -329,7 +360,8 @@ std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bott
   </tr>
 </table>
 </div><div class="memdoc">
-<p>AEAD decrypt with authentication verification</p>
+
+<p>AEAD decrypt with authentication verification. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ciphertext</td><td>Data to decrypt </td></tr>
@@ -398,7 +430,8 @@ std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bott
   </tr>
 </table>
 </div><div class="memdoc">
-<p>AEAD encrypt with integrated authentication</p>
+
+<p>AEAD encrypt with integrated authentication. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">plaintext</td><td>Data to encrypt </td></tr>
@@ -437,7 +470,8 @@ std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bott
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Get provider capabilities</p>
+
+<p>Get provider capabilities. </p>
 <dl class="section return"><dt>Returns</dt><dd>Capabilities of the underlying crypto provider </dd></dl>
 
 <p>Implements <a class="el" href="classdtls_1_1v13_1_1crypto_1_1ICryptoOperations.html#aeae271e82acba68045799dfa09c18f81">dtls::v13::crypto::ICryptoOperations</a>.</p>
@@ -477,7 +511,8 @@ std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bott
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Compute cryptographic hash</p>
+
+<p>Compute cryptographic hash. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">data</td><td>Data to hash </td></tr>
@@ -530,7 +565,8 @@ std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bott
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Compute HMAC with timing-attack resistance</p>
+
+<p>Compute HMAC with timing-attack resistance. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">key</td><td>HMAC key </td></tr>
@@ -584,7 +620,8 @@ std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bott
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Decrypt sequence number (RFC 9147 Section 4.2.2)</p>
+
+<p>Decrypt sequence number (RFC 9147 Section 4.2.2) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">encrypted_sequence_number</td><td>Encrypted sequence number </td></tr>
@@ -639,7 +676,8 @@ std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bott
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Derive traffic keys for current epoch</p>
+
+<p>Derive traffic keys for current epoch. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">master_secret</td><td>Current master secret </td></tr>
@@ -721,7 +759,8 @@ std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bott
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Encrypt sequence number (RFC 9147 Section 4.2.2)</p>
+
+<p>Encrypt sequence number (RFC 9147 Section 4.2.2) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">sequence_number</td><td>Plain sequence number </td></tr>
@@ -759,7 +798,8 @@ std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bott
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Extract public key from certificate</p>
+
+<p>Extract public key from certificate. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">certificate_der</td><td>DER-encoded certificate </td></tr>
@@ -795,14 +835,15 @@ std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bott
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Generate connection ID for DTLS v1.3</p>
+
+<p>Generate connection ID for DTLS v1.3. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">length</td><td><a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> ID length (1-255 bytes) </td></tr>
+    <tr><td class="paramname">length</td><td><a class="el" href="classdtls_1_1v13_1_1Connection.html" title="DTLS v1.3 Connection implementation.">Connection</a> ID length (1-255 bytes) </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classdtls_1_1v13_1_1Connection.html">Connection</a> ID or error details </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classdtls_1_1v13_1_1Connection.html" title="DTLS v1.3 Connection implementation.">Connection</a> ID or error details </dd></dl>
 
 <p>Implements <a class="el" href="classdtls_1_1v13_1_1crypto_1_1ICryptoOperations.html#a094548bfeed1ced331569220dd352e38">dtls::v13::crypto::ICryptoOperations</a>.</p>
 
@@ -830,7 +871,8 @@ std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bott
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Generate DTLS random structure (32 bytes)</p>
+
+<p>Generate DTLS random structure (32 bytes) </p>
 <dl class="section return"><dt>Returns</dt><dd>32-byte random value suitable for DTLS handshake </dd></dl>
 
 <p>Implements <a class="el" href="classdtls_1_1v13_1_1crypto_1_1ICryptoOperations.html#aa4e5fd693de7507f303a121c53a9229d">dtls::v13::crypto::ICryptoOperations</a>.</p>
@@ -860,7 +902,8 @@ std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bott
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Generate key pair for key exchange</p>
+
+<p>Generate key pair for key exchange. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">group</td><td>Named group for key generation </td></tr>
@@ -906,7 +949,8 @@ std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bott
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Generate cryptographically secure random bytes</p>
+
+<p>Generate cryptographically secure random bytes. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">length</td><td>Number of random bytes to generate </td></tr>
@@ -943,7 +987,8 @@ std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bott
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Generate session ID</p>
+
+<p>Generate session ID. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">length</td><td>Session ID length (typically 32 bytes) </td></tr>
@@ -1007,7 +1052,8 @@ std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bott
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Derive key using HKDF-Expand-Label (RFC 8446)</p>
+
+<p>Derive key using HKDF-Expand-Label (RFC 8446) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">secret</td><td>Input key material </td></tr>
@@ -1090,7 +1136,8 @@ std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bott
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Perform Diffie-Hellman key exchange</p>
+
+<p>Perform Diffie-Hellman key exchange. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">private_key</td><td>Local private key </td></tr>
@@ -1127,7 +1174,8 @@ std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bott
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Get provider name</p>
+
+<p>Get provider name. </p>
 <dl class="section return"><dt>Returns</dt><dd>Name of the underlying crypto provider </dd></dl>
 
 <p>Implements <a class="el" href="classdtls_1_1v13_1_1crypto_1_1ICryptoOperations.html#a5efad99bd73fdfe11fe23a1660a58f23">dtls::v13::crypto::ICryptoOperations</a>.</p>
@@ -1173,7 +1221,8 @@ std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bott
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Generate digital signature</p>
+
+<p>Generate digital signature. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">data</td><td>Data to sign </td></tr>
@@ -1211,7 +1260,8 @@ std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bott
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Check if operation is supported</p>
+
+<p>Check if operation is supported. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cipher_suite</td><td>Cipher suite to check </td></tr>
@@ -1247,7 +1297,8 @@ std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bott
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Check if named group is supported</p>
+
+<p>Check if named group is supported. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">group</td><td>Named group to check </td></tr>
@@ -1283,7 +1334,8 @@ std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bott
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Check if signature scheme is supported</p>
+
+<p>Check if signature scheme is supported. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">scheme</td><td>Signature scheme to check </td></tr>
@@ -1341,7 +1393,8 @@ std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bott
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Validate certificate chain</p>
+
+<p>Validate certificate chain. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">chain</td><td>Certificate chain to validate </td></tr>
@@ -1426,7 +1479,8 @@ std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bott
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Validate record MAC for DTLS v1.3 (RFC 9147 Section 4.2.1)</p>
+
+<p>Validate record MAC for DTLS v1.3 (RFC 9147 Section 4.2.1) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">mac_key</td><td>Record MAC key </td></tr>
@@ -1497,7 +1551,8 @@ std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bott
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Verify DTLS Certificate signature (RFC 9147 Section 4.2.3)</p>
+
+<p>Verify DTLS Certificate signature (RFC 9147 Section 4.2.3) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">transcript_hash</td><td>Handshake transcript hash </td></tr>
@@ -1559,7 +1614,8 @@ std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bott
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Verify HMAC with constant-time comparison</p>
+
+<p>Verify HMAC with constant-time comparison. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">key</td><td>HMAC key </td></tr>
@@ -1620,7 +1676,8 @@ std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bott
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Verify digital signature</p>
+
+<p>Verify digital signature. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">data</td><td>Original data that was signed </td></tr>

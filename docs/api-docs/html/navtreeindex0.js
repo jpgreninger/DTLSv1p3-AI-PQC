@@ -188,6 +188,12 @@ var NAVTREEINDEX0 =
 "classdtls_1_1v13_1_1ErrorReporter.html#aec6a5d00be45b30850be23d815fd069e":[6,0,0,0,23,5],
 "classdtls_1_1v13_1_1ErrorReporter.html#afdee96a49cddb2fa837253c22eb87108":[6,0,0,0,23,8],
 "classdtls_1_1v13_1_1Result.html":[6,0,0,0,25],
+"classdtls_1_1v13_1_1Result.html#a01cc7f910721db56f5442ea79c6bb264":[6,0,0,0,25,1],
+"classdtls_1_1v13_1_1Result.html#a2acb56d78d5066aa9a7ffa48a694f1fd":[6,0,0,0,25,0],
+"classdtls_1_1v13_1_1Result.html#a4e52fc42cd41dd6f1005b806acad01c3":[6,0,0,0,25,2],
+"classdtls_1_1v13_1_1Result.html#abad59edf076d50aa6c21555ed0520401":[6,0,0,0,25,5],
+"classdtls_1_1v13_1_1Result.html#ad63e3200c9c9d87b8fd6bea41e33710a":[6,0,0,0,25,4],
+"classdtls_1_1v13_1_1Result.html#aecbe966a0430927349a8cd08f0b233f1":[6,0,0,0,25,3],
 "classdtls_1_1v13_1_1Result_3_01void_01_4.html":[6,0,0,0,26],
 "classdtls_1_1v13_1_1compatibility_1_1CompatibilityManager.html":[6,0,0,0,0,0],
 "classdtls_1_1v13_1_1compatibility_1_1CompatibilityManager.html#a224e5408d9a911b49540ba3bf325be03":[6,0,0,0,0,0,3],
@@ -243,11 +249,5 @@ var NAVTREEINDEX0 =
 "classdtls_1_1v13_1_1connection_1_1advanced_1_1HealthMonitor.html":[6,0,0,0,1,0,7],
 "classdtls_1_1v13_1_1connection_1_1advanced_1_1HealthMonitor.html#a244bb668b530243f08493c006f1cfb7d":[6,0,0,0,1,0,7,0],
 "classdtls_1_1v13_1_1connection_1_1advanced_1_1HealthMonitor.html#aa5e94bae961e23cb3f66156c46da5711":[6,0,0,0,1,0,7,4],
-"classdtls_1_1v13_1_1connection_1_1advanced_1_1HealthMonitor.html#aa6e511710489a36ce9490664da8bc471":[6,0,0,0,1,0,7,2],
-"classdtls_1_1v13_1_1connection_1_1advanced_1_1HealthMonitor.html#aa89ab7b1f9aa95362409b213eeec63e1":[6,0,0,0,1,0,7,3],
-"classdtls_1_1v13_1_1connection_1_1advanced_1_1HealthMonitor.html#ab9edbe7dae4cbc3334949a8dbbb81710":[6,0,0,0,1,0,7,5],
-"classdtls_1_1v13_1_1connection_1_1advanced_1_1HealthMonitor.html#af44899ab4d6f8dba0f51a73641088da6":[6,0,0,0,1,0,7,1],
-"classdtls_1_1v13_1_1connection_1_1advanced_1_1LoadBalancer.html":[6,0,0,0,1,0,8],
-"classdtls_1_1v13_1_1connection_1_1advanced_1_1LoadBalancer.html#a54908f9cf11dd4cd202debfe11aa10fe":[6,0,0,0,1,0,8,0],
-"classdtls_1_1v13_1_1connection_1_1advanced_1_1LoadBalancer.html#a7539534cfe014fbb0b2d7cceb75fedca":[6,0,0,0,1,0,8,2]
+"classdtls_1_1v13_1_1connection_1_1advanced_1_1HealthMonitor.html#aa6e511710489a36ce9490664da8bc471":[6,0,0,0,1,0,7,2]
 };

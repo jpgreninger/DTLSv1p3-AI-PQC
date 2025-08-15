@@ -136,20 +136,27 @@ $(document).ready(function(){initNavTree('namespacedtls_1_1v13_1_1memory_1_1opti
   <div class="headertitle"><div class="title">dtls::v13::memory::optimization Namespace Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Memory optimization utilities.  
+<a href="namespacedtls_1_1v13_1_1memory_1_1optimization.html#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a365483326de012f71e985b7ca39caf8d" id="r_a365483326de012f71e985b7ca39caf8d"><td class="memItemLeft" align="right" valign="top">DTLS_API size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1memory_1_1optimization.html#a365483326de012f71e985b7ca39caf8d">optimize_memory_pools</a> ()</td></tr>
+<tr class="memdesc:a365483326de012f71e985b7ca39caf8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optimize memory pools based on usage patterns.  <br /></td></tr>
 <tr class="separator:a365483326de012f71e985b7ca39caf8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a097a4c2ec5c405f9bcd10a379cf40807" id="r_a097a4c2ec5c405f9bcd10a379cf40807"><td class="memItemLeft" align="right" valign="top">DTLS_API size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1memory_1_1optimization.html#a097a4c2ec5c405f9bcd10a379cf40807">compact_memory</a> ()</td></tr>
+<tr class="memdesc:a097a4c2ec5c405f9bcd10a379cf40807"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compact fragmented memory.  <br /></td></tr>
 <tr class="separator:a097a4c2ec5c405f9bcd10a379cf40807"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9a013d429b463dbcf367f78892845cb2" id="r_a9a013d429b463dbcf367f78892845cb2"><td class="memItemLeft" align="right" valign="top">DTLS_API <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1memory_1_1optimization.html#a9a013d429b463dbcf367f78892845cb2">preload_pools</a> (const std::vector&lt; std::pair&lt; size_t, size_t &gt; &gt; &amp;usage_hints)</td></tr>
+<tr class="memdesc:a9a013d429b463dbcf367f78892845cb2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Preload memory pools.  <br /></td></tr>
 <tr class="separator:a9a013d429b463dbcf367f78892845cb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a12985093d2161de9fe5c97d885e7e9c9" id="r_a12985093d2161de9fe5c97d885e7e9c9"><td class="memItemLeft" align="right" valign="top">DTLS_API size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1memory_1_1optimization.html#a12985093d2161de9fe5c97d885e7e9c9">predict_memory_usage</a> (std::chrono::minutes time_horizon)</td></tr>
+<tr class="memdesc:a12985093d2161de9fe5c97d885e7e9c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Memory usage prediction.  <br /></td></tr>
 <tr class="separator:a12985093d2161de9fe5c97d885e7e9c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Memory optimization utilities </p>
+<div class="textblock"><p>Memory optimization utilities. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
 <a id="a097a4c2ec5c405f9bcd10a379cf40807" name="a097a4c2ec5c405f9bcd10a379cf40807"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a097a4c2ec5c405f9bcd10a379cf40807">&#9670;&#160;</a></span>compact_memory()</h2>
@@ -165,7 +172,8 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Compact fragmented memory</p>
+
+<p>Compact fragmented memory. </p>
 <p>Attempts to reduce memory fragmentation by reorganizing pools.</p>
 <dl class="section return"><dt>Returns</dt><dd>Amount of memory freed (bytes) </dd></dl>
 
@@ -185,7 +193,8 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Optimize memory pools based on usage patterns</p>
+
+<p>Optimize memory pools based on usage patterns. </p>
 <p>Analyzes pool usage and adjusts pool sizes for optimal performance.</p>
 <dl class="section return"><dt>Returns</dt><dd>Number of pools optimized </dd></dl>
 
@@ -206,7 +215,8 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Memory usage prediction</p>
+
+<p>Memory usage prediction. </p>
 <p>Predicts future memory usage based on current patterns.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -233,7 +243,8 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Preload memory pools</p>
+
+<p>Preload memory pools. </p>
 <p>Pre-allocates buffers in pools based on expected usage patterns.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">

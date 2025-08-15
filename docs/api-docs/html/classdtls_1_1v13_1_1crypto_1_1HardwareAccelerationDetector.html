@@ -138,57 +138,52 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1crypto_1_1Hardware
 </div><!--header-->
 <div class="contents">
 
+<p>Hardware acceleration detection and management.  
+ <a href="classdtls_1_1v13_1_1crypto_1_1HardwareAccelerationDetector.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="hardware__acceleration_8h_source.html">hardware_acceleration.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a0863979808b7db91b6653d5e8a217dd4" id="r_a0863979808b7db91b6653d5e8a217dd4"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="structdtls_1_1v13_1_1crypto_1_1HardwareAccelerationProfile.html">HardwareAccelerationProfile</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1HardwareAccelerationDetector.html#a0863979808b7db91b6653d5e8a217dd4">detect_capabilities</a> ()</td></tr>
+<tr class="memdesc:a0863979808b7db91b6653d5e8a217dd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Detects all available hardware acceleration capabilities.  <br /></td></tr>
 <tr class="separator:a0863979808b7db91b6653d5e8a217dd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8615032ac00877520fc84e5c0c78d117" id="r_a8615032ac00877520fc84e5c0c78d117"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1HardwareAccelerationDetector.html#a8615032ac00877520fc84e5c0c78d117">is_capability_available</a> (<a class="el" href="namespacedtls_1_1v13_1_1crypto.html#a6fd77827090257f043c04ba9a6133f74">HardwareCapability</a> capability)</td></tr>
+<tr class="memdesc:a8615032ac00877520fc84e5c0c78d117"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a specific hardware capability is available.  <br /></td></tr>
 <tr class="separator:a8615032ac00877520fc84e5c0c78d117"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad8f79d9168a797a5e8b0ea70b984fa02" id="r_ad8f79d9168a797a5e8b0ea70b984fa02"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1HardwareAccelerationDetector.html#ad8f79d9168a797a5e8b0ea70b984fa02">get_recommended_provider</a> ()</td></tr>
+<tr class="memdesc:ad8f79d9168a797a5e8b0ea70b984fa02"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the best available crypto provider based on detected hardware.  <br /></td></tr>
 <tr class="separator:ad8f79d9168a797a5e8b0ea70b984fa02"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5379064f22402d88fb29bf81d02582ce" id="r_a5379064f22402d88fb29bf81d02582ce"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1HardwareAccelerationDetector.html#a5379064f22402d88fb29bf81d02582ce">enable_capability</a> (<a class="el" href="namespacedtls_1_1v13_1_1crypto.html#a6fd77827090257f043c04ba9a6133f74">HardwareCapability</a> capability)</td></tr>
+<tr class="memitem:a5379064f22402d88fb29bf81d02582ce" id="r_a5379064f22402d88fb29bf81d02582ce"><td class="memItemLeft" align="right" valign="top"><a id="a5379064f22402d88fb29bf81d02582ce" name="a5379064f22402d88fb29bf81d02582ce"></a>
+static <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>enable_capability</b> (<a class="el" href="namespacedtls_1_1v13_1_1crypto.html#a6fd77827090257f043c04ba9a6133f74">HardwareCapability</a> capability)</td></tr>
+<tr class="memdesc:a5379064f22402d88fb29bf81d02582ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable hardware acceleration for a specific capability. <br /></td></tr>
 <tr class="separator:a5379064f22402d88fb29bf81d02582ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0070fb33d5329c598a3777a2a30b1b30" id="r_a0070fb33d5329c598a3777a2a30b1b30"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1HardwareAccelerationDetector.html#a0070fb33d5329c598a3777a2a30b1b30">disable_capability</a> (<a class="el" href="namespacedtls_1_1v13_1_1crypto.html#a6fd77827090257f043c04ba9a6133f74">HardwareCapability</a> capability)</td></tr>
+<tr class="memitem:a0070fb33d5329c598a3777a2a30b1b30" id="r_a0070fb33d5329c598a3777a2a30b1b30"><td class="memItemLeft" align="right" valign="top"><a id="a0070fb33d5329c598a3777a2a30b1b30" name="a0070fb33d5329c598a3777a2a30b1b30"></a>
+static <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>disable_capability</b> (<a class="el" href="namespacedtls_1_1v13_1_1crypto.html#a6fd77827090257f043c04ba9a6133f74">HardwareCapability</a> capability)</td></tr>
+<tr class="memdesc:a0070fb33d5329c598a3777a2a30b1b30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disable hardware acceleration for a specific capability. <br /></td></tr>
 <tr class="separator:a0070fb33d5329c598a3777a2a30b1b30"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa58c6aacd021bc69b046af58a8b76077" id="r_aa58c6aacd021bc69b046af58a8b76077"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1HardwareAccelerationDetector.html#aa58c6aacd021bc69b046af58a8b76077">benchmark_capability</a> (<a class="el" href="namespacedtls_1_1v13_1_1crypto.html#a6fd77827090257f043c04ba9a6133f74">HardwareCapability</a> capability)</td></tr>
+<tr class="memitem:aa58c6aacd021bc69b046af58a8b76077" id="r_aa58c6aacd021bc69b046af58a8b76077"><td class="memItemLeft" align="right" valign="top"><a id="aa58c6aacd021bc69b046af58a8b76077" name="aa58c6aacd021bc69b046af58a8b76077"></a>
+static <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>benchmark_capability</b> (<a class="el" href="namespacedtls_1_1v13_1_1crypto.html#a6fd77827090257f043c04ba9a6133f74">HardwareCapability</a> capability)</td></tr>
+<tr class="memdesc:aa58c6aacd021bc69b046af58a8b76077"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get performance benchmark for a capability. <br /></td></tr>
 <tr class="separator:aa58c6aacd021bc69b046af58a8b76077"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a52b3d8f0f3ee447a03b240a4f9080c73" id="r_a52b3d8f0f3ee447a03b240a4f9080c73"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::vector&lt; std::string &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1HardwareAccelerationDetector.html#a52b3d8f0f3ee447a03b240a4f9080c73">get_optimization_recommendations</a> ()</td></tr>
+<tr class="memitem:a52b3d8f0f3ee447a03b240a4f9080c73" id="r_a52b3d8f0f3ee447a03b240a4f9080c73"><td class="memItemLeft" align="right" valign="top"><a id="a52b3d8f0f3ee447a03b240a4f9080c73" name="a52b3d8f0f3ee447a03b240a4f9080c73"></a>
+static <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::vector&lt; std::string &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>get_optimization_recommendations</b> ()</td></tr>
+<tr class="memdesc:a52b3d8f0f3ee447a03b240a4f9080c73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get optimization recommendations. <br /></td></tr>
 <tr class="separator:a52b3d8f0f3ee447a03b240a4f9080c73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98a868dcc90e0c2cabdfa1f70d8a8410" id="r_a98a868dcc90e0c2cabdfa1f70d8a8410"><td class="memItemLeft" align="right" valign="top"><a id="a98a868dcc90e0c2cabdfa1f70d8a8410" name="a98a868dcc90e0c2cabdfa1f70d8a8410"></a>
+static bool&#160;</td><td class="memItemRight" valign="bottom"><b>detect_hardware_rng</b> ()</td></tr>
+<tr class="memdesc:a98a868dcc90e0c2cabdfa1f70d8a8410"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if hardware RNG is available. <br /></td></tr>
+<tr class="separator:a98a868dcc90e0c2cabdfa1f70d8a8410"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16ccc2fd193490402f3d34d43209c8d7" id="r_a16ccc2fd193490402f3d34d43209c8d7"><td class="memItemLeft" align="right" valign="top"><a id="a16ccc2fd193490402f3d34d43209c8d7" name="a16ccc2fd193490402f3d34d43209c8d7"></a>
+static std::string&#160;</td><td class="memItemRight" valign="bottom"><b>get_platform_info</b> ()</td></tr>
+<tr class="memdesc:a16ccc2fd193490402f3d34d43209c8d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get platform information string. <br /></td></tr>
+<tr class="separator:a16ccc2fd193490402f3d34d43209c8d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Hardware acceleration detection and management </p>
+<div class="textblock"><p>Hardware acceleration detection and management. </p>
 
-<p class="definition">Definition at line <a class="el" href="hardware__acceleration_8h_source.html#l00081">81</a> of file <a class="el" href="hardware__acceleration_8h_source.html">hardware_acceleration.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hardware__acceleration_8h_source.html#l00086">86</a> of file <a class="el" href="hardware__acceleration_8h_source.html">hardware_acceleration.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="aa58c6aacd021bc69b046af58a8b76077" name="aa58c6aacd021bc69b046af58a8b76077"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa58c6aacd021bc69b046af58a8b76077">&#9670;&#160;</a></span>benchmark_capability()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; float &gt; dtls::v13::crypto::HardwareAccelerationDetector::benchmark_capability </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacedtls_1_1v13_1_1crypto.html#a6fd77827090257f043c04ba9a6133f74">HardwareCapability</a>&#160;</td>
-          <td class="paramname"><em>capability</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Get performance benchmark for a capability </p>
-
-</div>
-</div>
 <a id="a0863979808b7db91b6653d5e8a217dd4" name="a0863979808b7db91b6653d5e8a217dd4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0863979808b7db91b6653d5e8a217dd4">&#9670;&#160;</a></span>detect_capabilities()</h2>
 
@@ -211,87 +206,10 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Detect all available hardware acceleration capabilities </p>
 
-</div>
-</div>
-<a id="a0070fb33d5329c598a3777a2a30b1b30" name="a0070fb33d5329c598a3777a2a30b1b30"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0070fb33d5329c598a3777a2a30b1b30">&#9670;&#160;</a></span>disable_capability()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; dtls::v13::crypto::HardwareAccelerationDetector::disable_capability </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacedtls_1_1v13_1_1crypto.html#a6fd77827090257f043c04ba9a6133f74">HardwareCapability</a>&#160;</td>
-          <td class="paramname"><em>capability</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Disable hardware acceleration for a specific capability </p>
-
-</div>
-</div>
-<a id="a5379064f22402d88fb29bf81d02582ce" name="a5379064f22402d88fb29bf81d02582ce"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5379064f22402d88fb29bf81d02582ce">&#9670;&#160;</a></span>enable_capability()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; dtls::v13::crypto::HardwareAccelerationDetector::enable_capability </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacedtls_1_1v13_1_1crypto.html#a6fd77827090257f043c04ba9a6133f74">HardwareCapability</a>&#160;</td>
-          <td class="paramname"><em>capability</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Enable hardware acceleration for a specific capability </p>
-
-</div>
-</div>
-<a id="a52b3d8f0f3ee447a03b240a4f9080c73" name="a52b3d8f0f3ee447a03b240a4f9080c73"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a52b3d8f0f3ee447a03b240a4f9080c73">&#9670;&#160;</a></span>get_optimization_recommendations()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::vector&lt; std::string &gt; &gt; dtls::v13::crypto::HardwareAccelerationDetector::get_optimization_recommendations </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Get optimization recommendations </p>
+<p>Detects all available hardware acceleration capabilities. </p>
+<p>Performs comprehensive hardware detection including CPU instruction sets, dedicated crypto processors, and security hardware modules.</p>
+<dl class="section return"><dt>Returns</dt><dd>Hardware acceleration profile with detected capabilities or error details </dd></dl>
 
 </div>
 </div>
@@ -317,7 +235,10 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Get the best available crypto provider based on hardware </p>
+
+<p>Gets the best available crypto provider based on detected hardware. </p>
+<p>Analyzes detected hardware capabilities and recommends the optimal crypto provider for maximum performance.</p>
+<dl class="section return"><dt>Returns</dt><dd>Recommended provider name or error details </dd></dl>
 
 </div>
 </div>
@@ -344,7 +265,15 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Check if a specific capability is available </p>
+
+<p>Checks if a specific hardware capability is available. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">capability</td><td>The hardware capability to check </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if capability is available, false otherwise </dd></dl>
 
 </div>
 </div>

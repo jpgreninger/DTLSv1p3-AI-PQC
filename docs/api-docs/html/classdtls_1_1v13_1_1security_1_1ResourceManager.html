@@ -139,11 +139,15 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1security_1_1Resour
 </div><!--header-->
 <div class="contents">
 
+<p>Resource manager for DoS protection and system health.  
+ <a href="classdtls_1_1v13_1_1security_1_1ResourceManager.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="resource__manager_8h_source.html">resource_manager.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1security_1_1ResourceManager_1_1SourceResourceSummary.html">SourceResourceSummary</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get per-source resource usage.  <a href="structdtls_1_1v13_1_1security_1_1ResourceManager_1_1SourceResourceSummary.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -164,47 +168,70 @@ Public Member Functions</h2></td></tr>
 <a class="el" href="classdtls_1_1v13_1_1security_1_1ResourceManager.html">ResourceManager</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classdtls_1_1v13_1_1security_1_1ResourceManager.html">ResourceManager</a> &amp;&amp;) noexcept=default</td></tr>
 <tr class="separator:a9c99f9d13621de83d4358577859572e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb5e3832fa31ac9ed8faa89fc0011520" id="r_acb5e3832fa31ac9ed8faa89fc0011520"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; uint64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1ResourceManager.html#acb5e3832fa31ac9ed8faa89fc0011520">allocate_connection_resources</a> (const <a class="el" href="structdtls_1_1v13_1_1NetworkAddress.html">NetworkAddress</a> &amp;source_address, size_t memory_estimate)</td></tr>
+<tr class="memdesc:acb5e3832fa31ac9ed8faa89fc0011520"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate resources for a new connection.  <br /></td></tr>
 <tr class="separator:acb5e3832fa31ac9ed8faa89fc0011520"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac7f4db4dfceb1ea3caca7bbae8b20feb" id="r_ac7f4db4dfceb1ea3caca7bbae8b20feb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; uint64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1ResourceManager.html#ac7f4db4dfceb1ea3caca7bbae8b20feb">allocate_handshake_resources</a> (const <a class="el" href="structdtls_1_1v13_1_1NetworkAddress.html">NetworkAddress</a> &amp;source_address, size_t memory_estimate)</td></tr>
+<tr class="memdesc:ac7f4db4dfceb1ea3caca7bbae8b20feb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate resources for a handshake.  <br /></td></tr>
 <tr class="separator:ac7f4db4dfceb1ea3caca7bbae8b20feb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab1ce465f03b6c6ef4c3bb8027c31a6a2" id="r_ab1ce465f03b6c6ef4c3bb8027c31a6a2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; uint64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1ResourceManager.html#ab1ce465f03b6c6ef4c3bb8027c31a6a2">allocate_buffer_memory</a> (const <a class="el" href="structdtls_1_1v13_1_1NetworkAddress.html">NetworkAddress</a> &amp;source_address, size_t buffer_size)</td></tr>
+<tr class="memdesc:ab1ce465f03b6c6ef4c3bb8027c31a6a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate buffer memory.  <br /></td></tr>
 <tr class="separator:ab1ce465f03b6c6ef4c3bb8027c31a6a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ae01b2f12323527be77b8aa5ca1fe9b" id="r_a7ae01b2f12323527be77b8aa5ca1fe9b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1ResourceManager.html#a7ae01b2f12323527be77b8aa5ca1fe9b">release_resources</a> (uint64_t allocation_id)</td></tr>
+<tr class="memdesc:a7ae01b2f12323527be77b8aa5ca1fe9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release allocated resources.  <br /></td></tr>
 <tr class="separator:a7ae01b2f12323527be77b8aa5ca1fe9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2504eec925d2597f37777d2c491ffd8d" id="r_a2504eec925d2597f37777d2c491ffd8d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1ResourceManager.html#a2504eec925d2597f37777d2c491ffd8d">update_activity</a> (uint64_t allocation_id)</td></tr>
+<tr class="memdesc:a2504eec925d2597f37777d2c491ffd8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update resource activity (prevents cleanup)  <br /></td></tr>
 <tr class="separator:a2504eec925d2597f37777d2c491ffd8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a87ab7c70a788f1243eda51428c83b038" id="r_a87ab7c70a788f1243eda51428c83b038"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1ResourceManager.html#a87ab7c70a788f1243eda51428c83b038">can_allocate</a> (const <a class="el" href="structdtls_1_1v13_1_1NetworkAddress.html">NetworkAddress</a> &amp;source_address, ResourceType type, size_t amount) const</td></tr>
+<tr class="memdesc:a87ab7c70a788f1243eda51428c83b038"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if resource allocation would succeed.  <br /></td></tr>
 <tr class="separator:a87ab7c70a788f1243eda51428c83b038"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8b1b4f9d18a7db63b4c8b0b663b9881c" id="r_a8b1b4f9d18a7db63b4c8b0b663b9881c"><td class="memItemLeft" align="right" valign="top">PressureLevel&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1ResourceManager.html#a8b1b4f9d18a7db63b4c8b0b663b9881c">get_pressure_level</a> () const</td></tr>
+<tr class="memitem:a8b1b4f9d18a7db63b4c8b0b663b9881c" id="r_a8b1b4f9d18a7db63b4c8b0b663b9881c"><td class="memItemLeft" align="right" valign="top"><a id="a8b1b4f9d18a7db63b4c8b0b663b9881c" name="a8b1b4f9d18a7db63b4c8b0b663b9881c"></a>
+PressureLevel&#160;</td><td class="memItemRight" valign="bottom"><b>get_pressure_level</b> () const</td></tr>
+<tr class="memdesc:a8b1b4f9d18a7db63b4c8b0b663b9881c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current resource pressure level. <br /></td></tr>
 <tr class="separator:a8b1b4f9d18a7db63b4c8b0b663b9881c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae32cc8c0e82de3697d96cfa39abf16b1" id="r_ae32cc8c0e82de3697d96cfa39abf16b1"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1ResourceManager.html#ae32cc8c0e82de3697d96cfa39abf16b1">get_memory_usage_percentage</a> () const</td></tr>
+<tr class="memitem:ae32cc8c0e82de3697d96cfa39abf16b1" id="r_ae32cc8c0e82de3697d96cfa39abf16b1"><td class="memItemLeft" align="right" valign="top"><a id="ae32cc8c0e82de3697d96cfa39abf16b1" name="ae32cc8c0e82de3697d96cfa39abf16b1"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>get_memory_usage_percentage</b> () const</td></tr>
+<tr class="memdesc:ae32cc8c0e82de3697d96cfa39abf16b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get memory usage percentage (0.0 to 1.0) <br /></td></tr>
 <tr class="separator:ae32cc8c0e82de3697d96cfa39abf16b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2790e2e75f74754485fb5f51997b31d5" id="r_a2790e2e75f74754485fb5f51997b31d5"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1ResourceManager.html#a2790e2e75f74754485fb5f51997b31d5">get_connection_usage_percentage</a> () const</td></tr>
+<tr class="memitem:a2790e2e75f74754485fb5f51997b31d5" id="r_a2790e2e75f74754485fb5f51997b31d5"><td class="memItemLeft" align="right" valign="top"><a id="a2790e2e75f74754485fb5f51997b31d5" name="a2790e2e75f74754485fb5f51997b31d5"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>get_connection_usage_percentage</b> () const</td></tr>
+<tr class="memdesc:a2790e2e75f74754485fb5f51997b31d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get connection usage percentage (0.0 to 1.0) <br /></td></tr>
 <tr class="separator:a2790e2e75f74754485fb5f51997b31d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ade847933f5e5529f75a7b2738d0705dc" id="r_ade847933f5e5529f75a7b2738d0705dc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdtls_1_1v13_1_1security_1_1ResourceStats.html">ResourceStats</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1ResourceManager.html#ade847933f5e5529f75a7b2738d0705dc">get_resource_stats</a> () const</td></tr>
+<tr class="memitem:ade847933f5e5529f75a7b2738d0705dc" id="r_ade847933f5e5529f75a7b2738d0705dc"><td class="memItemLeft" align="right" valign="top"><a id="ade847933f5e5529f75a7b2738d0705dc" name="ade847933f5e5529f75a7b2738d0705dc"></a>
+<a class="el" href="structdtls_1_1v13_1_1security_1_1ResourceStats.html">ResourceStats</a>&#160;</td><td class="memItemRight" valign="bottom"><b>get_resource_stats</b> () const</td></tr>
+<tr class="memdesc:ade847933f5e5529f75a7b2738d0705dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get resource statistics. <br /></td></tr>
 <tr class="separator:ade847933f5e5529f75a7b2738d0705dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abeb0d0c318fb3073835bd2a65de1d037" id="r_abeb0d0c318fb3073835bd2a65de1d037"><td class="memItemLeft" align="right" valign="top"><a id="abeb0d0c318fb3073835bd2a65de1d037" name="abeb0d0c318fb3073835bd2a65de1d037"></a>
 <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="structdtls_1_1v13_1_1security_1_1ResourceManager_1_1SourceResourceSummary.html">SourceResourceSummary</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>get_source_usage</b> (const <a class="el" href="structdtls_1_1v13_1_1NetworkAddress.html">NetworkAddress</a> &amp;source_address) const</td></tr>
 <tr class="separator:abeb0d0c318fb3073835bd2a65de1d037"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae9f31e542e2969f06312ee4e6a39ea86" id="r_ae9f31e542e2969f06312ee4e6a39ea86"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1ResourceManager.html#ae9f31e542e2969f06312ee4e6a39ea86">force_cleanup</a> (size_t max_cleanup_count=0)</td></tr>
+<tr class="memdesc:ae9f31e542e2969f06312ee4e6a39ea86"><td class="mdescLeft">&#160;</td><td class="mdescRight">Force cleanup of idle resources.  <br /></td></tr>
 <tr class="separator:ae9f31e542e2969f06312ee4e6a39ea86"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb703884dd9aa0cee0f6992795016e4c" id="r_acb703884dd9aa0cee0f6992795016e4c"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1ResourceManager.html#acb703884dd9aa0cee0f6992795016e4c">cleanup_source_resources</a> (const <a class="el" href="structdtls_1_1v13_1_1NetworkAddress.html">NetworkAddress</a> &amp;source_address)</td></tr>
+<tr class="memdesc:acb703884dd9aa0cee0f6992795016e4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cleanup resources from specific source.  <br /></td></tr>
 <tr class="separator:acb703884dd9aa0cee0f6992795016e4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a572dbc9523845d7ea3abd78aef6dc4cc" id="r_a572dbc9523845d7ea3abd78aef6dc4cc"><td class="memItemLeft" align="right" valign="top">PressureLevel&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1ResourceManager.html#a572dbc9523845d7ea3abd78aef6dc4cc">check_system_health</a> ()</td></tr>
+<tr class="memdesc:a572dbc9523845d7ea3abd78aef6dc4cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check system health and trigger cleanup if needed.  <br /></td></tr>
 <tr class="separator:a572dbc9523845d7ea3abd78aef6dc4cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2a2dd2206fa674e5226c21f4243122bf" id="r_a2a2dd2206fa674e5226c21f4243122bf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1ResourceManager.html#a2a2dd2206fa674e5226c21f4243122bf">update_config</a> (const <a class="el" href="structdtls_1_1v13_1_1security_1_1ResourceConfig.html">ResourceConfig</a> &amp;new_config)</td></tr>
+<tr class="memdesc:a2a2dd2206fa674e5226c21f4243122bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update configuration.  <br /></td></tr>
 <tr class="separator:a2a2dd2206fa674e5226c21f4243122bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab191b1c62f62bf648cbddad781463e78" id="r_ab191b1c62f62bf648cbddad781463e78"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structdtls_1_1v13_1_1security_1_1ResourceConfig.html">ResourceConfig</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1ResourceManager.html#ab191b1c62f62bf648cbddad781463e78">get_config</a> () const</td></tr>
+<tr class="memdesc:ab191b1c62f62bf648cbddad781463e78"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current configuration.  <br /></td></tr>
 <tr class="separator:ab191b1c62f62bf648cbddad781463e78"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0fb0de0ea1626d4ea4c4d82961d4e495" id="r_a0fb0de0ea1626d4ea4c4d82961d4e495"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1ResourceManager.html#a0fb0de0ea1626d4ea4c4d82961d4e495">set_memory_monitoring</a> (bool enabled)</td></tr>
+<tr class="memdesc:a0fb0de0ea1626d4ea4c4d82961d4e495"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable/disable memory pressure monitoring.  <br /></td></tr>
 <tr class="separator:a0fb0de0ea1626d4ea4c4d82961d4e495"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a24c71c5f88a1057afaf92cc9ee0fe79f" id="r_a24c71c5f88a1057afaf92cc9ee0fe79f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structdtls_1_1v13_1_1NetworkAddress.html">NetworkAddress</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1ResourceManager.html#a24c71c5f88a1057afaf92cc9ee0fe79f">get_high_usage_sources</a> (double threshold=0.8) const</td></tr>
+<tr class="memdesc:a24c71c5f88a1057afaf92cc9ee0fe79f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get list of sources with high resource usage.  <br /></td></tr>
 <tr class="separator:a24c71c5f88a1057afaf92cc9ee0fe79f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aba16b5df49f978c3a27bf722ead7e44b" id="r_aba16b5df49f978c3a27bf722ead7e44b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1security_1_1ResourceManager.html#aba16b5df49f978c3a27bf722ead7e44b">reset</a> ()</td></tr>
+<tr class="memitem:aba16b5df49f978c3a27bf722ead7e44b" id="r_aba16b5df49f978c3a27bf722ead7e44b"><td class="memItemLeft" align="right" valign="top"><a id="aba16b5df49f978c3a27bf722ead7e44b" name="aba16b5df49f978c3a27bf722ead7e44b"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>reset</b> ()</td></tr>
+<tr class="memdesc:aba16b5df49f978c3a27bf722ead7e44b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset all resource tracking. <br /></td></tr>
 <tr class="separator:aba16b5df49f978c3a27bf722ead7e44b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Resource manager for DoS protection and system health </p>
+<div class="textblock"><p>Resource manager for DoS protection and system health. </p>
 
 <p class="definition">Definition at line <a class="el" href="resource__manager_8h_source.html#l00170">170</a> of file <a class="el" href="resource__manager_8h_source.html">resource_manager.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
@@ -233,7 +260,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Allocate buffer memory </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Allocate buffer memory. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">source_address</td><td>Source IP address </td></tr>
     <tr><td class="paramname">buffer_size</td><td>Buffer size needed </td></tr>
@@ -269,7 +298,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Allocate resources for a new connection </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Allocate resources for a new connection. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">source_address</td><td>Source IP address </td></tr>
     <tr><td class="paramname">memory_estimate</td><td>Estimated memory usage </td></tr>
@@ -305,7 +336,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Allocate resources for a handshake </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Allocate resources for a handshake. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">source_address</td><td>Source IP address </td></tr>
     <tr><td class="paramname">memory_estimate</td><td>Estimated memory usage </td></tr>
@@ -347,7 +380,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Check if resource allocation would succeed </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Check if resource allocation would succeed. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">source_address</td><td>Source IP address </td></tr>
     <tr><td class="paramname">type</td><td>Resource type to check </td></tr>
@@ -373,7 +408,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Check system health and trigger cleanup if needed </p><dl class="section return"><dt>Returns</dt><dd>Current pressure level after cleanup </dd></dl>
+
+<p>Check system health and trigger cleanup if needed. </p>
+<dl class="section return"><dt>Returns</dt><dd>Current pressure level after cleanup </dd></dl>
 
 </div>
 </div>
@@ -392,7 +429,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Cleanup resources from specific source </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Cleanup resources from specific source. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">source_address</td><td>Source IP address </td></tr>
   </table>
@@ -417,7 +456,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Force cleanup of idle resources </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Force cleanup of idle resources. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">max_cleanup_count</td><td>Maximum number of resources to cleanup </td></tr>
   </table>
@@ -449,27 +490,10 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Get current configuration </p>
+
+<p>Get current configuration. </p>
 
 <p class="definition">Definition at line <a class="el" href="resource__manager_8h_source.html#l00301">301</a> of file <a class="el" href="resource__manager_8h_source.html">resource_manager.h</a>.</p>
-
-</div>
-</div>
-<a id="a2790e2e75f74754485fb5f51997b31d5" name="a2790e2e75f74754485fb5f51997b31d5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2790e2e75f74754485fb5f51997b31d5">&#9670;&#160;</a></span>get_connection_usage_percentage()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">double dtls::v13::security::ResourceManager::get_connection_usage_percentage </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Get connection usage percentage (0.0 to 1.0) </p>
 
 </div>
 </div>
@@ -488,67 +512,15 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Get list of sources with high resource usage </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Get list of sources with high resource usage. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">threshold</td><td>Usage threshold (0.0 to 1.0) </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>List of source addresses </dd></dl>
-
-</div>
-</div>
-<a id="ae32cc8c0e82de3697d96cfa39abf16b1" name="ae32cc8c0e82de3697d96cfa39abf16b1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae32cc8c0e82de3697d96cfa39abf16b1">&#9670;&#160;</a></span>get_memory_usage_percentage()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">double dtls::v13::security::ResourceManager::get_memory_usage_percentage </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Get memory usage percentage (0.0 to 1.0) </p>
-
-</div>
-</div>
-<a id="a8b1b4f9d18a7db63b4c8b0b663b9881c" name="a8b1b4f9d18a7db63b4c8b0b663b9881c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8b1b4f9d18a7db63b4c8b0b663b9881c">&#9670;&#160;</a></span>get_pressure_level()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">PressureLevel dtls::v13::security::ResourceManager::get_pressure_level </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Get current resource pressure level </p>
-
-</div>
-</div>
-<a id="ade847933f5e5529f75a7b2738d0705dc" name="ade847933f5e5529f75a7b2738d0705dc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ade847933f5e5529f75a7b2738d0705dc">&#9670;&#160;</a></span>get_resource_stats()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="structdtls_1_1v13_1_1security_1_1ResourceStats.html">ResourceStats</a> dtls::v13::security::ResourceManager::get_resource_stats </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Get resource statistics </p>
 
 </div>
 </div>
@@ -567,30 +539,14 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Release allocated resources </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Release allocated resources. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">allocation_id</td><td>Allocation ID to release </td></tr>
   </table>
   </dd>
 </dl>
-
-</div>
-</div>
-<a id="aba16b5df49f978c3a27bf722ead7e44b" name="aba16b5df49f978c3a27bf722ead7e44b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aba16b5df49f978c3a27bf722ead7e44b">&#9670;&#160;</a></span>reset()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void dtls::v13::security::ResourceManager::reset </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Reset all resource tracking </p>
 
 </div>
 </div>
@@ -609,7 +565,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Enable/disable memory pressure monitoring </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Enable/disable memory pressure monitoring. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">enabled</td><td>True to enable monitoring </td></tr>
   </table>
@@ -633,7 +591,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Update resource activity (prevents cleanup) </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Update resource activity (prevents cleanup) </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">allocation_id</td><td>Allocation ID to update </td></tr>
   </table>
@@ -657,7 +617,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Update configuration </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Update configuration. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">new_config</td><td>New resource configuration </td></tr>
   </table>

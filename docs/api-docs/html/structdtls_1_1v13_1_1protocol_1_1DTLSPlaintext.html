@@ -141,6 +141,9 @@ $(document).ready(function(){initNavTree('structdtls_1_1v13_1_1protocol_1_1DTLSP
 </div><!--header-->
 <div class="contents">
 
+<p><a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html" title="DTLSPlaintext structure as specified in RFC 9147 Section 4.1.1.">DTLSPlaintext</a> structure as specified in RFC 9147 Section 4.1.1.  
+ <a href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="dtls__records_8h_source.html">dtls_records.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -161,10 +164,13 @@ Public Member Functions</h2></td></tr>
 <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html">DTLSPlaintext</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html">DTLSPlaintext</a> &amp;&amp;other) noexcept=default</td></tr>
 <tr class="separator:a0d6011b8f5f61cea839a5f7fdc0d6a75"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2de9c533e22fd197ab04662d8d9b4c52" id="r_a2de9c533e22fd197ab04662d8d9b4c52"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html#a2de9c533e22fd197ab04662d8d9b4c52">serialize</a> (<a class="el" href="classdtls_1_1v13_1_1memory_1_1ZeroCopyBuffer.html">memory::Buffer</a> &amp;buffer) const</td></tr>
+<tr class="memdesc:a2de9c533e22fd197ab04662d8d9b4c52"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serialize the <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html" title="DTLSPlaintext structure as specified in RFC 9147 Section 4.1.1.">DTLSPlaintext</a> structure to a buffer.  <br /></td></tr>
 <tr class="separator:a2de9c533e22fd197ab04662d8d9b4c52"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac5f970adcfd19570e09490b8455b7a2a" id="r_ac5f970adcfd19570e09490b8455b7a2a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html#ac5f970adcfd19570e09490b8455b7a2a">is_valid</a> () const</td></tr>
+<tr class="memdesc:ac5f970adcfd19570e09490b8455b7a2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate the <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html" title="DTLSPlaintext structure as specified in RFC 9147 Section 4.1.1.">DTLSPlaintext</a> structure.  <br /></td></tr>
 <tr class="separator:ac5f970adcfd19570e09490b8455b7a2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3d4fd55f0d0407e169141205ad2292f4" id="r_a3d4fd55f0d0407e169141205ad2292f4"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html#a3d4fd55f0d0407e169141205ad2292f4">total_size</a> () const</td></tr>
+<tr class="memdesc:a3d4fd55f0d0407e169141205ad2292f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get total size when serialized (header + fragment)  <br /></td></tr>
 <tr class="separator:a3d4fd55f0d0407e169141205ad2292f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa632282a562308460325245456431df0" id="r_aa632282a562308460325245456431df0"><td class="memItemLeft" align="right" valign="top">ContentType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html#aa632282a562308460325245456431df0">get_type</a> () const</td></tr>
 <tr class="separator:aa632282a562308460325245456431df0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -193,6 +199,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_fragment</b> (<a 
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a5a3df55f95653315ca7f90e22490e6f1" id="r_a5a3df55f95653315ca7f90e22490e6f1"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html">DTLSPlaintext</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html#a5a3df55f95653315ca7f90e22490e6f1">deserialize</a> (const <a class="el" href="classdtls_1_1v13_1_1memory_1_1ZeroCopyBuffer.html">memory::Buffer</a> &amp;buffer, size_t offset=0)</td></tr>
+<tr class="memdesc:a5a3df55f95653315ca7f90e22490e6f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deserialize <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html" title="DTLSPlaintext structure as specified in RFC 9147 Section 4.1.1.">DTLSPlaintext</a> from buffer.  <br /></td></tr>
 <tr class="separator:a5a3df55f95653315ca7f90e22490e6f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
@@ -218,7 +225,7 @@ Static Public Attributes</h2></td></tr>
 <tr class="separator:abb777b7ce4ae2699d5e2da85462557da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p><a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html">DTLSPlaintext</a> structure as specified in RFC 9147 Section 4.1.1</p>
+<div class="textblock"><p><a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html" title="DTLSPlaintext structure as specified in RFC 9147 Section 4.1.1.">DTLSPlaintext</a> structure as specified in RFC 9147 Section 4.1.1. </p>
 <p>This is the unified header format for DTLS v1.3 that provides backward compatibility while supporting new features. </p>
 
 <p class="definition">Definition at line <a class="el" href="dtls__records_8h_source.html#l00052">52</a> of file <a class="el" href="dtls__records_8h_source.html">dtls_records.h</a>.</p>
@@ -256,14 +263,16 @@ Static Public Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Deserialize <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html">DTLSPlaintext</a> from buffer </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Deserialize <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html" title="DTLSPlaintext structure as specified in RFC 9147 Section 4.1.1.">DTLSPlaintext</a> from buffer. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">buffer</td><td>Input buffer containing serialized data </td></tr>
     <tr><td class="paramname">offset</td><td>Offset in buffer to start reading from </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Deserialized <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html">DTLSPlaintext</a> structure or error </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Deserialized <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html" title="DTLSPlaintext structure as specified in RFC 9147 Section 4.1.1.">DTLSPlaintext</a> structure or error </dd></dl>
 
 </div>
 </div>
@@ -443,7 +452,9 @@ Static Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Validate the <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html">DTLSPlaintext</a> structure </p><dl class="section return"><dt>Returns</dt><dd>true if valid, false otherwise </dd></dl>
+
+<p>Validate the <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html" title="DTLSPlaintext structure as specified in RFC 9147 Section 4.1.1.">DTLSPlaintext</a> structure. </p>
+<dl class="section return"><dt>Returns</dt><dd>true if valid, false otherwise </dd></dl>
 
 </div>
 </div>
@@ -462,7 +473,9 @@ Static Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Serialize the <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html">DTLSPlaintext</a> structure to a buffer </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Serialize the <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html" title="DTLSPlaintext structure as specified in RFC 9147 Section 4.1.1.">DTLSPlaintext</a> structure to a buffer. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">buffer</td><td>Output buffer to write serialized data </td></tr>
   </table>
@@ -598,7 +611,9 @@ Static Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Get total size when serialized (header + fragment) </p><dl class="section return"><dt>Returns</dt><dd>Total serialized size in bytes </dd></dl>
+
+<p>Get total size when serialized (header + fragment) </p>
+<dl class="section return"><dt>Returns</dt><dd>Total serialized size in bytes </dd></dl>
 
 </div>
 </div>
