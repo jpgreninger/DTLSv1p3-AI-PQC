@@ -1,0 +1,25 @@
+var classdtls_1_1v13_1_1memory_1_1ConnectionMemoryManager =
+[
+    [ "SystemStats", "structdtls_1_1v13_1_1memory_1_1ConnectionMemoryManager_1_1SystemStats.html", "structdtls_1_1v13_1_1memory_1_1ConnectionMemoryManager_1_1SystemStats" ],
+    [ "allocate_batch_for_connection", "classdtls_1_1v13_1_1memory_1_1ConnectionMemoryManager.html#a77dedf3fb9ae259e87773a4aeadef420", null ],
+    [ "allocate_for_connection", "classdtls_1_1v13_1_1memory_1_1ConnectionMemoryManager.html#ab4bee3c785a847fb016bb1cb44de072b", null ],
+    [ "balance_memory_across_connections", "classdtls_1_1v13_1_1memory_1_1ConnectionMemoryManager.html#a5b7ef41a8e675a4c58602baad0e65f7e", null ],
+    [ "cleanup_inactive_connections", "classdtls_1_1v13_1_1memory_1_1ConnectionMemoryManager.html#a9a01af818e03238e1a354949dea1b275", null ],
+    [ "create_connection_pool", "classdtls_1_1v13_1_1memory_1_1ConnectionMemoryManager.html#a2d54536a2c71eb0eaba4e676f4c58ecb", null ],
+    [ "deallocate_batch_for_connection", "classdtls_1_1v13_1_1memory_1_1ConnectionMemoryManager.html#a0ce23a91947927b66d03a95f198742ee", null ],
+    [ "deallocate_for_connection", "classdtls_1_1v13_1_1memory_1_1ConnectionMemoryManager.html#af02cb81911ca65017b04ce7e917bac75", null ],
+    [ "destroy_connection_pool", "classdtls_1_1v13_1_1memory_1_1ConnectionMemoryManager.html#ab069c7e8f7edd2042f22e1747a85475a", null ],
+    [ "dump_connection_pool_states", "classdtls_1_1v13_1_1memory_1_1ConnectionMemoryManager.html#aa33a2ddee3b91ea9016839fab8ae39cf", null ],
+    [ "enable_automatic_optimization", "classdtls_1_1v13_1_1memory_1_1ConnectionMemoryManager.html#a58ade21a1f1fac293dbb0171159d731f", null ],
+    [ "generate_memory_usage_report", "classdtls_1_1v13_1_1memory_1_1ConnectionMemoryManager.html#afe900fbb3ddfa3dc0947fac46f0e77a9", null ],
+    [ "get_all_connection_characteristics", "classdtls_1_1v13_1_1memory_1_1ConnectionMemoryManager.html#ad3a4eae373b25b805072f8ece8ea0e69", null ],
+    [ "get_connection_pool", "classdtls_1_1v13_1_1memory_1_1ConnectionMemoryManager.html#ad451ba333bc80a21fed61529ffb0eb8c", null ],
+    [ "get_system_statistics", "classdtls_1_1v13_1_1memory_1_1ConnectionMemoryManager.html#a091c5a4f6b19d1e9433f3a77fa3efa82", null ],
+    [ "handle_memory_pressure", "classdtls_1_1v13_1_1memory_1_1ConnectionMemoryManager.html#ac94b0a7d559c566dda0e6889e568b20f", null ],
+    [ "handle_memory_relief", "classdtls_1_1v13_1_1memory_1_1ConnectionMemoryManager.html#a1da559a8665714cccce73167da9810f2", null ],
+    [ "instance", "classdtls_1_1v13_1_1memory_1_1ConnectionMemoryManager.html#a23888ec473555f92d817f604d1c986a5", null ],
+    [ "optimize_all_connection_pools", "classdtls_1_1v13_1_1memory_1_1ConnectionMemoryManager.html#af26e594bd06df86cd2e08361630f47f1", null ],
+    [ "reclaim_memory_from_connections", "classdtls_1_1v13_1_1memory_1_1ConnectionMemoryManager.html#ac6f7c5aba63a57b3bbe18cdf475267a8", null ],
+    [ "set_global_memory_limit", "classdtls_1_1v13_1_1memory_1_1ConnectionMemoryManager.html#a5853b07b51948cea31f57662f5d04b5d", null ],
+    [ "set_per_connection_limit", "classdtls_1_1v13_1_1memory_1_1ConnectionMemoryManager.html#a71d7ea3a9bba74e352186076922de0f0", null ]
+];

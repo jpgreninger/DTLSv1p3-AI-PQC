@@ -46,13 +46,24 @@ Complete documentation for the DTLS v1.3 implementation, covering both C++ and S
 
 ### Doxygen Documentation
 
-Generate HTML documentation from source code:
+Generate comprehensive HTML documentation from source code:
 
 ```bash
-cd docs
+# Generate API documentation
 doxygen Doxyfile
-# Output: docs/api-docs/html/index.html
+# Output: docs/api/html/index.html
+
+# Or use the build system target
+make docs
 ```
+
+**Features of Generated Documentation:**
+- Complete API reference with class diagrams
+- Function signatures with detailed parameter descriptions  
+- Code examples and usage patterns
+- Cross-references and inheritance diagrams
+- Search functionality and alphabetical index
+- RFC 9147 compliance notes and security annotations
 
 ### API Coverage
 

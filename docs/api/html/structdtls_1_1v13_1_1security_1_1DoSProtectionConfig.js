@@ -1,0 +1,25 @@
+var structdtls_1_1v13_1_1security_1_1DoSProtectionConfig =
+[
+    [ "DoSProtectionConfig", "structdtls_1_1v13_1_1security_1_1DoSProtectionConfig.html#ae61fb267131fccbb96582e0dd92d29a9", null ],
+    [ "alternate_servers", "structdtls_1_1v13_1_1security_1_1DoSProtectionConfig.html#afcc321e404af92fe2592999f56c28578", null ],
+    [ "amplification_ratio_limit", "structdtls_1_1v13_1_1security_1_1DoSProtectionConfig.html#a5f75e8bfc0678cbebdbf76716a4d740a", null ],
+    [ "blocked_countries", "structdtls_1_1v13_1_1security_1_1DoSProtectionConfig.html#a40af142b4ad9ba49d18068effe5707e8", null ],
+    [ "cookie_config", "structdtls_1_1v13_1_1security_1_1DoSProtectionConfig.html#a973db773d499818ebc43d440b97f4cd8", null ],
+    [ "cookie_trigger_connection_count", "structdtls_1_1v13_1_1security_1_1DoSProtectionConfig.html#ae9a64db29ea5abda054bce241149673d", null ],
+    [ "cookie_trigger_cpu_threshold", "structdtls_1_1v13_1_1security_1_1DoSProtectionConfig.html#a926e7c3b0c5dcccc76d98ea5264adc19", null ],
+    [ "cpu_check_interval", "structdtls_1_1v13_1_1security_1_1DoSProtectionConfig.html#a225fd63b6251dbd84d56c9954e4583ff", null ],
+    [ "cpu_threshold", "structdtls_1_1v13_1_1security_1_1DoSProtectionConfig.html#af360e0cae8f7773e6c34942d8ee4c462", null ],
+    [ "enable_cookie_validation", "structdtls_1_1v13_1_1security_1_1DoSProtectionConfig.html#a2cab845f857e61e7d482f5e9fba3c9dd", null ],
+    [ "enable_cpu_monitoring", "structdtls_1_1v13_1_1security_1_1DoSProtectionConfig.html#a80365e54d24ed4683454a484f33e080a", null ],
+    [ "enable_geoblocking", "structdtls_1_1v13_1_1security_1_1DoSProtectionConfig.html#a27d45c30d0eedbfcdfae95f6d1864cce", null ],
+    [ "enable_load_balancing", "structdtls_1_1v13_1_1security_1_1DoSProtectionConfig.html#a8f37a7cc70e2fd99c3bf68885e2ffac5", null ],
+    [ "enable_proof_of_work", "structdtls_1_1v13_1_1security_1_1DoSProtectionConfig.html#a02e5b631d3911ffd681d107258055e31", null ],
+    [ "enable_response_rate_limiting", "structdtls_1_1v13_1_1security_1_1DoSProtectionConfig.html#abd6768b726e44e9f2a3d7608b32a3b51", null ],
+    [ "enable_source_validation", "structdtls_1_1v13_1_1security_1_1DoSProtectionConfig.html#a3622b1e585191c89bef7046ca0283a95", null ],
+    [ "max_response_size_unverified", "structdtls_1_1v13_1_1security_1_1DoSProtectionConfig.html#a9602888fc74637ea40c7c314edf00085", null ],
+    [ "pow_difficulty", "structdtls_1_1v13_1_1security_1_1DoSProtectionConfig.html#a73fd90d594b432c3913ee44a6081f35d", null ],
+    [ "pow_validity", "structdtls_1_1v13_1_1security_1_1DoSProtectionConfig.html#a81a89635b85e27fa734b4f424e9d24bf", null ],
+    [ "rate_limit_config", "structdtls_1_1v13_1_1security_1_1DoSProtectionConfig.html#a290b61e62b980a0ce6d47b44866457ce", null ],
+    [ "require_cookie_on_overload", "structdtls_1_1v13_1_1security_1_1DoSProtectionConfig.html#a872e72078741a54c86da23ea53e4b295", null ],
+    [ "resource_config", "structdtls_1_1v13_1_1security_1_1DoSProtectionConfig.html#add4c98fb6d6751e97d1487718fb3ce57", null ]
+];

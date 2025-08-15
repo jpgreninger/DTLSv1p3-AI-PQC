@@ -1,0 +1,27 @@
+var structdtls_1_1v13_1_1ErrorReporter_1_1ReportingConfig =
+[
+    [ "anonymize_peer_info", "structdtls_1_1v13_1_1ErrorReporter_1_1ReportingConfig.html#aa5bea8546d1f4bcd4762f807e0d47b0f", null ],
+    [ "audit_log_path", "structdtls_1_1v13_1_1ErrorReporter_1_1ReportingConfig.html#a21c541f46a9333e92caa2069d6b53017", null ],
+    [ "auto_rotate_logs", "structdtls_1_1v13_1_1ErrorReporter_1_1ReportingConfig.html#af5d4648e8eef7ce6d16212a34d9d47b2", null ],
+    [ "enable_audit_trail", "structdtls_1_1v13_1_1ErrorReporter_1_1ReportingConfig.html#afc1e3728c6d2c846175cf2271788fb5b", null ],
+    [ "format", "structdtls_1_1v13_1_1ErrorReporter_1_1ReportingConfig.html#a38874907c832fd554c6965ba18dd405e", null ],
+    [ "include_microseconds", "structdtls_1_1v13_1_1ErrorReporter_1_1ReportingConfig.html#a40a40e3d276658271ae15ba3d29c7fbd", null ],
+    [ "include_stack_traces", "structdtls_1_1v13_1_1ErrorReporter_1_1ReportingConfig.html#a769322fc8235b073bcbd6a566b895a55", null ],
+    [ "log_connection_ids", "structdtls_1_1v13_1_1ErrorReporter_1_1ReportingConfig.html#a393f3f33e3362d1a205ae6db6a47dbd3", null ],
+    [ "log_file_path", "structdtls_1_1v13_1_1ErrorReporter_1_1ReportingConfig.html#a7f24982af33b3c6d1914d977b8581eef", null ],
+    [ "log_file_prefix", "structdtls_1_1v13_1_1ErrorReporter_1_1ReportingConfig.html#a93eec77614de802701d4b4fab028579e", null ],
+    [ "log_message_contents", "structdtls_1_1v13_1_1ErrorReporter_1_1ReportingConfig.html#a057b397072d4de3eaef12b7ccc225521", null ],
+    [ "log_network_addresses", "structdtls_1_1v13_1_1ErrorReporter_1_1ReportingConfig.html#a6bc7894d34b23bd49fd82af065a5db2c", null ],
+    [ "log_retention_hours", "structdtls_1_1v13_1_1ErrorReporter_1_1ReportingConfig.html#a2644a55dc085d13086871798409c3ea0", null ],
+    [ "max_log_entry_size", "structdtls_1_1v13_1_1ErrorReporter_1_1ReportingConfig.html#a64b624cfe14d016154e0e5691d4202a7", null ],
+    [ "max_log_files", "structdtls_1_1v13_1_1ErrorReporter_1_1ReportingConfig.html#a9e8f45cf72e7a7c2ab7f6db02d150aa0", null ],
+    [ "max_reports_per_minute", "structdtls_1_1v13_1_1ErrorReporter_1_1ReportingConfig.html#af5a5fa356a4006ca6c0894f56dfc31fe", null ],
+    [ "max_reports_per_second", "structdtls_1_1v13_1_1ErrorReporter_1_1ReportingConfig.html#afa8b8ff8ee4b7df6b2710ba2fc260b86", null ],
+    [ "max_sensitivity", "structdtls_1_1v13_1_1ErrorReporter_1_1ReportingConfig.html#a8a6195aee4637f1483ac2d967ca6e67c", null ],
+    [ "max_total_log_size", "structdtls_1_1v13_1_1ErrorReporter_1_1ReportingConfig.html#afa846845a0cc8ce7a2659cfdadd0178f", null ],
+    [ "minimum_level", "structdtls_1_1v13_1_1ErrorReporter_1_1ReportingConfig.html#a1bcc903d703bccbfe69d455a0ca01220", null ],
+    [ "sign_audit_entries", "structdtls_1_1v13_1_1ErrorReporter_1_1ReportingConfig.html#a62fb8f18bd34b2a0b8a0242fe41ef6bd", null ],
+    [ "syslog_facility", "structdtls_1_1v13_1_1ErrorReporter_1_1ReportingConfig.html#aff8a07ab36425195a19a62e72bc01f3d", null ],
+    [ "syslog_identity", "structdtls_1_1v13_1_1ErrorReporter_1_1ReportingConfig.html#a28b7792948896735bb2466ff237650b6", null ],
+    [ "use_utc_timestamps", "structdtls_1_1v13_1_1ErrorReporter_1_1ReportingConfig.html#a1a703efb6d948057e800ce3cf45cae26", null ]
+];

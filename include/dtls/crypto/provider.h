@@ -1,3 +1,22 @@
+/**
+ * @file provider.h
+ * @brief DTLS v1.3 Cryptographic Provider Interface
+ * 
+ * This file defines the abstract cryptographic provider interface for DTLS v1.3,
+ * enabling multiple cryptographic backend implementations (OpenSSL, Botan, etc.)
+ * with a unified API. Supports advanced features including quantum-resistant
+ * ML-KEM cryptography, hardware acceleration, and high-performance operations.
+ * 
+ * @author DTLS v1.3 Implementation Team
+ * @version 1.0.0
+ * @date 2025-08-15
+ * 
+ * @rfc9147 Implements cryptographic requirements from RFC 9147 Section 4.1
+ * @security Provides quantum-resistant ML-KEM and traditional ECDHE key exchange
+ * @performance Optimized for high-throughput with hardware acceleration support
+ * @thread_safety All provider implementations must be thread-safe
+ */
+
 #ifndef DTLS_CRYPTO_PROVIDER_H
 #define DTLS_CRYPTO_PROVIDER_H
 
@@ -11,6 +30,14 @@
 #include <future>
 #include <unordered_map>
 
+/**
+ * @namespace dtls::v13::crypto
+ * @brief Cryptographic subsystem for DTLS v1.3
+ * 
+ * Contains all cryptographic interfaces, implementations, and utilities
+ * required for DTLS v1.3 protocol operation. Supports multiple crypto
+ * providers and advanced security features.
+ */
 namespace dtls {
 namespace v13 {
 namespace crypto {

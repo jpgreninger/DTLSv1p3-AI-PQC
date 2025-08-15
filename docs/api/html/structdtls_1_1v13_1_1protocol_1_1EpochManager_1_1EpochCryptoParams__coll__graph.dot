@@ -1,0 +1,10 @@
+digraph "dtls::v13::protocol::EpochManager::EpochCryptoParams"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  Node1 [id="Node000001",label="dtls::v13::protocol\l::EpochManager::EpochCrypto\lParams",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Get crypto parameters for an epoch."];
+  Node2 -> Node1 [id="edge1_Node000001_Node000002",dir="back",color="darkorchid3",style="dashed",tooltip=" ",label=" read_iv\nread_key\nwrite_iv\nwrite_key",fontcolor="grey" ];
+  Node2 [id="Node000002",label="std::vector\< uint8_t \>",height=0.2,width=0.4,color="gray40", fillcolor="white", style="filled",tooltip=" "];
+}

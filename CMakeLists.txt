@@ -178,6 +178,36 @@ set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 
 include(CPack)
 
+# Documentation generation
+find_package(Doxygen QUIET)
+if(DOXYGEN_FOUND)
+    # Configure Doxygen
+    set(DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/docs/api)
+    
+    # Add documentation target
+    add_custom_target(docs
+        COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMENT "Generating comprehensive API documentation with Doxygen"
+        VERBATIM
+    )
+    
+    # Add documentation installation
+    install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/docs/api/html/
+        DESTINATION ${CMAKE_INSTALL_DOCDIR}/api
+        OPTIONAL
+        PATTERN "*.html"
+        PATTERN "*.css"
+        PATTERN "*.js"
+        PATTERN "*.png"
+        PATTERN "*.svg"
+    )
+    
+    message(STATUS "Documentation generation: Available (run 'make docs')")
+else()
+    message(STATUS "Documentation generation: Doxygen not found")
+endif()
+
 # Print configuration summary
 message(STATUS "")
 message(STATUS "DTLSv13 Configuration Summary:")
@@ -198,5 +228,10 @@ if(DTLS_HAS_SYSTEMC)
     message(STATUS "  SystemC: ${SystemCLanguage_VERSION}")
 else()
     message(STATUS "  SystemC: Not found")
+endif()
+if(DOXYGEN_FOUND)
+    message(STATUS "  Documentation: Available")
+else()
+    message(STATUS "  Documentation: Doxygen required")
 endif()
 message(STATUS "")

@@ -1,0 +1,27 @@
+var classdtls_1_1v13_1_1memory_1_1HandshakeBufferManager =
+[
+    [ "HandshakeBufferConfig", "structdtls_1_1v13_1_1memory_1_1HandshakeBufferManager_1_1HandshakeBufferConfig.html", "structdtls_1_1v13_1_1memory_1_1HandshakeBufferManager_1_1HandshakeBufferConfig" ],
+    [ "HandshakeBufferStats", "structdtls_1_1v13_1_1memory_1_1HandshakeBufferManager_1_1HandshakeBufferStats.html", "structdtls_1_1v13_1_1memory_1_1HandshakeBufferManager_1_1HandshakeBufferStats" ],
+    [ "allocate_certificate_buffer", "classdtls_1_1v13_1_1memory_1_1HandshakeBufferManager.html#ad72351256cde4a165485831b50fb66ee", null ],
+    [ "allocate_finished_buffer", "classdtls_1_1v13_1_1memory_1_1HandshakeBufferManager.html#a15f501eb1071ca1af0d477d32cc099aa", null ],
+    [ "allocate_fragment_buffer", "classdtls_1_1v13_1_1memory_1_1HandshakeBufferManager.html#a5248d0ad3ae4cf3bce964042118a3c82", null ],
+    [ "allocate_handshake_buffer", "classdtls_1_1v13_1_1memory_1_1HandshakeBufferManager.html#a2b00b4ba5a016694f046363f553fcfcb", null ],
+    [ "allocate_key_exchange_buffer", "classdtls_1_1v13_1_1memory_1_1HandshakeBufferManager.html#adebf49cb2f2f06b13f31c6fa959b3eaa", null ],
+    [ "cleanup_abandoned_reassemblies", "classdtls_1_1v13_1_1memory_1_1HandshakeBufferManager.html#a4e698733bf940549c494b642fbc1228a", null ],
+    [ "cleanup_connection", "classdtls_1_1v13_1_1memory_1_1HandshakeBufferManager.html#a14ffd078fc0452b4f8866e776a646102", null ],
+    [ "cleanup_expired_fragments", "classdtls_1_1v13_1_1memory_1_1HandshakeBufferManager.html#aae5c837adb76b35c53748404bdd46733", null ],
+    [ "get_config", "classdtls_1_1v13_1_1memory_1_1HandshakeBufferManager.html#a0348807b97f7e90ef147319daca0d4c8", null ],
+    [ "get_connection_memory_usage", "classdtls_1_1v13_1_1memory_1_1HandshakeBufferManager.html#ac56a87887bf0daacbebbf21cf43263f4", null ],
+    [ "get_statistics", "classdtls_1_1v13_1_1memory_1_1HandshakeBufferManager.html#a8dbb8d4b55677255b78223e2989e9679", null ],
+    [ "get_total_memory_usage", "classdtls_1_1v13_1_1memory_1_1HandshakeBufferManager.html#adc8440b8277f6cc4a1b6a4a4e5d6384c", null ],
+    [ "instance", "classdtls_1_1v13_1_1memory_1_1HandshakeBufferManager.html#a8883afec3ea6701e15193651078c79d9", null ],
+    [ "is_fragmentation_attack", "classdtls_1_1v13_1_1memory_1_1HandshakeBufferManager.html#a720f1b055d3e12420f8fd27deeee1e9f", null ],
+    [ "on_handshake_complete", "classdtls_1_1v13_1_1memory_1_1HandshakeBufferManager.html#a4fea6fe2375c97886db133f3ac57ba6d", null ],
+    [ "on_handshake_failed", "classdtls_1_1v13_1_1memory_1_1HandshakeBufferManager.html#a3cfbd8c8e662a0beaf67da2512512d95", null ],
+    [ "on_handshake_start", "classdtls_1_1v13_1_1memory_1_1HandshakeBufferManager.html#a65ede6ab9703748f6bd1da3180fd97df", null ],
+    [ "reset_statistics", "classdtls_1_1v13_1_1memory_1_1HandshakeBufferManager.html#a2002b0da5dee83560ebcb5c03e561df8", null ],
+    [ "set_config", "classdtls_1_1v13_1_1memory_1_1HandshakeBufferManager.html#a259d49b9c24c55cb5a78c216e0091007", null ],
+    [ "store_handshake_fragment", "classdtls_1_1v13_1_1memory_1_1HandshakeBufferManager.html#a8fb4b4a051c33e0f10b506a6582b9004", null ],
+    [ "try_assemble_message", "classdtls_1_1v13_1_1memory_1_1HandshakeBufferManager.html#a278250683095af177bd08bc20a6302a3", null ],
+    [ "validate_fragment", "classdtls_1_1v13_1_1memory_1_1HandshakeBufferManager.html#af3f40cadacef0df40ad3095019823025", null ]
+];
