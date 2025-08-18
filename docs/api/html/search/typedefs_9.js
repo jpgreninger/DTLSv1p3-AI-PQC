@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['mutableview_0',['MutableView',['../namespacedtls_1_1v13_1_1memory.html#a886dedd7f7540487b5bd642f7fb75a15',1,'dtls::v13::memory']]]
+  ['other_0',['other',['../structdtls_1_1v13_1_1memory_1_1PoolAllocator_1_1rebind.html#adffde1c205bc9edf4937bf468b0644f8',1,'dtls::v13::memory::PoolAllocator::rebind']]]
 ];

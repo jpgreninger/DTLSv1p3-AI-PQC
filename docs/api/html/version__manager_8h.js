@@ -1,11 +1,5 @@
 var version__manager_8h =
 [
-    [ "dtls::v13::protocol::VersionManager", "classdtls_1_1v13_1_1protocol_1_1VersionManager.html", "classdtls_1_1v13_1_1protocol_1_1VersionManager" ],
-    [ "dtls::v13::protocol::VersionManager::NegotiationResult", "structdtls_1_1v13_1_1protocol_1_1VersionManager_1_1NegotiationResult.html", "structdtls_1_1v13_1_1protocol_1_1VersionManager_1_1NegotiationResult" ],
-    [ "dtls::v13::protocol::VersionManager::Config", "structdtls_1_1v13_1_1protocol_1_1VersionManager_1_1Config.html", "structdtls_1_1v13_1_1protocol_1_1VersionManager_1_1Config" ],
-    [ "dtls::v13::protocol::VersionManager::CompatibilityInfo", "structdtls_1_1v13_1_1protocol_1_1VersionManager_1_1CompatibilityInfo.html", "structdtls_1_1v13_1_1protocol_1_1VersionManager_1_1CompatibilityInfo" ],
-    [ "dtls::v13::protocol::VersionManager::ValidationResult", "structdtls_1_1v13_1_1protocol_1_1VersionManager_1_1ValidationResult.html", "structdtls_1_1v13_1_1protocol_1_1VersionManager_1_1ValidationResult" ],
-    [ "dtls::v13::protocol::VersionManager::HandshakeVersionContext", "structdtls_1_1v13_1_1protocol_1_1VersionManager_1_1HandshakeVersionContext.html", "structdtls_1_1v13_1_1protocol_1_1VersionManager_1_1HandshakeVersionContext" ],
     [ "GlobalProtocolVersion", "version__manager_8h.html#aa3bad47e167e26fa25050b9eaeb22cf2", null ],
     [ "create_supported_versions_extension", "version__manager_8h.html#a0df11296ffa2741d6538eb73ebe6ec6c", null ],
     [ "get_legacy_version_for_hello", "version__manager_8h.html#a9bb7b89eb379a9d96fb9ae3d5996a90e", null ],

@@ -138,11 +138,12 @@ Decision 1: Layered Architecture with Abstract Interfaces</h2>
 <li><b>Why</b>: Provides maximum testability, flexibility, and maintainability</li>
 <li><b>Evidence</b>: Successful mock implementations for testing, easy SystemC integration</li>
 </ul>
-<p><b>Implementation:</b> </p><div class="fragment"><div class="line"><span class="keyword">class </span>Connection {</div>
+<p><b>Implementation:</b> </p><div class="fragment"><div class="line"><span class="keyword">class </span><a class="code hl_class" href="classConnection.html">Connection</a> {</div>
 <div class="line">    std::unique_ptr&lt;CryptoProvider&gt; crypto_provider_;     <span class="comment">// Abstract interface</span></div>
 <div class="line">    std::unique_ptr&lt;Transport&gt; transport_;                <span class="comment">// Abstract interface</span></div>
 <div class="line">    std::unique_ptr&lt;RecordLayer&gt; record_layer_;          <span class="comment">// Abstract interface</span></div>
 <div class="line">};</div>
+<div class="ttc" id="aclassConnection_html"><div class="ttname"><a href="classConnection.html">Connection</a></div><div class="ttdoc">Main DTLS v1.3 Connection implementation.</div></div>
 </div><!-- fragment --><p><b>Trade-offs:</b></p><ul>
 <li>✅ <b>Pros</b>: Easy testing with mocks, clean separation of concerns, flexible implementations</li>
 <li>❌ <b>Cons</b>: Small performance overhead from virtual calls (~13% measured)</li>
@@ -498,7 +499,7 @@ Decision 10: Fine-Grained Locking with Lock-Free Operations</h2>
 <li><b>Why</b>: Best scalability and performance under high concurrency</li>
 <li><b>Evidence</b>: Successful concurrent testing with 10,000+ connections</li>
 </ul>
-<p><b>Implementation:</b> </p><div class="fragment"><div class="line"><span class="keyword">class </span>Connection {</div>
+<p><b>Implementation:</b> </p><div class="fragment"><div class="line"><span class="keyword">class </span><a class="code hl_class" href="classConnection.html">Connection</a> {</div>
 <div class="line"><span class="keyword">private</span>:</div>
 <div class="line">    <span class="keyword">mutable</span> std::shared_mutex state_mutex_;          <span class="comment">// Reader-writer for state</span></div>
 <div class="line">    std::atomic&lt;ConnectionState&gt; atomic_state_;      <span class="comment">// Lock-free state checks</span></div>
@@ -720,7 +721,7 @@ Decision 15: Comprehensive DoS Protection</h2>
 <p><b>Problem</b>: How to protect against sophisticated denial-of-service attacks.</p>
 <p><b>Options Considered:</b></p><ol type="1">
 <li><b>Basic Rate Limiting</b>: Simple request rate limits</li>
-<li><b>Connection Limits</b>: Limit concurrent connections</li>
+<li><b><a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> Limits</b>: Limit concurrent connections</li>
 <li><b>Comprehensive DoS Protection</b>: Multi-vector attack protection</li>
 </ol>
 <p><b>Decision Rationale:</b></p><ul>
@@ -761,7 +762,7 @@ Decision 15: Comprehensive DoS Protection</h2>
 </ul>
 <p><b>Protection Coverage:</b></p><ul>
 <li><b>Volumetric Floods</b>: Token bucket + sliding window detection</li>
-<li><b>Connection Exhaustion</b>: Per-IP and global connection limits</li>
+<li><b><a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> Exhaustion</b>: Per-IP and global connection limits</li>
 <li><b>Memory Exhaustion</b>: Per-connection and global memory limits</li>
 <li><b>Protocol Attacks</b>: Cookie validation and state management</li>
 <li><b>Amplification</b>: Request size validation and response limiting</li>
@@ -961,7 +962,7 @@ Decision 19: Mock-Based Testing Strategy</h2>
 <div class="line">    <span class="keyword">auto</span> mock_transport = std::make_unique&lt;MockTransport&gt;();</div>
 <div class="line">    mock_transport-&gt;simulate_network_failure();</div>
 <div class="line">    </div>
-<div class="line">    Connection connection(config, crypto_provider, std::move(mock_transport));</div>
+<div class="line">    <a class="code hl_class" href="classConnection.html">Connection</a> connection(config, crypto_provider, std::move(mock_transport));</div>
 <div class="line">    </div>
 <div class="line">    <span class="comment">// Test should handle network failure gracefully</span></div>
 <div class="line">    <span class="keyword">auto</span> result = connection.send(test_data);</div>

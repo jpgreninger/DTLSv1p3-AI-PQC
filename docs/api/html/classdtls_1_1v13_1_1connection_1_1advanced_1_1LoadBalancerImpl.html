@@ -114,18 +114,12 @@ Collaboration diagram for dtls::v13::connection::advanced::LoadBalancerImpl:</di
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a591833361b45f4ccbe318ced94a8bd06" id="r_a591833361b45f4ccbe318ced94a8bd06"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1LoadBalancerImpl.html#a591833361b45f4ccbe318ced94a8bd06">LoadBalancerImpl</a> (<a class="el" href="structdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPoolConfig.html#adba98716d531a15b941110aaa02c1232">ConnectionPoolConfig::LoadBalancingStrategy</a> strategy)</td></tr>
 <tr class="separator:a591833361b45f4ccbe318ced94a8bd06"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af8fc1037f0d7eb72886fb7eec9a6c55e" id="r_af8fc1037f0d7eb72886fb7eec9a6c55e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::shared_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ManagedConnection.html">ManagedConnection</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1LoadBalancerImpl.html#af8fc1037f0d7eb72886fb7eec9a6c55e">select_connection</a> (<a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> std::vector&lt; std::shared_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ManagedConnection.html">ManagedConnection</a> &gt; &gt; &amp;<a class="el" href="classdtls_1_1v13_1_1Result.html">available_connections</a>, <a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> <a class="el" href="structdtls_1_1v13_1_1transport_1_1NetworkEndpoint.html">transport::NetworkEndpoint</a> &amp;<a class="el" href="classdtls_1_1v13_1_1Result.html">target_endpoint</a>) <a class="el" href="classdtls_1_1v13_1_1Result.html">override</a></td></tr>
-<tr class="memdesc:af8fc1037f0d7eb72886fb7eec9a6c55e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select best connection from available pool.  <br /></td></tr>
+<tr class="memitem:af8fc1037f0d7eb72886fb7eec9a6c55e" id="r_af8fc1037f0d7eb72886fb7eec9a6c55e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::shared_ptr&lt; ManagedConnection &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1LoadBalancerImpl.html#af8fc1037f0d7eb72886fb7eec9a6c55e">select_connection</a> (const std::vector&lt; std::shared_ptr&lt; ManagedConnection &gt; &gt; &amp;available_connections, const <a class="el" href="structdtls_1_1v13_1_1transport_1_1NetworkEndpoint.html">transport::NetworkEndpoint</a> &amp;target_endpoint) override</td></tr>
 <tr class="separator:af8fc1037f0d7eb72886fb7eec9a6c55e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a70d2ed0a01b547b722a7e4f2cd1970af" id="r_a70d2ed0a01b547b722a7e4f2cd1970af"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1Result.html">void</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1LoadBalancerImpl.html#a70d2ed0a01b547b722a7e4f2cd1970af">update_weights</a> (<a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> std::unordered_map&lt; std::string, <a class="el" href="classdtls_1_1v13_1_1Result.html">double</a> &gt; &amp;<a class="el" href="classdtls_1_1v13_1_1Result.html">connection_weights</a>) <a class="el" href="classdtls_1_1v13_1_1Result.html">override</a></td></tr>
-<tr class="memdesc:a70d2ed0a01b547b722a7e4f2cd1970af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update load balancing weights.  <br /></td></tr>
+<tr class="memitem:a70d2ed0a01b547b722a7e4f2cd1970af" id="r_a70d2ed0a01b547b722a7e4f2cd1970af"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1LoadBalancerImpl.html#a70d2ed0a01b547b722a7e4f2cd1970af">update_weights</a> (const std::unordered_map&lt; std::string, double &gt; &amp;connection_weights) override</td></tr>
 <tr class="separator:a70d2ed0a01b547b722a7e4f2cd1970af"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a450f13c61bcec0fedf5ebf871491b8c2" id="r_a450f13c61bcec0fedf5ebf871491b8c2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPoolConfig.html#adba98716d531a15b941110aaa02c1232">ConnectionPoolConfig::LoadBalancingStrategy</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1LoadBalancerImpl.html#a450f13c61bcec0fedf5ebf871491b8c2">get_strategy</a> () <a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">override</a></td></tr>
-<tr class="memdesc:a450f13c61bcec0fedf5ebf871491b8c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get load balancing strategy.  <br /></td></tr>
+<tr class="memitem:a450f13c61bcec0fedf5ebf871491b8c2" id="r_a450f13c61bcec0fedf5ebf871491b8c2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPoolConfig.html#adba98716d531a15b941110aaa02c1232">ConnectionPoolConfig::LoadBalancingStrategy</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1LoadBalancerImpl.html#a450f13c61bcec0fedf5ebf871491b8c2">get_strategy</a> () const override</td></tr>
 <tr class="separator:a450f13c61bcec0fedf5ebf871491b8c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_classdtls_1_1v13_1_1connection_1_1advanced_1_1LoadBalancer"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classdtls_1_1v13_1_1connection_1_1advanced_1_1LoadBalancer')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1LoadBalancer.html">dtls::v13::connection::advanced::LoadBalancer</a></td></tr>
-<tr class="memitem:a225a79aec199da8a22334ef3a5453aac inherit pub_methods_classdtls_1_1v13_1_1connection_1_1advanced_1_1LoadBalancer" id="r_a225a79aec199da8a22334ef3a5453aac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">virtual</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1LoadBalancer.html#a225a79aec199da8a22334ef3a5453aac">~LoadBalancer</a> ()=<a class="el" href="classdtls_1_1v13_1_1Result.html">default</a></td></tr>
-<tr class="separator:a225a79aec199da8a22334ef3a5453aac inherit pub_methods_classdtls_1_1v13_1_1connection_1_1advanced_1_1LoadBalancer"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Load balancer implementation. </p>
@@ -179,14 +173,10 @@ Public Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Get load balancing strategy. </p>
-
-<p>Implements <a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1LoadBalancer.html#a54908f9cf11dd4cd202debfe11aa10fe">dtls::v13::connection::advanced::LoadBalancer</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="advanced__connection__manager_8cpp_source.html#l00332">332</a> of file <a class="el" href="advanced__connection__manager_8cpp_source.html">advanced_connection_manager.cpp</a>.</p>
 
@@ -202,15 +192,15 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::shared_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ManagedConnection.html">ManagedConnection</a> &gt; &gt; dtls::v13::connection::advanced::LoadBalancerImpl::select_connection </td>
+          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::shared_ptr&lt; ManagedConnection &gt; &gt; dtls::v13::connection::advanced::LoadBalancerImpl::select_connection </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> std::vector&lt; std::shared_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ManagedConnection.html">ManagedConnection</a> &gt; &gt; &amp;&#160;</td>
+          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; ManagedConnection &gt; &gt; &amp;&#160;</td>
           <td class="paramname"><em>available_connections</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> <a class="el" href="structdtls_1_1v13_1_1transport_1_1NetworkEndpoint.html">transport::NetworkEndpoint</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="structdtls_1_1v13_1_1transport_1_1NetworkEndpoint.html">transport::NetworkEndpoint</a> &amp;&#160;</td>
           <td class="paramname"><em>target_endpoint</em>&#160;</td>
         </tr>
         <tr>
@@ -221,14 +211,10 @@ Public Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Select best connection from available pool. </p>
-
-<p>Implements <a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1LoadBalancer.html#aca6818347c4227a8e5a1b6aa9a065b32">dtls::v13::connection::advanced::LoadBalancer</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="advanced__connection__manager_8cpp_source.html#l00281">281</a> of file <a class="el" href="advanced__connection__manager_8cpp_source.html">advanced_connection_manager.cpp</a>.</p>
 
@@ -244,23 +230,19 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1Result.html">void</a> &gt; dtls::v13::connection::advanced::LoadBalancerImpl::update_weights </td>
+          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; dtls::v13::connection::advanced::LoadBalancerImpl::update_weights </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> std::unordered_map&lt; std::string, <a class="el" href="classdtls_1_1v13_1_1Result.html">double</a> &gt; &amp;&#160;</td>
+          <td class="paramtype">const std::unordered_map&lt; std::string, double &gt; &amp;&#160;</td>
           <td class="paramname"><em>connection_weights</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Update load balancing weights. </p>
-
-<p>Implements <a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1LoadBalancer.html#a7539534cfe014fbb0b2d7cceb75fedca">dtls::v13::connection::advanced::LoadBalancer</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="advanced__connection__manager_8cpp_source.html#l00325">325</a> of file <a class="el" href="advanced__connection__manager_8cpp_source.html">advanced_connection_manager.cpp</a>.</p>
 

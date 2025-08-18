@@ -98,17 +98,17 @@ $(document).ready(function(){initNavTree('namespacedtls_1_1v13_1_1result__compos
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a0ad62adc4825ac44de898b0a950c4591" id="r_a0ad62adc4825ac44de898b0a950c4591"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="classdtls_1_1v13_1_1Result.html">typename</a> T , <a class="el" href="classdtls_1_1v13_1_1Result.html">typename</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">F</a> &gt; </td></tr>
-<tr class="memitem:a0ad62adc4825ac44de898b0a950c4591"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">auto</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1result__compose.html#a0ad62adc4825ac44de898b0a950c4591">and_then_chain</a> (<a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; T &gt; <a class="el" href="classdtls_1_1v13_1_1Result.html">initial</a>, <a class="el" href="classdtls_1_1v13_1_1Result.html">F</a> &amp;&amp;<a class="el" href="classdtls_1_1v13_1_1Result.html">func</a>) -&gt; <a class="el" href="classdtls_1_1v13_1_1Result.html">decltype</a>(<a class="el" href="classdtls_1_1v13_1_1Result.html">func</a>(std::move(<a class="el" href="classdtls_1_1v13_1_1Result.html">initial</a>).value()))</td></tr>
+<tr class="memitem:a0ad62adc4825ac44de898b0a950c4591" id="r_a0ad62adc4825ac44de898b0a950c4591"><td class="memTemplParams" colspan="2">template&lt;typename T , typename F &gt; </td></tr>
+<tr class="memitem:a0ad62adc4825ac44de898b0a950c4591"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1result__compose.html#a0ad62adc4825ac44de898b0a950c4591">and_then_chain</a> (<a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; T &gt; initial, F &amp;&amp;func) -&gt; decltype(func(std::move(initial).value()))</td></tr>
 <tr class="separator:a0ad62adc4825ac44de898b0a950c4591"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad6ea58d6afcc4896d018ddc40815eef9" id="r_ad6ea58d6afcc4896d018ddc40815eef9"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="classdtls_1_1v13_1_1Result.html">typename</a> T , <a class="el" href="classdtls_1_1v13_1_1Result.html">typename</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">F</a> &gt; </td></tr>
-<tr class="memitem:ad6ea58d6afcc4896d018ddc40815eef9"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">auto</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1result__compose.html#ad6ea58d6afcc4896d018ddc40815eef9">map_result</a> (<a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; T &gt; &amp;<a class="el" href="classdtls_1_1v13_1_1Result.html">result</a>, <a class="el" href="classdtls_1_1v13_1_1Result.html">F</a> &amp;&amp;<a class="el" href="classdtls_1_1v13_1_1Result.html">func</a>) -&gt; <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1Result.html">decltype</a>(<a class="el" href="classdtls_1_1v13_1_1Result.html">func</a>(result.value()))&gt;</td></tr>
+<tr class="memitem:ad6ea58d6afcc4896d018ddc40815eef9" id="r_ad6ea58d6afcc4896d018ddc40815eef9"><td class="memTemplParams" colspan="2">template&lt;typename T , typename F &gt; </td></tr>
+<tr class="memitem:ad6ea58d6afcc4896d018ddc40815eef9"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1result__compose.html#ad6ea58d6afcc4896d018ddc40815eef9">map_result</a> (const <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; T &gt; &amp;result, F &amp;&amp;func) -&gt; <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; decltype(func(result.value()))&gt;</td></tr>
 <tr class="separator:ad6ea58d6afcc4896d018ddc40815eef9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a27d018a6dfe3c1bd61f4ad9baf55d2f8" id="r_a27d018a6dfe3c1bd61f4ad9baf55d2f8"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="classdtls_1_1v13_1_1Result.html">typename</a> T , <a class="el" href="classdtls_1_1v13_1_1Result.html">typename</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">F</a> &gt; </td></tr>
-<tr class="memitem:a27d018a6dfe3c1bd61f4ad9baf55d2f8"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1result__compose.html#a27d018a6dfe3c1bd61f4ad9baf55d2f8">map_error_result</a> (<a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; T &gt; &amp;<a class="el" href="classdtls_1_1v13_1_1Result.html">result</a>, <a class="el" href="classdtls_1_1v13_1_1Result.html">F</a> &amp;&amp;<a class="el" href="classdtls_1_1v13_1_1Result.html">func</a>)</td></tr>
+<tr class="memitem:a27d018a6dfe3c1bd61f4ad9baf55d2f8" id="r_a27d018a6dfe3c1bd61f4ad9baf55d2f8"><td class="memTemplParams" colspan="2">template&lt;typename T , typename F &gt; </td></tr>
+<tr class="memitem:a27d018a6dfe3c1bd61f4ad9baf55d2f8"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1result__compose.html#a27d018a6dfe3c1bd61f4ad9baf55d2f8">map_error_result</a> (const <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; T &gt; &amp;result, F &amp;&amp;func)</td></tr>
 <tr class="separator:a27d018a6dfe3c1bd61f4ad9baf55d2f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2110fbc25856d4f1629ea575cc513bc4" id="r_a2110fbc25856d4f1629ea575cc513bc4"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="classdtls_1_1v13_1_1Result.html">typename</a> T , <a class="el" href="classdtls_1_1v13_1_1Result.html">typename</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">U</a> , <a class="el" href="classdtls_1_1v13_1_1Result.html">typename</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">F</a> &gt; </td></tr>
-<tr class="memitem:a2110fbc25856d4f1629ea575cc513bc4"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1Result.html">U</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1result__compose.html#a2110fbc25856d4f1629ea575cc513bc4">convert_result</a> (<a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; T &gt; &amp;<a class="el" href="classdtls_1_1v13_1_1Result.html">result</a>, <a class="el" href="classdtls_1_1v13_1_1Result.html">F</a> &amp;&amp;<a class="el" href="classdtls_1_1v13_1_1Result.html">converter</a>)</td></tr>
+<tr class="memitem:a2110fbc25856d4f1629ea575cc513bc4" id="r_a2110fbc25856d4f1629ea575cc513bc4"><td class="memTemplParams" colspan="2">template&lt;typename T , typename U , typename F &gt; </td></tr>
+<tr class="memitem:a2110fbc25856d4f1629ea575cc513bc4"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; U &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1result__compose.html#a2110fbc25856d4f1629ea575cc513bc4">convert_result</a> (const <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; T &gt; &amp;result, F &amp;&amp;converter)</td></tr>
 <tr class="separator:a2110fbc25856d4f1629ea575cc513bc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
@@ -118,10 +118,10 @@ Functions</h2></td></tr>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;<a class="el" href="classdtls_1_1v13_1_1Result.html">typename</a> T , <a class="el" href="classdtls_1_1v13_1_1Result.html">typename</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">F</a> &gt; </div>
+template&lt;typename T , typename F &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">auto</a> dtls::v13::result_compose::and_then_chain </td>
+          <td class="memname">auto dtls::v13::result_compose::and_then_chain </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; T &gt;&#160;</td>
           <td class="paramname"><em>initial</em>, </td>
@@ -129,13 +129,13 @@ template&lt;<a class="el" href="classdtls_1_1v13_1_1Result.html">typename</a> T 
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classdtls_1_1v13_1_1Result.html">F</a> &amp;&amp;&#160;</td>
+          <td class="paramtype">F &amp;&amp;&#160;</td>
           <td class="paramname"><em>func</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td> -&gt; <a class="el" href="classdtls_1_1v13_1_1Result.html">decltype</a>(<a class="el" href="classdtls_1_1v13_1_1Result.html">func</a>(std::move(<a class="el" href="classdtls_1_1v13_1_1Result.html">initial</a>).value())) </td>
+          <td></td><td> -&gt; decltype(func(std::move(initial).value())) </td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -150,18 +150,18 @@ template&lt;<a class="el" href="classdtls_1_1v13_1_1Result.html">typename</a> T 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;<a class="el" href="classdtls_1_1v13_1_1Result.html">typename</a> T , <a class="el" href="classdtls_1_1v13_1_1Result.html">typename</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">U</a> , <a class="el" href="classdtls_1_1v13_1_1Result.html">typename</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">F</a> &gt; </div>
+template&lt;typename T , typename U , typename F &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1Result.html">U</a> &gt; dtls::v13::result_compose::convert_result </td>
+          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; U &gt; dtls::v13::result_compose::convert_result </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; T &gt; &amp;&#160;</td>
           <td class="paramname"><em>result</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classdtls_1_1v13_1_1Result.html">F</a> &amp;&amp;&#160;</td>
+          <td class="paramtype">F &amp;&amp;&#160;</td>
           <td class="paramname"><em>converter</em>&#160;</td>
         </tr>
         <tr>
@@ -182,18 +182,18 @@ template&lt;<a class="el" href="classdtls_1_1v13_1_1Result.html">typename</a> T 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;<a class="el" href="classdtls_1_1v13_1_1Result.html">typename</a> T , <a class="el" href="classdtls_1_1v13_1_1Result.html">typename</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">F</a> &gt; </div>
+template&lt;typename T , typename F &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; T &gt; dtls::v13::result_compose::map_error_result </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; T &gt; &amp;&#160;</td>
           <td class="paramname"><em>result</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classdtls_1_1v13_1_1Result.html">F</a> &amp;&amp;&#160;</td>
+          <td class="paramtype">F &amp;&amp;&#160;</td>
           <td class="paramname"><em>func</em>&#160;</td>
         </tr>
         <tr>
@@ -214,24 +214,24 @@ template&lt;<a class="el" href="classdtls_1_1v13_1_1Result.html">typename</a> T 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;<a class="el" href="classdtls_1_1v13_1_1Result.html">typename</a> T , <a class="el" href="classdtls_1_1v13_1_1Result.html">typename</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">F</a> &gt; </div>
+template&lt;typename T , typename F &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">auto</a> dtls::v13::result_compose::map_result </td>
+          <td class="memname">auto dtls::v13::result_compose::map_result </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; T &gt; &amp;&#160;</td>
           <td class="paramname"><em>result</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classdtls_1_1v13_1_1Result.html">F</a> &amp;&amp;&#160;</td>
+          <td class="paramtype">F &amp;&amp;&#160;</td>
           <td class="paramname"><em>func</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td> -&gt; <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt;<a class="el" href="classdtls_1_1v13_1_1Result.html">decltype</a>(<a class="el" href="classdtls_1_1v13_1_1Result.html">func</a>(result.value()))&gt; </td>
+          <td></td><td> -&gt; <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt;decltype(func(result.value()))&gt; </td>
         </tr>
       </table>
 </div><div class="memdoc">

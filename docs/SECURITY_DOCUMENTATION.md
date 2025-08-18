@@ -1,4 +1,4 @@
-# DTLS v1.3 Security Documentation
+# DTLS v1.3 Security Documentation - Production Release v1.0
 
 ## Table of Contents
 
@@ -16,7 +16,7 @@
 
 ## Overview
 
-The DTLS v1.3 implementation provides enterprise-grade security through a comprehensive defense-in-depth strategy. This document details the security assumptions, guarantees, threat model, and mitigation strategies that ensure secure communication in untrusted network environments.
+The DTLS v1.3 production release provides enterprise-grade security through a comprehensive defense-in-depth strategy with quantum-resistant cryptography. This document details the security assumptions, guarantees, threat model, and mitigation strategies that ensure secure communication in untrusted network environments.
 
 ### Security Philosophy
 

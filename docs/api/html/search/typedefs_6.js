@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['handshakeeventcallback_0',['HandshakeEventCallback',['../namespacedtls_1_1v13_1_1protocol.html#ab935649ea311992f8dfdfd2474d4d620',1,'dtls::v13::protocol']]]
+  ['keymaterial_0',['KeyMaterial',['../namespacedtls_1_1v13.html#ad85d4a54164cded6e84c6f301708d48d',1,'dtls::v13']]]
 ];

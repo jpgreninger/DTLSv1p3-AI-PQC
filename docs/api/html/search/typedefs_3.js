@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['difference_5ftype_0',['difference_type',['../classdtls_1_1v13_1_1memory_1_1PoolAllocator.html#a07491bb78b27277208cfe30905daf277',1,'dtls::v13::memory::PoolAllocator']]],
-  ['duration_1',['Duration',['../namespacedtls_1_1v13.html#a194dc0e759eb319dbeb0a6a368d802c8',1,'dtls::v13']]]
+  ['epoch_0',['Epoch',['../group__CoreTypes.html#gace5e728a8418b8695b245902009ffa77',1,'dtls::v13']]],
+  ['evp_5fpkey_1',['EVP_PKEY',['../openssl__provider_8h.html#a2fca4fef9e4c7a2a739b1ea04acb56ce',1,'openssl_provider.h']]]
 ];

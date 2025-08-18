@@ -5,5 +5,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
   node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
   rankdir="LR";
-  Node0 [id="Node000000",label="dtls::v13::crypto::\lhybrid_pqc::MLKEMSizes",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structdtls_1_1v13_1_1crypto_1_1hybrid__pqc_1_1MLKEMSizes.html",tooltip="Get ML-KEM key sizes (public key, private key, ciphertext) for a parameter set."];
+  Node0 [id="Node000000",label="dtls::v13::memory::\lLeakDetectionConfig",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structdtls_1_1v13_1_1memory_1_1LeakDetectionConfig.html",tooltip=" "];
 }

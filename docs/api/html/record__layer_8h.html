@@ -91,12 +91,12 @@ $(document).ready(function(){initNavTree('record__layer_8h.html',''); initResiza
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a>  </div>
+<a href="#namespaces">Namespaces</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">record_layer.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;dtls/config.h&gt;</code><br />
+<div class="textblock"><code>#include &lt;<a class="el" href="config_8h_source.html">dtls/config.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="types_8h_source.html">dtls/types.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="result_8h_source.html">dtls/result.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="record_8h_source.html">dtls/protocol/record.h</a>&gt;</code><br />
@@ -121,30 +121,6 @@ This graph shows which files directly or indirectly include this file:</div>
 </div>
 <p><a href="record__layer_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1AntiReplayWindow.html">dtls::v13::protocol::AntiReplayWindow</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Anti-Replay Window for detecting duplicate packets.  <a href="classdtls_1_1v13_1_1protocol_1_1AntiReplayWindow.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1protocol_1_1AntiReplayWindow_1_1WindowStats.html">dtls::v13::protocol::AntiReplayWindow::WindowStats</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current window statistics.  <a href="structdtls_1_1v13_1_1protocol_1_1AntiReplayWindow_1_1WindowStats.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1SequenceNumberManager.html">dtls::v13::protocol::SequenceNumberManager</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sequence Number Manager for tracking and generating sequence numbers.  <a href="classdtls_1_1v13_1_1protocol_1_1SequenceNumberManager.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1EpochManager.html">dtls::v13::protocol::EpochManager</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Epoch Manager for handling DTLS epochs.  <a href="classdtls_1_1v13_1_1protocol_1_1EpochManager.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1protocol_1_1EpochManager_1_1EpochCryptoParams.html">dtls::v13::protocol::EpochManager::EpochCryptoParams</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get crypto parameters for an epoch.  <a href="structdtls_1_1v13_1_1protocol_1_1EpochManager_1_1EpochCryptoParams.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1ConnectionIDManager.html">dtls::v13::protocol::ConnectionIDManager</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classdtls_1_1v13_1_1Connection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> ID Manager for handling DTLS <a class="el" href="classdtls_1_1v13_1_1Connection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> IDs (RFC 9146)  <a href="classdtls_1_1v13_1_1protocol_1_1ConnectionIDManager.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1protocol_1_1RecordLayer.html">dtls::v13::protocol::RecordLayer</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main Record Layer implementation.  <a href="classdtls_1_1v13_1_1protocol_1_1RecordLayer.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespacedtls" id="r_namespacedtls"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls.html">dtls</a></td></tr>
@@ -156,7 +132,17 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacedtls_1_1v13_1_1protocol" id="r_namespacedtls_1_1v13_1_1protocol"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1protocol.html">dtls::v13::protocol</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacedtls_1_1v13_1_1protocol_1_1record__layer__utils" id="r_namespacedtls_1_1v13_1_1protocol_1_1record__layer__utils"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1protocol_1_1record__layer__utils.html">dtls::v13::protocol::record_layer_utils</a></td></tr>
+<tr class="memdesc:namespacedtls_1_1v13_1_1protocol_1_1record__layer__utils"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main Record Layer implementation. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:ad81f2c69be53e6a132cdd180b501d235" id="r_ad81f2c69be53e6a132cdd180b501d235"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1protocol.html#ad81f2c69be53e6a132cdd180b501d235">dtls::v13::protocol::__attribute__</a> ((visibility(&quot;default&quot;))) CookieManager</td></tr>
+<tr class="memdesc:ad81f2c69be53e6a132cdd180b501d235"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cookie Exchange Manager.  <br /></td></tr>
+<tr class="separator:ad81f2c69be53e6a132cdd180b501d235"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04ae92746332986e3260b3fa37cb070f" id="r_a04ae92746332986e3260b3fa37cb070f"><td class="memItemLeft" align="right" valign="top">__attribute__((visibility(&quot;default&quot;))) std&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1protocol_1_1record__layer__utils.html#a04ae92746332986e3260b3fa37cb070f">dtls::v13::protocol::record_layer_utils::__attribute__</a> ((visibility(&quot;default&quot;))) <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; <a class="el" href="namespacedtls_1_1v13_1_1protocol_1_1record__layer__utils.html#a75f997f21141509df7b0104d773fa644">validate_record_layer_config</a>(const RecordLayer &amp;layer)</td></tr>
+<tr class="memdesc:a04ae92746332986e3260b3fa37cb070f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create test record layer with mock crypto provider.  <br /></td></tr>
+<tr class="separator:a04ae92746332986e3260b3fa37cb070f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

@@ -99,7 +99,7 @@ $(document).ready(function(){initNavTree('leak__detection_8h.html',''); initResi
   <div class="headertitle"><div class="title">leak_detection.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;dtls/config.h&gt;</code><br />
+<div class="textblock"><code>#include &lt;<a class="el" href="config_8h_source.html">dtls/config.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="result_8h_source.html">dtls/result.h</a>&gt;</code><br />
 <code>#include &lt;memory&gt;</code><br />
 <code>#include &lt;unordered_map&gt;</code><br />
@@ -130,16 +130,6 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1memory_1_1LeakDetectionConfig.html">dtls::v13::memory::LeakDetectionConfig</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1memory_1_1LeakDetector.html">dtls::v13::memory::LeakDetector</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1memory_1_1LeakDetector_1_1LeakReport.html">dtls::v13::memory::LeakDetector::LeakReport</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1memory_1_1LeakDetector_1_1DetectionStats.html">dtls::v13::memory::LeakDetector::DetectionStats</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1memory_1_1ResourceTracker.html">dtls::v13::memory::ResourceTracker&lt; T &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1memory_1_1ResourceCleanupManager.html">dtls::v13::memory::ResourceCleanupManager</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
@@ -155,11 +145,11 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:ad9335839c2c03311b38dd94f1e5c79f1" id="r_ad9335839c2c03311b38dd94f1e5c79f1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="leak__detection_8h.html#ad9335839c2c03311b38dd94f1e5c79f1">DTLS_TRACK_RESOURCE</a>(ptr,  type,  size,  desc)&#160;&#160;&#160;    <a class="el" href="classdtls_1_1v13_1_1memory_1_1LeakDetector.html#aaaa26c8232cfac8cdfb1277b20182d41">dtls::v13::memory::LeakDetector::instance</a>().track_resource(ptr, type, size, __FILE__ &quot;:&quot; <a class="el" href="memory__utils_8h.html#a231617f0d0328667632519ac7efb06e9">DTLS_STRINGIFY</a>(__LINE__), desc)</td></tr>
+<tr class="memitem:ad9335839c2c03311b38dd94f1e5c79f1" id="r_ad9335839c2c03311b38dd94f1e5c79f1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="leak__detection_8h.html#ad9335839c2c03311b38dd94f1e5c79f1">DTLS_TRACK_RESOURCE</a>(ptr,  type,  size,  desc)&#160;&#160;&#160;    dtls::v13::memory::LeakDetector::instance().track_resource(ptr, type, size, __FILE__ &quot;:&quot; <a class="el" href="memory__utils_8h.html#a231617f0d0328667632519ac7efb06e9">DTLS_STRINGIFY</a>(__LINE__), desc)</td></tr>
 <tr class="separator:ad9335839c2c03311b38dd94f1e5c79f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afa217c21f8d271f3a3a1d2cda0bef502" id="r_afa217c21f8d271f3a3a1d2cda0bef502"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="leak__detection_8h.html#afa217c21f8d271f3a3a1d2cda0bef502">DTLS_UNTRACK_RESOURCE</a>(ptr)&#160;&#160;&#160;    <a class="el" href="classdtls_1_1v13_1_1memory_1_1LeakDetector.html#aaaa26c8232cfac8cdfb1277b20182d41">dtls::v13::memory::LeakDetector::instance</a>().untrack_resource(ptr)</td></tr>
+<tr class="memitem:afa217c21f8d271f3a3a1d2cda0bef502" id="r_afa217c21f8d271f3a3a1d2cda0bef502"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="leak__detection_8h.html#afa217c21f8d271f3a3a1d2cda0bef502">DTLS_UNTRACK_RESOURCE</a>(ptr)&#160;&#160;&#160;    dtls::v13::memory::LeakDetector::instance().untrack_resource(ptr)</td></tr>
 <tr class="separator:afa217c21f8d271f3a3a1d2cda0bef502"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac578095adafe7391ef28b9135eea11f2" id="r_ac578095adafe7391ef28b9135eea11f2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="leak__detection_8h.html#ac578095adafe7391ef28b9135eea11f2">DTLS_UPDATE_RESOURCE_ACCESS</a>(ptr)&#160;&#160;&#160;    <a class="el" href="classdtls_1_1v13_1_1memory_1_1LeakDetector.html#aaaa26c8232cfac8cdfb1277b20182d41">dtls::v13::memory::LeakDetector::instance</a>().update_resource_access(ptr)</td></tr>
+<tr class="memitem:ac578095adafe7391ef28b9135eea11f2" id="r_ac578095adafe7391ef28b9135eea11f2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="leak__detection_8h.html#ac578095adafe7391ef28b9135eea11f2">DTLS_UPDATE_RESOURCE_ACCESS</a>(ptr)&#160;&#160;&#160;    dtls::v13::memory::LeakDetector::instance().update_resource_access(ptr)</td></tr>
 <tr class="separator:ac578095adafe7391ef28b9135eea11f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad8c039117d143d5d823f60409efd94f3" id="r_ad8c039117d143d5d823f60409efd94f3"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="leak__detection_8h.html#ad8c039117d143d5d823f60409efd94f3">DTLS_MAKE_RESOURCE_TRACKER</a>(var,  ptr,  type,  size,  desc)</td></tr>
 <tr class="separator:ad8c039117d143d5d823f60409efd94f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -190,18 +180,12 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a7d5c0402a65133a0ba56a6be3d163b25" id="r_a7d5c0402a65133a0ba56a6be3d163b25"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">DTLS_API</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1memory.html#a7d5c0402a65133a0ba56a6be3d163b25">dtls::v13::memory::enable_leak_detection</a> (<a class="el" href="classdtls_1_1v13_1_1Result.html">bool</a> enabled=<a class="el" href="classdtls_1_1v13_1_1Result.html">true</a>)</td></tr>
-<tr class="separator:a7d5c0402a65133a0ba56a6be3d163b25"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae1f519b535c467b382e45e68da7944a3" id="r_ae1f519b535c467b382e45e68da7944a3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">DTLS_API</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1memory.html#ae1f519b535c467b382e45e68da7944a3">dtls::v13::memory::is_leak_detection_enabled</a> ()</td></tr>
-<tr class="separator:ae1f519b535c467b382e45e68da7944a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a086b2854455e54b59e4a67fa6678a4be" id="r_a086b2854455e54b59e4a67fa6678a4be"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">DTLS_API</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">size_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1memory.html#a086b2854455e54b59e4a67fa6678a4be">dtls::v13::memory::get_tracked_resource_count</a> ()</td></tr>
-<tr class="separator:a086b2854455e54b59e4a67fa6678a4be"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a13a385b843bd34d0ccb23a50c3b5ac57" id="r_a13a385b843bd34d0ccb23a50c3b5ac57"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">DTLS_API</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">size_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1memory.html#a13a385b843bd34d0ccb23a50c3b5ac57">dtls::v13::memory::cleanup_all_leaked_resources</a> ()</td></tr>
-<tr class="separator:a13a385b843bd34d0ccb23a50c3b5ac57"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3f67d68643f06c0d204c7cabbc3e60bd" id="r_a3f67d68643f06c0d204c7cabbc3e60bd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">DTLS_API</a> std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1memory.html#a3f67d68643f06c0d204c7cabbc3e60bd">dtls::v13::memory::generate_resource_report</a> ()</td></tr>
-<tr class="separator:a3f67d68643f06c0d204c7cabbc3e60bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abf80225ced3091a3a1018e1e64e4427e" id="r_abf80225ced3091a3a1018e1e64e4427e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">DTLS_API</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1memory.html#abf80225ced3091a3a1018e1e64e4427e">dtls::v13::memory::register_default_cleanup_callbacks</a> ()</td></tr>
-<tr class="separator:abf80225ced3091a3a1018e1e64e4427e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae17a0bb0cee1f6f44d5aa31dcf83f71d" id="r_ae17a0bb0cee1f6f44d5aa31dcf83f71d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1memory.html#ae17a0bb0cee1f6f44d5aa31dcf83f71d">dtls::v13::memory::__attribute__</a> ((visibility(&quot;default&quot;))) <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; <a class="el" href="namespacedtls_1_1v13_1_1memory.html#ade825ea6155c092341b1494babef3d85">initialize_memory_system</a>() = true)</td></tr>
+<tr class="memdesc:ae17a0bb0cee1f6f44d5aa31dcf83f71d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the memory management system.  <br /></td></tr>
+<tr class="separator:ae17a0bb0cee1f6f44d5aa31dcf83f71d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f07d74efbdae68a80e5dca8caaa01da" id="r_a4f07d74efbdae68a80e5dca8caaa01da"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a4f07d74efbdae68a80e5dca8caaa01da"><td class="memTemplItemLeft" align="right" valign="top">class&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1memory.html#a4f07d74efbdae68a80e5dca8caaa01da">dtls::v13::memory::__attribute__</a> ((visibility(&quot;default&quot;))) ResourceTracker</td></tr>
+<tr class="separator:a4f07d74efbdae68a80e5dca8caaa01da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="ad8c039117d143d5d823f60409efd94f3" name="ad8c039117d143d5d823f60409efd94f3"></a>
@@ -247,9 +231,8 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">    <span class="keyword">auto</span> var = <a class="code hl_class" href="classdtls_1_1v13_1_1memory_1_1ResourceTracker.html">dtls::v13::memory::ResourceTracker</a>&lt;std::remove_pointer_t&lt;<span class="keyword">decltype</span>(ptr)&gt;&gt;( \</div>
+<b>Value:</b><div class="fragment"><div class="line">    <span class="keyword">auto</span> var = dtls::v13::memory::ResourceTracker&lt;std::remove_pointer_t&lt;<span class="keyword">decltype</span>(ptr)&gt;&gt;( \</div>
 <div class="line">        ptr, type, size, __FILE__ <span class="stringliteral">&quot;:&quot;</span> <a class="code hl_define" href="memory__utils_8h.html#a231617f0d0328667632519ac7efb06e9">DTLS_STRINGIFY</a>(__LINE__), desc)</div>
-<div class="ttc" id="aclassdtls_1_1v13_1_1memory_1_1ResourceTracker_html"><div class="ttname"><a href="classdtls_1_1v13_1_1memory_1_1ResourceTracker.html">dtls::v13::memory::ResourceTracker</a></div><div class="ttdef"><b>Definition</b> <a href="leak__detection_8h_source.html#l00181">leak_detection.h:181</a></div></div>
 <div class="ttc" id="amemory__utils_8h_html_a231617f0d0328667632519ac7efb06e9"><div class="ttname"><a href="memory__utils_8h.html#a231617f0d0328667632519ac7efb06e9">DTLS_STRINGIFY</a></div><div class="ttdeci">#define DTLS_STRINGIFY(x)</div><div class="ttdef"><b>Definition</b> <a href="memory__utils_8h_source.html#l00275">memory_utils.h:275</a></div></div>
 </div><!-- fragment -->
 <p class="definition">Definition at line <a class="el" href="leak__detection_8h_source.html#l00298">298</a> of file <a class="el" href="leak__detection_8h_source.html">leak_detection.h</a>.</p>
@@ -289,7 +272,7 @@ Functions</h2></td></tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td>&#160;&#160;&#160;    <a class="el" href="classdtls_1_1v13_1_1memory_1_1LeakDetector.html#aaaa26c8232cfac8cdfb1277b20182d41">dtls::v13::memory::LeakDetector::instance</a>().track_resource(ptr, type, size, __FILE__ &quot;:&quot; <a class="el" href="memory__utils_8h.html#a231617f0d0328667632519ac7efb06e9">DTLS_STRINGIFY</a>(__LINE__), desc)</td>
+          <td></td><td>&#160;&#160;&#160;    dtls::v13::memory::LeakDetector::instance().track_resource(ptr, type, size, __FILE__ &quot;:&quot; <a class="el" href="memory__utils_8h.html#a231617f0d0328667632519ac7efb06e9">DTLS_STRINGIFY</a>(__LINE__), desc)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -309,7 +292,7 @@ Functions</h2></td></tr>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname">ptr</td><td>)</td>
-          <td>&#160;&#160;&#160;    <a class="el" href="classdtls_1_1v13_1_1memory_1_1LeakDetector.html#aaaa26c8232cfac8cdfb1277b20182d41">dtls::v13::memory::LeakDetector::instance</a>().untrack_resource(ptr)</td>
+          <td>&#160;&#160;&#160;    dtls::v13::memory::LeakDetector::instance().untrack_resource(ptr)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -329,7 +312,7 @@ Functions</h2></td></tr>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname">ptr</td><td>)</td>
-          <td>&#160;&#160;&#160;    <a class="el" href="classdtls_1_1v13_1_1memory_1_1LeakDetector.html#aaaa26c8232cfac8cdfb1277b20182d41">dtls::v13::memory::LeakDetector::instance</a>().update_resource_access(ptr)</td>
+          <td>&#160;&#160;&#160;    dtls::v13::memory::LeakDetector::instance().update_resource_access(ptr)</td>
         </tr>
       </table>
 </div><div class="memdoc">

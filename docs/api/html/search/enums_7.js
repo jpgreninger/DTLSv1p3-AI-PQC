@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['keyupdaterequest_0',['KeyUpdateRequest',['../namespacedtls_1_1v13_1_1protocol.html#a58b3c09b25f89fcc9b34d74ec84a331a',1,'dtls::v13::protocol']]]
+  ['loadbalancingstrategy_0',['loadbalancingstrategy',['../structdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPoolConfig.html#adba98716d531a15b941110aaa02c1232',1,'dtls::v13::connection::advanced::ConnectionPoolConfig::LoadBalancingStrategy'],['../namespacedtls_1_1v13_1_1crypto.html#ad9c17f38b5e910571400003376129046',1,'dtls::v13::crypto::LoadBalancingStrategy']]]
 ];

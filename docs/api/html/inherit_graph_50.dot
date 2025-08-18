@@ -5,5 +5,7 @@ digraph "Graphical Class Hierarchy"
   edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
   node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
   rankdir="LR";
-  Node0 [id="Node000000",label="dtls::v13::crypto::\lAEADEncryptionParams",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structdtls_1_1v13_1_1crypto_1_1AEADEncryptionParams.html",tooltip=" "];
+  Node0 [id="Node000000",label="dtls::v13::crypto::\lKeyDerivationParams",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structdtls_1_1v13_1_1crypto_1_1KeyDerivationParams.html",tooltip="Key derivation parameters for HKDF and PBKDF2 operations."];
+  Node0 -> Node1 [id="edge6_Node000000_Node000001",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node1 [id="Node000001",label="dtls::v13::crypto::\ladvanced::ExtendedKeyDerivation\lParams",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structdtls_1_1v13_1_1crypto_1_1advanced_1_1ExtendedKeyDerivationParams.html",tooltip="Extended key derivation parameters."];
 }

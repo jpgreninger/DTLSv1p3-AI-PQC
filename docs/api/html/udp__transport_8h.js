@@ -4,9 +4,6 @@ var udp__transport_8h =
     [ "dtls::v13::transport::UDPPacket", "structdtls_1_1v13_1_1transport_1_1UDPPacket.html", "structdtls_1_1v13_1_1transport_1_1UDPPacket" ],
     [ "dtls::v13::transport::TransportStats", "structdtls_1_1v13_1_1transport_1_1TransportStats.html", "structdtls_1_1v13_1_1transport_1_1TransportStats" ],
     [ "dtls::v13::transport::TransportConfig", "structdtls_1_1v13_1_1transport_1_1TransportConfig.html", "structdtls_1_1v13_1_1transport_1_1TransportConfig" ],
-    [ "dtls::v13::transport::TransportInterface", "classdtls_1_1v13_1_1transport_1_1TransportInterface.html", "classdtls_1_1v13_1_1transport_1_1TransportInterface" ],
-    [ "dtls::v13::transport::UDPTransport", "classdtls_1_1v13_1_1transport_1_1UDPTransport.html", "classdtls_1_1v13_1_1transport_1_1UDPTransport" ],
-    [ "dtls::v13::transport::TransportManager", "classdtls_1_1v13_1_1transport_1_1TransportManager.html", "classdtls_1_1v13_1_1transport_1_1TransportManager" ],
     [ "SocketHandle", "udp__transport_8h.html#a1024378279f1e6bb9130ae323f718204", null ],
     [ "TransportEventCallback", "udp__transport_8h.html#abdd49141cb55de0a18577cc1a31d7c34", null ],
     [ "TransportEvent", "udp__transport_8h.html#a9517c07669392427e5942de0bd1ee80f", [
@@ -18,5 +15,6 @@ var udp__transport_8h =
       [ "CONNECTION_TIMEOUT", "udp__transport_8h.html#a9517c07669392427e5942de0bd1ee80fad094d5806cc309e317fd3420bbd30fb5", null ],
       [ "INTERFACE_CHANGE", "udp__transport_8h.html#a9517c07669392427e5942de0bd1ee80faacdec03cb6690909d56519b3b1ba9bb6", null ]
     ] ],
+    [ "__attribute__", "udp__transport_8h.html#a869ab9ff54fdf256f4e48d383c701fd2", null ],
     [ "INVALID_SOCKET_HANDLE", "udp__transport_8h.html#a65191a393cdffd61469a6090f9bece18", null ]
 ];

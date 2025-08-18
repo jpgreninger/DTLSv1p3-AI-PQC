@@ -100,7 +100,7 @@ $(document).ready(function(){initNavTree('provider__factory_8h.html',''); initRe
   <div class="headertitle"><div class="title">provider_factory.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;dtls/config.h&gt;</code><br />
+<div class="textblock"><code>#include &lt;<a class="el" href="config_8h_source.html">dtls/config.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="provider_8h_source.html">dtls/crypto/provider.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="result_8h_source.html">dtls/result.h</a>&gt;</code><br />
 <code>#include &lt;memory&gt;</code><br />
@@ -131,16 +131,6 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1crypto_1_1ProviderPoolConfig.html">dtls::v13::crypto::ProviderPoolConfig</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1ProviderFactory.html">dtls::v13::crypto::ProviderFactory</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Factory class for creating and managing crypto providers.  <a href="classdtls_1_1v13_1_1crypto_1_1ProviderFactory.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1crypto_1_1ProviderFactory_1_1ProviderStats.html">dtls::v13::crypto::ProviderFactory::ProviderStats</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1ProviderManager.html">dtls::v13::crypto::ProviderManager</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">RAII wrapper for crypto provider management.  <a href="classdtls_1_1v13_1_1crypto_1_1ProviderManager.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1crypto_1_1ProviderAutoInit.html">dtls::v13::crypto::ProviderAutoInit</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
@@ -158,7 +148,7 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:ad6c4a487dba7394f7a682fe180763fae" id="r_ad6c4a487dba7394f7a682fe180763fae"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">using</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1crypto.html#ad6c4a487dba7394f7a682fe180763fae">dtls::v13::crypto::ProviderFactoryFunction</a> = std::function&lt; std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1crypto_1_1CryptoProvider.html">CryptoProvider</a> &gt;()&gt;</td></tr>
+<tr class="memitem:ad6c4a487dba7394f7a682fe180763fae" id="r_ad6c4a487dba7394f7a682fe180763fae"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1crypto.html#ad6c4a487dba7394f7a682fe180763fae">dtls::v13::crypto::ProviderFactoryFunction</a> = std::function&lt; std::unique_ptr&lt; CryptoProvider &gt;()&gt;</td></tr>
 <tr class="separator:ad6c4a487dba7394f7a682fe180763fae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
@@ -176,20 +166,16 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a585e00b532533fb7bfc6ba4455ff8c3a" id="r_a585e00b532533fb7bfc6ba4455ff8c3a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">DTLS_API</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1crypto_1_1CryptoProvider.html">CryptoProvider</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1crypto.html#a585e00b532533fb7bfc6ba4455ff8c3a">dtls::v13::crypto::create_crypto_provider</a> (<a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> std::string &amp;name=&quot;&quot;)</td></tr>
-<tr class="separator:a585e00b532533fb7bfc6ba4455ff8c3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7114d65671bfa6d05b19474ae02851cc" id="r_a7114d65671bfa6d05b19474ae02851cc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">DTLS_API</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1crypto_1_1CryptoProvider.html">CryptoProvider</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1crypto.html#a7114d65671bfa6d05b19474ae02851cc">dtls::v13::crypto::create_best_crypto_provider</a> (<a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> <a class="el" href="structdtls_1_1v13_1_1crypto_1_1ProviderSelection.html">ProviderSelection</a> &amp;<a class="el" href="classdtls_1_1v13_1_1Result.html">criteria</a>={})</td></tr>
-<tr class="separator:a7114d65671bfa6d05b19474ae02851cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a84b1aaf90fe7804229d95dc1467a6520" id="r_a84b1aaf90fe7804229d95dc1467a6520"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">DTLS_API</a> std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1crypto.html#a84b1aaf90fe7804229d95dc1467a6520">dtls::v13::crypto::list_available_providers</a> ()</td></tr>
-<tr class="separator:a84b1aaf90fe7804229d95dc1467a6520"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad5574d0733878c4cc3480a50039ef217" id="r_ad5574d0733878c4cc3480a50039ef217"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">DTLS_API</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1crypto.html#ad5574d0733878c4cc3480a50039ef217">dtls::v13::crypto::is_provider_available</a> (<a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> std::string &amp;name)</td></tr>
-<tr class="separator:ad5574d0733878c4cc3480a50039ef217"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afebe78d56d12f315922f5265de44fa3a" id="r_afebe78d56d12f315922f5265de44fa3a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">DTLS_API</a> std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1crypto.html#afebe78d56d12f315922f5265de44fa3a">dtls::v13::crypto::get_default_provider_name</a> ()</td></tr>
-<tr class="separator:afebe78d56d12f315922f5265de44fa3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97c73b21fac4aaa4e93344e9288b8fa0" id="r_a97c73b21fac4aaa4e93344e9288b8fa0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1crypto.html#a97c73b21fac4aaa4e93344e9288b8fa0">dtls::v13::crypto::__attribute__</a> ((visibility(&quot;default&quot;))) <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; <a class="el" href="namespacedtls_1_1v13_1_1crypto.html#aa2b912472a3d6da62e51bbcb58e526bd">initialize_crypto_system</a>()</td></tr>
+<tr class="memdesc:a97c73b21fac4aaa4e93344e9288b8fa0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the cryptographic subsystem.  <br /></td></tr>
+<tr class="separator:a97c73b21fac4aaa4e93344e9288b8fa0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace9fce1321ce40fd531b8d03bc54df45" id="r_ace9fce1321ce40fd531b8d03bc54df45"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1crypto_1_1builtin.html#ace9fce1321ce40fd531b8d03bc54df45">dtls::v13::crypto::builtin::__attribute__</a> ((visibility(&quot;default&quot;))) <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; <a class="el" href="namespacedtls_1_1v13_1_1crypto_1_1builtin.html#a05a3edb36c26351e2f14d6c4bee7e47c">register_all_providers</a>()</td></tr>
+<tr class="memdesc:ace9fce1321ce40fd531b8d03bc54df45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register all built-in crypto providers.  <br /></td></tr>
+<tr class="separator:ace9fce1321ce40fd531b8d03bc54df45"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:afc9d6d841ada32b321ba6100e8875458" id="r_afc9d6d841ada32b321ba6100e8875458"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">static</a> <a class="el" href="classdtls_1_1v13_1_1crypto_1_1ProviderAutoInit.html">ProviderAutoInit</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1crypto.html#afc9d6d841ada32b321ba6100e8875458">dtls::v13::crypto::g_provider_auto_init</a></td></tr>
+<tr class="memitem:afc9d6d841ada32b321ba6100e8875458" id="r_afc9d6d841ada32b321ba6100e8875458"><td class="memItemLeft" align="right" valign="top">static ProviderAutoInit&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1crypto.html#afc9d6d841ada32b321ba6100e8875458">dtls::v13::crypto::g_provider_auto_init</a></td></tr>
 <tr class="separator:afc9d6d841ada32b321ba6100e8875458"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->

@@ -5,5 +5,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
   node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
   rankdir="LR";
-  Node0 [id="Node000000",label="dtls::v13::crypto::\ladvanced::ExtendedCipherSuite\lProperties",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structdtls_1_1v13_1_1crypto_1_1advanced_1_1ExtendedCipherSuiteProperties.html",tooltip="Cipher suite properties for extended algorithms."];
+  Node0 [id="Node000000",label="dtls::v13::crypto::\lCryptoSystemConfig",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structdtls_1_1v13_1_1crypto_1_1CryptoSystemConfig.html",tooltip="Get system-wide crypto configuration."];
 }

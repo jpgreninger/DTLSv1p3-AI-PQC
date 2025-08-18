@@ -1,10 +1,5 @@
 var handshake__manager_8h =
 [
-    [ "dtls::v13::protocol::HandshakeManager", "classdtls_1_1v13_1_1protocol_1_1HandshakeManager.html", "classdtls_1_1v13_1_1protocol_1_1HandshakeManager" ],
-    [ "dtls::v13::protocol::HandshakeManager::Config", "structdtls_1_1v13_1_1protocol_1_1HandshakeManager_1_1Config.html", "structdtls_1_1v13_1_1protocol_1_1HandshakeManager_1_1Config" ],
-    [ "dtls::v13::protocol::HandshakeManager::Statistics", "structdtls_1_1v13_1_1protocol_1_1HandshakeManager_1_1Statistics.html", "structdtls_1_1v13_1_1protocol_1_1HandshakeManager_1_1Statistics" ],
-    [ "dtls::v13::protocol::ReliabilityManager", "classdtls_1_1v13_1_1protocol_1_1ReliabilityManager.html", "classdtls_1_1v13_1_1protocol_1_1ReliabilityManager" ],
-    [ "dtls::v13::protocol::ReliabilityManager::Config", "structdtls_1_1v13_1_1protocol_1_1ReliabilityManager_1_1Config.html", "structdtls_1_1v13_1_1protocol_1_1ReliabilityManager_1_1Config" ],
     [ "HandshakeEventCallback", "handshake__manager_8h.html#ab935649ea311992f8dfdfd2474d4d620", null ],
     [ "SendMessageCallback", "handshake__manager_8h.html#a6a265af701186f0a11924c498ec584f0", null ],
     [ "HandshakeEvent", "handshake__manager_8h.html#a896f71d6f8cd3be60286fc4e53617c98", [
@@ -16,5 +11,6 @@ var handshake__manager_8h =
       [ "TIMEOUT_OCCURRED", "handshake__manager_8h.html#a896f71d6f8cd3be60286fc4e53617c98ab767e1244cec182a6ece242de53eb92d", null ],
       [ "HANDSHAKE_COMPLETE", "handshake__manager_8h.html#a896f71d6f8cd3be60286fc4e53617c98af77d51c5603906c5d66c5e41c930dc08", null ],
       [ "HANDSHAKE_FAILED", "handshake__manager_8h.html#a896f71d6f8cd3be60286fc4e53617c98a031450236028a5f782ed0cb7745935b3", null ]
-    ] ]
+    ] ],
+    [ "__attribute__", "handshake__manager_8h.html#ad81f2c69be53e6a132cdd180b501d235", null ]
 ];

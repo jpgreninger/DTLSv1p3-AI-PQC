@@ -1,6 +1,6 @@
-# DTLS v1.3 API Documentation
+# DTLS v1.3 API Documentation - Production Release v1.0
 
-Complete reference for the DTLS v1.3 C++ library public API. This implementation follows RFC 9147 specifications and provides both high-level convenience APIs and low-level control interfaces.
+Complete reference for the DTLS v1.3 C++ library public API. This production-ready implementation follows RFC 9147 specifications and provides both high-level convenience APIs and low-level control interfaces with quantum-resistant cryptography support.
 
 ## Table of Contents
 

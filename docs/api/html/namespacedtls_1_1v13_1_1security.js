@@ -1,22 +1,18 @@
 var namespacedtls_1_1v13_1_1security =
 [
     [ "CPUMonitor", "classdtls_1_1v13_1_1security_1_1CPUMonitor.html", "classdtls_1_1v13_1_1security_1_1CPUMonitor" ],
-    [ "DoSProtection", "classdtls_1_1v13_1_1security_1_1DoSProtection.html", "classdtls_1_1v13_1_1security_1_1DoSProtection" ],
     [ "DoSProtectionConfig", "structdtls_1_1v13_1_1security_1_1DoSProtectionConfig.html", "structdtls_1_1v13_1_1security_1_1DoSProtectionConfig" ],
     [ "DoSProtectionFactory", "classdtls_1_1v13_1_1security_1_1DoSProtectionFactory.html", "classdtls_1_1v13_1_1security_1_1DoSProtectionFactory" ],
     [ "DoSProtectionStats", "structdtls_1_1v13_1_1security_1_1DoSProtectionStats.html", "structdtls_1_1v13_1_1security_1_1DoSProtectionStats" ],
     [ "ProofOfWorkChallenge", "structdtls_1_1v13_1_1security_1_1ProofOfWorkChallenge.html", "structdtls_1_1v13_1_1security_1_1ProofOfWorkChallenge" ],
     [ "RateLimitConfig", "structdtls_1_1v13_1_1security_1_1RateLimitConfig.html", "structdtls_1_1v13_1_1security_1_1RateLimitConfig" ],
-    [ "RateLimiter", "classdtls_1_1v13_1_1security_1_1RateLimiter.html", "classdtls_1_1v13_1_1security_1_1RateLimiter" ],
     [ "RateLimiterFactory", "classdtls_1_1v13_1_1security_1_1RateLimiterFactory.html", "classdtls_1_1v13_1_1security_1_1RateLimiterFactory" ],
     [ "RateLimitStats", "structdtls_1_1v13_1_1security_1_1RateLimitStats.html", "structdtls_1_1v13_1_1security_1_1RateLimitStats" ],
     [ "ResourceAllocation", "structdtls_1_1v13_1_1security_1_1ResourceAllocation.html", "structdtls_1_1v13_1_1security_1_1ResourceAllocation" ],
     [ "ResourceConfig", "structdtls_1_1v13_1_1security_1_1ResourceConfig.html", "structdtls_1_1v13_1_1security_1_1ResourceConfig" ],
     [ "ResourceGuard", "classdtls_1_1v13_1_1security_1_1ResourceGuard.html", "classdtls_1_1v13_1_1security_1_1ResourceGuard" ],
-    [ "ResourceManager", "classdtls_1_1v13_1_1security_1_1ResourceManager.html", "classdtls_1_1v13_1_1security_1_1ResourceManager" ],
     [ "ResourceManagerFactory", "classdtls_1_1v13_1_1security_1_1ResourceManagerFactory.html", "classdtls_1_1v13_1_1security_1_1ResourceManagerFactory" ],
     [ "ResourceStats", "structdtls_1_1v13_1_1security_1_1ResourceStats.html", "structdtls_1_1v13_1_1security_1_1ResourceStats" ],
-    [ "SecureConnectionManager", "classdtls_1_1v13_1_1security_1_1SecureConnectionManager.html", "classdtls_1_1v13_1_1security_1_1SecureConnectionManager" ],
     [ "SecureConnectionManagerFactory", "classdtls_1_1v13_1_1security_1_1SecureConnectionManagerFactory.html", "classdtls_1_1v13_1_1security_1_1SecureConnectionManagerFactory" ],
     [ "SlidingWindow", "classdtls_1_1v13_1_1security_1_1SlidingWindow.html", "classdtls_1_1v13_1_1security_1_1SlidingWindow" ],
     [ "SourceData", "structdtls_1_1v13_1_1security_1_1SourceData.html", "structdtls_1_1v13_1_1security_1_1SourceData" ],
@@ -62,5 +58,6 @@ var namespacedtls_1_1v13_1_1security =
       [ "BUFFER_MEMORY", "namespacedtls_1_1v13_1_1security.html#af86c3ab6045164642224d5750e246f98a3070da5b3b9b2662efec6579dbb803d7", null ],
       [ "CONNECTION_SLOT", "namespacedtls_1_1v13_1_1security.html#af86c3ab6045164642224d5750e246f98acd23413037f0db78db338b21543bb65b", null ],
       [ "HANDSHAKE_SLOT", "namespacedtls_1_1v13_1_1security.html#af86c3ab6045164642224d5750e246f98a0b58151e8189152d60f34dba714452b9", null ]
-    ] ]
+    ] ],
+    [ "__attribute__", "namespacedtls_1_1v13_1_1security.html#a08683a75971f732d4f7776a666619e10", null ]
 ];

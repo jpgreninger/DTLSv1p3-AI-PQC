@@ -5,5 +5,7 @@ digraph "Graphical Class Hierarchy"
   edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
   node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
   rankdir="LR";
-  Node0 [id="Node000000",label="dtls::v13::cipher_suite\l_info::CipherSuiteProperties",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structdtls_1_1v13_1_1cipher__suite__info_1_1CipherSuiteProperties.html",tooltip=" "];
+  Node0 [id="Node000000",label="DTLS12RecordLayer",height=0.2,width=0.4,color="grey60", fillcolor="#E0E0E0", style="filled",tooltip=" "];
+  Node0 -> Node1 [id="edge5_Node000000_Node000001",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node1 [id="Node000001",label="dtls::v13::compatibility\l::DTLS12RecordLayerImpl",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classdtls_1_1v13_1_1compatibility_1_1DTLS12RecordLayerImpl.html",tooltip="Implementation of DTLS 1.2 record layer."];
 }

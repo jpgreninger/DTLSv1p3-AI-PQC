@@ -1,7 +1,6 @@
 var advanced__cipher__suites_8h =
 [
     [ "dtls::v13::crypto::advanced::ExtendedCipherSuiteProperties", "structdtls_1_1v13_1_1crypto_1_1advanced_1_1ExtendedCipherSuiteProperties.html", "structdtls_1_1v13_1_1crypto_1_1advanced_1_1ExtendedCipherSuiteProperties" ],
-    [ "dtls::v13::crypto::advanced::AdvancedCryptoProvider", "classdtls_1_1v13_1_1crypto_1_1advanced_1_1AdvancedCryptoProvider.html", "classdtls_1_1v13_1_1crypto_1_1advanced_1_1AdvancedCryptoProvider" ],
     [ "dtls::v13::crypto::advanced::ExtendedAEADParams", "structdtls_1_1v13_1_1crypto_1_1advanced_1_1ExtendedAEADParams.html", "structdtls_1_1v13_1_1crypto_1_1advanced_1_1ExtendedAEADParams" ],
     [ "dtls::v13::crypto::advanced::ExtendedAEADParams::ChaCha20Params", "structdtls_1_1v13_1_1crypto_1_1advanced_1_1ExtendedAEADParams_1_1ChaCha20Params.html", "structdtls_1_1v13_1_1crypto_1_1advanced_1_1ExtendedAEADParams_1_1ChaCha20Params" ],
     [ "dtls::v13::crypto::advanced::ExtendedAEADParams::AESParams", "structdtls_1_1v13_1_1crypto_1_1advanced_1_1ExtendedAEADParams_1_1AESParams.html", "structdtls_1_1v13_1_1crypto_1_1advanced_1_1ExtendedAEADParams_1_1AESParams" ],
@@ -12,7 +11,6 @@ var advanced__cipher__suites_8h =
     [ "dtls::v13::crypto::advanced::ExtendedHMACParams", "structdtls_1_1v13_1_1crypto_1_1advanced_1_1ExtendedHMACParams.html", "structdtls_1_1v13_1_1crypto_1_1advanced_1_1ExtendedHMACParams" ],
     [ "dtls::v13::crypto::advanced::ExtendedKeyDerivationParams", "structdtls_1_1v13_1_1crypto_1_1advanced_1_1ExtendedKeyDerivationParams.html", "structdtls_1_1v13_1_1crypto_1_1advanced_1_1ExtendedKeyDerivationParams" ],
     [ "dtls::v13::crypto::advanced::ProviderPerformanceProfile", "structdtls_1_1v13_1_1crypto_1_1advanced_1_1ProviderPerformanceProfile.html", "structdtls_1_1v13_1_1crypto_1_1advanced_1_1ProviderPerformanceProfile" ],
-    [ "dtls::v13::crypto::advanced::AdvancedCipherSuiteManager", "classdtls_1_1v13_1_1crypto_1_1advanced_1_1AdvancedCipherSuiteManager.html", "classdtls_1_1v13_1_1crypto_1_1advanced_1_1AdvancedCipherSuiteManager" ],
     [ "dtls::v13::crypto::advanced::PerformanceRequirements", "structdtls_1_1v13_1_1crypto_1_1advanced_1_1PerformanceRequirements.html", "structdtls_1_1v13_1_1crypto_1_1advanced_1_1PerformanceRequirements" ],
     [ "dtls::v13::crypto::advanced::SecurityAssessment", "structdtls_1_1v13_1_1crypto_1_1advanced_1_1SecurityAssessment.html", "structdtls_1_1v13_1_1crypto_1_1advanced_1_1SecurityAssessment" ],
     [ "dtls::v13::crypto::advanced::PerformanceBenchmark", "structdtls_1_1v13_1_1crypto_1_1advanced_1_1PerformanceBenchmark.html", "structdtls_1_1v13_1_1crypto_1_1advanced_1_1PerformanceBenchmark" ],
@@ -68,6 +66,7 @@ var advanced__cipher__suites_8h =
       [ "BLAKE3_384", "advanced__cipher__suites_8h.html#a8ac3848127c18a245515aab438fa4726a0434f790b423af07be4d3dd333eaef0b", null ],
       [ "BLAKE3_512", "advanced__cipher__suites_8h.html#a8ac3848127c18a245515aab438fa4726a1f7c508587ae68557d230c1305b0b3be", null ]
     ] ],
+    [ "__attribute__", "advanced__cipher__suites_8h.html#a2f333f4b151d4c85aab5e719295a79e3", null ],
     [ "are_cipher_suites_compatible", "advanced__cipher__suites_8h.html#a1207eb3d51d53f4199b2b55d94d1ae78", null ],
     [ "convert_base_to_extended", "advanced__cipher__suites_8h.html#a07667f34ba572275c7ab56b2e7c63b33", null ],
     [ "convert_extended_to_base", "advanced__cipher__suites_8h.html#a704c2cdb230855352abaf6f663172950", null ],

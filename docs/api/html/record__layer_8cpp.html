@@ -92,7 +92,8 @@ $(document).ready(function(){initNavTree('record__layer_8cpp.html',''); initResi
 <div class="header">
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#define-members">Macros</a>  </div>
+<a href="#define-members">Macros</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">record_layer.cpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -124,6 +125,7 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacedtls_1_1v13_1_1protocol" id="r_namespacedtls_1_1v13_1_1protocol"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1protocol.html">dtls::v13::protocol</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacedtls_1_1v13_1_1protocol_1_1record__layer__utils" id="r_namespacedtls_1_1v13_1_1protocol_1_1record__layer__utils"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1protocol_1_1record__layer__utils.html">dtls::v13::protocol::record_layer_utils</a></td></tr>
+<tr class="memdesc:namespacedtls_1_1v13_1_1protocol_1_1record__layer__utils"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main Record Layer implementation. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
@@ -132,6 +134,17 @@ Macros</h2></td></tr>
 <tr class="separator:a5c81b75e6da4507e0a90b6f6169c4787"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af94eb043f5be14b4f260fb9b4c89ca2e" id="r_af94eb043f5be14b4f260fb9b4c89ca2e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="record__layer_8cpp.html#af94eb043f5be14b4f260fb9b4c89ca2e">be64toh</a>(x)&#160;&#160;&#160;(((uint64_t)ntohl((x) &amp; 0xFFFFFFFF) &lt;&lt; 32) | ntohl((x) &gt;&gt; 32))</td></tr>
 <tr class="separator:af94eb043f5be14b4f260fb9b4c89ca2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a35e32f9f38a5547c926d12d318ea9a78" id="r_a35e32f9f38a5547c926d12d318ea9a78"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; RecordLayer &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1protocol_1_1record__layer__utils.html#a35e32f9f38a5547c926d12d318ea9a78">dtls::v13::protocol::record_layer_utils::create_test_record_layer</a> ()</td></tr>
+<tr class="separator:a35e32f9f38a5547c926d12d318ea9a78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75f997f21141509df7b0104d773fa644" id="r_a75f997f21141509df7b0104d773fa644"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1protocol_1_1record__layer__utils.html#a75f997f21141509df7b0104d773fa644">dtls::v13::protocol::record_layer_utils::validate_record_layer_config</a> (const RecordLayer &amp;layer)</td></tr>
+<tr class="separator:a75f997f21141509df7b0104d773fa644"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac67a321094defd0f9578916c6a3476f2" id="r_ac67a321094defd0f9578916c6a3476f2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::vector&lt; std::pair&lt; <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSPlaintext.html">DTLSPlaintext</a>, <a class="el" href="structdtls_1_1v13_1_1protocol_1_1DTLSCiphertext.html">DTLSCiphertext</a> &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1protocol_1_1record__layer__utils.html#ac67a321094defd0f9578916c6a3476f2">dtls::v13::protocol::record_layer_utils::generate_test_vectors</a> (<a class="el" href="namespacedtls_1_1v13.html#a2c8cefcd0588652f47924c24935f52e3">CipherSuite</a> suite)</td></tr>
+<tr class="separator:ac67a321094defd0f9578916c6a3476f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a047a6fc2df398cf36de470bd506ed334" id="r_a047a6fc2df398cf36de470bd506ed334"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::vector&lt; std::pair&lt; <a class="el" href="classdtls_1_1v13_1_1protocol_1_1PlaintextRecord.html">PlaintextRecord</a>, <a class="el" href="classdtls_1_1v13_1_1protocol_1_1CiphertextRecord.html">CiphertextRecord</a> &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1protocol_1_1record__layer__utils.html#a047a6fc2df398cf36de470bd506ed334">dtls::v13::protocol::record_layer_utils::generate_legacy_test_vectors</a> (<a class="el" href="namespacedtls_1_1v13.html#a2c8cefcd0588652f47924c24935f52e3">CipherSuite</a> suite)</td></tr>
+<tr class="separator:a047a6fc2df398cf36de470bd506ed334"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="af94eb043f5be14b4f260fb9b4c89ca2e" name="af94eb043f5be14b4f260fb9b4c89ca2e"></a>

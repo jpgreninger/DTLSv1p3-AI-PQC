@@ -5,13 +5,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
   node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
   rankdir="LR";
-  Node0 [id="Node000000",label="dtls::v13::crypto::\lICryptoOperations",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classdtls_1_1v13_1_1crypto_1_1ICryptoOperations.html",tooltip="Abstract Crypto Operations Interface."];
-  Node0 -> Node1 [id="edge19_Node000000_Node000001",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node1 [id="Node000001",label="dtls::v13::crypto::\lAgnosticCryptoOperations",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classdtls_1_1v13_1_1crypto_1_1AgnosticCryptoOperations.html",tooltip="Provider-agnostic crypto operation wrapper."];
-  Node0 -> Node2 [id="edge20_Node000000_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node2 [id="Node000002",label="dtls::v13::crypto::\lCryptoOperationsImpl",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classdtls_1_1v13_1_1crypto_1_1CryptoOperationsImpl.html",tooltip="Default implementation of ICryptoOperations."];
-  Node0 -> Node3 [id="edge21_Node000000_Node000003",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node3 [id="Node000003",label="dtls::v13::crypto::\lMockCryptoOperations",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classdtls_1_1v13_1_1crypto_1_1MockCryptoOperations.html",tooltip="Mock crypto operations for testing."];
-  Node0 -> Node4 [id="edge22_Node000000_Node000004",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node4 [id="Node000004",label="dtls::v13::crypto::\lResilientCryptoOperations",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classdtls_1_1v13_1_1crypto_1_1ResilientCryptoOperations.html",tooltip="Crypto operations with automatic provider failover."];
+  Node0 [id="Node000000",label="dtls::v13::memory::\lMemorySystemStatus",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structdtls_1_1v13_1_1memory_1_1MemorySystemStatus.html",tooltip="Memory system status information."];
 }

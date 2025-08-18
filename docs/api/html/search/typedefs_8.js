@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['length_0',['Length',['../group__CoreTypes.html#ga5d36692edd61bb4d7126a5401b5b50cb',1,'dtls::v13']]]
+  ['mutableview_0',['MutableView',['../namespacedtls_1_1v13_1_1memory.html#a886dedd7f7540487b5bd642f7fb75a15',1,'dtls::v13::memory']]]
 ];

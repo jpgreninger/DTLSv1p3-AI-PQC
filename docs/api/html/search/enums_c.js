@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['pressurelevel_0',['pressurelevel',['../classdtls_1_1v13_1_1memory_1_1MemoryPressureResponse.html#ad1d52e5e3b36eefd158447028fb93cc1',1,'dtls::v13::memory::MemoryPressureResponse::PressureLevel'],['../classdtls_1_1v13_1_1memory_1_1MemoryPressureDetector.html#a92eb473571d6e54cd02932c9f668713f',1,'dtls::v13::memory::MemoryPressureDetector::PressureLevel'],['../namespacedtls_1_1v13_1_1security.html#afecfd50681dbc721840c124dcbf356e5',1,'dtls::v13::security::PressureLevel']]],
-  ['protocolversion_1',['ProtocolVersion',['../namespacedtls_1_1v13_1_1protocol.html#a98b9ca090f9c07ce4780def2c84b6569',1,'dtls::v13::protocol']]],
-  ['providerhealth_2',['ProviderHealth',['../namespacedtls_1_1v13_1_1crypto.html#a02a6f0c05b17e8865e93a8e1bdf3ef3e',1,'dtls::v13::crypto']]],
-  ['pskkeyexchangemode_3',['PskKeyExchangeMode',['../namespacedtls_1_1v13_1_1protocol.html#a1eca4728ba6d7b4410217900708673c6',1,'dtls::v13::protocol']]]
+  ['ratelimitresult_0',['RateLimitResult',['../namespacedtls_1_1v13_1_1security.html#a22353ba621e2fa0887bd2e6d7a2bf5c0',1,'dtls::v13::security']]],
+  ['recoverystrategy_1',['RecoveryStrategy',['../namespacedtls_1_1v13.html#a3148a802c5357f5e43dcf3ba7a4a97b7',1,'dtls::v13']]],
+  ['resourceresult_2',['ResourceResult',['../namespacedtls_1_1v13_1_1security.html#a0fed14a9d86f942b8e678e9ae89e3caf',1,'dtls::v13::security']]],
+  ['resourcetype_3',['resourcetype',['../namespacedtls_1_1v13_1_1memory.html#ac1e86b4d61ed3443792a67857f769673',1,'dtls::v13::memory::ResourceType'],['../namespacedtls_1_1v13_1_1security.html#af86c3ab6045164642224d5750e246f98',1,'dtls::v13::security::ResourceType']]]
 ];

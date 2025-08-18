@@ -112,26 +112,18 @@ Collaboration diagram for dtls::v13::monitoring::MetricsExporterImpl:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a4b32153ec8b60f9ab0f777ff95d1b2c2" id="r_a4b32153ec8b60f9ab0f777ff95d1b2c2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1monitoring_1_1MetricsExporterImpl.html#a4b32153ec8b60f9ab0f777ff95d1b2c2">MetricsExporterImpl</a> (<a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> std::shared_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1monitoring_1_1MetricsCollector.html">MetricsCollector</a> &gt; &amp;<a class="el" href="classdtls_1_1v13_1_1Result.html">collector</a>)</td></tr>
+<tr class="memitem:a4b32153ec8b60f9ab0f777ff95d1b2c2" id="r_a4b32153ec8b60f9ab0f777ff95d1b2c2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1monitoring_1_1MetricsExporterImpl.html#a4b32153ec8b60f9ab0f777ff95d1b2c2">MetricsExporterImpl</a> (const std::shared_ptr&lt; MetricsCollector &gt; &amp;collector)</td></tr>
 <tr class="separator:a4b32153ec8b60f9ab0f777ff95d1b2c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a101fe9b49a9ea3315f27c1ea8216cc0f" id="r_a101fe9b49a9ea3315f27c1ea8216cc0f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1monitoring_1_1MetricsExporterImpl.html#a101fe9b49a9ea3315f27c1ea8216cc0f">export_prometheus</a> () <a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">override</a></td></tr>
-<tr class="memdesc:a101fe9b49a9ea3315f27c1ea8216cc0f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Export metrics in Prometheus format.  <br /></td></tr>
+<tr class="memitem:a101fe9b49a9ea3315f27c1ea8216cc0f" id="r_a101fe9b49a9ea3315f27c1ea8216cc0f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1monitoring_1_1MetricsExporterImpl.html#a101fe9b49a9ea3315f27c1ea8216cc0f">export_prometheus</a> () const override</td></tr>
 <tr class="separator:a101fe9b49a9ea3315f27c1ea8216cc0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3112eb7a55f31b570d9d2e737e0297bc" id="r_a3112eb7a55f31b570d9d2e737e0297bc"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1monitoring_1_1MetricsExporterImpl.html#a3112eb7a55f31b570d9d2e737e0297bc">export_json</a> () <a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">override</a></td></tr>
-<tr class="memdesc:a3112eb7a55f31b570d9d2e737e0297bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Export metrics in JSON format.  <br /></td></tr>
+<tr class="memitem:a3112eb7a55f31b570d9d2e737e0297bc" id="r_a3112eb7a55f31b570d9d2e737e0297bc"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1monitoring_1_1MetricsExporterImpl.html#a3112eb7a55f31b570d9d2e737e0297bc">export_json</a> () const override</td></tr>
 <tr class="separator:a3112eb7a55f31b570d9d2e737e0297bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adcc9e26b29781ccfeaba0a440845086e" id="r_adcc9e26b29781ccfeaba0a440845086e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1monitoring_1_1MetricsExporterImpl.html#adcc9e26b29781ccfeaba0a440845086e">export_influxdb</a> () <a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">override</a></td></tr>
-<tr class="memdesc:adcc9e26b29781ccfeaba0a440845086e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Export metrics in InfluxDB line protocol.  <br /></td></tr>
+<tr class="memitem:adcc9e26b29781ccfeaba0a440845086e" id="r_adcc9e26b29781ccfeaba0a440845086e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1monitoring_1_1MetricsExporterImpl.html#adcc9e26b29781ccfeaba0a440845086e">export_influxdb</a> () const override</td></tr>
 <tr class="separator:adcc9e26b29781ccfeaba0a440845086e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a795a65191b0db8ed767d9f6fffe66c13" id="r_a795a65191b0db8ed767d9f6fffe66c13"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1monitoring_1_1MetricsExporterImpl.html#a795a65191b0db8ed767d9f6fffe66c13">export_custom</a> (<a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> std::string &amp;<a class="el" href="classdtls_1_1v13_1_1Result.html">format_name</a>) <a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">override</a></td></tr>
-<tr class="memdesc:a795a65191b0db8ed767d9f6fffe66c13"><td class="mdescLeft">&#160;</td><td class="mdescRight">Export metrics in custom format.  <br /></td></tr>
+<tr class="memitem:a795a65191b0db8ed767d9f6fffe66c13" id="r_a795a65191b0db8ed767d9f6fffe66c13"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1monitoring_1_1MetricsExporterImpl.html#a795a65191b0db8ed767d9f6fffe66c13">export_custom</a> (const std::string &amp;format_name) const override</td></tr>
 <tr class="separator:a795a65191b0db8ed767d9f6fffe66c13"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8e27f52d2df48dcd19b28926535aa56d" id="r_a8e27f52d2df48dcd19b28926535aa56d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1Result.html">void</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1monitoring_1_1MetricsExporterImpl.html#a8e27f52d2df48dcd19b28926535aa56d">configure_export</a> (<a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> std::unordered_map&lt; std::string, std::string &gt; &amp;<a class="el" href="classdtls_1_1v13_1_1Result.html">config</a>) <a class="el" href="classdtls_1_1v13_1_1Result.html">override</a></td></tr>
-<tr class="memdesc:a8e27f52d2df48dcd19b28926535aa56d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set export configuration.  <br /></td></tr>
+<tr class="memitem:a8e27f52d2df48dcd19b28926535aa56d" id="r_a8e27f52d2df48dcd19b28926535aa56d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1monitoring_1_1MetricsExporterImpl.html#a8e27f52d2df48dcd19b28926535aa56d">configure_export</a> (const std::unordered_map&lt; std::string, std::string &gt; &amp;config) override</td></tr>
 <tr class="separator:a8e27f52d2df48dcd19b28926535aa56d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_classdtls_1_1v13_1_1monitoring_1_1MetricsExporter"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classdtls_1_1v13_1_1monitoring_1_1MetricsExporter')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classdtls_1_1v13_1_1monitoring_1_1MetricsExporter.html">dtls::v13::monitoring::MetricsExporter</a></td></tr>
-<tr class="memitem:a137eda31699d05b622332a9327fc5d66 inherit pub_methods_classdtls_1_1v13_1_1monitoring_1_1MetricsExporter" id="r_a137eda31699d05b622332a9327fc5d66"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">virtual</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1monitoring_1_1MetricsExporter.html#a137eda31699d05b622332a9327fc5d66">~MetricsExporter</a> ()=<a class="el" href="classdtls_1_1v13_1_1Result.html">default</a></td></tr>
-<tr class="separator:a137eda31699d05b622332a9327fc5d66 inherit pub_methods_classdtls_1_1v13_1_1monitoring_1_1MetricsExporter"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Metrics exporter implementation. </p>
@@ -150,7 +142,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">dtls::v13::monitoring::MetricsExporterImpl::MetricsExporterImpl </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> std::shared_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1monitoring_1_1MetricsCollector.html">MetricsCollector</a> &gt; &amp;&#160;</td>
+          <td class="paramtype">const std::shared_ptr&lt; MetricsCollector &gt; &amp;&#160;</td>
           <td class="paramname"><em>collector</em></td><td>)</td>
           <td></td>
         </tr>
@@ -177,23 +169,19 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1Result.html">void</a> &gt; dtls::v13::monitoring::MetricsExporterImpl::configure_export </td>
+          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; dtls::v13::monitoring::MetricsExporterImpl::configure_export </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> std::unordered_map&lt; std::string, std::string &gt; &amp;&#160;</td>
+          <td class="paramtype">const std::unordered_map&lt; std::string, std::string &gt; &amp;&#160;</td>
           <td class="paramname"><em>config</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Set export configuration. </p>
-
-<p>Implements <a class="el" href="classdtls_1_1v13_1_1monitoring_1_1MetricsExporter.html#a48597b0abc9a09d8d9868044640df9a0">dtls::v13::monitoring::MetricsExporter</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="metrics__system_8cpp_source.html#l01144">1144</a> of file <a class="el" href="metrics__system_8cpp_source.html">metrics_system.cpp</a>.</p>
 
@@ -211,21 +199,17 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">std::string dtls::v13::monitoring::MetricsExporterImpl::export_custom </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> std::string &amp;&#160;</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>format_name</em></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Export metrics in custom format. </p>
-
-<p>Implements <a class="el" href="classdtls_1_1v13_1_1monitoring_1_1MetricsExporter.html#a4a2a21ad60f70c537ee7f94af699c269">dtls::v13::monitoring::MetricsExporter</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="metrics__system_8cpp_source.html#l01018">1018</a> of file <a class="el" href="metrics__system_8cpp_source.html">metrics_system.cpp</a>.</p>
 
@@ -249,14 +233,10 @@ Public Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Export metrics in InfluxDB line protocol. </p>
-
-<p>Implements <a class="el" href="classdtls_1_1v13_1_1monitoring_1_1MetricsExporter.html#a579af9b6d0e2f42e3369a46f2f63355d">dtls::v13::monitoring::MetricsExporter</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="metrics__system_8cpp_source.html#l00984">984</a> of file <a class="el" href="metrics__system_8cpp_source.html">metrics_system.cpp</a>.</p>
 
@@ -280,14 +260,10 @@ Public Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Export metrics in JSON format. </p>
-
-<p>Implements <a class="el" href="classdtls_1_1v13_1_1monitoring_1_1MetricsExporter.html#a18b3dcd445cc7470c2e08fcb05b165f8">dtls::v13::monitoring::MetricsExporter</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="metrics__system_8cpp_source.html#l00940">940</a> of file <a class="el" href="metrics__system_8cpp_source.html">metrics_system.cpp</a>.</p>
 
@@ -311,14 +287,10 @@ Public Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Export metrics in Prometheus format. </p>
-
-<p>Implements <a class="el" href="classdtls_1_1v13_1_1monitoring_1_1MetricsExporter.html#a30dcf91509d0c03fce52aa53c49bb435">dtls::v13::monitoring::MetricsExporter</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="metrics__system_8cpp_source.html#l00878">878</a> of file <a class="el" href="metrics__system_8cpp_source.html">metrics_system.cpp</a>.</p>
 

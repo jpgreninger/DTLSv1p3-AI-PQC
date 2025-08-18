@@ -10,8 +10,6 @@ var namespacedtls_1_1v13_1_1crypto_1_1advanced =
       [ "is_standards_approved", "namespacedtls_1_1v13_1_1crypto_1_1advanced_1_1utils.html#a5d701cfa862e08e2c796c0dc890a68b9", null ],
       [ "parse_cipher_suite", "namespacedtls_1_1v13_1_1crypto_1_1advanced_1_1utils.html#a2f546d90b65e8e6f1e5fdc9e272d68df", null ]
     ] ],
-    [ "AdvancedCipherSuiteManager", "classdtls_1_1v13_1_1crypto_1_1advanced_1_1AdvancedCipherSuiteManager.html", "classdtls_1_1v13_1_1crypto_1_1advanced_1_1AdvancedCipherSuiteManager" ],
-    [ "AdvancedCryptoProvider", "classdtls_1_1v13_1_1crypto_1_1advanced_1_1AdvancedCryptoProvider.html", "classdtls_1_1v13_1_1crypto_1_1advanced_1_1AdvancedCryptoProvider" ],
     [ "AdvancedCryptoProviderImpl", "classdtls_1_1v13_1_1crypto_1_1advanced_1_1AdvancedCryptoProviderImpl.html", "classdtls_1_1v13_1_1crypto_1_1advanced_1_1AdvancedCryptoProviderImpl" ],
     [ "ExtendedAEADParams", "structdtls_1_1v13_1_1crypto_1_1advanced_1_1ExtendedAEADParams.html", "structdtls_1_1v13_1_1crypto_1_1advanced_1_1ExtendedAEADParams" ],
     [ "ExtendedCipherSuiteProperties", "structdtls_1_1v13_1_1crypto_1_1advanced_1_1ExtendedCipherSuiteProperties.html", "structdtls_1_1v13_1_1crypto_1_1advanced_1_1ExtendedCipherSuiteProperties" ],
@@ -73,5 +71,6 @@ var namespacedtls_1_1v13_1_1crypto_1_1advanced =
       [ "BLAKE3_256", "namespacedtls_1_1v13_1_1crypto_1_1advanced.html#a8ac3848127c18a245515aab438fa4726a680c8bd6b077dd2ff0150f01884b87aa", null ],
       [ "BLAKE3_384", "namespacedtls_1_1v13_1_1crypto_1_1advanced.html#a8ac3848127c18a245515aab438fa4726a0434f790b423af07be4d3dd333eaef0b", null ],
       [ "BLAKE3_512", "namespacedtls_1_1v13_1_1crypto_1_1advanced.html#a8ac3848127c18a245515aab438fa4726a1f7c508587ae68557d230c1305b0b3be", null ]
-    ] ]
+    ] ],
+    [ "__attribute__", "namespacedtls_1_1v13_1_1crypto_1_1advanced.html#a2f333f4b151d4c85aab5e719295a79e3", null ]
 ];

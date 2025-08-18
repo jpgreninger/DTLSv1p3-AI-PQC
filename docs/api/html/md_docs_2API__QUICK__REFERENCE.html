@@ -118,32 +118,31 @@ Client Connection</h2>
 <div class="line"><span class="keyword">auto</span> <a class="code hl_namespace" href="namespacedtls_1_1v13_1_1crypto.html">crypto</a> = crypto::ProviderFactory::instance().create_provider(<span class="stringliteral">&quot;openssl&quot;</span>);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// 2. Configure connection</span></div>
-<div class="line"><a class="code hl_struct" href="structdtls_1_1v13_1_1ConnectionConfig.html">ConnectionConfig</a> <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">config</a> = ConnectionConfig::default_client_config();</div>
+<div class="line"><a class="code hl_struct" href="structdtls_1_1v13_1_1ConnectionConfig.html">ConnectionConfig</a> config = ConnectionConfig::default_client_config();</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// 3. Create and connect</span></div>
-<div class="line"><span class="keyword">auto</span> <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">conn</a> = Connection::create_client(</div>
+<div class="line"><span class="keyword">auto</span> conn = Connection::create_client(</div>
 <div class="line">    NetworkAddress::from_string(<span class="stringliteral">&quot;server.com:4433&quot;</span>).value(),</div>
-<div class="line">    <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">config</a>, </div>
+<div class="line">    config, </div>
 <div class="line">    std::move(<a class="code hl_namespace" href="namespacedtls_1_1v13_1_1crypto.html">crypto</a>.value())</div>
 <div class="line">);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// 4. Handshake and communicate</span></div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">conn</a>-&gt;handshake();</div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">conn</a>-&gt;send({<span class="charliteral">&#39;H&#39;</span>,<span class="charliteral">&#39;e&#39;</span>,<span class="charliteral">&#39;l&#39;</span>,<span class="charliteral">&#39;l&#39;</span>,<span class="charliteral">&#39;o&#39;</span>});</div>
-<div class="line"><span class="keyword">auto</span> <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">response</a> = <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">conn</a>-&gt;receive();</div>
-<div class="ttc" id="aclassdtls_1_1v13_1_1Result_html"><div class="ttname"><a href="classdtls_1_1v13_1_1Result.html">dtls::v13::Result</a></div><div class="ttdoc">Forward declaration for Result template class.</div><div class="ttdef"><b>Definition</b> <a href="result_8h_source.html#l00027">result.h:27</a></div></div>
+<div class="line">conn-&gt;handshake();</div>
+<div class="line">conn-&gt;send({<span class="charliteral">&#39;H&#39;</span>,<span class="charliteral">&#39;e&#39;</span>,<span class="charliteral">&#39;l&#39;</span>,<span class="charliteral">&#39;l&#39;</span>,<span class="charliteral">&#39;o&#39;</span>});</div>
+<div class="line"><span class="keyword">auto</span> response = conn-&gt;receive();</div>
 <div class="ttc" id="anamespacedtls_1_1v13_1_1crypto_html"><div class="ttname"><a href="namespacedtls_1_1v13_1_1crypto.html">dtls::v13::crypto</a></div><div class="ttdoc">Crypto namespace contains all cryptographic functionality for DTLS v1.3 implementation.</div><div class="ttdef"><b>Definition</b> <a href="crypto_8h_source.html#l00075">crypto.h:75</a></div></div>
 <div class="ttc" id="anamespacedtls_1_1v13_html"><div class="ttname"><a href="namespacedtls_1_1v13.html">dtls::v13</a></div><div class="ttdoc">Main namespace for DTLS v1.3 implementation.</div><div class="ttdef"><b>Definition</b> <a href="alert__manager_8h_source.html#l00017">alert_manager.h:17</a></div></div>
 <div class="ttc" id="astructdtls_1_1v13_1_1ConnectionConfig_html"><div class="ttname"><a href="structdtls_1_1v13_1_1ConnectionConfig.html">dtls::v13::ConnectionConfig</a></div><div class="ttdoc">Connection configuration parameters.</div><div class="ttdef"><b>Definition</b> <a href="connection_8h_source.html#l00158">connection.h:158</a></div></div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md188"></a>
 Server Setup</h2>
-<div class="fragment"><div class="line"><span class="keyword">auto</span> <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">manager</a> = ConnectionManager::create(ConnectionConfig::default_server_config());</div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">manager</a>-&gt;bind(NetworkAddress::from_string(<span class="stringliteral">&quot;0.0.0.0:4433&quot;</span>).value());</div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">manager</a>-&gt;set_event_callback([](<a class="code hl_enumeration" href="namespacedtls_1_1v13.html#ae6e8032c12417cb62fd44f38dfe5a1ea">ConnectionEvent</a> <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">event</a>, <span class="keyword">const</span> <a class="code hl_class" href="classdtls_1_1v13_1_1Connection.html">Connection</a>&amp; <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">conn</a>) {</div>
+<div class="fragment"><div class="line"><span class="keyword">auto</span> manager = ConnectionManager::create(ConnectionConfig::default_server_config());</div>
+<div class="line">manager-&gt;bind(NetworkAddress::from_string(<span class="stringliteral">&quot;0.0.0.0:4433&quot;</span>).value());</div>
+<div class="line">manager-&gt;set_event_callback([](<a class="code hl_enumeration" href="namespacedtls_1_1v13.html#ae6e8032c12417cb62fd44f38dfe5a1ea">ConnectionEvent</a> event, <span class="keyword">const</span> <a class="code hl_class" href="classConnection.html">Connection</a>&amp; conn) {</div>
 <div class="line">    <span class="comment">// Handle events</span></div>
 <div class="line">});</div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">manager</a>-&gt;run();</div>
-<div class="ttc" id="aclassdtls_1_1v13_1_1Connection_html"><div class="ttname"><a href="classdtls_1_1v13_1_1Connection.html">dtls::v13::Connection</a></div><div class="ttdoc">Main DTLS v1.3 Connection implementation.</div><div class="ttdef"><b>Definition</b> <a href="connection_8h_source.html#l00304">connection.h:304</a></div></div>
+<div class="line">manager-&gt;run();</div>
+<div class="ttc" id="aclassConnection_html"><div class="ttname"><a href="classConnection.html">Connection</a></div><div class="ttdoc">Main DTLS v1.3 Connection implementation.</div></div>
 <div class="ttc" id="anamespacedtls_1_1v13_html_ae6e8032c12417cb62fd44f38dfe5a1ea"><div class="ttname"><a href="namespacedtls_1_1v13.html#ae6e8032c12417cb62fd44f38dfe5a1ea">dtls::v13::ConnectionEvent</a></div><div class="ttdeci">ConnectionEvent</div><div class="ttdoc">Connection event types for callbacks.</div><div class="ttdef"><b>Definition</b> <a href="connection_8h_source.html#l00236">connection.h:236</a></div></div>
 </div><!-- fragment --><h1><a class="anchor" id="autotoc_md189"></a>
 Core Types Reference</h1>
@@ -155,9 +154,9 @@ Core Types Reference</h1>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone"><code>NetworkAddress</code>   </td><td class="markdownTableBodyNone">IP address + port   </td><td class="markdownTableBodyNone"><code>NetworkAddress::from_string("1.2.3.4:443")</code>    </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone"><code>ConnectionConfig</code>   </td><td class="markdownTableBodyNone">Connection settings   </td><td class="markdownTableBodyNone"><code>ConnectionConfig::default_client_config()</code>    </td></tr>
+<td class="markdownTableBodyNone"><code>ConnectionConfig</code>   </td><td class="markdownTableBodyNone"><a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> settings   </td><td class="markdownTableBodyNone"><code>ConnectionConfig::default_client_config()</code>    </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone"><code>ConnectionID</code>   </td><td class="markdownTableBodyNone">Connection identifier   </td><td class="markdownTableBodyNone"><code>std::vector&lt;uint8_t&gt;</code>    </td></tr>
+<td class="markdownTableBodyNone"><code>ConnectionID</code>   </td><td class="markdownTableBodyNone"><a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> identifier   </td><td class="markdownTableBodyNone"><code>std::vector&lt;uint8_t&gt;</code>    </td></tr>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone"><code>KeyMaterial</code>   </td><td class="markdownTableBodyNone">Cryptographic keys   </td><td class="markdownTableBodyNone"><code>std::vector&lt;uint8_t&gt;</code>    </td></tr>
 <tr class="markdownTableRowEven">
@@ -187,23 +186,20 @@ Error Handling Patterns</h1>
 <h2><a class="anchor" id="autotoc_md195"></a>
 Result Type Usage</h2>
 <div class="fragment"><div class="line"><span class="comment">// Check and use</span></div>
-<div class="line"><span class="keyword">auto</span> <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">result</a> = connection-&gt;send(data);</div>
-<div class="line"><span class="keywordflow">if</span> (<a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">result</a>) {</div>
-<div class="line">    std::cout &lt;&lt; <span class="stringliteral">&quot;Sent &quot;</span> &lt;&lt; *<a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">result</a> &lt;&lt; <span class="stringliteral">&quot; bytes\n&quot;</span>;</div>
+<div class="line"><span class="keyword">auto</span> result = connection-&gt;send(data);</div>
+<div class="line"><span class="keywordflow">if</span> (result) {</div>
+<div class="line">    std::cout &lt;&lt; <span class="stringliteral">&quot;Sent &quot;</span> &lt;&lt; *result &lt;&lt; <span class="stringliteral">&quot; bytes\n&quot;</span>;</div>
 <div class="line">} <span class="keywordflow">else</span> {</div>
-<div class="line">    std::cerr &lt;&lt; <span class="stringliteral">&quot;Error: &quot;</span> &lt;&lt; <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">result</a>.<a class="code hl_function" href="classdtls_1_1v13_1_1Result.html#acae6b3edbb83a4098261519bc9f8e2a3">error</a>().message() &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line">    std::cerr &lt;&lt; <span class="stringliteral">&quot;Error: &quot;</span> &lt;&lt; result.error().message() &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
 <div class="line">}</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Value or default</span></div>
-<div class="line"><span class="keywordtype">size_t</span> bytes_sent = <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">result</a>.<a class="code hl_function" href="classdtls_1_1v13_1_1Result.html#adbd04fc56f522afdd66b0d073c2ba6da">value_or</a>(0);</div>
+<div class="line"><span class="keywordtype">size_t</span> bytes_sent = result.value_or(0);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Chain operations</span></div>
-<div class="line"><span class="keyword">auto</span> <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">final_result</a> = connection-&gt;handshake()</div>
-<div class="line">    .<a class="code hl_function" href="classdtls_1_1v13_1_1Result.html#acec320deafbeffa7066b4f6198bac923">and_then</a>([&amp;]() { <span class="keywordflow">return</span> connection-&gt;send(data); })</div>
+<div class="line"><span class="keyword">auto</span> final_result = connection-&gt;handshake()</div>
+<div class="line">    .and_then([&amp;]() { <span class="keywordflow">return</span> connection-&gt;send(data); })</div>
 <div class="line">    .and_then([&amp;]() { <span class="keywordflow">return</span> connection-&gt;receive(); });</div>
-<div class="ttc" id="aclassdtls_1_1v13_1_1Result_html_acae6b3edbb83a4098261519bc9f8e2a3"><div class="ttname"><a href="classdtls_1_1v13_1_1Result.html#acae6b3edbb83a4098261519bc9f8e2a3">dtls::v13::Result::error</a></div><div class="ttdeci">DTLSError error() const</div><div class="ttdef"><b>Definition</b> <a href="result_8h_source.html#l00107">result.h:107</a></div></div>
-<div class="ttc" id="aclassdtls_1_1v13_1_1Result_html_acec320deafbeffa7066b4f6198bac923"><div class="ttname"><a href="classdtls_1_1v13_1_1Result.html#acec320deafbeffa7066b4f6198bac923">dtls::v13::Result::and_then</a></div><div class="ttdeci">auto and_then(F &amp;&amp;func) const &amp;-&gt; decltype(func(value()))</div><div class="ttdef"><b>Definition</b> <a href="result_8h_source.html#l00165">result.h:165</a></div></div>
-<div class="ttc" id="aclassdtls_1_1v13_1_1Result_html_adbd04fc56f522afdd66b0d073c2ba6da"><div class="ttname"><a href="classdtls_1_1v13_1_1Result.html#adbd04fc56f522afdd66b0d073c2ba6da">dtls::v13::Result::value_or</a></div><div class="ttdeci">T value_or(U &amp;&amp;default_value) const &amp;</div><div class="ttdef"><b>Definition</b> <a href="result_8h_source.html#l00091">result.h:91</a></div></div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md196"></a>
 Common Error Codes</h2>
 <div class="fragment"><div class="line">ErrorCode::NETWORK_ERROR          <span class="comment">// Network issues</span></div>
@@ -216,24 +212,24 @@ Connection Management</h1>
 <h2><a class="anchor" id="autotoc_md198"></a>
 Basic Operations</h2>
 <div class="fragment"><div class="line"><span class="comment">// Create connection</span></div>
-<div class="line"><span class="keyword">auto</span> <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">conn</a> = Connection::create_client(address, <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">config</a>, <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">crypto_provider</a>);</div>
+<div class="line"><span class="keyword">auto</span> conn = Connection::create_client(address, config, crypto_provider);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Lifecycle</span></div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">conn</a>-&gt;handshake();                 <span class="comment">// Perform handshake</span></div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">conn</a>-&gt;send(data);                 <span class="comment">// Send application data</span></div>
-<div class="line"><span class="keyword">auto</span> <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">received</a> = <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">conn</a>-&gt;receive();   <span class="comment">// Receive data</span></div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">conn</a>-&gt;close();                    <span class="comment">// Graceful close</span></div>
+<div class="line">conn-&gt;handshake();                 <span class="comment">// Perform handshake</span></div>
+<div class="line">conn-&gt;send(data);                 <span class="comment">// Send application data</span></div>
+<div class="line"><span class="keyword">auto</span> received = conn-&gt;receive();   <span class="comment">// Receive data</span></div>
+<div class="line">conn-&gt;close();                    <span class="comment">// Graceful close</span></div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// State queries</span></div>
-<div class="line"><span class="keywordtype">bool</span> <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">connected</a> = <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">conn</a>-&gt;is_connected();</div>
-<div class="line"><a class="code hl_enumeration" href="namespacedtls_1_1v13.html#a68896fa2f4ab2bfbb152b31cf949f0ad">ConnectionState</a> state = <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">conn</a>-&gt;get_state();</div>
-<div class="line"><a class="code hl_enumeration" href="namespacedtls_1_1v13.html#a2c8cefcd0588652f47924c24935f52e3">CipherSuite</a> suite = <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">conn</a>-&gt;get_negotiated_cipher_suite();</div>
+<div class="line"><span class="keywordtype">bool</span> connected = conn-&gt;is_connected();</div>
+<div class="line"><a class="code hl_enumeration" href="namespacedtls_1_1v13.html#a68896fa2f4ab2bfbb152b31cf949f0ad">ConnectionState</a> state = conn-&gt;get_state();</div>
+<div class="line"><a class="code hl_enumeration" href="namespacedtls_1_1v13.html#a2c8cefcd0588652f47924c24935f52e3">CipherSuite</a> suite = conn-&gt;get_negotiated_cipher_suite();</div>
 <div class="ttc" id="anamespacedtls_1_1v13_html_a2c8cefcd0588652f47924c24935f52e3"><div class="ttname"><a href="namespacedtls_1_1v13.html#a2c8cefcd0588652f47924c24935f52e3">dtls::v13::CipherSuite</a></div><div class="ttdeci">CipherSuite</div><div class="ttdef"><b>Definition</b> <a href="types_8h_source.html#l00153">types.h:153</a></div></div>
 <div class="ttc" id="anamespacedtls_1_1v13_html_a68896fa2f4ab2bfbb152b31cf949f0ad"><div class="ttname"><a href="namespacedtls_1_1v13.html#a68896fa2f4ab2bfbb152b31cf949f0ad">dtls::v13::ConnectionState</a></div><div class="ttdeci">ConnectionState</div><div class="ttdef"><b>Definition</b> <a href="types_8h_source.html#l00266">types.h:266</a></div></div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md199"></a>
 Event Handling</h2>
-<div class="fragment"><div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">conn</a>-&gt;set_event_callback([](<a class="code hl_enumeration" href="namespacedtls_1_1v13.html#ae6e8032c12417cb62fd44f38dfe5a1ea">ConnectionEvent</a> <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">event</a>, <span class="keyword">const</span> <a class="code hl_class" href="classdtls_1_1v13_1_1Connection.html">Connection</a>&amp; <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">conn</a>) {</div>
-<div class="line">    <span class="keywordflow">switch</span> (<a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">event</a>) {</div>
+<div class="fragment"><div class="line">conn-&gt;set_event_callback([](<a class="code hl_enumeration" href="namespacedtls_1_1v13.html#ae6e8032c12417cb62fd44f38dfe5a1ea">ConnectionEvent</a> event, <span class="keyword">const</span> <a class="code hl_class" href="classConnection.html">Connection</a>&amp; conn) {</div>
+<div class="line">    <span class="keywordflow">switch</span> (event) {</div>
 <div class="line">        <span class="keywordflow">case</span> ConnectionEvent::HANDSHAKE_COMPLETED:</div>
 <div class="line">            <span class="comment">// Connection ready</span></div>
 <div class="line">            <span class="keywordflow">break</span>;</div>
@@ -247,26 +243,35 @@ Event Handling</h2>
 <div class="line">});</div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md200"></a>
 Configuration Options</h2>
-<div class="fragment"><div class="line"><a class="code hl_struct" href="structdtls_1_1v13_1_1ConnectionConfig.html">ConnectionConfig</a> <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">config</a>;</div>
+<div class="fragment"><div class="line"><a class="code hl_struct" href="structdtls_1_1v13_1_1ConnectionConfig.html">ConnectionConfig</a> config;</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Crypto preferences</span></div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">config</a>.supported_cipher_suites = {</div>
+<div class="line">config.<a class="code hl_variable" href="structdtls_1_1v13_1_1ConnectionConfig.html#a2a2b5f8d68ae8300ae2bf3380ad0f3c8">supported_cipher_suites</a> = {</div>
 <div class="line">    CipherSuite::TLS_AES_256_GCM_SHA384,</div>
 <div class="line">    CipherSuite::TLS_CHACHA20_POLY1305_SHA256</div>
 <div class="line">};</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Timeouts</span></div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">config</a>.handshake_timeout = std::chrono::seconds(10);</div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">config</a>.retransmission_timeout = std::chrono::milliseconds(1000);</div>
+<div class="line">config.<a class="code hl_variable" href="structdtls_1_1v13_1_1ConnectionConfig.html#aa23b4ef8bfaba19569d1608b90eccede">handshake_timeout</a> = std::chrono::seconds(10);</div>
+<div class="line">config.<a class="code hl_variable" href="structdtls_1_1v13_1_1ConnectionConfig.html#a503ac394292c500c3d2e9f1b1e5f153b">retransmission_timeout</a> = std::chrono::milliseconds(1000);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Features</span></div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">config</a>.enable_connection_id = <span class="keyword">true</span>;</div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">config</a>.enable_early_data = <span class="keyword">true</span>;</div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">config</a>.max_early_data_size = 16384;</div>
+<div class="line">config.<a class="code hl_variable" href="structdtls_1_1v13_1_1ConnectionConfig.html#a8eb7b89f77d70db959089d856f009528">enable_connection_id</a> = <span class="keyword">true</span>;</div>
+<div class="line">config.<a class="code hl_variable" href="structdtls_1_1v13_1_1ConnectionConfig.html#ac37a00666a4781627fb5671086db011a">enable_early_data</a> = <span class="keyword">true</span>;</div>
+<div class="line">config.<a class="code hl_variable" href="structdtls_1_1v13_1_1ConnectionConfig.html#a6e1ebf8c49495c8de1b5f818d6bef995">max_early_data_size</a> = 16384;</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Error recovery</span></div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">config</a>.error_recovery.max_retries = 3;</div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">config</a>.error_recovery.enable_automatic_recovery = <span class="keyword">true</span>;</div>
+<div class="line">config.<a class="code hl_variable" href="structdtls_1_1v13_1_1ConnectionConfig.html#a8b529857a182fa3d7178ef18613ee06e">error_recovery</a>.<a class="code hl_variable" href="structdtls_1_1v13_1_1ErrorRecoveryConfig.html#ae900674a4813243de4dd84687f583ca9">max_retries</a> = 3;</div>
+<div class="line">config.<a class="code hl_variable" href="structdtls_1_1v13_1_1ConnectionConfig.html#a8b529857a182fa3d7178ef18613ee06e">error_recovery</a>.<a class="code hl_variable" href="structdtls_1_1v13_1_1ErrorRecoveryConfig.html#a725bf12fdc0f55d9fb29ab0152d39d12">enable_automatic_recovery</a> = <span class="keyword">true</span>;</div>
+<div class="ttc" id="astructdtls_1_1v13_1_1ConnectionConfig_html_a2a2b5f8d68ae8300ae2bf3380ad0f3c8"><div class="ttname"><a href="structdtls_1_1v13_1_1ConnectionConfig.html#a2a2b5f8d68ae8300ae2bf3380ad0f3c8">dtls::v13::ConnectionConfig::supported_cipher_suites</a></div><div class="ttdeci">std::vector&lt; CipherSuite &gt; supported_cipher_suites</div><div class="ttdef"><b>Definition</b> <a href="connection_8h_source.html#l00160">connection.h:160</a></div></div>
+<div class="ttc" id="astructdtls_1_1v13_1_1ConnectionConfig_html_a503ac394292c500c3d2e9f1b1e5f153b"><div class="ttname"><a href="structdtls_1_1v13_1_1ConnectionConfig.html#a503ac394292c500c3d2e9f1b1e5f153b">dtls::v13::ConnectionConfig::retransmission_timeout</a></div><div class="ttdeci">std::chrono::milliseconds retransmission_timeout</div><div class="ttdef"><b>Definition</b> <a href="connection_8h_source.html#l00166">connection.h:166</a></div></div>
+<div class="ttc" id="astructdtls_1_1v13_1_1ConnectionConfig_html_a6e1ebf8c49495c8de1b5f818d6bef995"><div class="ttname"><a href="structdtls_1_1v13_1_1ConnectionConfig.html#a6e1ebf8c49495c8de1b5f818d6bef995">dtls::v13::ConnectionConfig::max_early_data_size</a></div><div class="ttdeci">size_t max_early_data_size</div><div class="ttdef"><b>Definition</b> <a href="connection_8h_source.html#l00175">connection.h:175</a></div></div>
+<div class="ttc" id="astructdtls_1_1v13_1_1ConnectionConfig_html_a8b529857a182fa3d7178ef18613ee06e"><div class="ttname"><a href="structdtls_1_1v13_1_1ConnectionConfig.html#a8b529857a182fa3d7178ef18613ee06e">dtls::v13::ConnectionConfig::error_recovery</a></div><div class="ttdeci">ErrorRecoveryConfig error_recovery</div><div class="ttdef"><b>Definition</b> <a href="connection_8h_source.html#l00190">connection.h:190</a></div></div>
+<div class="ttc" id="astructdtls_1_1v13_1_1ConnectionConfig_html_a8eb7b89f77d70db959089d856f009528"><div class="ttname"><a href="structdtls_1_1v13_1_1ConnectionConfig.html#a8eb7b89f77d70db959089d856f009528">dtls::v13::ConnectionConfig::enable_connection_id</a></div><div class="ttdeci">bool enable_connection_id</div><div class="ttdef"><b>Definition</b> <a href="connection_8h_source.html#l00170">connection.h:170</a></div></div>
+<div class="ttc" id="astructdtls_1_1v13_1_1ConnectionConfig_html_aa23b4ef8bfaba19569d1608b90eccede"><div class="ttname"><a href="structdtls_1_1v13_1_1ConnectionConfig.html#aa23b4ef8bfaba19569d1608b90eccede">dtls::v13::ConnectionConfig::handshake_timeout</a></div><div class="ttdeci">std::chrono::milliseconds handshake_timeout</div><div class="ttdef"><b>Definition</b> <a href="connection_8h_source.html#l00165">connection.h:165</a></div></div>
+<div class="ttc" id="astructdtls_1_1v13_1_1ConnectionConfig_html_ac37a00666a4781627fb5671086db011a"><div class="ttname"><a href="structdtls_1_1v13_1_1ConnectionConfig.html#ac37a00666a4781627fb5671086db011a">dtls::v13::ConnectionConfig::enable_early_data</a></div><div class="ttdeci">bool enable_early_data</div><div class="ttdef"><b>Definition</b> <a href="connection_8h_source.html#l00174">connection.h:174</a></div></div>
+<div class="ttc" id="astructdtls_1_1v13_1_1ErrorRecoveryConfig_html_a725bf12fdc0f55d9fb29ab0152d39d12"><div class="ttname"><a href="structdtls_1_1v13_1_1ErrorRecoveryConfig.html#a725bf12fdc0f55d9fb29ab0152d39d12">dtls::v13::ErrorRecoveryConfig::enable_automatic_recovery</a></div><div class="ttdeci">bool enable_automatic_recovery</div><div class="ttdef"><b>Definition</b> <a href="connection_8h_source.html#l00119">connection.h:119</a></div></div>
+<div class="ttc" id="astructdtls_1_1v13_1_1ErrorRecoveryConfig_html_ae900674a4813243de4dd84687f583ca9"><div class="ttname"><a href="structdtls_1_1v13_1_1ErrorRecoveryConfig.html#ae900674a4813243de4dd84687f583ca9">dtls::v13::ErrorRecoveryConfig::max_retries</a></div><div class="ttdeci">uint32_t max_retries</div><div class="ttdef"><b>Definition</b> <a href="connection_8h_source.html#l00100">connection.h:100</a></div></div>
 </div><!-- fragment --><h1><a class="anchor" id="autotoc_md201"></a>
 Crypto Provider Management</h1>
 <h2><a class="anchor" id="autotoc_md202"></a>
@@ -274,27 +279,27 @@ Factory Usage</h2>
 <div class="fragment"><div class="line"><span class="keyword">auto</span>&amp; factory = crypto::ProviderFactory::instance();</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Create default provider</span></div>
-<div class="line"><span class="keyword">auto</span> <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">provider</a> = factory.create_provider();</div>
+<div class="line"><span class="keyword">auto</span> provider = factory.create_provider();</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Create specific provider</span></div>
-<div class="line"><span class="keyword">auto</span> <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">openssl_provider</a> = factory.create_provider(<span class="stringliteral">&quot;openssl&quot;</span>);</div>
-<div class="line"><span class="keyword">auto</span> <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">botan_provider</a> = factory.create_provider(<span class="stringliteral">&quot;botan&quot;</span>);</div>
+<div class="line"><span class="keyword">auto</span> openssl_provider = factory.create_provider(<span class="stringliteral">&quot;openssl&quot;</span>);</div>
+<div class="line"><span class="keyword">auto</span> botan_provider = factory.create_provider(<span class="stringliteral">&quot;botan&quot;</span>);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Check availability</span></div>
 <div class="line"><span class="keywordtype">bool</span> available = factory.is_provider_available(<span class="stringliteral">&quot;openssl&quot;</span>);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// List providers</span></div>
-<div class="line"><span class="keyword">auto</span> <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">providers</a> = factory.get_available_providers();</div>
+<div class="line"><span class="keyword">auto</span> providers = factory.get_available_providers();</div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md203"></a>
 Provider Capabilities</h2>
 <div class="fragment"><div class="line"><span class="comment">// Query capabilities</span></div>
-<div class="line"><span class="keyword">auto</span> <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">suites</a> = <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">provider</a>-&gt;get_supported_cipher_suites();</div>
-<div class="line"><span class="keyword">auto</span> <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">groups</a> = <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">provider</a>-&gt;get_supported_groups();</div>
-<div class="line"><span class="keyword">auto</span> <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">signatures</a> = <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">provider</a>-&gt;get_supported_signatures();</div>
+<div class="line"><span class="keyword">auto</span> suites = provider-&gt;get_supported_cipher_suites();</div>
+<div class="line"><span class="keyword">auto</span> groups = provider-&gt;get_supported_groups();</div>
+<div class="line"><span class="keyword">auto</span> signatures = provider-&gt;get_supported_signatures();</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Hardware acceleration</span></div>
-<div class="line"><span class="keywordflow">if</span> (<a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">provider</a>-&gt;supports_hardware_acceleration()) {</div>
-<div class="line">    <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">provider</a>-&gt;enable_hardware_acceleration();</div>
+<div class="line"><span class="keywordflow">if</span> (provider-&gt;supports_hardware_acceleration()) {</div>
+<div class="line">    provider-&gt;enable_hardware_acceleration();</div>
 <div class="line">}</div>
 </div><!-- fragment --><h1><a class="anchor" id="autotoc_md204"></a>
 Memory Management</h1>
@@ -302,71 +307,70 @@ Memory Management</h1>
 Buffer Operations</h2>
 <div class="fragment"><div class="line"><span class="comment">// Create buffers</span></div>
 <div class="line">Buffer buffer(1024);                    <span class="comment">// 1KB capacity</span></div>
-<div class="line">Buffer <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">data_buffer</a>({<span class="charliteral">&#39;H&#39;</span>,<span class="charliteral">&#39;e&#39;</span>,<span class="charliteral">&#39;l&#39;</span>,<span class="charliteral">&#39;l&#39;</span>,<span class="charliteral">&#39;o&#39;</span>});  <span class="comment">// From data</span></div>
+<div class="line">Buffer data_buffer({<span class="charliteral">&#39;H&#39;</span>,<span class="charliteral">&#39;e&#39;</span>,<span class="charliteral">&#39;l&#39;</span>,<span class="charliteral">&#39;l&#39;</span>,<span class="charliteral">&#39;o&#39;</span>});  <span class="comment">// From data</span></div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Manipulate</span></div>
 <div class="line">buffer.append(additional_data);</div>
-<div class="line">Buffer slice = buffer.<a class="code hl_function" href="classdtls_1_1v13_1_1memory_1_1ZeroCopyBuffer.html#aa949ec8d2a31f30ec73820fec5907979">slice</a>(10, 100);   <span class="comment">// Offset 10, length 100</span></div>
+<div class="line">Buffer slice = buffer.slice(10, 100);   <span class="comment">// Offset 10, length 100</span></div>
 <div class="line">buffer.secure_zero();                   <span class="comment">// Secure cleanup</span></div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Pool usage</span></div>
-<div class="line"><span class="keyword">auto</span>&amp; <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">pool</a> = BufferPool::instance();</div>
-<div class="line"><span class="keyword">auto</span> <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">pooled_buffer</a> = <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">pool</a>.acquire(2048);</div>
+<div class="line"><span class="keyword">auto</span>&amp; pool = BufferPool::instance();</div>
+<div class="line"><span class="keyword">auto</span> pooled_buffer = pool.acquire(2048);</div>
 <div class="line"><span class="comment">// ... use buffer ...</span></div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">pool</a>.release(std::move(<a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">pooled_buffer</a>));</div>
-<div class="ttc" id="aclassdtls_1_1v13_1_1memory_1_1ZeroCopyBuffer_html_aa949ec8d2a31f30ec73820fec5907979"><div class="ttname"><a href="classdtls_1_1v13_1_1memory_1_1ZeroCopyBuffer.html#aa949ec8d2a31f30ec73820fec5907979">dtls::v13::memory::ZeroCopyBuffer::slice</a></div><div class="ttdeci">Result&lt; ZeroCopyBuffer &gt; slice(size_t offset, size_t length) const</div><div class="ttdef"><b>Definition</b> <a href="buffer_8cpp_source.html#l00238">buffer.cpp:238</a></div></div>
+<div class="line">pool.release(std::move(pooled_buffer));</div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md206"></a>
 Zero-Copy Operations</h2>
 <div class="fragment"><div class="line"><span class="comment">// Efficient data handling</span></div>
-<div class="line"><span class="keyword">auto</span> <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">send_result</a> = connection-&gt;send(buffer.data(), buffer.size());</div>
-<div class="line"><span class="keyword">auto</span> <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">receive_buffer</a> = Buffer(4096);</div>
-<div class="line"><span class="keyword">auto</span> bytes_received = connection-&gt;receive(<a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">receive_buffer</a>.data(), </div>
-<div class="line">                                         <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">receive_buffer</a>.capacity());</div>
+<div class="line"><span class="keyword">auto</span> send_result = connection-&gt;send(buffer.data(), buffer.size());</div>
+<div class="line"><span class="keyword">auto</span> receive_buffer = Buffer(4096);</div>
+<div class="line"><span class="keyword">auto</span> bytes_received = connection-&gt;receive(receive_buffer.data(), </div>
+<div class="line">                                         receive_buffer.capacity());</div>
 </div><!-- fragment --><h1><a class="anchor" id="autotoc_md207"></a>
 Advanced Features</h1>
 <h2><a class="anchor" id="autotoc_md208"></a>
 Early Data (0-RTT)</h2>
 <div class="fragment"><div class="line"><span class="comment">// Client side</span></div>
-<div class="line"><span class="keywordflow">if</span> (<a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">has_previous_session</a>) {</div>
-<div class="line">    <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">conn</a>-&gt;send_early_data(<a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">early_data</a>);</div>
+<div class="line"><span class="keywordflow">if</span> (has_previous_session) {</div>
+<div class="line">    conn-&gt;send_early_data(early_data);</div>
 <div class="line">}</div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">conn</a>-&gt;handshake();</div>
-<div class="line"><span class="keywordflow">if</span> (<a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">conn</a>-&gt;is_early_data_accepted()) {</div>
+<div class="line">conn-&gt;handshake();</div>
+<div class="line"><span class="keywordflow">if</span> (conn-&gt;is_early_data_accepted()) {</div>
 <div class="line">    <span class="comment">// Early data was processed</span></div>
 <div class="line">} <span class="keywordflow">else</span> {</div>
 <div class="line">    <span class="comment">// Resend as regular data</span></div>
-<div class="line">    <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">conn</a>-&gt;send(<a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">early_data</a>);</div>
+<div class="line">    conn-&gt;send(early_data);</div>
 <div class="line">}</div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md209"></a>
 Connection ID Migration</h2>
 <div class="fragment"><div class="line"><span class="comment">// Enable connection ID</span></div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">config</a>.enable_connection_id = <span class="keyword">true</span>;</div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">config</a>.connection_id_length = 8;</div>
+<div class="line">config.<a class="code hl_variable" href="structdtls_1_1v13_1_1ConnectionConfig.html#a8eb7b89f77d70db959089d856f009528">enable_connection_id</a> = <span class="keyword">true</span>;</div>
+<div class="line">config.<a class="code hl_variable" href="structdtls_1_1v13_1_1ConnectionConfig.html#a972d23e9036d3e182bdf570160219d1f">connection_id_length</a> = 8;</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Migrate connection</span></div>
-<div class="line"><span class="keyword">auto</span> <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">new_address</a> = NetworkAddress::from_string(<span class="stringliteral">&quot;10.0.0.2:5000&quot;</span>);</div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">conn</a>-&gt;migrate_connection(<a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">new_address</a>.<a class="code hl_function" href="classdtls_1_1v13_1_1Result.html#ab19678eb3fabf2a575b1a8e742f1a541">value</a>());</div>
-<div class="ttc" id="aclassdtls_1_1v13_1_1Result_html_ab19678eb3fabf2a575b1a8e742f1a541"><div class="ttname"><a href="classdtls_1_1v13_1_1Result.html#ab19678eb3fabf2a575b1a8e742f1a541">dtls::v13::Result::value</a></div><div class="ttdeci">const T &amp; value() const &amp;</div><div class="ttdef"><b>Definition</b> <a href="result_8h_source.html#l00068">result.h:68</a></div></div>
+<div class="line"><span class="keyword">auto</span> new_address = NetworkAddress::from_string(<span class="stringliteral">&quot;10.0.0.2:5000&quot;</span>);</div>
+<div class="line">conn-&gt;migrate_connection(new_address.value());</div>
+<div class="ttc" id="astructdtls_1_1v13_1_1ConnectionConfig_html_a972d23e9036d3e182bdf570160219d1f"><div class="ttname"><a href="structdtls_1_1v13_1_1ConnectionConfig.html#a972d23e9036d3e182bdf570160219d1f">dtls::v13::ConnectionConfig::connection_id_length</a></div><div class="ttdeci">size_t connection_id_length</div><div class="ttdef"><b>Definition</b> <a href="connection_8h_source.html#l00171">connection.h:171</a></div></div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md210"></a>
 Key Updates</h2>
 <div class="fragment"><div class="line"><span class="comment">// Request key update for forward secrecy</span></div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">conn</a>-&gt;update_keys();</div>
+<div class="line">conn-&gt;update_keys();</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Export keying material for other uses</span></div>
-<div class="line"><span class="keyword">auto</span> <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">exported</a> = <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">conn</a>-&gt;export_keying_material(<span class="stringliteral">&quot;EXPORTER-Label&quot;</span>, 32);</div>
+<div class="line"><span class="keyword">auto</span> exported = conn-&gt;export_keying_material(<span class="stringliteral">&quot;EXPORTER-Label&quot;</span>, 32);</div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md211"></a>
 Session Management</h2>
 <div class="fragment"><div class="line"><span class="comment">// Server: Create session ticket</span></div>
-<div class="line"><span class="keyword">auto</span> ticket_data = <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">handshake_mgr</a>-&gt;export_session_ticket();</div>
+<div class="line"><span class="keyword">auto</span> ticket_data = handshake_mgr-&gt;export_session_ticket();</div>
 <div class="line"><span class="comment">// Store ticket_data for client</span></div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Client: Resume session</span></div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">handshake_mgr</a>-&gt;import_session_ticket(<a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">stored_ticket_data</a>);</div>
+<div class="line">handshake_mgr-&gt;import_session_ticket(stored_ticket_data);</div>
 </div><!-- fragment --><h1><a class="anchor" id="autotoc_md212"></a>
 Performance Monitoring</h1>
 <h2><a class="anchor" id="autotoc_md213"></a>
 Connection Statistics</h2>
-<div class="fragment"><div class="line"><span class="keyword">const</span> <span class="keyword">auto</span>&amp; stats = <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">conn</a>-&gt;get_statistics();</div>
+<div class="fragment"><div class="line"><span class="keyword">const</span> <span class="keyword">auto</span>&amp; stats = conn-&gt;get_statistics();</div>
 <div class="line"> </div>
 <div class="line">std::cout &lt;&lt; <span class="stringliteral">&quot;Handshake time: &quot;</span> </div>
 <div class="line">          &lt;&lt; std::chrono::duration_cast&lt;std::chrono::milliseconds&gt;(</div>
@@ -379,38 +383,37 @@ Connection Statistics</h2>
 <div class="line">          &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md214"></a>
 System Metrics</h2>
-<div class="fragment"><div class="line"><span class="keyword">auto</span>&amp; <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">metrics</a> = monitoring::MetricsCollector::instance();</div>
+<div class="fragment"><div class="line"><span class="keyword">auto</span>&amp; metrics = monitoring::MetricsCollector::instance();</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Get system-wide metrics</span></div>
-<div class="line"><span class="keyword">auto</span> <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">system_stats</a> = <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">metrics</a>.get_system_metrics();</div>
-<div class="line">std::cout &lt;&lt; <span class="stringliteral">&quot;Connections/sec: &quot;</span> &lt;&lt; <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">system_stats</a>.connections_per_second &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
-<div class="line">std::cout &lt;&lt; <span class="stringliteral">&quot;Memory usage: &quot;</span> &lt;&lt; <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">system_stats</a>.memory_usage_bytes &lt;&lt; <span class="stringliteral">&quot; bytes\n&quot;</span>;</div>
+<div class="line"><span class="keyword">auto</span> system_stats = metrics.get_system_metrics();</div>
+<div class="line">std::cout &lt;&lt; <span class="stringliteral">&quot;Connections/sec: &quot;</span> &lt;&lt; system_stats.connections_per_second &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line">std::cout &lt;&lt; <span class="stringliteral">&quot;Memory usage: &quot;</span> &lt;&lt; system_stats.memory_usage_bytes &lt;&lt; <span class="stringliteral">&quot; bytes\n&quot;</span>;</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Generate report</span></div>
-<div class="line">std::string <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">report</a> = <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">metrics</a>.generate_metrics_report();</div>
-<div class="line">std::cout &lt;&lt; <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">report</a> &lt;&lt; std::endl;</div>
+<div class="line">std::string report = metrics.generate_metrics_report();</div>
+<div class="line">std::cout &lt;&lt; report &lt;&lt; std::endl;</div>
 </div><!-- fragment --><h1><a class="anchor" id="autotoc_md215"></a>
 Security Features</h1>
 <h2><a class="anchor" id="autotoc_md216"></a>
 DoS Protection</h2>
-<div class="fragment"><div class="line">security::DoSProtection::DoSConfig <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">dos_config</a>;</div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">dos_config</a>.max_connections_per_ip = 100;</div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">dos_config</a>.max_handshakes_per_second = 1000;</div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">dos_config</a>.enable_cookie_verification = <span class="keyword">true</span>;</div>
+<div class="fragment"><div class="line">security::DoSProtection::DoSConfig dos_config;</div>
+<div class="line">dos_config.max_connections_per_ip = 100;</div>
+<div class="line">dos_config.max_handshakes_per_second = 1000;</div>
+<div class="line">dos_config.enable_cookie_verification = <span class="keyword">true</span>;</div>
 <div class="line"> </div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1security_1_1DoSProtection.html">security::DoSProtection</a> <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">dos_protection</a>(<a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">dos_config</a>);</div>
+<div class="line">security::DoSProtection dos_protection(dos_config);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// In server loop</span></div>
-<div class="line"><span class="keywordflow">if</span> (<a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">dos_protection</a>.should_accept_connection(<a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">client_addr</a>)) {</div>
+<div class="line"><span class="keywordflow">if</span> (dos_protection.should_accept_connection(client_addr)) {</div>
 <div class="line">    <span class="comment">// Accept connection</span></div>
 <div class="line">}</div>
-<div class="ttc" id="aclassdtls_1_1v13_1_1security_1_1DoSProtection_html"><div class="ttname"><a href="classdtls_1_1v13_1_1security_1_1DoSProtection.html">dtls::v13::security::DoSProtection</a></div><div class="ttdoc">Comprehensive DoS protection system.</div><div class="ttdef"><b>Definition</b> <a href="security_2dos__protection_8h_source.html#l00180">dos_protection.h:180</a></div></div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md217"></a>
 Certificate Validation</h2>
-<div class="fragment"><div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">handshake_mgr</a>-&gt;set_certificate_verify_callback(</div>
-<div class="line">    [](<span class="keyword">const</span> std::vector&lt;std::vector&lt;uint8_t&gt;&gt;&amp; <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">cert_chain</a>) -&gt; <span class="keywordtype">bool</span> {</div>
+<div class="fragment"><div class="line">handshake_mgr-&gt;set_certificate_verify_callback(</div>
+<div class="line">    [](<span class="keyword">const</span> std::vector&lt;std::vector&lt;uint8_t&gt;&gt;&amp; cert_chain) -&gt; <span class="keywordtype">bool</span> {</div>
 <div class="line">        <span class="comment">// Custom certificate validation logic</span></div>
-<div class="line">        <span class="keywordflow">return</span> validate_certificate_chain(<a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">cert_chain</a>);</div>
+<div class="line">        <span class="keywordflow">return</span> validate_certificate_chain(cert_chain);</div>
 <div class="line">    }</div>
 <div class="line">);</div>
 </div><!-- fragment --><h1><a class="anchor" id="autotoc_md218"></a>
@@ -418,65 +421,68 @@ Common Patterns</h1>
 <h2><a class="anchor" id="autotoc_md219"></a>
 Async Operations</h2>
 <div class="fragment"><div class="line"><span class="comment">// Async handshake</span></div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">conn</a>-&gt;handshake_async([](<a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">result</a>) {</div>
-<div class="line">    <span class="keywordflow">if</span> (<a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">result</a>) {</div>
+<div class="line">conn-&gt;handshake_async([](<a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">Result&lt;void&gt;</a> result) {</div>
+<div class="line">    <span class="keywordflow">if</span> (result) {</div>
 <div class="line">        std::cout &lt;&lt; <span class="stringliteral">&quot;Handshake completed asynchronously\n&quot;</span>;</div>
 <div class="line">    } <span class="keywordflow">else</span> {</div>
-<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Handshake failed: &quot;</span> &lt;&lt; <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">result</a>.<a class="code hl_function" href="classdtls_1_1v13_1_1Result.html#acae6b3edbb83a4098261519bc9f8e2a3">error</a>().message() &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line">        std::cerr &lt;&lt; <span class="stringliteral">&quot;Handshake failed: &quot;</span> &lt;&lt; result.error().message() &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
 <div class="line">    }</div>
 <div class="line">});</div>
+<div class="ttc" id="aclassdtls_1_1v13_1_1Result_html"><div class="ttname"><a href="classdtls_1_1v13_1_1Result.html">dtls::v13::Result</a></div><div class="ttdoc">Forward declaration for Result template class.</div><div class="ttdef"><b>Definition</b> <a href="result_8h_source.html#l00015">result.h:15</a></div></div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md220"></a>
 Error Recovery</h2>
 <div class="fragment"><div class="line"><span class="comment">// Configure automatic recovery</span></div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">config</a>.error_recovery.max_retries = 5;</div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">config</a>.error_recovery.initial_retry_delay = std::chrono::seconds(1);</div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">config</a>.error_recovery.backoff_multiplier = 2.0;</div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">config</a>.error_recovery.enable_automatic_recovery = <span class="keyword">true</span>;</div>
+<div class="line">config.<a class="code hl_variable" href="structdtls_1_1v13_1_1ConnectionConfig.html#a8b529857a182fa3d7178ef18613ee06e">error_recovery</a>.<a class="code hl_variable" href="structdtls_1_1v13_1_1ErrorRecoveryConfig.html#ae900674a4813243de4dd84687f583ca9">max_retries</a> = 5;</div>
+<div class="line">config.<a class="code hl_variable" href="structdtls_1_1v13_1_1ConnectionConfig.html#a8b529857a182fa3d7178ef18613ee06e">error_recovery</a>.<a class="code hl_variable" href="structdtls_1_1v13_1_1ErrorRecoveryConfig.html#a4cfea962ce4052b062b012531a7e1f05">initial_retry_delay</a> = std::chrono::seconds(1);</div>
+<div class="line">config.<a class="code hl_variable" href="structdtls_1_1v13_1_1ConnectionConfig.html#a8b529857a182fa3d7178ef18613ee06e">error_recovery</a>.<a class="code hl_variable" href="structdtls_1_1v13_1_1ErrorRecoveryConfig.html#a92ea1d19faed9f9d4f5a2406154922b6">backoff_multiplier</a> = 2.0;</div>
+<div class="line">config.<a class="code hl_variable" href="structdtls_1_1v13_1_1ConnectionConfig.html#a8b529857a182fa3d7178ef18613ee06e">error_recovery</a>.<a class="code hl_variable" href="structdtls_1_1v13_1_1ErrorRecoveryConfig.html#a725bf12fdc0f55d9fb29ab0152d39d12">enable_automatic_recovery</a> = <span class="keyword">true</span>;</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Handle recovery events</span></div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">conn</a>-&gt;set_event_callback([](<a class="code hl_enumeration" href="namespacedtls_1_1v13.html#ae6e8032c12417cb62fd44f38dfe5a1ea">ConnectionEvent</a> <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">event</a>, <span class="keyword">const</span> <a class="code hl_class" href="classdtls_1_1v13_1_1Connection.html">Connection</a>&amp; <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">conn</a>) {</div>
-<div class="line">    <span class="keywordflow">if</span> (<a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">event</a> == ConnectionEvent::RECOVERY_SUCCEEDED) {</div>
+<div class="line">conn-&gt;set_event_callback([](<a class="code hl_enumeration" href="namespacedtls_1_1v13.html#ae6e8032c12417cb62fd44f38dfe5a1ea">ConnectionEvent</a> event, <span class="keyword">const</span> <a class="code hl_class" href="classConnection.html">Connection</a>&amp; conn) {</div>
+<div class="line">    <span class="keywordflow">if</span> (event == ConnectionEvent::RECOVERY_SUCCEEDED) {</div>
 <div class="line">        std::cout &lt;&lt; <span class="stringliteral">&quot;Connection recovered successfully\n&quot;</span>;</div>
 <div class="line">    }</div>
 <div class="line">});</div>
+<div class="ttc" id="astructdtls_1_1v13_1_1ErrorRecoveryConfig_html_a4cfea962ce4052b062b012531a7e1f05"><div class="ttname"><a href="structdtls_1_1v13_1_1ErrorRecoveryConfig.html#a4cfea962ce4052b062b012531a7e1f05">dtls::v13::ErrorRecoveryConfig::initial_retry_delay</a></div><div class="ttdeci">std::chrono::milliseconds initial_retry_delay</div><div class="ttdef"><b>Definition</b> <a href="connection_8h_source.html#l00101">connection.h:101</a></div></div>
+<div class="ttc" id="astructdtls_1_1v13_1_1ErrorRecoveryConfig_html_a92ea1d19faed9f9d4f5a2406154922b6"><div class="ttname"><a href="structdtls_1_1v13_1_1ErrorRecoveryConfig.html#a92ea1d19faed9f9d4f5a2406154922b6">dtls::v13::ErrorRecoveryConfig::backoff_multiplier</a></div><div class="ttdeci">double backoff_multiplier</div><div class="ttdef"><b>Definition</b> <a href="connection_8h_source.html#l00103">connection.h:103</a></div></div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md221"></a>
 Multi-threaded Usage</h2>
 <div class="fragment"><div class="line"><span class="comment">// Thread-safe operations</span></div>
-<div class="line">std::vector&lt;std::thread&gt; <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">workers</a>;</div>
-<div class="line">std::shared_ptr&lt;Connection&gt; <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">shared_conn</a> = std::move(<a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">conn</a>);</div>
+<div class="line">std::vector&lt;std::thread&gt; workers;</div>
+<div class="line">std::shared_ptr&lt;Connection&gt; shared_conn = std::move(conn);</div>
 <div class="line"> </div>
-<div class="line"><span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">i</a> = 0; <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">i</a> &lt; 4; ++<a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">i</a>) {</div>
-<div class="line">    <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">workers</a>.emplace_back([<a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">shared_conn</a>]() {</div>
+<div class="line"><span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 4; ++i) {</div>
+<div class="line">    workers.emplace_back([shared_conn]() {</div>
 <div class="line">        <span class="comment">// Each thread can safely use the connection</span></div>
-<div class="line">        <span class="keyword">auto</span> data = <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">generate_data</a>();</div>
-<div class="line">        <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">shared_conn</a>-&gt;send(data);</div>
+<div class="line">        <span class="keyword">auto</span> data = generate_data();</div>
+<div class="line">        shared_conn-&gt;send(data);</div>
 <div class="line">    });</div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line"><span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">worker</a> : <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">workers</a>) {</div>
-<div class="line">    <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">worker</a>.join();</div>
+<div class="line"><span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; worker : workers) {</div>
+<div class="line">    worker.join();</div>
 <div class="line">}</div>
 </div><!-- fragment --><h1><a class="anchor" id="autotoc_md222"></a>
 Debugging and Logging</h1>
 <h2><a class="anchor" id="autotoc_md223"></a>
 Debug Configuration</h2>
-<div class="fragment"><div class="line">config::SystemConfig <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">system_config</a>;</div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">system_config</a>.default_log_level = LogLevel::DEBUG;</div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">system_config</a>.enable_memory_debugging = <span class="keyword">true</span>;</div>
-<div class="line">config::set_global_config(<a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">system_config</a>);</div>
+<div class="fragment"><div class="line">config::SystemConfig system_config;</div>
+<div class="line">system_config.default_log_level = LogLevel::DEBUG;</div>
+<div class="line">system_config.enable_memory_debugging = <span class="keyword">true</span>;</div>
+<div class="line">config::set_global_config(system_config);</div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md224"></a>
 Performance Profiling</h2>
 <div class="fragment"><div class="line"><span class="comment">// Enable detailed metrics</span></div>
-<div class="line"><span class="keyword">auto</span>&amp; <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">metrics</a> = monitoring::MetricsCollector::instance();</div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">metrics</a>.enable_detailed_metrics(<span class="keyword">true</span>);</div>
+<div class="line"><span class="keyword">auto</span>&amp; metrics = monitoring::MetricsCollector::instance();</div>
+<div class="line">metrics.enable_detailed_metrics(<span class="keyword">true</span>);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Profile specific operations</span></div>
 <div class="line"><span class="keyword">auto</span> start = std::chrono::high_resolution_clock::now();</div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">conn</a>-&gt;handshake();</div>
-<div class="line"><span class="keyword">auto</span> <a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">duration</a> = std::chrono::high_resolution_clock::now() - start;</div>
+<div class="line">conn-&gt;handshake();</div>
+<div class="line"><span class="keyword">auto</span> duration = std::chrono::high_resolution_clock::now() - start;</div>
 <div class="line"> </div>
-<div class="line"><a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">metrics</a>.record_handshake_time(</div>
-<div class="line">    std::chrono::duration_cast&lt;std::chrono::nanoseconds&gt;(<a class="code hl_class" href="classdtls_1_1v13_1_1Result.html">duration</a>)</div>
+<div class="line">metrics.record_handshake_time(</div>
+<div class="line">    std::chrono::duration_cast&lt;std::chrono::nanoseconds&gt;(duration)</div>
 <div class="line">);</div>
 </div><!-- fragment --><h1><a class="anchor" id="autotoc_md225"></a>
 Build Integration</h1>
@@ -501,7 +507,7 @@ Common Error Solutions</h1>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone"><code>CRYPTO_ERROR</code>   </td><td class="markdownTableBodyNone">Provider unavailable   </td><td class="markdownTableBodyNone">Install OpenSSL/Botan    </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone"><code>NETWORK_ERROR</code>   </td><td class="markdownTableBodyNone">Connection refused   </td><td class="markdownTableBodyNone">Check server address/port    </td></tr>
+<td class="markdownTableBodyNone"><code>NETWORK_ERROR</code>   </td><td class="markdownTableBodyNone"><a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> refused   </td><td class="markdownTableBodyNone">Check server address/port    </td></tr>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone"><code>OUT_OF_MEMORY</code>   </td><td class="markdownTableBodyNone">Large buffers   </td><td class="markdownTableBodyNone">Configure buffer pool    </td></tr>
 <tr class="markdownTableRowOdd">

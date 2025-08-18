@@ -5,5 +5,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
   node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
   rankdir="LR";
-  Node0 [id="Node000000",label="dtls::v13::crypto::\lHardwareZeroCopyCrypto\l::HardwareConfig",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structdtls_1_1v13_1_1crypto_1_1HardwareZeroCopyCrypto_1_1HardwareConfig.html",tooltip="Configuration for hardware operations."];
+  Node0 [id="Node000000",label="dtls::v13::memory::\lAttackEvent",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structdtls_1_1v13_1_1memory_1_1AttackEvent.html",tooltip=" "];
 }

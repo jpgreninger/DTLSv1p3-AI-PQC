@@ -5,5 +5,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
   node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
   rankdir="LR";
-  Node0 [id="Node000000",label="dtls::v13::crypto::\lRecordMACParams",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structdtls_1_1v13_1_1crypto_1_1RecordMACParams.html",tooltip=" "];
+  Node0 [id="Node000000",label="dtls::v13::protocol\l::ClientHello",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classdtls_1_1v13_1_1protocol_1_1ClientHello.html",tooltip=" "];
 }

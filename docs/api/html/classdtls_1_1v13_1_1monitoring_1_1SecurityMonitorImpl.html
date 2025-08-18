@@ -112,35 +112,24 @@ Collaboration diagram for dtls::v13::monitoring::SecurityMonitorImpl:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a2bd38c10b2c926247db9c912e81077ec" id="r_a2bd38c10b2c926247db9c912e81077ec"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1monitoring_1_1SecurityMonitorImpl.html#a2bd38c10b2c926247db9c912e81077ec">SecurityMonitorImpl</a> (<a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> std::shared_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1monitoring_1_1MetricsCollector.html">MetricsCollector</a> &gt; &amp;<a class="el" href="classdtls_1_1v13_1_1Result.html">collector</a>)</td></tr>
+<tr class="memitem:a2bd38c10b2c926247db9c912e81077ec" id="r_a2bd38c10b2c926247db9c912e81077ec"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1monitoring_1_1SecurityMonitorImpl.html#a2bd38c10b2c926247db9c912e81077ec">SecurityMonitorImpl</a> (const std::shared_ptr&lt; MetricsCollector &gt; &amp;collector)</td></tr>
 <tr class="separator:a2bd38c10b2c926247db9c912e81077ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a04513d12853744f8a51bbed3050b2ffd" id="r_a04513d12853744f8a51bbed3050b2ffd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdtls_1_1v13_1_1monitoring_1_1SecurityMetrics.html">SecurityMetrics</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1monitoring_1_1SecurityMonitorImpl.html#a04513d12853744f8a51bbed3050b2ffd">get_security_metrics</a> () <a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">override</a></td></tr>
-<tr class="memdesc:a04513d12853744f8a51bbed3050b2ffd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current security metrics.  <br /></td></tr>
+<tr class="memitem:a04513d12853744f8a51bbed3050b2ffd" id="r_a04513d12853744f8a51bbed3050b2ffd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdtls_1_1v13_1_1monitoring_1_1SecurityMetrics.html">SecurityMetrics</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1monitoring_1_1SecurityMonitorImpl.html#a04513d12853744f8a51bbed3050b2ffd">get_security_metrics</a> () const override</td></tr>
 <tr class="separator:a04513d12853744f8a51bbed3050b2ffd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abc208bdbadf1257ba27d28b1bf0409fd" id="r_abc208bdbadf1257ba27d28b1bf0409fd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1monitoring_1_1SecurityMonitorImpl.html#abc208bdbadf1257ba27d28b1bf0409fd">record_authentication_event</a> (<a class="el" href="classdtls_1_1v13_1_1Result.html">bool</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">successful</a>, <a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> std::string &amp;<a class="el" href="classdtls_1_1v13_1_1Result.html">details</a>) <a class="el" href="classdtls_1_1v13_1_1Result.html">override</a></td></tr>
-<tr class="memdesc:abc208bdbadf1257ba27d28b1bf0409fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Record authentication event.  <br /></td></tr>
+<tr class="memitem:abc208bdbadf1257ba27d28b1bf0409fd" id="r_abc208bdbadf1257ba27d28b1bf0409fd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1monitoring_1_1SecurityMonitorImpl.html#abc208bdbadf1257ba27d28b1bf0409fd">record_authentication_event</a> (bool successful, const std::string &amp;details) override</td></tr>
 <tr class="separator:abc208bdbadf1257ba27d28b1bf0409fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a67412370e0980c213f0c9329ff0bcc8f" id="r_a67412370e0980c213f0c9329ff0bcc8f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1monitoring_1_1SecurityMonitorImpl.html#a67412370e0980c213f0c9329ff0bcc8f">record_security_threat</a> (<a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> std::string &amp;<a class="el" href="classdtls_1_1v13_1_1Result.html">threat_type</a>, <a class="el" href="namespacedtls_1_1v13_1_1monitoring.html#ac3d28b34b024bb8c0efbf17e6b90c6ac">AlertSeverity</a> severity, <a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> std::string &amp;<a class="el" href="classdtls_1_1v13_1_1Result.html">source_info</a>) <a class="el" href="classdtls_1_1v13_1_1Result.html">override</a></td></tr>
-<tr class="memdesc:a67412370e0980c213f0c9329ff0bcc8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Record potential security threat.  <br /></td></tr>
+<tr class="memitem:a67412370e0980c213f0c9329ff0bcc8f" id="r_a67412370e0980c213f0c9329ff0bcc8f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1monitoring_1_1SecurityMonitorImpl.html#a67412370e0980c213f0c9329ff0bcc8f">record_security_threat</a> (const std::string &amp;threat_type, <a class="el" href="namespacedtls_1_1v13_1_1monitoring.html#ac3d28b34b024bb8c0efbf17e6b90c6ac">AlertSeverity</a> severity, const std::string &amp;source_info) override</td></tr>
 <tr class="separator:a67412370e0980c213f0c9329ff0bcc8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8a807bc7da2ee5aa78025b32c5b1c2d7" id="r_a8a807bc7da2ee5aa78025b32c5b1c2d7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1monitoring_1_1SecurityMonitorImpl.html#a8a807bc7da2ee5aa78025b32c5b1c2d7">record_cipher_suite_usage</a> (<a class="el" href="classdtls_1_1v13_1_1Result.html">uint16_t</a> cipher_suite) <a class="el" href="classdtls_1_1v13_1_1Result.html">override</a></td></tr>
-<tr class="memdesc:a8a807bc7da2ee5aa78025b32c5b1c2d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Record cipher suite usage.  <br /></td></tr>
+<tr class="memitem:a8a807bc7da2ee5aa78025b32c5b1c2d7" id="r_a8a807bc7da2ee5aa78025b32c5b1c2d7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1monitoring_1_1SecurityMonitorImpl.html#a8a807bc7da2ee5aa78025b32c5b1c2d7">record_cipher_suite_usage</a> (uint16_t cipher_suite) override</td></tr>
 <tr class="separator:a8a807bc7da2ee5aa78025b32c5b1c2d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a76d363ef7179c7722455db4ff627cd26" id="r_a76d363ef7179c7722455db4ff627cd26"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1monitoring_1_1SecurityMonitorImpl.html#a76d363ef7179c7722455db4ff627cd26">record_protocol_version_usage</a> (<a class="el" href="classdtls_1_1v13_1_1Result.html">uint16_t</a> protocol_version) <a class="el" href="classdtls_1_1v13_1_1Result.html">override</a></td></tr>
-<tr class="memdesc:a76d363ef7179c7722455db4ff627cd26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Record protocol version usage.  <br /></td></tr>
+<tr class="memitem:a76d363ef7179c7722455db4ff627cd26" id="r_a76d363ef7179c7722455db4ff627cd26"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1monitoring_1_1SecurityMonitorImpl.html#a76d363ef7179c7722455db4ff627cd26">record_protocol_version_usage</a> (uint16_t protocol_version) override</td></tr>
 <tr class="separator:a76d363ef7179c7722455db4ff627cd26"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2f92e88e2e317025534cdc730ad8a5fa" id="r_a2f92e88e2e317025534cdc730ad8a5fa"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1monitoring_1_1SecurityMonitorImpl.html#a2f92e88e2e317025534cdc730ad8a5fa">generate_security_report</a> () <a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">override</a></td></tr>
-<tr class="memdesc:a2f92e88e2e317025534cdc730ad8a5fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get security report.  <br /></td></tr>
+<tr class="memitem:a2f92e88e2e317025534cdc730ad8a5fa" id="r_a2f92e88e2e317025534cdc730ad8a5fa"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1monitoring_1_1SecurityMonitorImpl.html#a2f92e88e2e317025534cdc730ad8a5fa">generate_security_report</a> () const override</td></tr>
 <tr class="separator:a2f92e88e2e317025534cdc730ad8a5fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3fbe96f95df998109fa0b01d4f629d6f" id="r_a3fbe96f95df998109fa0b01d4f629d6f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structdtls_1_1v13_1_1monitoring_1_1Alert.html">Alert</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1monitoring_1_1SecurityMonitorImpl.html#a3fbe96f95df998109fa0b01d4f629d6f">check_security_anomalies</a> () <a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">override</a></td></tr>
-<tr class="memdesc:a3fbe96f95df998109fa0b01d4f629d6f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check for security anomalies.  <br /></td></tr>
+<tr class="memitem:a3fbe96f95df998109fa0b01d4f629d6f" id="r_a3fbe96f95df998109fa0b01d4f629d6f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structdtls_1_1v13_1_1monitoring_1_1Alert.html">Alert</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1monitoring_1_1SecurityMonitorImpl.html#a3fbe96f95df998109fa0b01d4f629d6f">check_security_anomalies</a> () const override</td></tr>
 <tr class="separator:a3fbe96f95df998109fa0b01d4f629d6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a618dbfaf220144472951f614a23b33bd" id="r_a618dbfaf220144472951f614a23b33bd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1monitoring_1_1SecurityMonitorImpl.html#a618dbfaf220144472951f614a23b33bd">reset_security_metrics</a> () <a class="el" href="classdtls_1_1v13_1_1Result.html">override</a></td></tr>
-<tr class="memdesc:a618dbfaf220144472951f614a23b33bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset security metrics.  <br /></td></tr>
+<tr class="memitem:a618dbfaf220144472951f614a23b33bd" id="r_a618dbfaf220144472951f614a23b33bd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1monitoring_1_1SecurityMonitorImpl.html#a618dbfaf220144472951f614a23b33bd">reset_security_metrics</a> () override</td></tr>
 <tr class="separator:a618dbfaf220144472951f614a23b33bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_classdtls_1_1v13_1_1monitoring_1_1SecurityMonitor"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classdtls_1_1v13_1_1monitoring_1_1SecurityMonitor')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classdtls_1_1v13_1_1monitoring_1_1SecurityMonitor.html">dtls::v13::monitoring::SecurityMonitor</a></td></tr>
-<tr class="memitem:a0625241c6150ade8ab714a677484b5a8 inherit pub_methods_classdtls_1_1v13_1_1monitoring_1_1SecurityMonitor" id="r_a0625241c6150ade8ab714a677484b5a8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">virtual</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1monitoring_1_1SecurityMonitor.html#a0625241c6150ade8ab714a677484b5a8">~SecurityMonitor</a> ()=<a class="el" href="classdtls_1_1v13_1_1Result.html">default</a></td></tr>
-<tr class="separator:a0625241c6150ade8ab714a677484b5a8 inherit pub_methods_classdtls_1_1v13_1_1monitoring_1_1SecurityMonitor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Security monitor implementation. </p>
@@ -159,7 +148,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">dtls::v13::monitoring::SecurityMonitorImpl::SecurityMonitorImpl </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> std::shared_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1monitoring_1_1MetricsCollector.html">MetricsCollector</a> &gt; &amp;&#160;</td>
+          <td class="paramtype">const std::shared_ptr&lt; MetricsCollector &gt; &amp;&#160;</td>
           <td class="paramname"><em>collector</em></td><td>)</td>
           <td></td>
         </tr>
@@ -194,14 +183,10 @@ Public Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Check for security anomalies. </p>
-
-<p>Implements <a class="el" href="classdtls_1_1v13_1_1monitoring_1_1SecurityMonitor.html#a2f45333eb6d3b7b886314d26506b8acf">dtls::v13::monitoring::SecurityMonitor</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="metrics__system_8cpp_source.html#l00529">529</a> of file <a class="el" href="metrics__system_8cpp_source.html">metrics_system.cpp</a>.</p>
 
@@ -225,14 +210,10 @@ Public Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Get security report. </p>
-
-<p>Implements <a class="el" href="classdtls_1_1v13_1_1monitoring_1_1SecurityMonitor.html#a8bad05db9d4b7bd1b409ce32a6589ec1">dtls::v13::monitoring::SecurityMonitor</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="metrics__system_8cpp_source.html#l00487">487</a> of file <a class="el" href="metrics__system_8cpp_source.html">metrics_system.cpp</a>.</p>
 
@@ -256,14 +237,10 @@ Public Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Get current security metrics. </p>
-
-<p>Implements <a class="el" href="classdtls_1_1v13_1_1monitoring_1_1SecurityMonitor.html#a87362b68d3e72db04cea9134084f7a61">dtls::v13::monitoring::SecurityMonitor</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="metrics__system_8cpp_source.html#l00428">428</a> of file <a class="el" href="metrics__system_8cpp_source.html">metrics_system.cpp</a>.</p>
 
@@ -279,15 +256,15 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">void</a> dtls::v13::monitoring::SecurityMonitorImpl::record_authentication_event </td>
+          <td class="memname">void dtls::v13::monitoring::SecurityMonitorImpl::record_authentication_event </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classdtls_1_1v13_1_1Result.html">bool</a>&#160;</td>
+          <td class="paramtype">bool&#160;</td>
           <td class="paramname"><em>successful</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> std::string &amp;&#160;</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>details</em>&#160;</td>
         </tr>
         <tr>
@@ -298,14 +275,10 @@ Public Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Record authentication event. </p>
-
-<p>Implements <a class="el" href="classdtls_1_1v13_1_1monitoring_1_1SecurityMonitor.html#aa0bb12d59972d9ddc3cf4820233f6abc">dtls::v13::monitoring::SecurityMonitor</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="metrics__system_8cpp_source.html#l00433">433</a> of file <a class="el" href="metrics__system_8cpp_source.html">metrics_system.cpp</a>.</p>
 
@@ -321,23 +294,19 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">void</a> dtls::v13::monitoring::SecurityMonitorImpl::record_cipher_suite_usage </td>
+          <td class="memname">void dtls::v13::monitoring::SecurityMonitorImpl::record_cipher_suite_usage </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classdtls_1_1v13_1_1Result.html">uint16_t</a>&#160;</td>
+          <td class="paramtype">uint16_t&#160;</td>
           <td class="paramname"><em>cipher_suite</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Record cipher suite usage. </p>
-
-<p>Implements <a class="el" href="classdtls_1_1v13_1_1monitoring_1_1SecurityMonitor.html#a3f273c323664a043a1949437b3a647d3">dtls::v13::monitoring::SecurityMonitor</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="metrics__system_8cpp_source.html#l00471">471</a> of file <a class="el" href="metrics__system_8cpp_source.html">metrics_system.cpp</a>.</p>
 
@@ -353,23 +322,19 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">void</a> dtls::v13::monitoring::SecurityMonitorImpl::record_protocol_version_usage </td>
+          <td class="memname">void dtls::v13::monitoring::SecurityMonitorImpl::record_protocol_version_usage </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classdtls_1_1v13_1_1Result.html">uint16_t</a>&#160;</td>
+          <td class="paramtype">uint16_t&#160;</td>
           <td class="paramname"><em>protocol_version</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Record protocol version usage. </p>
-
-<p>Implements <a class="el" href="classdtls_1_1v13_1_1monitoring_1_1SecurityMonitor.html#af6648477cf1a7e45fa21da092ccf5b58">dtls::v13::monitoring::SecurityMonitor</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="metrics__system_8cpp_source.html#l00479">479</a> of file <a class="el" href="metrics__system_8cpp_source.html">metrics_system.cpp</a>.</p>
 
@@ -385,9 +350,9 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">void</a> dtls::v13::monitoring::SecurityMonitorImpl::record_security_threat </td>
+          <td class="memname">void dtls::v13::monitoring::SecurityMonitorImpl::record_security_threat </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> std::string &amp;&#160;</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>threat_type</em>, </td>
         </tr>
         <tr>
@@ -399,7 +364,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> std::string &amp;&#160;</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>source_info</em>&#160;</td>
         </tr>
         <tr>
@@ -410,14 +375,10 @@ Public Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Record potential security threat. </p>
-
-<p>Implements <a class="el" href="classdtls_1_1v13_1_1monitoring_1_1SecurityMonitor.html#a23eb3ed69a346e706484d78b92c589cf">dtls::v13::monitoring::SecurityMonitor</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="metrics__system_8cpp_source.html#l00445">445</a> of file <a class="el" href="metrics__system_8cpp_source.html">metrics_system.cpp</a>.</p>
 
@@ -433,7 +394,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">void</a> dtls::v13::monitoring::SecurityMonitorImpl::reset_security_metrics </td>
+          <td class="memname">void dtls::v13::monitoring::SecurityMonitorImpl::reset_security_metrics </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -441,14 +402,10 @@ Public Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Reset security metrics. </p>
-
-<p>Implements <a class="el" href="classdtls_1_1v13_1_1monitoring_1_1SecurityMonitor.html#aa3dbbe63895046dae40d916711aa2926">dtls::v13::monitoring::SecurityMonitor</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="metrics__system_8cpp_source.html#l00567">567</a> of file <a class="el" href="metrics__system_8cpp_source.html">metrics_system.cpp</a>.</p>
 

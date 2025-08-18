@@ -7,7 +7,7 @@ var crypto__utils_8cpp =
     [ "constant_time_signature_verify", "crypto__utils_8cpp.html#a3717226001182bb9d3d08bcf20ff45a6", null ],
     [ "construct_aead_additional_data", "crypto__utils_8cpp.html#a639bc319cd0c1f5561e81d88032c1811", null ],
     [ "construct_aead_nonce", "crypto__utils_8cpp.html#a52bdfe114931715a9d354033e48bb159", null ],
-    [ "construct_dtls_signature_context", "crypto__utils_8cpp.html#ade699f6201bf7ce487841db4cc872ca8", null ],
+    [ "construct_dtls_signature_context", "crypto__utils_8cpp.html#a05a63568c4a1c1ee7c60bea7d761cd0f", null ],
     [ "create_certificate_verify_data", "crypto__utils_8cpp.html#aa8bd8e1c1d93ba911d36de20efefe37b", null ],
     [ "create_finished_verify_data", "crypto__utils_8cpp.html#ab5c8b47f5cf33b5915787dcc389f2aac", null ],
     [ "decrypt_sequence_number", "crypto__utils_8cpp.html#a2982779ada606e7f11038849b9f7c705", null ],
@@ -17,7 +17,7 @@ var crypto__utils_8cpp =
     [ "derive_sequence_number_mask", "crypto__utils_8cpp.html#ad9cced171a8f6f931ba580aa2719c4f8", null ],
     [ "encrypt_sequence_number", "crypto__utils_8cpp.html#a91e263b9e69c9c71ecbbd779b6b50bbd", null ],
     [ "generate_client_hello_random", "crypto__utils_8cpp.html#a8719ef3e9b83e5be52d359a97ef141fb", null ],
-    [ "generate_connection_id", "crypto__utils_8cpp.html#acdf7072ad258b2a7ec2f4cb222724072", null ],
+    [ "generate_connection_id", "crypto__utils_8cpp.html#a247baa7364c1b44917d53e96505ecc1d", null ],
     [ "generate_dtls_random_with_entropy", "crypto__utils_8cpp.html#a660b30f88a4c8ba311ab82a9749f079d", null ],
     [ "generate_random", "crypto__utils_8cpp.html#a4977dd5a406347fa451615b2c67b362e", null ],
     [ "generate_server_hello_random", "crypto__utils_8cpp.html#a054f9fd36fcb9d5c908fe33c897e8a2c", null ],
@@ -50,8 +50,11 @@ var crypto__utils_8cpp =
     [ "update_traffic_keys", "crypto__utils_8cpp.html#aa6f08d16c57e3ed7effa046b98a3c57c", null ],
     [ "validate_certificate_signature_compatibility", "crypto__utils_8cpp.html#a53f6eeeb2b8747a063129ccace2e17d7", null ],
     [ "validate_ecdsa_asn1_signature", "crypto__utils_8cpp.html#adf527d5100801c2a97091368bb7ecb96", null ],
-    [ "verify_cookie_mac", "crypto__utils_8cpp.html#abbe5c7ebe393854d344029afa265ea47", null ],
-    [ "verify_handshake_mac", "crypto__utils_8cpp.html#aa8d33260d4a21beba0a5ada62df631fe", null ],
+    [ "verify_cookie_mac", "crypto__utils_8cpp.html#acd25f22cbf1e63a16a9a5d9fef098c5b", null ],
+    [ "verify_handshake_mac", "crypto__utils_8cpp.html#af59f1d5b46b2f0974aff4d2a84b88102", null ],
     [ "verify_psk_binder", "crypto__utils_8cpp.html#a5ad901d90922908bae701daada654dce", null ],
-    [ "verify_record_mac", "crypto__utils_8cpp.html#a6cf178fb54ef29340089023d88b6bc32", null ]
+    [ "verify_record_mac", "crypto__utils_8cpp.html#ab4561db18dbd30c3a5f952554adf57a7", null ],
+    [ "SHA256_EMPTY_HASH", "crypto__utils_8cpp.html#ac5df495717cbb230049edf6d0007f54e", null ],
+    [ "SHA384_EMPTY_HASH", "crypto__utils_8cpp.html#ad2df4891162096e757b890fbee82328b", null ],
+    [ "SHA512_EMPTY_HASH", "crypto__utils_8cpp.html#a1701fb14449860e239665272c9bb38b1", null ]
 ];

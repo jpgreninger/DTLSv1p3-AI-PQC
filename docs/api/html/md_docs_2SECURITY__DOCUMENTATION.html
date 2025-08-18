@@ -243,7 +243,7 @@ Threat Model</h1>
 <li><b>Impact</b>: Service unavailability, resource exhaustion</li>
 <li><b>Mitigation</b>:<ul>
 <li>Token bucket rate limiting (100/sec default)</li>
-<li>Connection limits (10,000 total, 100 per IP)</li>
+<li><a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> limits (10,000 total, 100 per IP)</li>
 <li>Response size limits (1KB for unverified clients)</li>
 <li>Automatic blacklisting based on violation patterns</li>
 </ul>
@@ -259,7 +259,7 @@ Threat Model</h1>
 <li>Cookie-based client verification (HMAC-SHA256)</li>
 <li>Handshake rate limiting (30/minute per IP)</li>
 <li>Resource allocation limits (256MB total)</li>
-<li>Connection state timeouts</li>
+<li><a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> state timeouts</li>
 </ul>
 </li>
 </ul>
@@ -376,7 +376,7 @@ Threat Model</h1>
 <li><b>Mitigation</b>:<ul>
 <li>48-bit sequence number space with sliding window</li>
 <li>Epoch-based replay protection</li>
-<li>Connection ID uniqueness validation</li>
+<li><a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> ID uniqueness validation</li>
 <li>Message freshness verification</li>
 </ul>
 </li>
@@ -398,13 +398,13 @@ Threat Model</h1>
 <h3><a class="anchor" id="autotoc_md644"></a>
 &lt;strong&gt;Connection ID Attacks&lt;/strong&gt;</h3>
 <ul>
-<li><b>Threat</b>: Connection ID manipulation for traffic analysis</li>
+<li><b>Threat</b>: <a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> ID manipulation for traffic analysis</li>
 <li><b>Attack Vector</b>: ID prediction, correlation attacks</li>
 <li><b>Impact</b>: Traffic analysis, privacy compromise</li>
 <li><b>Mitigation</b>:<ul>
-<li>Cryptographically secure Connection ID generation</li>
-<li>Regular Connection ID rotation</li>
-<li>Variable-length Connection IDs (0-20 bytes)</li>
+<li>Cryptographically secure <a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> ID generation</li>
+<li>Regular <a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> ID rotation</li>
+<li>Variable-length <a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> IDs (0-20 bytes)</li>
 <li>Traffic analysis resistance</li>
 </ul>
 </li>
@@ -670,7 +670,7 @@ Attack Mitigation Strategies</h1>
 <div class="line">    <span class="comment">// 99%+ effectiveness against protocol DoS</span></div>
 <div class="line">}</div>
 </div><!-- fragment --><p><b>Resource Management</b></p><ul>
-<li><b>Connection State Limits</b>: Maximum states per connection</li>
+<li><b><a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> State Limits</b>: Maximum states per connection</li>
 <li><b>Memory Allocation Tracking</b>: Per-connection memory limits</li>
 <li><b>Timeout Management</b>: Aggressive cleanup of stale states</li>
 <li><b>Priority Queues</b>: High-priority traffic processing</li>
@@ -808,8 +808,9 @@ Attack Mitigation Strategies</h1>
 <div class="line"><span class="keywordtype">bool</span> is_sequence_number_approaching_limit(uint64_t sequence_number) {</div>
 <div class="line">    <span class="keyword">const</span> uint64_t max_sequence = (1ULL &lt;&lt; 48) - 1;</div>
 <div class="line">    <span class="keyword">const</span> uint64_t warning_threshold = max_sequence * 9 / 10;  <span class="comment">// 90%</span></div>
-<div class="line">    <span class="keywordflow">return</span> sequence_number &gt; warning_threshold;</div>
+<div class="line">    <span class="keywordflow">return</span> <a class="code hl_variable" href="namespacedtls_1_1v13_1_1crypto_1_1utils.html#a5888ff77152f047f6eb879d49c474ccc">sequence_number</a> &gt; warning_threshold;</div>
 <div class="line">}</div>
+<div class="ttc" id="anamespacedtls_1_1v13_1_1crypto_1_1utils_html_a5888ff77152f047f6eb879d49c474ccc"><div class="ttname"><a href="namespacedtls_1_1v13_1_1crypto_1_1utils.html#a5888ff77152f047f6eb879d49c474ccc">dtls::v13::crypto::utils::sequence_number</a></div><div class="ttdeci">uint64_t sequence_number</div><div class="ttdef"><b>Definition</b> <a href="crypto__utils_8h_source.html#l00074">crypto_utils.h:74</a></div></div>
 </div><!-- fragment --><p><b>Input Validation</b></p><ul>
 <li><b>Size Field Validation</b>: All size fields validated against limits</li>
 <li><b>Range Checking</b>: All numeric inputs validated against expected ranges</li>
@@ -869,7 +870,7 @@ Security Architecture</h1>
 <li><b>DoS Protection</b>: Multi-layer denial-of-service protection</li>
 <li><b>Rate Limiting</b>: Comprehensive traffic rate limiting</li>
 <li><b>Source Validation</b>: Client verification and validation</li>
-<li><b>Traffic Analysis Resistance</b>: Connection ID and padding support</li>
+<li><b>Traffic Analysis Resistance</b>: <a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> ID and padding support</li>
 </ul>
 <p><b>Memory Security Layer</b></p><ul>
 <li><b>Bounds Checking</b>: All memory operations bounds-checked</li>
@@ -1028,11 +1029,11 @@ Security Architecture</h1>
 <li><b>Mitigations</b>: Bounds checking, safe allocation, leak detection</li>
 <li><b>Monitoring</b>: Memory usage monitoring, corruption detection</li>
 </ul>
-<p><b>Connection State Surface</b></p><ul>
-<li><b>Exposure</b>: Connection state machines and data structures</li>
+<p><b><a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> State Surface</b></p><ul>
+<li><b>Exposure</b>: <a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> state machines and data structures</li>
 <li><b>Threats</b>: State confusion, race conditions, resource exhaustion</li>
 <li><b>Mitigations</b>: Thread safety, resource limits, state validation</li>
-<li><b>Monitoring</b>: Connection state monitoring, resource tracking</li>
+<li><b>Monitoring</b>: <a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> state monitoring, resource tracking</li>
 </ul>
 <h1><a class="anchor" id="autotoc_md697"></a>
 Compliance and Standards</h1>
@@ -1054,7 +1055,7 @@ Compliance and Standards</h1>
 <li>✅ <b>Sequence Number Encryption</b>: RFC 9147 Section 4.2.3</li>
 </ul>
 <p><b>Advanced Features</b></p><ul>
-<li>✅ <b>Connection ID</b>: RFC 9146 Connection ID support</li>
+<li>✅ <b><a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> ID</b>: RFC 9146 <a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> ID support</li>
 <li>✅ <b>Early Data</b>: 0-RTT data transmission</li>
 <li>✅ <b>Post-Handshake Authentication</b>: Certificate re-validation</li>
 <li>✅ <b>Key Updates</b>: Session key rotation</li>

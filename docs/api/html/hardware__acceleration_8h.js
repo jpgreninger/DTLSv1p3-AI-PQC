@@ -2,8 +2,6 @@ var hardware__acceleration_8h =
 [
     [ "dtls::v13::crypto::HardwareCapabilityStatus", "structdtls_1_1v13_1_1crypto_1_1HardwareCapabilityStatus.html", "structdtls_1_1v13_1_1crypto_1_1HardwareCapabilityStatus" ],
     [ "dtls::v13::crypto::HardwareAccelerationProfile", "structdtls_1_1v13_1_1crypto_1_1HardwareAccelerationProfile.html", "structdtls_1_1v13_1_1crypto_1_1HardwareAccelerationProfile" ],
-    [ "dtls::v13::crypto::HardwareAccelerationDetector", "classdtls_1_1v13_1_1crypto_1_1HardwareAccelerationDetector.html", "classdtls_1_1v13_1_1crypto_1_1HardwareAccelerationDetector" ],
-    [ "dtls::v13::crypto::HardwareAcceleratedProviderSelector", "classdtls_1_1v13_1_1crypto_1_1HardwareAcceleratedProviderSelector.html", "classdtls_1_1v13_1_1crypto_1_1HardwareAcceleratedProviderSelector" ],
     [ "HardwareCapability", "hardware__acceleration_8h.html#a6fd77827090257f043c04ba9a6133f74", [
       [ "AES_NI", "hardware__acceleration_8h.html#a6fd77827090257f043c04ba9a6133f74ac1b26a5e2b22efffe96c17a038b2d2e8", null ],
       [ "AVX", "hardware__acceleration_8h.html#a6fd77827090257f043c04ba9a6133f74a4863502abea45861b9ed022e66d66cb2", null ],
@@ -28,5 +26,7 @@ var hardware__acceleration_8h =
       [ "POWER_CRYPTO", "hardware__acceleration_8h.html#a6fd77827090257f043c04ba9a6133f74a0931cf8fb03b199ac050d609072a8ce4", null ],
       [ "VIRTUAL_HSM", "hardware__acceleration_8h.html#a6fd77827090257f043c04ba9a6133f74a9dc6a59993b930ffd33dce8e1da0bfc5", null ],
       [ "CLOUD_KMS", "hardware__acceleration_8h.html#a6fd77827090257f043c04ba9a6133f74a29624fd42934e39cd8db74ab12d9d582", null ]
-    ] ]
+    ] ],
+    [ "__attribute__", "hardware__acceleration_8h.html#ae968695dc3b039d04d81ba038f69dd52", null ],
+    [ "__attribute__", "hardware__acceleration_8h.html#a97c73b21fac4aaa4e93344e9288b8fa0", null ]
 ];

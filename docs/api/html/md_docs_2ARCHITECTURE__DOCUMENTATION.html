@@ -147,11 +147,12 @@ Architectural Principles</h1>
 <h2><a class="anchor" id="autotoc_md236"></a>
 2. &lt;strong&gt;Dependency Inversion&lt;/strong&gt;</h2>
 <p>High-level modules don't depend on low-level modules; both depend on abstractions: </p><div class="fragment"><div class="line"><span class="comment">// High-level Connection class depends on abstractions</span></div>
-<div class="line"><span class="keyword">class </span>Connection {</div>
+<div class="line"><span class="keyword">class </span><a class="code hl_class" href="classConnection.html">Connection</a> {</div>
 <div class="line">    std::unique_ptr&lt;CryptoProvider&gt; crypto_provider_;     <span class="comment">// Abstract interface</span></div>
 <div class="line">    std::unique_ptr&lt;Transport&gt; transport_;                <span class="comment">// Abstract interface</span></div>
 <div class="line">    std::unique_ptr&lt;RecordLayer&gt; record_layer_;          <span class="comment">// Abstract interface</span></div>
 <div class="line">};</div>
+<div class="ttc" id="aclassConnection_html"><div class="ttname"><a href="classConnection.html">Connection</a></div><div class="ttdoc">Main DTLS v1.3 Connection implementation.</div></div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md237"></a>
 3. &lt;strong&gt;Interface Segregation&lt;/strong&gt;</h2>
 <p>Clients depend only on interfaces they actually use: </p><div class="fragment"><div class="line"><span class="comment">// Crypto operations segregated by functionality</span></div>
@@ -174,7 +175,7 @@ Architectural Principles</h1>
 <h2><a class="anchor" id="autotoc_md239"></a>
 5. &lt;strong&gt;Single Responsibility&lt;/strong&gt;</h2>
 <p>Each class has one reason to change:</p><ul>
-<li><code>Connection</code>: Manages connection lifecycle</li>
+<li><code><a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a></code>: Manages connection lifecycle</li>
 <li><code>RecordLayer</code>: Handles record protection/unprotection</li>
 <li><code>CryptoProvider</code>: Performs cryptographic operations</li>
 <li><code>Transport</code>: Handles network communication</li>
@@ -237,9 +238,9 @@ Core Design Patterns</h1>
 <h2><a class="anchor" id="autotoc_md243"></a>
 3. &lt;strong&gt;RAII (Resource Acquisition Is Initialization)&lt;/strong&gt;</h2>
 <p>Fundamental pattern for resource management:</p>
-<div class="fragment"><div class="line"><span class="keyword">class </span>Connection {</div>
+<div class="fragment"><div class="line"><span class="keyword">class </span><a class="code hl_class" href="classConnection.html">Connection</a> {</div>
 <div class="line"><span class="keyword">public</span>:</div>
-<div class="line">    Connection(ConnectionConfig config, </div>
+<div class="line">    <a class="code hl_class" href="classConnection.html">Connection</a>(ConnectionConfig config, </div>
 <div class="line">               std::unique_ptr&lt;CryptoProvider&gt; <a class="code hl_namespace" href="namespacedtls_1_1v13_1_1crypto.html">crypto</a>,</div>
 <div class="line">               std::unique_ptr&lt;Transport&gt; transport)</div>
 <div class="line">        : crypto_provider_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(<a class="code hl_namespace" href="namespacedtls_1_1v13_1_1crypto.html">crypto</a>))</div>
@@ -247,7 +248,7 @@ Core Design Patterns</h1>
 <div class="line">        <span class="comment">// Resources acquired in constructor</span></div>
 <div class="line">    }</div>
 <div class="line">    </div>
-<div class="line">    ~Connection() {</div>
+<div class="line">    <a class="code hl_class" href="classConnection.html">~Connection</a>() {</div>
 <div class="line">        <span class="comment">// Automatic cleanup - no manual resource management needed</span></div>
 <div class="line">        cleanup_resources();</div>
 <div class="line">    }</div>
@@ -266,9 +267,9 @@ Core Design Patterns</h1>
 <h2><a class="anchor" id="autotoc_md244"></a>
 4. &lt;strong&gt;Observer Pattern&lt;/strong&gt;</h2>
 <p>Used for event notification and monitoring:</p>
-<div class="fragment"><div class="line"><span class="keyword">using </span>ConnectionEventCallback = std::function&lt;void(ConnectionEvent, <span class="keyword">const</span> Connection&amp;)&gt;;</div>
+<div class="fragment"><div class="line"><span class="keyword">using </span>ConnectionEventCallback = std::function&lt;void(ConnectionEvent, <span class="keyword">const</span> <a class="code hl_class" href="classConnection.html">Connection</a>&amp;)&gt;;</div>
 <div class="line"> </div>
-<div class="line"><span class="keyword">class </span>Connection {</div>
+<div class="line"><span class="keyword">class </span><a class="code hl_class" href="classConnection.html">Connection</a> {</div>
 <div class="line"><span class="keyword">public</span>:</div>
 <div class="line">    <span class="keywordtype">void</span> set_event_callback(ConnectionEventCallback callback) {</div>
 <div class="line">        event_callback_ = std::move(callback);</div>
@@ -285,7 +286,7 @@ Core Design Patterns</h1>
 <div class="line">};</div>
 <div class="ttc" id="anamespacedtls_1_1v13_html_a0822f6ecebdf163c5b140d5e15f949c9"><div class="ttname"><a href="namespacedtls_1_1v13.html#a0822f6ecebdf163c5b140d5e15f949c9">dtls::v13::ConnectionEventCallback</a></div><div class="ttdeci">std::function&lt; void(ConnectionEvent event, const std::vector&lt; uint8_t &gt; &amp;data)&gt; ConnectionEventCallback</div><div class="ttdoc">Connection event callback function type.</div><div class="ttdef"><b>Definition</b> <a href="connection_8h_source.html#l00261">connection.h:262</a></div></div>
 </div><!-- fragment --><p><b>Benefits:</b></p><ul>
-<li><b>Decoupling</b>: Observers don't need to know about Connection internals</li>
+<li><b>Decoupling</b>: Observers don't need to know about <a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> internals</li>
 <li><b>Flexibility</b>: Multiple observers can be added</li>
 <li><b>Monitoring</b>: Essential for debugging and metrics</li>
 </ul>
@@ -302,7 +303,7 @@ Core Design Patterns</h1>
 <div class="line"> </div>
 <div class="line"><span class="keyword">class </span>HandshakeRetryCommand : <span class="keyword">public</span> RecoveryCommand {</div>
 <div class="line"><span class="keyword">public</span>:</div>
-<div class="line">    <span class="keyword">explicit</span> HandshakeRetryCommand(Connection&amp; connection)</div>
+<div class="line">    <span class="keyword">explicit</span> HandshakeRetryCommand(<a class="code hl_class" href="classConnection.html">Connection</a>&amp; connection)</div>
 <div class="line">        : connection_(connection) {}</div>
 <div class="line">    </div>
 <div class="line">    Result&lt;void&gt; execute()<span class="keyword"> override </span>{</div>
@@ -310,7 +311,7 @@ Core Design Patterns</h1>
 <div class="line">    }</div>
 <div class="line">    </div>
 <div class="line"><span class="keyword">private</span>:</div>
-<div class="line">    Connection&amp; connection_;</div>
+<div class="line">    <a class="code hl_class" href="classConnection.html">Connection</a>&amp; connection_;</div>
 <div class="line">};</div>
 </div><!-- fragment --><p><b>Benefits:</b></p><ul>
 <li><b>Encapsulation</b>: Recovery logic encapsulated in commands</li>
@@ -465,18 +466,18 @@ Component Architecture</h1>
 <h2><a class="anchor" id="autotoc_md253"></a>
 1. &lt;strong&gt;Connection Management Layer&lt;/strong&gt;</h2>
 <p><b>Primary Components:</b></p><ul>
-<li><code>Connection</code>: Main connection lifecycle management</li>
+<li><code><a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a></code>: Main connection lifecycle management</li>
 <li><code>ConnectionManager</code>: Server-side multi-connection management</li>
 <li><code>ConnectionConfig</code>: Configuration and policy management</li>
 </ul>
 <p><b>Key Responsibilities:</b></p><ul>
-<li>Connection state machine management</li>
+<li><a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> state machine management</li>
 <li>Event notification and callback handling</li>
 <li>Error recovery and health monitoring</li>
 <li>Statistics collection and reporting</li>
 </ul>
 <p><b>Design Patterns:</b></p><ul>
-<li><b>State Machine</b>: Connection state transitions</li>
+<li><b>State Machine</b>: <a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> state transitions</li>
 <li><b>Observer</b>: Event notification</li>
 <li><b>Strategy</b>: Error recovery policies</li>
 <li><b>RAII</b>: Resource management</li>

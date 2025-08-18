@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['globalprotocolversion_0',['GlobalProtocolVersion',['../namespacedtls_1_1v13_1_1protocol.html#aa3bad47e167e26fa25050b9eaeb22cf2',1,'dtls::v13::protocol']]]
+  ['handshakeeventcallback_0',['HandshakeEventCallback',['../namespacedtls_1_1v13_1_1protocol.html#ab935649ea311992f8dfdfd2474d4d620',1,'dtls::v13::protocol']]]
 ];

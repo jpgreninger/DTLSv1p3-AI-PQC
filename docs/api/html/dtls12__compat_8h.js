@@ -1,12 +1,7 @@
 var dtls12__compat_8h =
 [
-    [ "dtls::v13::compatibility::DTLS12RecordLayer", "classdtls_1_1v13_1_1compatibility_1_1DTLS12RecordLayer.html", "classdtls_1_1v13_1_1compatibility_1_1DTLS12RecordLayer" ],
-    [ "dtls::v13::compatibility::DTLS12HandshakeConverter", "classdtls_1_1v13_1_1compatibility_1_1DTLS12HandshakeConverter.html", "classdtls_1_1v13_1_1compatibility_1_1DTLS12HandshakeConverter" ],
     [ "dtls::v13::compatibility::DTLS12CompatibilityContext", "structdtls_1_1v13_1_1compatibility_1_1DTLS12CompatibilityContext.html", "structdtls_1_1v13_1_1compatibility_1_1DTLS12CompatibilityContext" ],
-    [ "dtls::v13::compatibility::VersionNegotiator", "classdtls_1_1v13_1_1compatibility_1_1VersionNegotiator.html", "classdtls_1_1v13_1_1compatibility_1_1VersionNegotiator" ],
-    [ "dtls::v13::compatibility::DTLS12ConnectionAdapter", "classdtls_1_1v13_1_1compatibility_1_1DTLS12ConnectionAdapter.html", "classdtls_1_1v13_1_1compatibility_1_1DTLS12ConnectionAdapter" ],
     [ "dtls::v13::compatibility::CompatibilityStats", "structdtls_1_1v13_1_1compatibility_1_1CompatibilityStats.html", "structdtls_1_1v13_1_1compatibility_1_1CompatibilityStats" ],
-    [ "dtls::v13::compatibility::CompatibilityManager", "classdtls_1_1v13_1_1compatibility_1_1CompatibilityManager.html", "classdtls_1_1v13_1_1compatibility_1_1CompatibilityManager" ],
     [ "DTLS12CipherSuite", "dtls12__compat_8h.html#acbe95a948eb97c03907ad29f09eb5ecd", [
       [ "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256", "dtls12__compat_8h.html#acbe95a948eb97c03907ad29f09eb5ecda7397dc1c01dd058299ec0dbfe63689a1", null ],
       [ "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256", "dtls12__compat_8h.html#acbe95a948eb97c03907ad29f09eb5ecda0187c6357b1d55d749a5e111ffe1c683", null ],
@@ -19,6 +14,7 @@ var dtls12__compat_8h =
       [ "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256", "dtls12__compat_8h.html#acbe95a948eb97c03907ad29f09eb5ecda672dd486346b3111c982c3ed6900576b", null ],
       [ "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256", "dtls12__compat_8h.html#acbe95a948eb97c03907ad29f09eb5ecdaef8013ea23356cb34a430c299196ac2a", null ]
     ] ],
+    [ "__attribute__", "dtls12__compat_8h.html#aebbc649df268a94e3c6b328e657e431f", null ],
     [ "dtls12_cipher_provides_pfs", "dtls12__compat_8h.html#afe7e3fed4d1cad35086bb1da25096cf9", null ],
     [ "get_dtls12_cipher_security_level", "dtls12__compat_8h.html#a61d81f5ac1c40591046fef8f65e2e6fc", null ],
     [ "is_dtls12_compatible_cipher_suite", "dtls12__compat_8h.html#aa21111b3ce0a3351d01084e6a8d821ca", null ],

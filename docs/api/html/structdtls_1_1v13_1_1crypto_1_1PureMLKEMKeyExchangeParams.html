@@ -108,23 +108,44 @@ Collaboration diagram for dtls::v13::crypto::PureMLKEMKeyExchangeParams:</div>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a03dc08597d0a20a8e23d501e2ff77908" id="r_a03dc08597d0a20a8e23d501e2ff77908"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacedtls_1_1v13.html#aa8dc4e9aaf0e18a4d8934a385f8a4c34">NamedGroup</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1crypto_1_1PureMLKEMKeyExchangeParams.html#a03dc08597d0a20a8e23d501e2ff77908">mlkem_group</a> {<a class="el" href="namespacedtls_1_1v13.html#aa8dc4e9aaf0e18a4d8934a385f8a4c34a329129f7a8d49d767f97e1a99ac77974">NamedGroup::MLKEM512</a>}</td></tr>
 <tr class="separator:a03dc08597d0a20a8e23d501e2ff77908"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0691d8e229b458a19c138110cdb3671e" id="r_a0691d8e229b458a19c138110cdb3671e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classdtls_1_1v13_1_1Result.html">uint8_t</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1crypto_1_1PureMLKEMKeyExchangeParams.html#a0691d8e229b458a19c138110cdb3671e">peer_public_key</a></td></tr>
-<tr class="memdesc:a0691d8e229b458a19c138110cdb3671e"><td class="mdescLeft">&#160;</td><td class="mdescRight">ML-KEM public key from peer.  <br /></td></tr>
-<tr class="separator:a0691d8e229b458a19c138110cdb3671e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5ace7876561cae07e428fb18e7bfb675" id="r_a5ace7876561cae07e428fb18e7bfb675"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classdtls_1_1v13_1_1Result.html">uint8_t</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1crypto_1_1PureMLKEMKeyExchangeParams.html#a5ace7876561cae07e428fb18e7bfb675">private_key</a></td></tr>
-<tr class="memdesc:a5ace7876561cae07e428fb18e7bfb675"><td class="mdescLeft">&#160;</td><td class="mdescRight">Our ML-KEM private key (for decap)  <br /></td></tr>
-<tr class="separator:a5ace7876561cae07e428fb18e7bfb675"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a02882156cd4cc4222af00ba22bcbb075" id="r_a02882156cd4cc4222af00ba22bcbb075"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1crypto_1_1PureMLKEMKeyExchangeParams.html#a02882156cd4cc4222af00ba22bcbb075">is_encapsulation</a> {<a class="el" href="classdtls_1_1v13_1_1Result.html">true</a>}</td></tr>
+<tr class="memitem:a02882156cd4cc4222af00ba22bcbb075" id="r_a02882156cd4cc4222af00ba22bcbb075"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1crypto_1_1PureMLKEMKeyExchangeParams.html#a02882156cd4cc4222af00ba22bcbb075">is_encapsulation</a> {true}</td></tr>
 <tr class="memdesc:a02882156cd4cc4222af00ba22bcbb075"><td class="mdescLeft">&#160;</td><td class="mdescRight">true=encap (client), false=decap (server)  <br /></td></tr>
 <tr class="separator:a02882156cd4cc4222af00ba22bcbb075"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3abc20ca6f51776b4c23791596e49020" id="r_a3abc20ca6f51776b4c23791596e49020"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classdtls_1_1v13_1_1Result.html">uint8_t</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1crypto_1_1PureMLKEMKeyExchangeParams.html#a3abc20ca6f51776b4c23791596e49020">encap_randomness</a></td></tr>
+<tr class="memitem:a0691d8e229b458a19c138110cdb3671e" id="r_a0691d8e229b458a19c138110cdb3671e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; uint8_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1crypto_1_1PureMLKEMKeyExchangeParams.html#a0691d8e229b458a19c138110cdb3671e">peer_public_key</a></td></tr>
+<tr class="memdesc:a0691d8e229b458a19c138110cdb3671e"><td class="mdescLeft">&#160;</td><td class="mdescRight">ML-KEM public key from peer (encap only)  <br /></td></tr>
+<tr class="separator:a0691d8e229b458a19c138110cdb3671e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3abc20ca6f51776b4c23791596e49020" id="r_a3abc20ca6f51776b4c23791596e49020"><td class="memItemLeft" align="right" valign="top">std::vector&lt; uint8_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1crypto_1_1PureMLKEMKeyExchangeParams.html#a3abc20ca6f51776b4c23791596e49020">encap_randomness</a></td></tr>
 <tr class="memdesc:a3abc20ca6f51776b4c23791596e49020"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional randomness for encapsulation.  <br /></td></tr>
 <tr class="separator:a3abc20ca6f51776b4c23791596e49020"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ace7876561cae07e428fb18e7bfb675" id="r_a5ace7876561cae07e428fb18e7bfb675"><td class="memItemLeft" align="right" valign="top">std::vector&lt; uint8_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1crypto_1_1PureMLKEMKeyExchangeParams.html#a5ace7876561cae07e428fb18e7bfb675">private_key</a></td></tr>
+<tr class="memdesc:a5ace7876561cae07e428fb18e7bfb675"><td class="mdescLeft">&#160;</td><td class="mdescRight">Our ML-KEM private key (decap only)  <br /></td></tr>
+<tr class="separator:a5ace7876561cae07e428fb18e7bfb675"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5720897efeef8fefede9ce5a7472027" id="r_af5720897efeef8fefede9ce5a7472027"><td class="memItemLeft" align="right" valign="top">std::vector&lt; uint8_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1crypto_1_1PureMLKEMKeyExchangeParams.html#af5720897efeef8fefede9ce5a7472027">ciphertext</a></td></tr>
+<tr class="memdesc:af5720897efeef8fefede9ce5a7472027"><td class="mdescLeft">&#160;</td><td class="mdescRight">ML-KEM ciphertext to decapsulate (decap only)  <br /></td></tr>
+<tr class="separator:af5720897efeef8fefede9ce5a7472027"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
 <p class="definition">Definition at line <a class="el" href="provider_8h_source.html#l00173">173</a> of file <a class="el" href="provider_8h_source.html">provider.h</a>.</p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
+<a id="af5720897efeef8fefede9ce5a7472027" name="af5720897efeef8fefede9ce5a7472027"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5720897efeef8fefede9ce5a7472027">&#9670;&#160;</a></span>ciphertext</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;uint8_t&gt; dtls::v13::crypto::PureMLKEMKeyExchangeParams::ciphertext</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>ML-KEM ciphertext to decapsulate (decap only) </p>
+
+<p class="definition">Definition at line <a class="el" href="provider_8h_source.html#l00183">183</a> of file <a class="el" href="provider_8h_source.html">provider.h</a>.</p>
+
+</div>
+</div>
 <a id="a3abc20ca6f51776b4c23791596e49020" name="a3abc20ca6f51776b4c23791596e49020"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3abc20ca6f51776b4c23791596e49020">&#9670;&#160;</a></span>encap_randomness</h2>
 
@@ -132,14 +153,14 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt;<a class="el" href="classdtls_1_1v13_1_1Result.html">uint8_t</a>&gt; dtls::v13::crypto::PureMLKEMKeyExchangeParams::encap_randomness</td>
+          <td class="memname">std::vector&lt;uint8_t&gt; dtls::v13::crypto::PureMLKEMKeyExchangeParams::encap_randomness</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Optional randomness for encapsulation. </p>
 
-<p class="definition">Definition at line <a class="el" href="provider_8h_source.html#l00178">178</a> of file <a class="el" href="provider_8h_source.html">provider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="provider_8h_source.html#l00179">179</a> of file <a class="el" href="provider_8h_source.html">provider.h</a>.</p>
 
 </div>
 </div>
@@ -150,14 +171,14 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">bool</a> dtls::v13::crypto::PureMLKEMKeyExchangeParams::is_encapsulation {<a class="el" href="classdtls_1_1v13_1_1Result.html">true</a>}</td>
+          <td class="memname">bool dtls::v13::crypto::PureMLKEMKeyExchangeParams::is_encapsulation {true}</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>true=encap (client), false=decap (server) </p>
 
-<p class="definition">Definition at line <a class="el" href="provider_8h_source.html#l00177">177</a> of file <a class="el" href="provider_8h_source.html">provider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="provider_8h_source.html#l00175">175</a> of file <a class="el" href="provider_8h_source.html">provider.h</a>.</p>
 
 </div>
 </div>
@@ -184,14 +205,14 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt;<a class="el" href="classdtls_1_1v13_1_1Result.html">uint8_t</a>&gt; dtls::v13::crypto::PureMLKEMKeyExchangeParams::peer_public_key</td>
+          <td class="memname">std::vector&lt;uint8_t&gt; dtls::v13::crypto::PureMLKEMKeyExchangeParams::peer_public_key</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>ML-KEM public key from peer. </p>
+<p>ML-KEM public key from peer (encap only) </p>
 
-<p class="definition">Definition at line <a class="el" href="provider_8h_source.html#l00175">175</a> of file <a class="el" href="provider_8h_source.html">provider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="provider_8h_source.html#l00178">178</a> of file <a class="el" href="provider_8h_source.html">provider.h</a>.</p>
 
 </div>
 </div>
@@ -202,14 +223,14 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt;<a class="el" href="classdtls_1_1v13_1_1Result.html">uint8_t</a>&gt; dtls::v13::crypto::PureMLKEMKeyExchangeParams::private_key</td>
+          <td class="memname">std::vector&lt;uint8_t&gt; dtls::v13::crypto::PureMLKEMKeyExchangeParams::private_key</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Our ML-KEM private key (for decap) </p>
+<p>Our ML-KEM private key (decap only) </p>
 
-<p class="definition">Definition at line <a class="el" href="provider_8h_source.html#l00176">176</a> of file <a class="el" href="provider_8h_source.html">provider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="provider_8h_source.html#l00182">182</a> of file <a class="el" href="provider_8h_source.html">provider.h</a>.</p>
 
 </div>
 </div>

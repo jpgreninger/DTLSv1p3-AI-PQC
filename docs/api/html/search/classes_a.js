@@ -1,8 +1,23 @@
 var searchData=
 [
-  ['leakdetectionconfig_0',['LeakDetectionConfig',['../structdtls_1_1v13_1_1memory_1_1LeakDetectionConfig.html',1,'dtls::v13::memory']]],
-  ['leakdetector_1',['LeakDetector',['../classdtls_1_1v13_1_1memory_1_1LeakDetector.html',1,'dtls::v13::memory']]],
-  ['leakreport_2',['LeakReport',['../structdtls_1_1v13_1_1memory_1_1LeakDetector_1_1LeakReport.html',1,'dtls::v13::memory::LeakDetector']]],
-  ['loadbalancer_3',['LoadBalancer',['../classdtls_1_1v13_1_1connection_1_1advanced_1_1LoadBalancer.html',1,'dtls::v13::connection::advanced']]],
-  ['loadbalancerimpl_4',['LoadBalancerImpl',['../classdtls_1_1v13_1_1connection_1_1advanced_1_1LoadBalancerImpl.html',1,'dtls::v13::connection::advanced']]]
+  ['macvalidationparams_0',['MACValidationParams',['../structdtls_1_1v13_1_1crypto_1_1MACValidationParams.html',1,'dtls::v13::crypto']]],
+  ['managedconnectionimpl_1',['ManagedConnectionImpl',['../classdtls_1_1v13_1_1connection_1_1advanced_1_1ManagedConnectionImpl.html',1,'dtls::v13::connection::advanced']]],
+  ['memoryconfig_2',['MemoryConfig',['../structdtls_1_1v13_1_1memory_1_1utils_1_1MemoryConfig.html',1,'dtls::v13::memory::utils']]],
+  ['memoryhealthcheckresult_3',['MemoryHealthCheckResult',['../structdtls_1_1v13_1_1memory_1_1MemoryHealthCheckResult.html',1,'dtls::v13::memory']]],
+  ['memoryhealthreport_4',['MemoryHealthReport',['../structdtls_1_1v13_1_1memory_1_1utils_1_1MemoryHealthReport.html',1,'dtls::v13::memory::utils']]],
+  ['memorystats_5',['MemoryStats',['../structdtls_1_1v13_1_1memory_1_1utils_1_1MemoryStats.html',1,'dtls::v13::memory::utils']]],
+  ['memorysystemconfig_6',['MemorySystemConfig',['../structdtls_1_1v13_1_1memory_1_1MemorySystemConfig.html',1,'dtls::v13::memory']]],
+  ['memorysystemstatus_7',['MemorySystemStatus',['../structdtls_1_1v13_1_1memory_1_1MemorySystemStatus.html',1,'dtls::v13::memory']]],
+  ['memorytestresult_8',['MemoryTestResult',['../structdtls_1_1v13_1_1memory_1_1MemoryTestResult.html',1,'dtls::v13::memory']]],
+  ['messagefragment_9',['MessageFragment',['../structdtls_1_1v13_1_1protocol_1_1MessageFragment.html',1,'dtls::v13::protocol']]],
+  ['metricmetadata_10',['MetricMetadata',['../structdtls_1_1v13_1_1monitoring_1_1MetricMetadata.html',1,'dtls::v13::monitoring']]],
+  ['metricscollectorimpl_11',['MetricsCollectorImpl',['../classdtls_1_1v13_1_1monitoring_1_1MetricsCollectorImpl.html',1,'dtls::v13::monitoring']]],
+  ['metricsexporterimpl_12',['MetricsExporterImpl',['../classdtls_1_1v13_1_1monitoring_1_1MetricsExporterImpl.html',1,'dtls::v13::monitoring']]],
+  ['metricvalue_13',['MetricValue',['../structdtls_1_1v13_1_1monitoring_1_1MetricValue.html',1,'dtls::v13::monitoring']]],
+  ['mlkemdecapparams_14',['MLKEMDecapParams',['../structdtls_1_1v13_1_1crypto_1_1MLKEMDecapParams.html',1,'dtls::v13::crypto']]],
+  ['mlkemencapparams_15',['MLKEMEncapParams',['../structdtls_1_1v13_1_1crypto_1_1MLKEMEncapParams.html',1,'dtls::v13::crypto']]],
+  ['mlkemencapresult_16',['MLKEMEncapResult',['../structdtls_1_1v13_1_1crypto_1_1MLKEMEncapResult.html',1,'dtls::v13::crypto']]],
+  ['mlkemkeygenparams_17',['MLKEMKeyGenParams',['../structdtls_1_1v13_1_1crypto_1_1MLKEMKeyGenParams.html',1,'dtls::v13::crypto']]],
+  ['mlkemsizes_18',['MLKEMSizes',['../structdtls_1_1v13_1_1crypto_1_1hybrid__pqc_1_1MLKEMSizes.html',1,'dtls::v13::crypto::hybrid_pqc']]],
+  ['monitoringsystemimpl_19',['MonitoringSystemImpl',['../classdtls_1_1v13_1_1monitoring_1_1MonitoringSystemImpl.html',1,'dtls::v13::monitoring']]]
 ];

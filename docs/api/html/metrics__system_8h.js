@@ -7,14 +7,6 @@ var metrics__system_8h =
     [ "dtls::v13::monitoring::ResourceMetrics", "structdtls_1_1v13_1_1monitoring_1_1ResourceMetrics.html", "structdtls_1_1v13_1_1monitoring_1_1ResourceMetrics" ],
     [ "dtls::v13::monitoring::AlertCondition", "structdtls_1_1v13_1_1monitoring_1_1AlertCondition.html", "structdtls_1_1v13_1_1monitoring_1_1AlertCondition" ],
     [ "dtls::v13::monitoring::Alert", "structdtls_1_1v13_1_1monitoring_1_1Alert.html", "structdtls_1_1v13_1_1monitoring_1_1Alert" ],
-    [ "dtls::v13::monitoring::MetricsCollector", "classdtls_1_1v13_1_1monitoring_1_1MetricsCollector.html", "classdtls_1_1v13_1_1monitoring_1_1MetricsCollector" ],
-    [ "dtls::v13::monitoring::PerformanceMonitor", "classdtls_1_1v13_1_1monitoring_1_1PerformanceMonitor.html", "classdtls_1_1v13_1_1monitoring_1_1PerformanceMonitor" ],
-    [ "dtls::v13::monitoring::SecurityMonitor", "classdtls_1_1v13_1_1monitoring_1_1SecurityMonitor.html", "classdtls_1_1v13_1_1monitoring_1_1SecurityMonitor" ],
-    [ "dtls::v13::monitoring::ResourceMonitor", "classdtls_1_1v13_1_1monitoring_1_1ResourceMonitor.html", "classdtls_1_1v13_1_1monitoring_1_1ResourceMonitor" ],
-    [ "dtls::v13::monitoring::AlertManager", "classdtls_1_1v13_1_1monitoring_1_1AlertManager.html", "classdtls_1_1v13_1_1monitoring_1_1AlertManager" ],
-    [ "dtls::v13::monitoring::MetricsExporter", "classdtls_1_1v13_1_1monitoring_1_1MetricsExporter.html", "classdtls_1_1v13_1_1monitoring_1_1MetricsExporter" ],
-    [ "dtls::v13::monitoring::MonitoringSystem", "classdtls_1_1v13_1_1monitoring_1_1MonitoringSystem.html", "classdtls_1_1v13_1_1monitoring_1_1MonitoringSystem" ],
-    [ "dtls::v13::monitoring::ScopedTimer", "classdtls_1_1v13_1_1monitoring_1_1ScopedTimer.html", "classdtls_1_1v13_1_1monitoring_1_1ScopedTimer" ],
     [ "DTLS_SCOPED_TIMER", "metrics__system_8h.html#af904a42c09d763e594834c2307108a24", null ],
     [ "DTLS_SCOPED_TIMER_WITH_LABELS", "metrics__system_8h.html#a70a6c5a0df61a62ff4075cf4e7ded5d4", null ],
     [ "AlertSeverity", "metrics__system_8h.html#ac3d28b34b024bb8c0efbf17e6b90c6ac", [
@@ -29,5 +21,6 @@ var metrics__system_8h =
       [ "HISTOGRAM", "metrics__system_8h.html#a9425a77035f75fc8106646fbab4f7379a7f33aef6b28f7abec2f5d804ab1343c8", null ],
       [ "SUMMARY", "metrics__system_8h.html#a9425a77035f75fc8106646fbab4f7379a36cbecb886c3fb994669cd10cdbd9f5f", null ],
       [ "TIMER", "metrics__system_8h.html#a9425a77035f75fc8106646fbab4f7379ab127d163c55a6603f3a37ce3a642c36d", null ]
-    ] ]
+    ] ],
+    [ "__attribute__", "metrics__system_8h.html#a16c5e815e37b5236fbaefe2000220cb0", null ]
 ];

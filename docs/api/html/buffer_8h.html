@@ -91,13 +91,13 @@ $(document).ready(function(){initNavTree('buffer_8h.html',''); initResizable(); 
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">buffer.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;dtls/config.h&gt;</code><br />
+<div class="textblock"><code>#include &lt;<a class="el" href="config_8h_source.html">dtls/config.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="result_8h_source.html">dtls/result.h</a>&gt;</code><br />
 <code>#include &lt;memory&gt;</code><br />
 <code>#include &lt;cstddef&gt;</code><br />
@@ -116,17 +116,6 @@ This graph shows which files directly or indirectly include this file:</div>
 </div>
 <p><a href="buffer_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1memory_1_1BufferSharedState.html">dtls::v13::memory::BufferSharedState</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1memory_1_1ZeroCopyBuffer.html">dtls::v13::memory::ZeroCopyBuffer</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1memory_1_1BufferView.html">dtls::v13::memory::BufferView</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1memory_1_1MutableBufferView.html">dtls::v13::memory::MutableBufferView</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespacedtls" id="r_namespacedtls"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls.html">dtls</a></td></tr>
@@ -141,18 +130,17 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a73ebc4a2b4f6d8dee091880d92e9bc4f" id="r_a73ebc4a2b4f6d8dee091880d92e9bc4f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">DTLS_API</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1memory.html#a73ebc4a2b4f6d8dee091880d92e9bc4f">dtls::v13::memory::constant_time_compare</a> (<a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> <a class="el" href="classdtls_1_1v13_1_1memory_1_1BufferView.html">BufferView</a> &amp;<a class="el" href="classdtls_1_1v13_1_1Result.html">a</a>, <a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> <a class="el" href="classdtls_1_1v13_1_1memory_1_1BufferView.html">BufferView</a> &amp;<a class="el" href="classdtls_1_1v13_1_1Result.html">b</a>) <a class="el" href="classdtls_1_1v13_1_1Result.html">noexcept</a></td></tr>
-<tr class="separator:a73ebc4a2b4f6d8dee091880d92e9bc4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6ce13defdbcf154429f86acbcad7c22f" id="r_a6ce13defdbcf154429f86acbcad7c22f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">DTLS_API</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1memory.html#a6ce13defdbcf154429f86acbcad7c22f">dtls::v13::memory::secure_zero_memory</a> (<a class="el" href="classdtls_1_1v13_1_1Result.html">void</a> *ptr, <a class="el" href="classdtls_1_1v13_1_1Result.html">size_t</a> size) <a class="el" href="classdtls_1_1v13_1_1Result.html">noexcept</a></td></tr>
-<tr class="separator:a6ce13defdbcf154429f86acbcad7c22f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6ef4d48b1fa93cab8d4a581f7f08ab75" id="r_a6ef4d48b1fa93cab8d4a581f7f08ab75"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">DTLS_API</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">size_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1memory.html#a6ef4d48b1fa93cab8d4a581f7f08ab75">dtls::v13::memory::find_byte</a> (<a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> <a class="el" href="classdtls_1_1v13_1_1memory_1_1BufferView.html">BufferView</a> &amp;buffer, std::byte value) <a class="el" href="classdtls_1_1v13_1_1Result.html">noexcept</a></td></tr>
-<tr class="separator:a6ef4d48b1fa93cab8d4a581f7f08ab75"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a86a8918949d4247d0473a0bcb72e3654" id="r_a86a8918949d4247d0473a0bcb72e3654"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">DTLS_API</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1memory_1_1ZeroCopyBuffer.html">ZeroCopyBuffer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1memory.html#a86a8918949d4247d0473a0bcb72e3654">dtls::v13::memory::concatenate_buffers</a> (<a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> std::vector&lt; <a class="el" href="classdtls_1_1v13_1_1memory_1_1BufferView.html">BufferView</a> &gt; &amp;<a class="el" href="classdtls_1_1v13_1_1Result.html">buffers</a>)</td></tr>
-<tr class="separator:a86a8918949d4247d0473a0bcb72e3654"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7b070ad658e02261d11829064bf80bb2" id="r_a7b070ad658e02261d11829064bf80bb2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">DTLS_API</a> std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1memory.html#a7b070ad658e02261d11829064bf80bb2">dtls::v13::memory::to_hex_string</a> (<a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> <a class="el" href="classdtls_1_1v13_1_1memory_1_1BufferView.html">BufferView</a> &amp;buffer)</td></tr>
-<tr class="separator:a7b070ad658e02261d11829064bf80bb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a778791b8384b3ae06d2e78d2ef8b7270" id="r_a778791b8384b3ae06d2e78d2ef8b7270"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">DTLS_API</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1memory_1_1ZeroCopyBuffer.html">ZeroCopyBuffer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1memory.html#a778791b8384b3ae06d2e78d2ef8b7270">dtls::v13::memory::from_hex_string</a> (<a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> std::string &amp;<a class="el" href="classdtls_1_1v13_1_1Result.html">hex</a>)</td></tr>
-<tr class="separator:a778791b8384b3ae06d2e78d2ef8b7270"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae17a0bb0cee1f6f44d5aa31dcf83f71d" id="r_ae17a0bb0cee1f6f44d5aa31dcf83f71d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1memory.html#ae17a0bb0cee1f6f44d5aa31dcf83f71d">dtls::v13::memory::__attribute__</a> ((visibility(&quot;default&quot;))) <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; <a class="el" href="namespacedtls_1_1v13_1_1memory.html#ade825ea6155c092341b1494babef3d85">initialize_memory_system</a>() = true)</td></tr>
+<tr class="memdesc:ae17a0bb0cee1f6f44d5aa31dcf83f71d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the memory management system.  <br /></td></tr>
+<tr class="separator:ae17a0bb0cee1f6f44d5aa31dcf83f71d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67cb7b918e519713fb65fa54f8b58d2f" id="r_a67cb7b918e519713fb65fa54f8b58d2f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1memory.html#a67cb7b918e519713fb65fa54f8b58d2f">dtls::v13::memory::__attribute__</a> ((visibility(&quot;default&quot;))) <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; <a class="el" href="namespacedtls_1_1v13_1_1memory.html#ac1262fb5830aa8fa96ddd44a6bbf6411">set_memory_system_config</a>(const <a class="el" href="structdtls_1_1v13_1_1memory_1_1MemorySystemConfig.html">MemorySystemConfig</a> &amp;config)</td></tr>
+<tr class="memdesc:a67cb7b918e519713fb65fa54f8b58d2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set system-wide memory configuration.  <br /></td></tr>
+<tr class="separator:a67cb7b918e519713fb65fa54f8b58d2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a3e0cf58ad1673d15cc919ba45cd52a6c" id="r_a3e0cf58ad1673d15cc919ba45cd52a6c"><td class="memItemLeft" align="right" valign="top">const BufferView &amp;<a class="el" href="namespacedtls_1_1v13_1_1memory.html#aec9b9066022db0cf3ce56f1cac59d229">b</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1memory.html#a3e0cf58ad1673d15cc919ba45cd52a6c">dtls::v13::memory::noexcept</a></td></tr>
+<tr class="separator:a3e0cf58ad1673d15cc919ba45cd52a6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

@@ -6,5 +6,5 @@ digraph "dtls::v13::connection::advanced::LoadBalancerImpl"
   node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
   Node1 [id="Node000001",label="dtls::v13::connection\l::advanced::LoadBalancerImpl",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Load balancer implementation."];
   Node2 -> Node1 [id="edge1_Node000001_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node2 [id="Node000002",label="dtls::v13::connection\l::advanced::LoadBalancer",height=0.2,width=0.4,color="gray40", fillcolor="white", style="filled",URL="$classdtls_1_1v13_1_1connection_1_1advanced_1_1LoadBalancer.html",tooltip="Load balancer interface."];
+  Node2 [id="Node000002",label="LoadBalancer",height=0.2,width=0.4,color="gray40", fillcolor="white", style="filled",tooltip=" "];
 }

@@ -1,7 +1,6 @@
 var error_8h =
 [
     [ "dtls::v13::DTLSErrorCategory", "classdtls_1_1v13_1_1DTLSErrorCategory.html", "classdtls_1_1v13_1_1DTLSErrorCategory" ],
-    [ "dtls::v13::DTLSException", "classdtls_1_1v13_1_1DTLSException.html", "classdtls_1_1v13_1_1DTLSException" ],
     [ "std::is_error_code_enum< dtls::v13::DTLSError >", "structstd_1_1is__error__code__enum_3_01dtls_1_1v13_1_1DTLSError_01_4.html", null ],
     [ "DTLS_RETURN_IF_ERROR", "error_8h.html#aaf35f9b1de8956084057727736e6d356", null ],
     [ "DTLS_THROW_IF_ERROR", "error_8h.html#a9cc6b1bc53352421ce9c3bf9814853e8", null ],
@@ -137,10 +136,6 @@ var error_8h =
       [ "TRIAL_EXPIRED", "error_8h.html#aeaab1a668f345648ec3f402f6d41a243a6e01557d404e6f3c4e53836c61799c61", null ],
       [ "ACCOUNT_SUSPENDED", "error_8h.html#aeaab1a668f345648ec3f402f6d41a243a4f8b150d14506b293765aa8832affb08", null ]
     ] ],
-    [ "alert_to_error", "error_8h.html#ab673847440bba407f1fb20cf737656a6", null ],
-    [ "error_message", "error_8h.html#aae2f3c4ee3d48bae22c0905163cc3869", null ],
-    [ "error_to_alert", "error_8h.html#a7e010b0fa1d8985556654b99d5b110e8", null ],
-    [ "is_fatal_error", "error_8h.html#a885bc06c26cb3f075373f47ff00c58ea", null ],
-    [ "is_retryable_error", "error_8h.html#a51f1acde3d36ac7d1fc215edbd7f7592", null ],
+    [ "__attribute__", "error_8h.html#a1019a2293dde74eee051401f22b83098", null ],
     [ "make_error_code", "error_8h.html#adae6431ef30f0da160b5569a4255bc14", null ]
 ];

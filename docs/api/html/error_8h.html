@@ -99,7 +99,7 @@ $(document).ready(function(){initNavTree('error_8h.html',''); initResizable(); }
   <div class="headertitle"><div class="title">error.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;dtls/config.h&gt;</code><br />
+<div class="textblock"><code>#include &lt;<a class="el" href="config_8h_source.html">dtls/config.h</a>&gt;</code><br />
 <code>#include &lt;system_error&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
 <code>#include &lt;cstdint&gt;</code><br />
@@ -119,8 +119,6 @@ This graph shows which files directly or indirectly include this file:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1DTLSErrorCategory.html">dtls::v13::DTLSErrorCategory</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1DTLSException.html">dtls::v13::DTLSException</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstd_1_1is__error__code__enum_3_01dtls_1_1v13_1_1DTLSError_01_4.html">std::is_error_code_enum&lt; dtls::v13::DTLSError &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -315,18 +313,11 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:adae6431ef30f0da160b5569a4255bc14" id="r_adae6431ef30f0da160b5569a4255bc14"><td class="memItemLeft" align="right" valign="top">std::error_code&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13.html#adae6431ef30f0da160b5569a4255bc14">dtls::v13::make_error_code</a> (<a class="el" href="namespacedtls_1_1v13.html#aeaab1a668f345648ec3f402f6d41a243">DTLSError</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">e</a>)</td></tr>
+<tr class="memitem:adae6431ef30f0da160b5569a4255bc14" id="r_adae6431ef30f0da160b5569a4255bc14"><td class="memItemLeft" align="right" valign="top">std::error_code&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13.html#adae6431ef30f0da160b5569a4255bc14">dtls::v13::make_error_code</a> (<a class="el" href="namespacedtls_1_1v13.html#aeaab1a668f345648ec3f402f6d41a243">DTLSError</a> e)</td></tr>
 <tr class="separator:adae6431ef30f0da160b5569a4255bc14"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aae2f3c4ee3d48bae22c0905163cc3869" id="r_aae2f3c4ee3d48bae22c0905163cc3869"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">DTLS_API</a> std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13.html#aae2f3c4ee3d48bae22c0905163cc3869">dtls::v13::error_message</a> (<a class="el" href="namespacedtls_1_1v13.html#aeaab1a668f345648ec3f402f6d41a243">DTLSError</a> error)</td></tr>
-<tr class="separator:aae2f3c4ee3d48bae22c0905163cc3869"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a885bc06c26cb3f075373f47ff00c58ea" id="r_a885bc06c26cb3f075373f47ff00c58ea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">DTLS_API</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13.html#a885bc06c26cb3f075373f47ff00c58ea">dtls::v13::is_fatal_error</a> (<a class="el" href="namespacedtls_1_1v13.html#aeaab1a668f345648ec3f402f6d41a243">DTLSError</a> error)</td></tr>
-<tr class="separator:a885bc06c26cb3f075373f47ff00c58ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a51f1acde3d36ac7d1fc215edbd7f7592" id="r_a51f1acde3d36ac7d1fc215edbd7f7592"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">DTLS_API</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13.html#a51f1acde3d36ac7d1fc215edbd7f7592">dtls::v13::is_retryable_error</a> (<a class="el" href="namespacedtls_1_1v13.html#aeaab1a668f345648ec3f402f6d41a243">DTLSError</a> error)</td></tr>
-<tr class="separator:a51f1acde3d36ac7d1fc215edbd7f7592"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7e010b0fa1d8985556654b99d5b110e8" id="r_a7e010b0fa1d8985556654b99d5b110e8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">DTLS_API</a> <a class="el" href="namespacedtls_1_1v13.html#aa1e690285dfa4c975cd5eef269224a1b">AlertDescription</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13.html#a7e010b0fa1d8985556654b99d5b110e8">dtls::v13::error_to_alert</a> (<a class="el" href="namespacedtls_1_1v13.html#aeaab1a668f345648ec3f402f6d41a243">DTLSError</a> error)</td></tr>
-<tr class="separator:a7e010b0fa1d8985556654b99d5b110e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab673847440bba407f1fb20cf737656a6" id="r_ab673847440bba407f1fb20cf737656a6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">DTLS_API</a> <a class="el" href="namespacedtls_1_1v13.html#aeaab1a668f345648ec3f402f6d41a243">DTLSError</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13.html#ab673847440bba407f1fb20cf737656a6">dtls::v13::alert_to_error</a> (<a class="el" href="namespacedtls_1_1v13.html#aa1e690285dfa4c975cd5eef269224a1b">AlertDescription</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">alert</a>)</td></tr>
-<tr class="separator:ab673847440bba407f1fb20cf737656a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1019a2293dde74eee051401f22b83098" id="r_a1019a2293dde74eee051401f22b83098"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13.html#a1019a2293dde74eee051401f22b83098">dtls::v13::__attribute__</a> ((visibility(&quot;default&quot;))) AlertManager</td></tr>
+<tr class="memdesc:a1019a2293dde74eee051401f22b83098"><td class="mdescLeft">&#160;</td><td class="mdescRight">AlertManager handles DTLS alert generation and processing according to RFC 9147.  <br /></td></tr>
+<tr class="separator:a1019a2293dde74eee051401f22b83098"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="aaf35f9b1de8956084057727736e6d356" name="aaf35f9b1de8956084057727736e6d356"></a>

@@ -110,7 +110,7 @@ Collaboration diagram for dtls::v13::security::SourceData:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aed975b19591b81f5dff3be3f877d2676" id="r_aed975b19591b81f5dff3be3f877d2676"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1security_1_1SourceData.html#aed975b19591b81f5dff3be3f877d2676">SourceData</a> (<a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> <a class="el" href="structdtls_1_1v13_1_1security_1_1RateLimitConfig.html">RateLimitConfig</a> &amp;<a class="el" href="classdtls_1_1v13_1_1Result.html">config</a>)</td></tr>
+<tr class="memitem:aed975b19591b81f5dff3be3f877d2676" id="r_aed975b19591b81f5dff3be3f877d2676"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1security_1_1SourceData.html#aed975b19591b81f5dff3be3f877d2676">SourceData</a> (const <a class="el" href="structdtls_1_1v13_1_1security_1_1RateLimitConfig.html">RateLimitConfig</a> &amp;config)</td></tr>
 <tr class="separator:aed975b19591b81f5dff3be3f877d2676"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
@@ -123,9 +123,9 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a7f5c212f10c9b0cac93960ff459c2952"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a420786e1bc358d07227db3d564c64e9d" id="r_a420786e1bc358d07227db3d564c64e9d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdtls_1_1v13_1_1security_1_1RateLimitStats.html">RateLimitStats</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1security_1_1SourceData.html#a420786e1bc358d07227db3d564c64e9d">stats</a></td></tr>
 <tr class="separator:a420786e1bc358d07227db3d564c64e9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6520fcd769c893c9fa0eb69859516f0a" id="r_a6520fcd769c893c9fa0eb69859516f0a"><td class="memItemLeft" align="right" valign="top">std::atomic&lt; <a class="el" href="classdtls_1_1v13_1_1Result.html">size_t</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1security_1_1SourceData.html#a6520fcd769c893c9fa0eb69859516f0a">active_connections</a> {0}</td></tr>
+<tr class="memitem:a6520fcd769c893c9fa0eb69859516f0a" id="r_a6520fcd769c893c9fa0eb69859516f0a"><td class="memItemLeft" align="right" valign="top">std::atomic&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1security_1_1SourceData.html#a6520fcd769c893c9fa0eb69859516f0a">active_connections</a> {0}</td></tr>
 <tr class="separator:a6520fcd769c893c9fa0eb69859516f0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2447742b717fd28e114cf57f1c39a7be" id="r_a2447742b717fd28e114cf57f1c39a7be"><td class="memItemLeft" align="right" valign="top">std::atomic&lt; <a class="el" href="classdtls_1_1v13_1_1Result.html">bool</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1security_1_1SourceData.html#a2447742b717fd28e114cf57f1c39a7be">is_blacklisted</a> {<a class="el" href="classdtls_1_1v13_1_1Result.html">false</a>}</td></tr>
+<tr class="memitem:a2447742b717fd28e114cf57f1c39a7be" id="r_a2447742b717fd28e114cf57f1c39a7be"><td class="memItemLeft" align="right" valign="top">std::atomic&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1security_1_1SourceData.html#a2447742b717fd28e114cf57f1c39a7be">is_blacklisted</a> {false}</td></tr>
 <tr class="separator:a2447742b717fd28e114cf57f1c39a7be"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5a577c11a992067de85d529036842b16" id="r_a5a577c11a992067de85d529036842b16"><td class="memItemLeft" align="right" valign="top">std::atomic&lt; std::chrono::steady_clock::time_point &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1security_1_1SourceData.html#a5a577c11a992067de85d529036842b16">blacklist_expiry</a></td></tr>
 <tr class="separator:a5a577c11a992067de85d529036842b16"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -148,7 +148,7 @@ Public Attributes</h2></td></tr>
         <tr>
           <td class="memname">dtls::v13::security::SourceData::SourceData </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> <a class="el" href="structdtls_1_1v13_1_1security_1_1RateLimitConfig.html">RateLimitConfig</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="structdtls_1_1v13_1_1security_1_1RateLimitConfig.html">RateLimitConfig</a> &amp;&#160;</td>
           <td class="paramname"><em>config</em></td><td>)</td>
           <td></td>
         </tr>
@@ -167,7 +167,7 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::atomic&lt;<a class="el" href="classdtls_1_1v13_1_1Result.html">size_t</a>&gt; dtls::v13::security::SourceData::active_connections {0}</td>
+          <td class="memname">std::atomic&lt;size_t&gt; dtls::v13::security::SourceData::active_connections {0}</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -231,7 +231,7 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::atomic&lt;<a class="el" href="classdtls_1_1v13_1_1Result.html">bool</a>&gt; dtls::v13::security::SourceData::is_blacklisted {<a class="el" href="classdtls_1_1v13_1_1Result.html">false</a>}</td>
+          <td class="memname">std::atomic&lt;bool&gt; dtls::v13::security::SourceData::is_blacklisted {false}</td>
         </tr>
       </table>
 </div><div class="memdoc">

@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['failed_0',['failed',['../namespacedtls_1_1v13.html#a7546637dd240d5746d9f4b5ff3f14fd1ab9e14d9b2886bcff408b85aefa780419',1,'dtls::v13::FAILED'],['../classdtls_1_1v13_1_1connection_1_1advanced_1_1ManagedConnection.html#a68072f72ee36501232a21beb40ef053eab9e14d9b2886bcff408b85aefa780419',1,'dtls::v13::connection::advanced::ManagedConnection::FAILED']]],
+  ['failed_0',['FAILED',['../namespacedtls_1_1v13.html#a7546637dd240d5746d9f4b5ff3f14fd1ab9e14d9b2886bcff408b85aefa780419',1,'dtls::v13']]],
   ['failing_1',['failing',['../namespacedtls_1_1v13.html#a7546637dd240d5746d9f4b5ff3f14fd1a04a6fafe393ceb9f5b6ce96aae00c8cb',1,'dtls::v13::FAILING'],['../namespacedtls_1_1v13_1_1crypto.html#a02a6f0c05b17e8865e93a8e1bdf3ef3ea04a6fafe393ceb9f5b6ce96aae00c8cb',1,'dtls::v13::crypto::FAILING']]],
   ['failover_2',['FAILOVER',['../namespacedtls_1_1v13.html#a3148a802c5357f5e43dcf3ba7a4a97b7a36d31c88e39d3eb841007cbe5c9272dd',1,'dtls::v13']]],
   ['fatal_3',['FATAL',['../namespacedtls_1_1v13.html#aa6e0f24213793eb1de7bd24c26fc2bb3a19da7170bea36556dde582519795f3fc',1,'dtls::v13']]],

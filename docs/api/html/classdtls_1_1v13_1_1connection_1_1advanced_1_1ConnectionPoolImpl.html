@@ -97,7 +97,7 @@ $(document).ready(function(){initNavTree('classdtls_1_1v13_1_1connection_1_1adva
 </div><!--header-->
 <div class="contents">
 
-<p><a class="el" href="classdtls_1_1v13_1_1Connection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> pool implementation.  
+<p><a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> pool implementation.  
  <a href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPoolImpl.html#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for dtls::v13::connection::advanced::ConnectionPoolImpl:</div>
@@ -112,37 +112,27 @@ Collaboration diagram for dtls::v13::connection::advanced::ConnectionPoolImpl:</
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a8263aeed2630391de1354bca734f8b5d" id="r_a8263aeed2630391de1354bca734f8b5d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPoolImpl.html#a8263aeed2630391de1354bca734f8b5d">ConnectionPoolImpl</a> (<a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> <a class="el" href="structdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPoolConfig.html">ConnectionPoolConfig</a> &amp;<a class="el" href="classdtls_1_1v13_1_1Result.html">config</a>)</td></tr>
+<tr class="memitem:a8263aeed2630391de1354bca734f8b5d" id="r_a8263aeed2630391de1354bca734f8b5d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPoolImpl.html#a8263aeed2630391de1354bca734f8b5d">ConnectionPoolImpl</a> (const <a class="el" href="structdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPoolConfig.html">ConnectionPoolConfig</a> &amp;config)</td></tr>
 <tr class="separator:a8263aeed2630391de1354bca734f8b5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abadbbdb639140a65e9d426ffe1520e41" id="r_abadbbdb639140a65e9d426ffe1520e41"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPoolImpl.html#abadbbdb639140a65e9d426ffe1520e41">~ConnectionPoolImpl</a> ()</td></tr>
 <tr class="separator:abadbbdb639140a65e9d426ffe1520e41"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae2ef16ecbf0f85cfa654692869bb61a4" id="r_ae2ef16ecbf0f85cfa654692869bb61a4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::shared_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ManagedConnection.html">ManagedConnection</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPoolImpl.html#ae2ef16ecbf0f85cfa654692869bb61a4">acquire_connection</a> (<a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> <a class="el" href="structdtls_1_1v13_1_1transport_1_1NetworkEndpoint.html">transport::NetworkEndpoint</a> &amp;<a class="el" href="classdtls_1_1v13_1_1Result.html">endpoint</a>, std::chrono::milliseconds timeout) <a class="el" href="classdtls_1_1v13_1_1Result.html">override</a></td></tr>
-<tr class="memdesc:ae2ef16ecbf0f85cfa654692869bb61a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Acquire connection from pool.  <br /></td></tr>
+<tr class="memitem:ae2ef16ecbf0f85cfa654692869bb61a4" id="r_ae2ef16ecbf0f85cfa654692869bb61a4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::shared_ptr&lt; ManagedConnection &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPoolImpl.html#ae2ef16ecbf0f85cfa654692869bb61a4">acquire_connection</a> (const <a class="el" href="structdtls_1_1v13_1_1transport_1_1NetworkEndpoint.html">transport::NetworkEndpoint</a> &amp;endpoint, std::chrono::milliseconds timeout) override</td></tr>
 <tr class="separator:ae2ef16ecbf0f85cfa654692869bb61a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a936f2ccb0082567e8f66e586479435d2" id="r_a936f2ccb0082567e8f66e586479435d2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1Result.html">void</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPoolImpl.html#a936f2ccb0082567e8f66e586479435d2">release_connection</a> (<a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> std::shared_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ManagedConnection.html">ManagedConnection</a> &gt; &amp;connection) <a class="el" href="classdtls_1_1v13_1_1Result.html">override</a></td></tr>
-<tr class="memdesc:a936f2ccb0082567e8f66e586479435d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release connection back to pool.  <br /></td></tr>
+<tr class="memitem:a936f2ccb0082567e8f66e586479435d2" id="r_a936f2ccb0082567e8f66e586479435d2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPoolImpl.html#a936f2ccb0082567e8f66e586479435d2">release_connection</a> (const std::shared_ptr&lt; ManagedConnection &gt; &amp;connection) override</td></tr>
 <tr class="separator:a936f2ccb0082567e8f66e586479435d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab7a4cc577c3b6fa826c5eccbe342a3ce" id="r_ab7a4cc577c3b6fa826c5eccbe342a3ce"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPoolStats.html">ConnectionPoolStats</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPoolImpl.html#ab7a4cc577c3b6fa826c5eccbe342a3ce">get_statistics</a> () <a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">override</a></td></tr>
-<tr class="memdesc:ab7a4cc577c3b6fa826c5eccbe342a3ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get pool statistics.  <br /></td></tr>
+<tr class="memitem:ab7a4cc577c3b6fa826c5eccbe342a3ce" id="r_ab7a4cc577c3b6fa826c5eccbe342a3ce"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPoolStats.html">ConnectionPoolStats</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPoolImpl.html#ab7a4cc577c3b6fa826c5eccbe342a3ce">get_statistics</a> () const override</td></tr>
 <tr class="separator:ab7a4cc577c3b6fa826c5eccbe342a3ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a34fa22e945db694cf37702feceaa2a9b" id="r_a34fa22e945db694cf37702feceaa2a9b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1Result.html">void</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPoolImpl.html#a34fa22e945db694cf37702feceaa2a9b">update_configuration</a> (<a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> <a class="el" href="structdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPoolConfig.html">ConnectionPoolConfig</a> &amp;<a class="el" href="classdtls_1_1v13_1_1Result.html">config</a>) <a class="el" href="classdtls_1_1v13_1_1Result.html">override</a></td></tr>
-<tr class="memdesc:a34fa22e945db694cf37702feceaa2a9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update pool configuration.  <br /></td></tr>
+<tr class="memitem:a34fa22e945db694cf37702feceaa2a9b" id="r_a34fa22e945db694cf37702feceaa2a9b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPoolImpl.html#a34fa22e945db694cf37702feceaa2a9b">update_configuration</a> (const <a class="el" href="structdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPoolConfig.html">ConnectionPoolConfig</a> &amp;config) override</td></tr>
 <tr class="separator:a34fa22e945db694cf37702feceaa2a9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a25d730fb8a26b79f05e055bd69f4a5b5" id="r_a25d730fb8a26b79f05e055bd69f4a5b5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1Result.html">void</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPoolImpl.html#a25d730fb8a26b79f05e055bd69f4a5b5">perform_maintenance</a> () <a class="el" href="classdtls_1_1v13_1_1Result.html">override</a></td></tr>
-<tr class="memdesc:a25d730fb8a26b79f05e055bd69f4a5b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform pool maintenance.  <br /></td></tr>
+<tr class="memitem:a25d730fb8a26b79f05e055bd69f4a5b5" id="r_a25d730fb8a26b79f05e055bd69f4a5b5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPoolImpl.html#a25d730fb8a26b79f05e055bd69f4a5b5">perform_maintenance</a> () override</td></tr>
 <tr class="separator:a25d730fb8a26b79f05e055bd69f4a5b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab2f2658a5f0d2ef2a5a767505bcb3ea8" id="r_ab2f2658a5f0d2ef2a5a767505bcb3ea8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1Result.html">void</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPoolImpl.html#ab2f2658a5f0d2ef2a5a767505bcb3ea8">shutdown</a> (std::chrono::milliseconds timeout) <a class="el" href="classdtls_1_1v13_1_1Result.html">override</a></td></tr>
-<tr class="memdesc:ab2f2658a5f0d2ef2a5a767505bcb3ea8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shutdown pool gracefully.  <br /></td></tr>
+<tr class="memitem:ab2f2658a5f0d2ef2a5a767505bcb3ea8" id="r_ab2f2658a5f0d2ef2a5a767505bcb3ea8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPoolImpl.html#ab2f2658a5f0d2ef2a5a767505bcb3ea8">shutdown</a> (std::chrono::milliseconds timeout) override</td></tr>
 <tr class="separator:ab2f2658a5f0d2ef2a5a767505bcb3ea8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a949a9c3b28e7ae1fe5578cec3dd641a1" id="r_a949a9c3b28e7ae1fe5578cec3dd641a1"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::pair&lt; std::string, <a class="el" href="structdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionHealth.html">ConnectionHealth</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPoolImpl.html#a949a9c3b28e7ae1fe5578cec3dd641a1">get_connection_health</a> () <a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">override</a></td></tr>
-<tr class="memdesc:a949a9c3b28e7ae1fe5578cec3dd641a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get health status of all connections.  <br /></td></tr>
+<tr class="memitem:a949a9c3b28e7ae1fe5578cec3dd641a1" id="r_a949a9c3b28e7ae1fe5578cec3dd641a1"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::pair&lt; std::string, <a class="el" href="structdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionHealth.html">ConnectionHealth</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPoolImpl.html#a949a9c3b28e7ae1fe5578cec3dd641a1">get_connection_health</a> () const override</td></tr>
 <tr class="separator:a949a9c3b28e7ae1fe5578cec3dd641a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_classdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPool"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPool')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPool.html">dtls::v13::connection::advanced::ConnectionPool</a></td></tr>
-<tr class="memitem:a129ed574f304eb6a36c220311a1cb5cd inherit pub_methods_classdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPool" id="r_a129ed574f304eb6a36c220311a1cb5cd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">virtual</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPool.html#a129ed574f304eb6a36c220311a1cb5cd">~ConnectionPool</a> ()=<a class="el" href="classdtls_1_1v13_1_1Result.html">default</a></td></tr>
-<tr class="separator:a129ed574f304eb6a36c220311a1cb5cd inherit pub_methods_classdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPool"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p><a class="el" href="classdtls_1_1v13_1_1Connection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> pool implementation. </p>
+<div class="textblock"><p><a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> pool implementation. </p>
 
 <p class="definition">Definition at line <a class="el" href="advanced__connection__manager_8cpp_source.html#l00445">445</a> of file <a class="el" href="advanced__connection__manager_8cpp_source.html">advanced_connection_manager.cpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
@@ -158,7 +148,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">dtls::v13::connection::advanced::ConnectionPoolImpl::ConnectionPoolImpl </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> <a class="el" href="structdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPoolConfig.html">ConnectionPoolConfig</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="structdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPoolConfig.html">ConnectionPoolConfig</a> &amp;&#160;</td>
           <td class="paramname"><em>config</em></td><td>)</td>
           <td></td>
         </tr>
@@ -212,9 +202,9 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::shared_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ManagedConnection.html">ManagedConnection</a> &gt; &gt; dtls::v13::connection::advanced::ConnectionPoolImpl::acquire_connection </td>
+          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; std::shared_ptr&lt; ManagedConnection &gt; &gt; dtls::v13::connection::advanced::ConnectionPoolImpl::acquire_connection </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> <a class="el" href="structdtls_1_1v13_1_1transport_1_1NetworkEndpoint.html">transport::NetworkEndpoint</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="structdtls_1_1v13_1_1transport_1_1NetworkEndpoint.html">transport::NetworkEndpoint</a> &amp;&#160;</td>
           <td class="paramname"><em>endpoint</em>, </td>
         </tr>
         <tr>
@@ -231,14 +221,10 @@ Public Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Acquire connection from pool. </p>
-
-<p>Implements <a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPool.html#a6bcd1787fce8eb09c75d5f060df14bbd">dtls::v13::connection::advanced::ConnectionPool</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="advanced__connection__manager_8cpp_source.html#l00475">475</a> of file <a class="el" href="advanced__connection__manager_8cpp_source.html">advanced_connection_manager.cpp</a>.</p>
 
@@ -262,14 +248,10 @@ Public Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Get health status of all connections. </p>
-
-<p>Implements <a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPool.html#a1abef771db613a31dfcb205a66a07aaa">dtls::v13::connection::advanced::ConnectionPool</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="advanced__connection__manager_8cpp_source.html#l00646">646</a> of file <a class="el" href="advanced__connection__manager_8cpp_source.html">advanced_connection_manager.cpp</a>.</p>
 
@@ -293,14 +275,10 @@ Public Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Get pool statistics. </p>
-
-<p>Implements <a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPool.html#abc79c02e1d6e5c572f250f1267e842d5">dtls::v13::connection::advanced::ConnectionPool</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="advanced__connection__manager_8cpp_source.html#l00539">539</a> of file <a class="el" href="advanced__connection__manager_8cpp_source.html">advanced_connection_manager.cpp</a>.</p>
 
@@ -316,7 +294,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1Result.html">void</a> &gt; dtls::v13::connection::advanced::ConnectionPoolImpl::perform_maintenance </td>
+          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; dtls::v13::connection::advanced::ConnectionPoolImpl::perform_maintenance </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -324,14 +302,10 @@ Public Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Perform pool maintenance. </p>
-
-<p>Implements <a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPool.html#a7d204bb7ed3cffa575341a93c2f52446">dtls::v13::connection::advanced::ConnectionPool</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="advanced__connection__manager_8cpp_source.html#l00564">564</a> of file <a class="el" href="advanced__connection__manager_8cpp_source.html">advanced_connection_manager.cpp</a>.</p>
 
@@ -347,23 +321,19 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1Result.html">void</a> &gt; dtls::v13::connection::advanced::ConnectionPoolImpl::release_connection </td>
+          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; dtls::v13::connection::advanced::ConnectionPoolImpl::release_connection </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> std::shared_ptr&lt; <a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ManagedConnection.html">ManagedConnection</a> &gt; &amp;&#160;</td>
+          <td class="paramtype">const std::shared_ptr&lt; ManagedConnection &gt; &amp;&#160;</td>
           <td class="paramname"><em>connection</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Release connection back to pool. </p>
-
-<p>Implements <a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPool.html#ac16f40b0126285762be3ea7ed3ebc217">dtls::v13::connection::advanced::ConnectionPool</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="advanced__connection__manager_8cpp_source.html#l00520">520</a> of file <a class="el" href="advanced__connection__manager_8cpp_source.html">advanced_connection_manager.cpp</a>.</p>
 
@@ -379,7 +349,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1Result.html">void</a> &gt; dtls::v13::connection::advanced::ConnectionPoolImpl::shutdown </td>
+          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; dtls::v13::connection::advanced::ConnectionPoolImpl::shutdown </td>
           <td>(</td>
           <td class="paramtype">std::chrono::milliseconds&#160;</td>
           <td class="paramname"><em>timeout</em></td><td>)</td>
@@ -388,14 +358,10 @@ Public Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Shutdown pool gracefully. </p>
-
-<p>Implements <a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPool.html#a18eec7d49082fe96392542375e375994">dtls::v13::connection::advanced::ConnectionPool</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="advanced__connection__manager_8cpp_source.html#l00623">623</a> of file <a class="el" href="advanced__connection__manager_8cpp_source.html">advanced_connection_manager.cpp</a>.</p>
 
@@ -411,23 +377,19 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1Result.html">void</a> &gt; dtls::v13::connection::advanced::ConnectionPoolImpl::update_configuration </td>
+          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; dtls::v13::connection::advanced::ConnectionPoolImpl::update_configuration </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classdtls_1_1v13_1_1Result.html">const</a> <a class="el" href="structdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPoolConfig.html">ConnectionPoolConfig</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="structdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPoolConfig.html">ConnectionPoolConfig</a> &amp;&#160;</td>
           <td class="paramname"><em>config</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Update pool configuration. </p>
-
-<p>Implements <a class="el" href="classdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionPool.html#a50300e09512453c835d0ee6450649b33">dtls::v13::connection::advanced::ConnectionPool</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="advanced__connection__manager_8cpp_source.html#l00558">558</a> of file <a class="el" href="advanced__connection__manager_8cpp_source.html">advanced_connection_manager.cpp</a>.</p>
 

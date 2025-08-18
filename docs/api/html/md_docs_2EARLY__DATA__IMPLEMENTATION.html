@@ -126,7 +126,7 @@ Week 1: Early Data Infrastructure ✅</h3>
 Week 2: Early Data Integration ✅</h3>
 <ul>
 <li>[x] <b>Connection-level early data support</b><ul>
-<li>[x] Add early data API to Connection class (<code>send_early_data()</code>, <code>can_send_early_data()</code>, etc.)</li>
+<li>[x] Add early data API to <a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> class (<code>send_early_data()</code>, <code>can_send_early_data()</code>, etc.)</li>
 <li>[x] Implement early data transmission (state management and buffering)</li>
 <li>[x] Add early data receive handling (server-side acceptance/rejection)</li>
 <li>[x] Implement proper key derivation for early data (<code>derive_early_traffic_secret()</code>)</li>
@@ -220,7 +220,7 @@ Core Components</h2>
 Connection API (&lt;tt&gt;include/dtls/connection.h&lt;/tt&gt;)</h2>
 <h3><a class="anchor" id="autotoc_md348"></a>
 Early Data Methods</h3>
-<div class="fragment"><div class="line"><span class="keyword">class </span>Connection {</div>
+<div class="fragment"><div class="line"><span class="keyword">class </span><a class="code hl_class" href="classConnection.html">Connection</a> {</div>
 <div class="line"><span class="keyword">public</span>:</div>
 <div class="line">    <span class="comment">// Early data transmission</span></div>
 <div class="line">    Result&lt;void&gt; send_early_data(<span class="keyword">const</span> memory::ZeroCopyBuffer&amp; data);</div>
@@ -243,6 +243,7 @@ Early Data Methods</h3>
 <div class="line">    };</div>
 <div class="line">    EarlyDataStats get_early_data_stats() <span class="keyword">const</span>;</div>
 <div class="line">};</div>
+<div class="ttc" id="aclassConnection_html"><div class="ttname"><a href="classConnection.html">Connection</a></div><div class="ttdoc">Main DTLS v1.3 Connection implementation.</div></div>
 <div class="ttc" id="aclassdtls_1_1v13_1_1protocol_1_1NewSessionTicket_html"><div class="ttname"><a href="classdtls_1_1v13_1_1protocol_1_1NewSessionTicket.html">dtls::v13::protocol::NewSessionTicket</a></div><div class="ttdef"><b>Definition</b> <a href="handshake_8h_source.html#l00692">handshake.h:692</a></div></div>
 </div><!-- fragment --><h3><a class="anchor" id="autotoc_md349"></a>
 Configuration</h3>
@@ -396,7 +397,7 @@ Integration Points</h2>
 <li><b>Handshake Manager</b>: Early data message processing</li>
 <li><b>Record Layer</b>: Early data record encryption/decryption <br  />
 </li>
-<li><b>Connection State</b>: Early data state transitions</li>
+<li><b><a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> State</b>: Early data state transitions</li>
 <li><b>Event System</b>: Early data event notifications</li>
 </ul>
 <h1><a class="anchor" id="autotoc_md366"></a>

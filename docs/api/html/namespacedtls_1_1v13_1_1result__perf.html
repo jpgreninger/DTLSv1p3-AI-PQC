@@ -98,11 +98,11 @@ $(document).ready(function(){initNavTree('namespacedtls_1_1v13_1_1result__perf.h
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a45aa0afd950840b955a0aec6d0378f05" id="r_a45aa0afd950840b955a0aec6d0378f05"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="classdtls_1_1v13_1_1Result.html">typename</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">F</a> &gt; </td></tr>
-<tr class="memitem:a45aa0afd950840b955a0aec6d0378f05"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">auto</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1result__perf.html#a45aa0afd950840b955a0aec6d0378f05">timed_execute</a> (<a class="el" href="classdtls_1_1v13_1_1Result.html">F</a> &amp;&amp;<a class="el" href="classdtls_1_1v13_1_1Result.html">func</a>) -&gt; std::pair&lt; <a class="el" href="classdtls_1_1v13_1_1Result.html">decltype</a>(<a class="el" href="classdtls_1_1v13_1_1Result.html">func</a>()), std::chrono::nanoseconds &gt;</td></tr>
+<tr class="memitem:a45aa0afd950840b955a0aec6d0378f05" id="r_a45aa0afd950840b955a0aec6d0378f05"><td class="memTemplParams" colspan="2">template&lt;typename F &gt; </td></tr>
+<tr class="memitem:a45aa0afd950840b955a0aec6d0378f05"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1result__perf.html#a45aa0afd950840b955a0aec6d0378f05">timed_execute</a> (F &amp;&amp;func) -&gt; std::pair&lt; decltype(func()), std::chrono::nanoseconds &gt;</td></tr>
 <tr class="separator:a45aa0afd950840b955a0aec6d0378f05"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a96674699576e2711b0300b6be501562b" id="r_a96674699576e2711b0300b6be501562b"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="classdtls_1_1v13_1_1Result.html">typename</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">F</a> &gt; </td></tr>
-<tr class="memitem:a96674699576e2711b0300b6be501562b"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">auto</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1result__perf.html#a96674699576e2711b0300b6be501562b">execute_with_timeout</a> (<a class="el" href="classdtls_1_1v13_1_1Result.html">F</a> &amp;&amp;<a class="el" href="classdtls_1_1v13_1_1Result.html">func</a>, std::chrono::milliseconds timeout) -&gt; <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; <a class="el" href="classdtls_1_1v13_1_1Result.html">decltype</a>(<a class="el" href="classdtls_1_1v13_1_1Result.html">func</a>().value())&gt;</td></tr>
+<tr class="memitem:a96674699576e2711b0300b6be501562b" id="r_a96674699576e2711b0300b6be501562b"><td class="memTemplParams" colspan="2">template&lt;typename F &gt; </td></tr>
+<tr class="memitem:a96674699576e2711b0300b6be501562b"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1result__perf.html#a96674699576e2711b0300b6be501562b">execute_with_timeout</a> (F &amp;&amp;func, std::chrono::milliseconds timeout) -&gt; <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; decltype(func().value())&gt;</td></tr>
 <tr class="separator:a96674699576e2711b0300b6be501562b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
@@ -112,12 +112,12 @@ Functions</h2></td></tr>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;<a class="el" href="classdtls_1_1v13_1_1Result.html">typename</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">F</a> &gt; </div>
+template&lt;typename F &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">auto</a> dtls::v13::result_perf::execute_with_timeout </td>
+          <td class="memname">auto dtls::v13::result_perf::execute_with_timeout </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classdtls_1_1v13_1_1Result.html">F</a> &amp;&amp;&#160;</td>
+          <td class="paramtype">F &amp;&amp;&#160;</td>
           <td class="paramname"><em>func</em>, </td>
         </tr>
         <tr>
@@ -129,7 +129,7 @@ template&lt;<a class="el" href="classdtls_1_1v13_1_1Result.html">typename</a> <a
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td> -&gt; <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt;<a class="el" href="classdtls_1_1v13_1_1Result.html">decltype</a>(<a class="el" href="classdtls_1_1v13_1_1Result.html">func</a>().value())&gt; </td>
+          <td></td><td> -&gt; <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt;decltype(func().value())&gt; </td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -144,14 +144,14 @@ template&lt;<a class="el" href="classdtls_1_1v13_1_1Result.html">typename</a> <a
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;<a class="el" href="classdtls_1_1v13_1_1Result.html">typename</a> <a class="el" href="classdtls_1_1v13_1_1Result.html">F</a> &gt; </div>
+template&lt;typename F &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">auto</a> dtls::v13::result_perf::timed_execute </td>
+          <td class="memname">auto dtls::v13::result_perf::timed_execute </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classdtls_1_1v13_1_1Result.html">F</a> &amp;&amp;&#160;</td>
+          <td class="paramtype">F &amp;&amp;&#160;</td>
           <td class="paramname"><em>func</em></td><td>)</td>
-          <td> -&gt; std::pair&lt;<a class="el" href="classdtls_1_1v13_1_1Result.html">decltype</a>(<a class="el" href="classdtls_1_1v13_1_1Result.html">func</a>()), std::chrono::nanoseconds&gt; </td>
+          <td> -&gt; std::pair&lt;decltype(func()), std::chrono::nanoseconds&gt; </td>
         </tr>
       </table>
 </div><div class="memdoc">

@@ -7,14 +7,9 @@ var namespacedtls_1_1v13_1_1compatibility =
       [ "validate_dtls12_context", "namespacedtls_1_1v13_1_1compatibility_1_1utils.html#a2483fa8b6e569bbc788391432f957b29", null ],
       [ "version_to_string", "namespacedtls_1_1v13_1_1compatibility_1_1utils.html#aace7aad869496d7aeb2dfeddcda65d92", null ]
     ] ],
-    [ "CompatibilityManager", "classdtls_1_1v13_1_1compatibility_1_1CompatibilityManager.html", "classdtls_1_1v13_1_1compatibility_1_1CompatibilityManager" ],
     [ "CompatibilityStats", "structdtls_1_1v13_1_1compatibility_1_1CompatibilityStats.html", "structdtls_1_1v13_1_1compatibility_1_1CompatibilityStats" ],
     [ "DTLS12CompatibilityContext", "structdtls_1_1v13_1_1compatibility_1_1DTLS12CompatibilityContext.html", "structdtls_1_1v13_1_1compatibility_1_1DTLS12CompatibilityContext" ],
-    [ "DTLS12ConnectionAdapter", "classdtls_1_1v13_1_1compatibility_1_1DTLS12ConnectionAdapter.html", "classdtls_1_1v13_1_1compatibility_1_1DTLS12ConnectionAdapter" ],
-    [ "DTLS12HandshakeConverter", "classdtls_1_1v13_1_1compatibility_1_1DTLS12HandshakeConverter.html", "classdtls_1_1v13_1_1compatibility_1_1DTLS12HandshakeConverter" ],
-    [ "DTLS12RecordLayer", "classdtls_1_1v13_1_1compatibility_1_1DTLS12RecordLayer.html", "classdtls_1_1v13_1_1compatibility_1_1DTLS12RecordLayer" ],
     [ "DTLS12RecordLayerImpl", "classdtls_1_1v13_1_1compatibility_1_1DTLS12RecordLayerImpl.html", "classdtls_1_1v13_1_1compatibility_1_1DTLS12RecordLayerImpl" ],
-    [ "VersionNegotiator", "classdtls_1_1v13_1_1compatibility_1_1VersionNegotiator.html", "classdtls_1_1v13_1_1compatibility_1_1VersionNegotiator" ],
     [ "DTLS12CipherSuite", "namespacedtls_1_1v13_1_1compatibility.html#acbe95a948eb97c03907ad29f09eb5ecd", [
       [ "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256", "namespacedtls_1_1v13_1_1compatibility.html#acbe95a948eb97c03907ad29f09eb5ecda7397dc1c01dd058299ec0dbfe63689a1", null ],
       [ "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256", "namespacedtls_1_1v13_1_1compatibility.html#acbe95a948eb97c03907ad29f09eb5ecda0187c6357b1d55d749a5e111ffe1c683", null ],
@@ -26,5 +21,6 @@ var namespacedtls_1_1v13_1_1compatibility =
       [ "TLS_DHE_RSA_WITH_AES_256_GCM_SHA384", "namespacedtls_1_1v13_1_1compatibility.html#acbe95a948eb97c03907ad29f09eb5ecdab96dc4f39da9e16e1674d1628c91a131", null ],
       [ "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256", "namespacedtls_1_1v13_1_1compatibility.html#acbe95a948eb97c03907ad29f09eb5ecda672dd486346b3111c982c3ed6900576b", null ],
       [ "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256", "namespacedtls_1_1v13_1_1compatibility.html#acbe95a948eb97c03907ad29f09eb5ecdaef8013ea23356cb34a430c299196ac2a", null ]
-    ] ]
+    ] ],
+    [ "__attribute__", "namespacedtls_1_1v13_1_1compatibility.html#aebbc649df268a94e3c6b328e657e431f", null ]
 ];

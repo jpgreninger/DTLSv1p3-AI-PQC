@@ -1,9 +1,9 @@
 var result_8h =
 [
-    [ "dtls::v13::Result< T >", "classdtls_1_1v13_1_1Result.html", "classdtls_1_1v13_1_1Result" ],
-    [ "dtls::v13::Result< void >", "classdtls_1_1v13_1_1Result_3_01void_01_4.html", "classdtls_1_1v13_1_1Result_3_01void_01_4" ],
     [ "DTLS_TRY", "result_8h.html#ab974edfc7790117f71f215181d91ae75", null ],
     [ "DTLS_TRY_VOID", "result_8h.html#a36c6d2c202e575350adef0a7097aa4b5", null ],
+    [ "__attribute__", "result_8h.html#a466b74e423f0b2b6534df3b955b6c3a4", null ],
+    [ "__attribute__", "result_8h.html#ae372167d8ac02122e97bde85d96bf00e", null ],
     [ "make_error", "result_8h.html#ac1ccfeb5068948aa42abbb27582f250e", null ],
     [ "make_error", "result_8h.html#a116ce86589f5bd89df378de83855b7aa", null ],
     [ "make_error", "result_8h.html#a79695742a478288da5e143b969c28af9", null ],

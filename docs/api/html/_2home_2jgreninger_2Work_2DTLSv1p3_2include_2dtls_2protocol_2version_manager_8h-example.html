@@ -93,8 +93,36 @@ $(document).ready(function(){initNavTree('_2home_2jgreninger_2Work_2DTLSv1p3_2in
   <div class="headertitle"><div class="title">/home/jgreninger/Work/DTLSv1p3/include/dtls/protocol/version_manager.h</div></div>
 </div><!--header-->
 <div class="contents">
-<p>Server-side version negotiation from ClientHello.</p>
-<p>Server-side version negotiation from ClientHello Analyzes the ClientHello message to determine the optimal protocol version for the connection, considering supported versions extension and legacy compatibility.</p>
+<p>Protocol Version Manager for DTLS v1.3.</p>
+<p>Protocol Version Manager for DTLS v1.3.Comprehensive version negotiation system handling DTLS protocol version negotiation, validation, and backward compatibility checks following RFC 9147 specifications.</p>
+<p>Key Features:</p><ul>
+<li>Bidirectional Version Negotiation: Client and server-side version handling</li>
+<li>Security-First Design: Built-in downgrade attack detection</li>
+<li>Backward Compatible: Seamless DTLS v1.2 fallback support</li>
+<li>High Performance: Optimized for production environments</li>
+</ul>
+<dl class="section note"><dt>Note</dt><dd>This class implements critical security measures including version downgrade attack detection as specified in RFC 9147 Section 4.1.3.</dd></dl>
+<div class="fragment"><div class="line"><span class="comment">// Server-side version negotiation</span></div>
+<div class="line">VersionManager vm;</div>
+<div class="line"><span class="keyword">auto</span> result = vm.negotiate_version_from_client_hello(client_hello);</div>
+<div class="line"><span class="keywordflow">if</span> (result.is_ok()) {</div>
+<div class="line">    <span class="keyword">auto</span> negotiated = result.value().negotiated_version;</div>
+<div class="line">    <span class="comment">// Apply to ServerHello...</span></div>
+<div class="line">}</div>
+</div><!-- fragment --><dl class="section since"><dt>Since</dt><dd>DTLS v1.3 Implementation v1.0.0 </dd></dl>
+<dl class="section author"><dt>Author</dt><dd>DTLS v1.3 Implementation TeamVersion negotiation result structure</dd></dl>
+<p>Contains the outcome of version negotiation including security checks and any required follow-up actions.</p>
+<dl class="section see"><dt>See also</dt><dd>negotiate_version_from_client_hello()</dd></dl>
+<p>Configuration for version manager</p>
+<p>Constructor</p>
+<p>Get supported protocol versions in preference order</p>
+<p>Set supported protocol versions</p>
+<p>Get preferred (highest priority) version</p>
+<p>Check if a specific version is supported</p>
+<p>Validate protocol version format and value</p>
+<p>Client-side version negotiation: prepare ClientHello with appropriate legacy_version and supported_versions extension</p>
+<p>Server-side version negotiation from ClientHello</p>
+<p>Analyzes the ClientHello message to determine the optimal protocol version for the connection, considering supported versions extension and legacy compatibility.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">client_hello</td><td>The received ClientHello message containing version preferences </td></tr>
@@ -119,7 +147,7 @@ $(document).ready(function(){initNavTree('_2home_2jgreninger_2Work_2DTLSv1p3_2in
 <div class="line"><span class="comment">// Use global version type to avoid conflicts with protocol::ProtocolVersion enum</span></div>
 <div class="line"><span class="keyword">using </span><a id="a0" name="a0"></a><a class="code hl_typedef" href="namespacedtls_1_1v13_1_1protocol.html#aa3bad47e167e26fa25050b9eaeb22cf2">GlobalProtocolVersion</a> = <a id="a1" name="a1"></a><a class="code hl_typedef" href="group__CoreTypes.html#gabc4372b1165cf4e20b612d50ff20e1bb">dtls::v13::ProtocolVersion</a>;</div>
 <div class="line"> </div>
-<div class="line"><span class="keyword">class </span>DTLS_API VersionManager {</div>
+<div class="line"><span class="keyword">class </span><a id="a2" name="a2"></a><a class="code hl_define" href="config_8h.html#a886b9ffbbed793cc86db74330492efcf">DTLS_API</a> VersionManager {</div>
 <div class="line"><span class="keyword">public</span>:</div>
 <div class="line">    <span class="keyword">struct </span>NegotiationResult {</div>
 <div class="line">        GlobalProtocolVersion negotiated_version;</div>
@@ -139,7 +167,7 @@ $(document).ready(function(){initNavTree('_2home_2jgreninger_2Work_2DTLSv1p3_2in
 <div class="line">        <span class="keywordtype">bool</span> allow_version_downgrade{<span class="keyword">true</span>};</div>
 <div class="line">        <span class="keywordtype">bool</span> strict_version_checking{<span class="keyword">false</span>};</div>
 <div class="line">        </div>
-<div class="line">        Config() : supported_versions{<a id="a2" name="a2"></a><a class="code hl_variable" href="group__VersionConstants.html#gaa155c2c1b01c7c98909d43aaa2c84247">dtls::v13::DTLS_V13</a>, <a id="a3" name="a3"></a><a class="code hl_variable" href="group__VersionConstants.html#gac312c5a23b1754ec43b89e53276ea16a">dtls::v13::DTLS_V12</a>}, </div>
+<div class="line">        Config() : supported_versions{<a id="a3" name="a3"></a><a class="code hl_variable" href="group__VersionConstants.html#gaa155c2c1b01c7c98909d43aaa2c84247">dtls::v13::DTLS_V13</a>, <a id="a4" name="a4"></a><a class="code hl_variable" href="group__VersionConstants.html#gac312c5a23b1754ec43b89e53276ea16a">dtls::v13::DTLS_V12</a>}, </div>
 <div class="line">                   preferred_version{<a class="code hl_variable" href="group__VersionConstants.html#gaa155c2c1b01c7c98909d43aaa2c84247">dtls::v13::DTLS_V13</a>} {}</div>
 <div class="line">    };</div>
 <div class="line">    </div>
@@ -224,7 +252,7 @@ $(document).ready(function(){initNavTree('_2home_2jgreninger_2Work_2DTLSv1p3_2in
 <div class="line">    ValidationResult validate_server_hello_versions(<span class="keyword">const</span> ServerHello&amp; server_hello,</div>
 <div class="line">                                                   <span class="keyword">const</span> std::vector&lt;GlobalProtocolVersion&gt;&amp; client_offered) <span class="keyword">const</span>;</div>
 <div class="line">    </div>
-<div class="line">    <a id="_a4" name="_a4"></a><a class="code hl_class" href="classdtls_1_1v13_1_1protocol_1_1Alert.html">protocol::Alert</a> create_version_error_alert(GlobalProtocolVersion attempted_version,</div>
+<div class="line">    <a id="_a5" name="_a5"></a><a class="code hl_class" href="classdtls_1_1v13_1_1protocol_1_1Alert.html">protocol::Alert</a> create_version_error_alert(GlobalProtocolVersion attempted_version,</div>
 <div class="line">                                              <span class="keyword">const</span> std::string&amp; context = <span class="stringliteral">&quot;&quot;</span>) <span class="keyword">const</span>;</div>
 <div class="line">    </div>
 <div class="line">    <a class="code hl_class" href="classdtls_1_1v13_1_1protocol_1_1Alert.html">protocol::Alert</a> create_protocol_version_alert() <span class="keyword">const</span>;</div>
@@ -276,35 +304,36 @@ $(document).ready(function(){initNavTree('_2home_2jgreninger_2Work_2DTLSv1p3_2in
 <div class="line"> </div>
 <div class="line"><span class="keyword">namespace </span>version_utils {</div>
 <div class="line">    </div>
-<div class="line">    Result&lt;Extension&gt; <a id="a5" name="a5"></a><a class="code hl_function" href="namespacedtls_1_1v13_1_1protocol_1_1version__utils.html#a0df11296ffa2741d6538eb73ebe6ec6c">create_supported_versions_extension</a>(</div>
+<div class="line">    Result&lt;Extension&gt; <a id="a6" name="a6"></a><a class="code hl_function" href="namespacedtls_1_1v13_1_1protocol_1_1version__utils.html#a0df11296ffa2741d6538eb73ebe6ec6c">create_supported_versions_extension</a>(</div>
 <div class="line">        <span class="keyword">const</span> std::vector&lt;GlobalProtocolVersion&gt;&amp; versions);</div>
 <div class="line">    </div>
-<div class="line">    Result&lt;std::vector&lt;GlobalProtocolVersion&gt;&gt; <a id="a6" name="a6"></a><a class="code hl_function" href="namespacedtls_1_1v13_1_1protocol_1_1version__utils.html#aa68b86673c4ad051b5ab4c1c86baf17a">parse_supported_versions_extension</a>(</div>
+<div class="line">    Result&lt;std::vector&lt;GlobalProtocolVersion&gt;&gt; <a id="a7" name="a7"></a><a class="code hl_function" href="namespacedtls_1_1v13_1_1protocol_1_1version__utils.html#aa68b86673c4ad051b5ab4c1c86baf17a">parse_supported_versions_extension</a>(</div>
 <div class="line">        <span class="keyword">const</span> Extension&amp; extension);</div>
 <div class="line">    </div>
-<div class="line">    <span class="keywordtype">bool</span> <a id="a7" name="a7"></a><a class="code hl_function" href="namespacedtls_1_1v13_1_1protocol_1_1version__utils.html#aa5f965546911fb5f85c759214e484c3a">is_supported_versions_extension</a>(<span class="keyword">const</span> Extension&amp; extension);</div>
+<div class="line">    <span class="keywordtype">bool</span> <a id="a8" name="a8"></a><a class="code hl_function" href="namespacedtls_1_1v13_1_1protocol_1_1version__utils.html#aa5f965546911fb5f85c759214e484c3a">is_supported_versions_extension</a>(<span class="keyword">const</span> Extension&amp; extension);</div>
 <div class="line">    </div>
-<div class="line">    <span class="keywordtype">bool</span> <a id="a8" name="a8"></a><a class="code hl_function" href="namespacedtls_1_1v13_1_1protocol_1_1version__utils.html#a1bb0a511349a8d896fabe20648e779ed">validate_supported_versions_extension</a>(<span class="keyword">const</span> Extension&amp; extension);</div>
+<div class="line">    <span class="keywordtype">bool</span> <a id="a9" name="a9"></a><a class="code hl_function" href="namespacedtls_1_1v13_1_1protocol_1_1version__utils.html#a1bb0a511349a8d896fabe20648e779ed">validate_supported_versions_extension</a>(<span class="keyword">const</span> Extension&amp; extension);</div>
 <div class="line">    </div>
-<div class="line">    <a class="code hl_typedef" href="namespacedtls_1_1v13_1_1protocol.html#aa3bad47e167e26fa25050b9eaeb22cf2">GlobalProtocolVersion</a> <a id="a9" name="a9"></a><a class="code hl_function" href="namespacedtls_1_1v13_1_1protocol_1_1version__utils.html#a9bb7b89eb379a9d96fb9ae3d5996a90e">get_legacy_version_for_hello</a>(<a class="code hl_typedef" href="namespacedtls_1_1v13_1_1protocol.html#aa3bad47e167e26fa25050b9eaeb22cf2">GlobalProtocolVersion</a> actual_version);</div>
+<div class="line">    <a class="code hl_typedef" href="namespacedtls_1_1v13_1_1protocol.html#aa3bad47e167e26fa25050b9eaeb22cf2">GlobalProtocolVersion</a> <a id="a10" name="a10"></a><a class="code hl_function" href="namespacedtls_1_1v13_1_1protocol_1_1version__utils.html#a9bb7b89eb379a9d96fb9ae3d5996a90e">get_legacy_version_for_hello</a>(<a class="code hl_typedef" href="namespacedtls_1_1v13_1_1protocol.html#aa3bad47e167e26fa25050b9eaeb22cf2">GlobalProtocolVersion</a> actual_version);</div>
 <div class="line">    </div>
 <div class="line">    <span class="keyword">namespace </span>constants {</div>
 <div class="line">        <span class="comment">// Minimum supported version</span></div>
-<div class="line">        <span class="keyword">constexpr</span> <a class="code hl_typedef" href="namespacedtls_1_1v13_1_1protocol.html#aa3bad47e167e26fa25050b9eaeb22cf2">GlobalProtocolVersion</a> <a id="a10" name="a10"></a><a class="code hl_variable" href="namespacedtls_1_1v13_1_1protocol_1_1version__utils_1_1constants.html#a409ec9dbcc586b335231bed5ca332316">MIN_SUPPORTED_VERSION</a> = <a class="code hl_variable" href="group__VersionConstants.html#gac312c5a23b1754ec43b89e53276ea16a">dtls::v13::DTLS_V12</a>;</div>
+<div class="line">        <span class="keyword">constexpr</span> <a class="code hl_typedef" href="namespacedtls_1_1v13_1_1protocol.html#aa3bad47e167e26fa25050b9eaeb22cf2">GlobalProtocolVersion</a> <a id="a11" name="a11"></a><a class="code hl_variable" href="namespacedtls_1_1v13_1_1protocol_1_1version__utils_1_1constants.html#a409ec9dbcc586b335231bed5ca332316">MIN_SUPPORTED_VERSION</a> = <a class="code hl_variable" href="group__VersionConstants.html#gac312c5a23b1754ec43b89e53276ea16a">dtls::v13::DTLS_V12</a>;</div>
 <div class="line">        </div>
 <div class="line">        <span class="comment">// Maximum supported version  </span></div>
-<div class="line">        <span class="keyword">constexpr</span> <a class="code hl_typedef" href="namespacedtls_1_1v13_1_1protocol.html#aa3bad47e167e26fa25050b9eaeb22cf2">GlobalProtocolVersion</a> <a id="a11" name="a11"></a><a class="code hl_variable" href="namespacedtls_1_1v13_1_1protocol_1_1version__utils_1_1constants.html#a27874793b811f32ef27fac88916f93e2">MAX_SUPPORTED_VERSION</a> = <a class="code hl_variable" href="group__VersionConstants.html#gaa155c2c1b01c7c98909d43aaa2c84247">dtls::v13::DTLS_V13</a>;</div>
+<div class="line">        <span class="keyword">constexpr</span> <a class="code hl_typedef" href="namespacedtls_1_1v13_1_1protocol.html#aa3bad47e167e26fa25050b9eaeb22cf2">GlobalProtocolVersion</a> <a id="a12" name="a12"></a><a class="code hl_variable" href="namespacedtls_1_1v13_1_1protocol_1_1version__utils_1_1constants.html#a27874793b811f32ef27fac88916f93e2">MAX_SUPPORTED_VERSION</a> = <a class="code hl_variable" href="group__VersionConstants.html#gaa155c2c1b01c7c98909d43aaa2c84247">dtls::v13::DTLS_V13</a>;</div>
 <div class="line">        </div>
 <div class="line">        <span class="comment">// Default legacy version for ClientHello/ServerHello</span></div>
-<div class="line">        <span class="keyword">constexpr</span> <a class="code hl_typedef" href="namespacedtls_1_1v13_1_1protocol.html#aa3bad47e167e26fa25050b9eaeb22cf2">GlobalProtocolVersion</a> <a id="a12" name="a12"></a><a class="code hl_variable" href="namespacedtls_1_1v13_1_1protocol_1_1version__utils_1_1constants.html#a0b399a9ad92ec6f52779ed62a8962233">DEFAULT_LEGACY_VERSION</a> = <a class="code hl_variable" href="group__VersionConstants.html#gac312c5a23b1754ec43b89e53276ea16a">dtls::v13::DTLS_V12</a>;</div>
+<div class="line">        <span class="keyword">constexpr</span> <a class="code hl_typedef" href="namespacedtls_1_1v13_1_1protocol.html#aa3bad47e167e26fa25050b9eaeb22cf2">GlobalProtocolVersion</a> <a id="a13" name="a13"></a><a class="code hl_variable" href="namespacedtls_1_1v13_1_1protocol_1_1version__utils_1_1constants.html#a0b399a9ad92ec6f52779ed62a8962233">DEFAULT_LEGACY_VERSION</a> = <a class="code hl_variable" href="group__VersionConstants.html#gac312c5a23b1754ec43b89e53276ea16a">dtls::v13::DTLS_V12</a>;</div>
 <div class="line">        </div>
 <div class="line">        <span class="comment">// Version downgrade detection thresholds</span></div>
-<div class="line">        <span class="keyword">constexpr</span> <span class="keywordtype">size_t</span> <a id="a13" name="a13"></a><a class="code hl_variable" href="namespacedtls_1_1v13_1_1protocol_1_1version__utils_1_1constants.html#a7ecebee715f1a192c3d83c9384c2a8b3">MAX_VERSION_DOWNGRADE_TOLERANCE</a> = 1;</div>
+<div class="line">        <span class="keyword">constexpr</span> <span class="keywordtype">size_t</span> <a id="a14" name="a14"></a><a class="code hl_variable" href="namespacedtls_1_1v13_1_1protocol_1_1version__utils_1_1constants.html#a7ecebee715f1a192c3d83c9384c2a8b3">MAX_VERSION_DOWNGRADE_TOLERANCE</a> = 1;</div>
 <div class="line">    }</div>
 <div class="line">}</div>
 <div class="line"> </div>
 <div class="line">} <span class="comment">// namespace dtls::v13::protocol</span></div>
 <div class="ttc" id="aclassdtls_1_1v13_1_1protocol_1_1Alert_html"><div class="ttname"><a href="classdtls_1_1v13_1_1protocol_1_1Alert.html">dtls::v13::protocol::Alert</a></div><div class="ttdef"><b>Definition</b> <a href="handshake_8h_source.html#l00446">handshake.h:446</a></div></div>
+<div class="ttc" id="aconfig_8h_html_a886b9ffbbed793cc86db74330492efcf"><div class="ttname"><a href="config_8h.html#a886b9ffbbed793cc86db74330492efcf">DTLS_API</a></div><div class="ttdeci">#define DTLS_API</div><div class="ttdef"><b>Definition</b> <a href="config_8h_source.html#l00058">config.h:58</a></div></div>
 <div class="ttc" id="adtls12__compat_8h_html"><div class="ttname"><a href="dtls12__compat_8h.html">dtls12_compat.h</a></div><div class="ttdoc">DTLS 1.2 Backward Compatibility Layer.</div></div>
 <div class="ttc" id="agroup__CoreTypes_html_gabc4372b1165cf4e20b612d50ff20e1bb"><div class="ttname"><a href="group__CoreTypes.html#gabc4372b1165cf4e20b612d50ff20e1bb">dtls::v13::ProtocolVersion</a></div><div class="ttdeci">uint16_t ProtocolVersion</div><div class="ttdoc">Protocol version identifier (network byte order).</div><div class="ttdef"><b>Definition</b> <a href="types_8h_source.html#l00041">types.h:41</a></div></div>
 <div class="ttc" id="agroup__VersionConstants_html_gaa155c2c1b01c7c98909d43aaa2c84247"><div class="ttname"><a href="group__VersionConstants.html#gaa155c2c1b01c7c98909d43aaa2c84247">dtls::v13::DTLS_V13</a></div><div class="ttdeci">constexpr ProtocolVersion DTLS_V13</div><div class="ttdoc">DTLS v1.3 version identifier (primary target)</div><div class="ttdef"><b>Definition</b> <a href="types_8h_source.html#l00067">types.h:67</a></div></div>

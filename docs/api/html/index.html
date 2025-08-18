@@ -113,7 +113,7 @@ Architecture</h1>
 2. Resource Manager (&lt;tt&gt;resource_manager.h/cpp&lt;/tt&gt;)</h2>
 <ul>
 <li><b>Memory Limits</b>: Enforces per-connection and total memory limits</li>
-<li><b>Connection Limits</b>: Prevents resource exhaustion from too many connections</li>
+<li><b><a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> Limits</b>: Prevents resource exhaustion from too many connections</li>
 <li><b>Pressure Monitoring</b>: Tracks system resource pressure levels</li>
 <li><b>Automatic Cleanup</b>: Removes expired and inactive allocations</li>
 <li><b>RAII Resource Guards</b>: Ensures proper resource cleanup</li>
@@ -132,7 +132,7 @@ Architecture</h1>
 4. Secure Connection Manager (&lt;tt&gt;secure_connection_manager.h&lt;/tt&gt;)</h2>
 <ul>
 <li><b>Integration Layer</b>: Integrates DoS protection with connection management</li>
-<li><b>Connection Lifecycle</b>: Manages protected connections from creation to closure</li>
+<li><b><a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> Lifecycle</b>: Manages protected connections from creation to closure</li>
 <li><b>Statistics Tracking</b>: Provides detailed security and performance metrics</li>
 <li><b>Event Logging</b>: Records security violations and attack attempts</li>
 </ul>
@@ -151,7 +151,7 @@ Rate Limiting</h2>
 Resource Protection</h2>
 <ul>
 <li><b>Memory Management</b>: Tracks and limits memory usage per connection and globally</li>
-<li><b>Connection Limits</b>: Prevents connection table exhaustion</li>
+<li><b><a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> Limits</b>: Prevents connection table exhaustion</li>
 <li><b>Pressure Levels</b>: Four-tier pressure monitoring (Normal, Warning, Critical, Emergency)</li>
 <li><b>Smart Cleanup</b>: Prioritizes cleanup of idle and expired resources</li>
 <li><b>Resource Accounting</b>: Detailed tracking of resource allocation and usage</li>
@@ -301,7 +301,7 @@ Performance Characteristics</h1>
 Memory Usage</h2>
 <ul>
 <li><b>Base Overhead</b>: ~1KB per monitored source IP</li>
-<li><b>Connection Tracking</b>: ~100 bytes per active connection</li>
+<li><b><a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> Tracking</b>: ~100 bytes per active connection</li>
 <li><b>Resource Allocation</b>: ~50 bytes per resource allocation</li>
 <li><b>Total Memory</b>: Configurable limits (default: 256MB)</li>
 </ul>
@@ -325,7 +325,7 @@ Security Guarantees</h1>
 <h2><a class="anchor" id="autotoc_md27"></a>
 Protection Against</h2>
 <ul>
-<li><b>Connection Flooding</b>: Rate limiting and connection limits</li>
+<li><b><a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> Flooding</b>: Rate limiting and connection limits</li>
 <li><b>Memory Exhaustion</b>: Resource tracking and limits</li>
 <li><b>CPU Exhaustion</b>: CPU monitoring and computational limits</li>
 <li><b>Amplification Attacks</b>: Response size limits and ratio enforcement</li>
@@ -380,7 +380,7 @@ DoS Protection Tuning</h2>
 Integration with DTLS</h1>
 <p>The DoS protection integrates seamlessly with the DTLS v1.3 implementation:</p>
 <ol type="1">
-<li><b>Connection Creation</b>: All server connections go through DoS checks</li>
+<li><b><a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> Creation</b>: All server connections go through DoS checks</li>
 <li><b>Handshake Processing</b>: Handshake messages are rate limited and validated</li>
 <li><b>Resource Management</b>: Memory and CPU resources are tracked per connection</li>
 <li><b>Security Monitoring</b>: All security events are logged and tracked</li>
@@ -399,7 +399,7 @@ Week 1: Rate Limiting and Resource Management ✅</h2>
 <li>✅ Whitelist support for trusted sources</li>
 <li>✅ Memory usage tracking per connection attempt</li>
 <li>✅ Concurrent handshake limits per source</li>
-<li>✅ Connection pool limits and memory pressure detection</li>
+<li>✅ <a class="el" href="classConnection.html" title="Main DTLS v1.3 Connection implementation.">Connection</a> pool limits and memory pressure detection</li>
 <li>✅ Automatic cleanup of stale connections</li>
 </ul>
 <h2><a class="anchor" id="autotoc_md37"></a>

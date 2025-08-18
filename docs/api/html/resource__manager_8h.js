@@ -4,8 +4,6 @@ var resource__manager_8h =
     [ "dtls::v13::security::ResourceAllocation", "structdtls_1_1v13_1_1security_1_1ResourceAllocation.html", "structdtls_1_1v13_1_1security_1_1ResourceAllocation" ],
     [ "dtls::v13::security::SourceResourceData", "structdtls_1_1v13_1_1security_1_1SourceResourceData.html", "structdtls_1_1v13_1_1security_1_1SourceResourceData" ],
     [ "dtls::v13::security::ResourceStats", "structdtls_1_1v13_1_1security_1_1ResourceStats.html", "structdtls_1_1v13_1_1security_1_1ResourceStats" ],
-    [ "dtls::v13::security::ResourceManager", "classdtls_1_1v13_1_1security_1_1ResourceManager.html", "classdtls_1_1v13_1_1security_1_1ResourceManager" ],
-    [ "dtls::v13::security::ResourceManager::SourceResourceSummary", "structdtls_1_1v13_1_1security_1_1ResourceManager_1_1SourceResourceSummary.html", "structdtls_1_1v13_1_1security_1_1ResourceManager_1_1SourceResourceSummary" ],
     [ "dtls::v13::security::ResourceManagerFactory", "classdtls_1_1v13_1_1security_1_1ResourceManagerFactory.html", "classdtls_1_1v13_1_1security_1_1ResourceManagerFactory" ],
     [ "dtls::v13::security::ResourceGuard", "classdtls_1_1v13_1_1security_1_1ResourceGuard.html", "classdtls_1_1v13_1_1security_1_1ResourceGuard" ],
     [ "PressureLevel", "resource__manager_8h.html#afecfd50681dbc721840c124dcbf356e5", [
@@ -28,5 +26,6 @@ var resource__manager_8h =
       [ "BUFFER_MEMORY", "resource__manager_8h.html#af86c3ab6045164642224d5750e246f98a3070da5b3b9b2662efec6579dbb803d7", null ],
       [ "CONNECTION_SLOT", "resource__manager_8h.html#af86c3ab6045164642224d5750e246f98acd23413037f0db78db338b21543bb65b", null ],
       [ "HANDSHAKE_SLOT", "resource__manager_8h.html#af86c3ab6045164642224d5750e246f98a0b58151e8189152d60f34dba714452b9", null ]
-    ] ]
+    ] ],
+    [ "__attribute__", "resource__manager_8h.html#a08683a75971f732d4f7776a666619e10", null ]
 ];

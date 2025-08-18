@@ -4,10 +4,6 @@ var connection_8h =
     [ "dtls::v13::ErrorRecoveryState", "structdtls_1_1v13_1_1ErrorRecoveryState.html", "structdtls_1_1v13_1_1ErrorRecoveryState" ],
     [ "dtls::v13::ConnectionConfig", "structdtls_1_1v13_1_1ConnectionConfig.html", "structdtls_1_1v13_1_1ConnectionConfig" ],
     [ "dtls::v13::ConnectionStats", "structdtls_1_1v13_1_1ConnectionStats.html", "structdtls_1_1v13_1_1ConnectionStats" ],
-    [ "dtls::v13::Connection", "classdtls_1_1v13_1_1Connection.html", "classdtls_1_1v13_1_1Connection" ],
-    [ "dtls::v13::Connection::EarlyDataStats", "structdtls_1_1v13_1_1Connection_1_1EarlyDataStats.html", "structdtls_1_1v13_1_1Connection_1_1EarlyDataStats" ],
-    [ "dtls::v13::Context", "classdtls_1_1v13_1_1Context.html", "classdtls_1_1v13_1_1Context" ],
-    [ "dtls::v13::ConnectionManager", "classdtls_1_1v13_1_1ConnectionManager.html", "classdtls_1_1v13_1_1ConnectionManager" ],
     [ "ConnectionEventCallback", "connection_8h.html#a0822f6ecebdf163c5b140d5e15f949c9", null ],
     [ "ConnectionEvent", "connection_8h.html#ae6e8032c12417cb62fd44f38dfe5a1ea", [
       [ "HANDSHAKE_STARTED", "connection_8h.html#ae6e8032c12417cb62fd44f38dfe5a1eaa6bf13a53d9c94226f8951dfb66d4d15a", null ],
@@ -43,5 +39,6 @@ var connection_8h =
       [ "RESET_CONNECTION", "connection_8h.html#a3148a802c5357f5e43dcf3ba7a4a97b7a1af38ab8c9d27db122d0e538c9bc2305", null ],
       [ "FAILOVER", "connection_8h.html#a3148a802c5357f5e43dcf3ba7a4a97b7a36d31c88e39d3eb841007cbe5c9272dd", null ],
       [ "ABORT_CONNECTION", "connection_8h.html#a3148a802c5357f5e43dcf3ba7a4a97b7a78d9166d151784a4673ec9b57e275c1c", null ]
-    ] ]
+    ] ],
+    [ "__attribute__", "connection_8h.html#a1019a2293dde74eee051401f22b83098", null ]
 ];

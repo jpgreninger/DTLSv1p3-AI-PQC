@@ -90,9 +90,127 @@ $(document).ready(function(){initNavTree('namespacedtls_1_1v13_1_1crypto_1_1buil
 </div>
 
 <div class="header">
+  <div class="summary">
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">dtls::v13::crypto::builtin Namespace Reference</div></div>
 </div><!--header-->
 <div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:ace9fce1321ce40fd531b8d03bc54df45" id="r_ace9fce1321ce40fd531b8d03bc54df45"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1crypto_1_1builtin.html#ace9fce1321ce40fd531b8d03bc54df45">__attribute__</a> ((visibility(&quot;default&quot;))) <a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; <a class="el" href="namespacedtls_1_1v13_1_1crypto_1_1builtin.html#a05a3edb36c26351e2f14d6c4bee7e47c">register_all_providers</a>()</td></tr>
+<tr class="memdesc:ace9fce1321ce40fd531b8d03bc54df45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register all built-in crypto providers.  <br /></td></tr>
+<tr class="separator:ace9fce1321ce40fd531b8d03bc54df45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05a3edb36c26351e2f14d6c4bee7e47c" id="r_a05a3edb36c26351e2f14d6c4bee7e47c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1crypto_1_1builtin.html#a05a3edb36c26351e2f14d6c4bee7e47c">register_all_providers</a> ()</td></tr>
+<tr class="separator:a05a3edb36c26351e2f14d6c4bee7e47c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed3f151b21e5fdd7e7d8711c3ebab51e" id="r_aed3f151b21e5fdd7e7d8711c3ebab51e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1crypto_1_1builtin.html#aed3f151b21e5fdd7e7d8711c3ebab51e">register_openssl_provider</a> ()</td></tr>
+<tr class="separator:aed3f151b21e5fdd7e7d8711c3ebab51e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbe673594cda697c57b1d7246d006f20" id="r_abbe673594cda697c57b1d7246d006f20"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1crypto_1_1builtin.html#abbe673594cda697c57b1d7246d006f20">register_botan_provider</a> ()</td></tr>
+<tr class="separator:abbe673594cda697c57b1d7246d006f20"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf8b67db404e8b83a98c10245c76f5e7" id="r_acf8b67db404e8b83a98c10245c76f5e7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13_1_1crypto_1_1builtin.html#acf8b67db404e8b83a98c10245c76f5e7">register_null_provider</a> ()</td></tr>
+<tr class="separator:acf8b67db404e8b83a98c10245c76f5e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="ace9fce1321ce40fd531b8d03bc54df45" name="ace9fce1321ce40fd531b8d03bc54df45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace9fce1321ce40fd531b8d03bc54df45">&#9670;&#160;</a></span>__attribute__()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">dtls::v13::crypto::builtin::__attribute__ </td>
+          <td>(</td>
+          <td class="paramtype">(visibility(&quot;default&quot;))&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register all built-in crypto providers. </p>
+<p>Register null/mock provider for testing.</p>
+<p>Register Botan provider (if compiled with Botan support)</p>
+<p>Register OpenSSL provider.</p>
+<p>This function registers all available built-in providers (OpenSSL, Botan, etc.) with the factory. </p>
+
+</div>
+</div>
+<a id="a05a3edb36c26351e2f14d6c4bee7e47c" name="a05a3edb36c26351e2f14d6c4bee7e47c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05a3edb36c26351e2f14d6c4bee7e47c">&#9670;&#160;</a></span>register_all_providers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; dtls::v13::crypto::builtin::register_all_providers </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="provider__factory_8cpp_source.html#l01164">1164</a> of file <a class="el" href="provider__factory_8cpp_source.html">provider_factory.cpp</a>.</p>
+
+</div>
+</div>
+<a id="abbe673594cda697c57b1d7246d006f20" name="abbe673594cda697c57b1d7246d006f20"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbe673594cda697c57b1d7246d006f20">&#9670;&#160;</a></span>register_botan_provider()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; dtls::v13::crypto::builtin::register_botan_provider </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="provider__factory_8cpp_source.html#l01195">1195</a> of file <a class="el" href="provider__factory_8cpp_source.html">provider_factory.cpp</a>.</p>
+
+</div>
+</div>
+<a id="acf8b67db404e8b83a98c10245c76f5e7" name="acf8b67db404e8b83a98c10245c76f5e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf8b67db404e8b83a98c10245c76f5e7">&#9670;&#160;</a></span>register_null_provider()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; dtls::v13::crypto::builtin::register_null_provider </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="provider__factory_8cpp_source.html#l01220">1220</a> of file <a class="el" href="provider__factory_8cpp_source.html">provider_factory.cpp</a>.</p>
+
+</div>
+</div>
+<a id="aed3f151b21e5fdd7e7d8711c3ebab51e" name="aed3f151b21e5fdd7e7d8711c3ebab51e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed3f151b21e5fdd7e7d8711c3ebab51e">&#9670;&#160;</a></span>register_openssl_provider()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classdtls_1_1v13_1_1Result.html">Result</a>&lt; void &gt; dtls::v13::crypto::builtin::register_openssl_provider </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="provider__factory_8cpp_source.html#l01181">1181</a> of file <a class="el" href="provider__factory_8cpp_source.html">provider_factory.cpp</a>.</p>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

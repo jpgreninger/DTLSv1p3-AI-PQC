@@ -1,27 +1,4 @@
 var searchData=
 [
-  ['scopedtimer_0',['ScopedTimer',['../classdtls_1_1v13_1_1monitoring_1_1ScopedTimer.html',1,'dtls::v13::monitoring']]],
-  ['secureconnectionmanager_1',['SecureConnectionManager',['../classdtls_1_1v13_1_1security_1_1SecureConnectionManager.html',1,'dtls::v13::security']]],
-  ['secureconnectionmanagerfactory_2',['SecureConnectionManagerFactory',['../classdtls_1_1v13_1_1security_1_1SecureConnectionManagerFactory.html',1,'dtls::v13::security']]],
-  ['securityassessment_3',['SecurityAssessment',['../structdtls_1_1v13_1_1crypto_1_1advanced_1_1SecurityAssessment.html',1,'dtls::v13::crypto::advanced']]],
-  ['securitymetrics_4',['securitymetrics',['../structdtls_1_1v13_1_1ErrorContext_1_1SecurityMetrics.html',1,'dtls::v13::ErrorContext::SecurityMetrics'],['../structdtls_1_1v13_1_1monitoring_1_1SecurityMetrics.html',1,'dtls::v13::monitoring::SecurityMetrics']]],
-  ['securitymonitor_5',['SecurityMonitor',['../classdtls_1_1v13_1_1monitoring_1_1SecurityMonitor.html',1,'dtls::v13::monitoring']]],
-  ['securitymonitorimpl_6',['SecurityMonitorImpl',['../classdtls_1_1v13_1_1monitoring_1_1SecurityMonitorImpl.html',1,'dtls::v13::monitoring']]],
-  ['sequencenumber48_7',['SequenceNumber48',['../structdtls_1_1v13_1_1protocol_1_1SequenceNumber48.html',1,'dtls::v13::protocol']]],
-  ['sequencenumbermanager_8',['SequenceNumberManager',['../classdtls_1_1v13_1_1protocol_1_1SequenceNumberManager.html',1,'dtls::v13::protocol']]],
-  ['serverhello_9',['ServerHello',['../classdtls_1_1v13_1_1protocol_1_1ServerHello.html',1,'dtls::v13::protocol']]],
-  ['sessionticket_10',['SessionTicket',['../structdtls_1_1v13_1_1protocol_1_1SessionTicket.html',1,'dtls::v13::protocol']]],
-  ['sessionticketmanager_11',['SessionTicketManager',['../classdtls_1_1v13_1_1protocol_1_1SessionTicketManager.html',1,'dtls::v13::protocol']]],
-  ['sha3params_12',['SHA3Params',['../structdtls_1_1v13_1_1crypto_1_1advanced_1_1ExtendedHashParams_1_1SHA3Params.html',1,'dtls::v13::crypto::advanced::ExtendedHashParams']]],
-  ['signatureparams_13',['SignatureParams',['../structdtls_1_1v13_1_1crypto_1_1SignatureParams.html',1,'dtls::v13::crypto']]],
-  ['sizingconfig_14',['SizingConfig',['../structdtls_1_1v13_1_1memory_1_1AdaptivePoolSizer_1_1SizingConfig.html',1,'dtls::v13::memory::AdaptivePoolSizer']]],
-  ['slidingwindow_15',['SlidingWindow',['../classdtls_1_1v13_1_1security_1_1SlidingWindow.html',1,'dtls::v13::security']]],
-  ['smartbufferfactory_16',['SmartBufferFactory',['../classdtls_1_1v13_1_1memory_1_1SmartBufferFactory.html',1,'dtls::v13::memory']]],
-  ['sourceconnectionstats_17',['SourceConnectionStats',['../structdtls_1_1v13_1_1security_1_1SecureConnectionManager_1_1SourceConnectionStats.html',1,'dtls::v13::security::SecureConnectionManager']]],
-  ['sourcedata_18',['SourceData',['../structdtls_1_1v13_1_1security_1_1SourceData.html',1,'dtls::v13::security']]],
-  ['sourceresourcedata_19',['SourceResourceData',['../structdtls_1_1v13_1_1security_1_1SourceResourceData.html',1,'dtls::v13::security']]],
-  ['sourceresourcesummary_20',['SourceResourceSummary',['../structdtls_1_1v13_1_1security_1_1ResourceManager_1_1SourceResourceSummary.html',1,'dtls::v13::security::ResourceManager']]],
-  ['statistics_21',['statistics',['../structdtls_1_1v13_1_1protocol_1_1CookieManager_1_1Statistics.html',1,'dtls::v13::protocol::CookieManager::Statistics'],['../structdtls_1_1v13_1_1protocol_1_1HandshakeManager_1_1Statistics.html',1,'dtls::v13::protocol::HandshakeManager::Statistics']]],
-  ['systemhealth_22',['SystemHealth',['../structdtls_1_1v13_1_1security_1_1DoSProtection_1_1SystemHealth.html',1,'dtls::v13::security::DoSProtection']]],
-  ['systemstats_23',['systemstats',['../structdtls_1_1v13_1_1memory_1_1AdaptivePoolManager_1_1SystemStats.html',1,'dtls::v13::memory::AdaptivePoolManager::SystemStats'],['../structdtls_1_1v13_1_1memory_1_1ConnectionMemoryManager_1_1SystemStats.html',1,'dtls::v13::memory::ConnectionMemoryManager::SystemStats']]]
+  ['udppacket_0',['UDPPacket',['../structdtls_1_1v13_1_1transport_1_1UDPPacket.html',1,'dtls::v13::transport']]]
 ];

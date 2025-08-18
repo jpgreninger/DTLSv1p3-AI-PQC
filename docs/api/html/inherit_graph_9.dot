@@ -5,5 +5,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
   node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
   rankdir="LR";
-  Node0 [id="Node000000",label="dtls::v13::compatibility\l::DTLS12ConnectionAdapter",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classdtls_1_1v13_1_1compatibility_1_1DTLS12ConnectionAdapter.html",tooltip="DTLS 1.2 connection adapter."];
+  Node0 [id="Node000000",label="dtls::v13::connection\l::advanced::ConnectionHealth",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionHealth.html",tooltip="Connection health information."];
 }

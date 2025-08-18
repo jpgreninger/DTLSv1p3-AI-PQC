@@ -4,8 +4,6 @@ var security_2dos__protection_8h =
     [ "dtls::v13::security::DoSProtectionStats", "structdtls_1_1v13_1_1security_1_1DoSProtectionStats.html", "structdtls_1_1v13_1_1security_1_1DoSProtectionStats" ],
     [ "dtls::v13::security::ProofOfWorkChallenge", "structdtls_1_1v13_1_1security_1_1ProofOfWorkChallenge.html", "structdtls_1_1v13_1_1security_1_1ProofOfWorkChallenge" ],
     [ "dtls::v13::security::CPUMonitor", "classdtls_1_1v13_1_1security_1_1CPUMonitor.html", "classdtls_1_1v13_1_1security_1_1CPUMonitor" ],
-    [ "dtls::v13::security::DoSProtection", "classdtls_1_1v13_1_1security_1_1DoSProtection.html", "classdtls_1_1v13_1_1security_1_1DoSProtection" ],
-    [ "dtls::v13::security::DoSProtection::SystemHealth", "structdtls_1_1v13_1_1security_1_1DoSProtection_1_1SystemHealth.html", "structdtls_1_1v13_1_1security_1_1DoSProtection_1_1SystemHealth" ],
     [ "dtls::v13::security::DoSProtectionFactory", "classdtls_1_1v13_1_1security_1_1DoSProtectionFactory.html", "classdtls_1_1v13_1_1security_1_1DoSProtectionFactory" ],
     [ "DoSProtectionResult", "security_2dos__protection_8h.html#ac7add239315afbe596ee37e844fa0099", [
       [ "ALLOWED", "security_2dos__protection_8h.html#ac7add239315afbe596ee37e844fa0099a9725825c796122ef40f01b2d8794f902", null ],
@@ -20,5 +18,6 @@ var security_2dos__protection_8h =
       [ "COOKIE_REQUIRED", "security_2dos__protection_8h.html#ac7add239315afbe596ee37e844fa0099abe974b4c0d7268a752e1b83c913c00d1", null ],
       [ "COOKIE_INVALID", "security_2dos__protection_8h.html#ac7add239315afbe596ee37e844fa0099afa29bb05f5aa79db8cfa461cdba27f1f", null ],
       [ "COOKIE_EXPIRED", "security_2dos__protection_8h.html#ac7add239315afbe596ee37e844fa0099a4230b6e81c66bd6843265d22cbe874d4", null ]
-    ] ]
+    ] ],
+    [ "__attribute__", "security_2dos__protection_8h.html#a08683a75971f732d4f7776a666619e10", null ]
 ];

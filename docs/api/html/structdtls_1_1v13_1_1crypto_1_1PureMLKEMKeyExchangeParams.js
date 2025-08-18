@@ -1,5 +1,6 @@
 var structdtls_1_1v13_1_1crypto_1_1PureMLKEMKeyExchangeParams =
 [
+    [ "ciphertext", "structdtls_1_1v13_1_1crypto_1_1PureMLKEMKeyExchangeParams.html#af5720897efeef8fefede9ce5a7472027", null ],
     [ "encap_randomness", "structdtls_1_1v13_1_1crypto_1_1PureMLKEMKeyExchangeParams.html#a3abc20ca6f51776b4c23791596e49020", null ],
     [ "is_encapsulation", "structdtls_1_1v13_1_1crypto_1_1PureMLKEMKeyExchangeParams.html#a02882156cd4cc4222af00ba22bcbb075", null ],
     [ "mlkem_group", "structdtls_1_1v13_1_1crypto_1_1PureMLKEMKeyExchangeParams.html#a03dc08597d0a20a8e23d501e2ff77908", null ],

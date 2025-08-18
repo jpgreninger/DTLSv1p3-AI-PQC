@@ -91,13 +91,13 @@ $(document).ready(function(){initNavTree('error__reporter_8h.html',''); initResi
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#define-members">Macros</a>  </div>
+<a href="#define-members">Macros</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">error_reporter.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;dtls/config.h&gt;</code><br />
+<div class="textblock"><code>#include &lt;<a class="el" href="config_8h_source.html">dtls/config.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="error_8h_source.html">dtls/error.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="result_8h_source.html">dtls/result.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="types_8h_source.html">dtls/types.h</a>&gt;</code><br />
@@ -124,18 +124,6 @@ This graph shows which files directly or indirectly include this file:</div>
 </div>
 <p><a href="error__reporter_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdtls_1_1v13_1_1ErrorReporter.html">dtls::v13::ErrorReporter</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classdtls_1_1v13_1_1ErrorReporter.html" title="ErrorReporter provides secure diagnostic and logging capabilities that maintain RFC 9147 compliance a...">ErrorReporter</a> provides secure diagnostic and logging capabilities that maintain RFC 9147 compliance and security requirements:  <a href="classdtls_1_1v13_1_1ErrorReporter.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1ErrorReporter_1_1ReportingConfig.html">dtls::v13::ErrorReporter::ReportingConfig</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1ErrorReporter_1_1ErrorReport.html">dtls::v13::ErrorReporter::ErrorReport</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdtls_1_1v13_1_1ErrorReporter_1_1ReportingStatistics.html">dtls::v13::ErrorReporter::ReportingStatistics</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespacedtls" id="r_namespacedtls"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls.html">dtls</a></td></tr>
@@ -148,13 +136,20 @@ Namespaces</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:aa40ba40658dc6454a7e53d0b3aa03720" id="r_aa40ba40658dc6454a7e53d0b3aa03720"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="error__reporter_8h.html#aa40ba40658dc6454a7e53d0b3aa03720">DTLS_REPORT_ERROR</a>(reporter,  level,  error,  message)</td></tr>
+<tr class="memdesc:aa40ba40658dc6454a7e53d0b3aa03720"><td class="mdescLeft">&#160;</td><td class="mdescRight">ReportBuilder provides fluent interface for constructing detailed error reports.  <br /></td></tr>
 <tr class="separator:aa40ba40658dc6454a7e53d0b3aa03720"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a81b02457da1fc3450bf4c962cdba66" id="r_a7a81b02457da1fc3450bf4c962cdba66"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="error__reporter_8h.html#a7a81b02457da1fc3450bf4c962cdba66">DTLS_REPORT_SECURITY</a>(reporter,  error,  incident_type,  confidence)</td></tr>
 <tr class="separator:a7a81b02457da1fc3450bf4c962cdba66"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af674f24c1e61a2262384c65f5f2c9fa6" id="r_af674f24c1e61a2262384c65f5f2c9fa6"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="error__reporter_8h.html#af674f24c1e61a2262384c65f5f2c9fa6">DTLS_REPORT_DEBUG</a>(reporter,  error,  message)&#160;&#160;&#160;    <a class="el" href="error__reporter_8h.html#aa40ba40658dc6454a7e53d0b3aa03720">DTLS_REPORT_ERROR</a>(reporter, <a class="el" href="classdtls_1_1v13_1_1ErrorReporter.html#a70cb8c4c40c60302340d332220caddacadc30ec20708ef7b0f641ef78b7880a15">dtls::v13::ErrorReporter::LogLevel::DEBUG</a>, error, message)</td></tr>
+<tr class="memitem:af674f24c1e61a2262384c65f5f2c9fa6" id="r_af674f24c1e61a2262384c65f5f2c9fa6"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="error__reporter_8h.html#af674f24c1e61a2262384c65f5f2c9fa6">DTLS_REPORT_DEBUG</a>(reporter,  error,  message)&#160;&#160;&#160;    <a class="el" href="error__reporter_8h.html#aa40ba40658dc6454a7e53d0b3aa03720">DTLS_REPORT_ERROR</a>(reporter, dtls::v13::ErrorReporter::LogLevel::DEBUG, error, message)</td></tr>
 <tr class="separator:af674f24c1e61a2262384c65f5f2c9fa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a24ab9a8ae60b4f3e2d75399a6f441a16" id="r_a24ab9a8ae60b4f3e2d75399a6f441a16"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="error__reporter_8h.html#a24ab9a8ae60b4f3e2d75399a6f441a16">DTLS_REPORT_WARNING</a>(reporter,  error,  message)&#160;&#160;&#160;    <a class="el" href="error__reporter_8h.html#aa40ba40658dc6454a7e53d0b3aa03720">DTLS_REPORT_ERROR</a>(reporter, <a class="el" href="classdtls_1_1v13_1_1ErrorReporter.html#a70cb8c4c40c60302340d332220caddaca059e9861e0400dfbe05c98a841f3f96b">dtls::v13::ErrorReporter::LogLevel::WARNING</a>, error, message)</td></tr>
+<tr class="memitem:a24ab9a8ae60b4f3e2d75399a6f441a16" id="r_a24ab9a8ae60b4f3e2d75399a6f441a16"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="error__reporter_8h.html#a24ab9a8ae60b4f3e2d75399a6f441a16">DTLS_REPORT_WARNING</a>(reporter,  error,  message)&#160;&#160;&#160;    <a class="el" href="error__reporter_8h.html#aa40ba40658dc6454a7e53d0b3aa03720">DTLS_REPORT_ERROR</a>(reporter, dtls::v13::ErrorReporter::LogLevel::WARNING, error, message)</td></tr>
 <tr class="separator:a24ab9a8ae60b4f3e2d75399a6f441a16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a1019a2293dde74eee051401f22b83098" id="r_a1019a2293dde74eee051401f22b83098"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedtls_1_1v13.html#a1019a2293dde74eee051401f22b83098">dtls::v13::__attribute__</a> ((visibility(&quot;default&quot;))) AlertManager</td></tr>
+<tr class="memdesc:a1019a2293dde74eee051401f22b83098"><td class="mdescLeft">&#160;</td><td class="mdescRight">AlertManager handles DTLS alert generation and processing according to RFC 9147.  <br /></td></tr>
+<tr class="separator:a1019a2293dde74eee051401f22b83098"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="af674f24c1e61a2262384c65f5f2c9fa6" name="af674f24c1e61a2262384c65f5f2c9fa6"></a>
@@ -184,7 +179,7 @@ Macros</h2></td></tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td>&#160;&#160;&#160;    <a class="el" href="error__reporter_8h.html#aa40ba40658dc6454a7e53d0b3aa03720">DTLS_REPORT_ERROR</a>(reporter, <a class="el" href="classdtls_1_1v13_1_1ErrorReporter.html#a70cb8c4c40c60302340d332220caddacadc30ec20708ef7b0f641ef78b7880a15">dtls::v13::ErrorReporter::LogLevel::DEBUG</a>, error, message)</td>
+          <td></td><td>&#160;&#160;&#160;    <a class="el" href="error__reporter_8h.html#aa40ba40658dc6454a7e53d0b3aa03720">DTLS_REPORT_ERROR</a>(reporter, dtls::v13::ErrorReporter::LogLevel::DEBUG, error, message)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -236,6 +231,8 @@ Macros</h2></td></tr>
 <div class="line">        } \</div>
 <div class="line">    } <span class="keywordflow">while</span>(0)</div>
 </div><!-- fragment -->
+<p>ReportBuilder provides fluent interface for constructing detailed error reports. </p>
+
 <p class="definition">Definition at line <a class="el" href="error__reporter_8h_source.html#l00370">370</a> of file <a class="el" href="error__reporter_8h_source.html">error_reporter.h</a>.</p>
 
 </div>
@@ -314,7 +311,7 @@ Macros</h2></td></tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td>&#160;&#160;&#160;    <a class="el" href="error__reporter_8h.html#aa40ba40658dc6454a7e53d0b3aa03720">DTLS_REPORT_ERROR</a>(reporter, <a class="el" href="classdtls_1_1v13_1_1ErrorReporter.html#a70cb8c4c40c60302340d332220caddaca059e9861e0400dfbe05c98a841f3f96b">dtls::v13::ErrorReporter::LogLevel::WARNING</a>, error, message)</td>
+          <td></td><td>&#160;&#160;&#160;    <a class="el" href="error__reporter_8h.html#aa40ba40658dc6454a7e53d0b3aa03720">DTLS_REPORT_ERROR</a>(reporter, dtls::v13::ErrorReporter::LogLevel::WARNING, error, message)</td>
         </tr>
       </table>
 </div><div class="memdoc">

@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['value_5ftype_0',['value_type',['../classdtls_1_1v13_1_1memory_1_1PoolAllocator.html#a585c1b478bd80e23618f9b5c9090e948',1,'dtls::v13::memory::PoolAllocator']]],
-  ['view_1',['View',['../namespacedtls_1_1v13_1_1memory.html#a7baef2e0a9ef1e18261e6765bb7769f3',1,'dtls::v13::memory']]]
+  ['x509_0',['X509',['../openssl__provider_8h.html#a4f666bde6518f95deb3050c54b408416',1,'openssl_provider.h']]],
+  ['x509_5fstore_1',['X509_STORE',['../openssl__provider_8h.html#a3a2b800bae08729d11bc28f12b795597',1,'openssl_provider.h']]]
 ];
