@@ -148,5 +148,5 @@ When updating documentation:
 
 - **Documentation Version**: 1.0
 - **API Version**: DTLS v1.3 (RFC 9147 compliant)
-- **Last Updated**: August 2025
+- **Last Updated**: August 17, 2025
 - **SystemC Version**: Compatible with SystemC 2.3.3+
