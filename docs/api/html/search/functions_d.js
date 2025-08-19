@@ -1,9 +1,0 @@
-var searchData=
-[
-  ['name_0',['name',['../classdtls_1_1v13_1_1DTLSErrorCategory.html#a0225f899e485363c2cfabf0c23418015',1,'dtls::v13::DTLSErrorCategory']]],
-  ['named_5fgroup_5fto_5fbotan_1',['named_group_to_botan',['../namespacedtls_1_1v13_1_1crypto_1_1botan__utils.html#a585220c07b7a0b75a7612856548b69c4',1,'dtls::v13::crypto::botan_utils']]],
-  ['needs_5fattention_2',['needs_attention',['../structdtls_1_1v13_1_1connection_1_1advanced_1_1ConnectionHealth.html#a626cca2a46e4ca13033707fe7b029243',1,'dtls::v13::connection::advanced::ConnectionHealth']]],
-  ['networkaddress_3',['networkaddress',['../structdtls_1_1v13_1_1NetworkAddress.html#afeef1c45f2fa38656765a352731bf06e',1,'dtls::v13::NetworkAddress::NetworkAddress()=default'],['../structdtls_1_1v13_1_1NetworkAddress.html#a3ffde7eec369aa23ed1fb994c9c49838',1,'dtls::v13::NetworkAddress::NetworkAddress(const std::string &amp;ip, uint16_t port_num)']]],
-  ['networkendpoint_4',['networkendpoint',['../structdtls_1_1v13_1_1transport_1_1NetworkEndpoint.html#abc160695761af45d7888fc798b8f919a',1,'dtls::v13::transport::NetworkEndpoint::NetworkEndpoint()'],['../structdtls_1_1v13_1_1transport_1_1NetworkEndpoint.html#adbbf932d06857d2e2092d2b0a81b24e4',1,'dtls::v13::transport::NetworkEndpoint::NetworkEndpoint(const std::string &amp;addr, uint16_t p, NetworkAddress::Family f=NetworkAddress::Family::IPv4)']]],
-  ['newsessionticket_5',['newsessionticket',['../classdtls_1_1v13_1_1protocol_1_1NewSessionTicket.html#ab6d14322e1d7fac669e47ea98755486c',1,'dtls::v13::protocol::NewSessionTicket::NewSessionTicket()'],['../classdtls_1_1v13_1_1protocol_1_1NewSessionTicket.html#afccbf3fe2d296d5bf8c0d5313f122d03',1,'dtls::v13::protocol::NewSessionTicket::NewSessionTicket(uint32_t lifetime, uint32_t age_add, const std::vector&lt; uint8_t &gt; &amp;nonce, const std::vector&lt; uint8_t &gt; &amp;ticket)']]]
-];

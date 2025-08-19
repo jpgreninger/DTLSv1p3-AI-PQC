@@ -26,6 +26,9 @@ This notice will be removed once it demonstrates it works correctly in all cases
 
 https://jpgreninger.github.io/DTLSv1p3-AI-PQC/
 
+Full API documentation can be generated in Doxygen format. GitHub wouldn't allow the upload of that
+many files
+
 ## 🏆 **Key Features**
 
 ### **🔐 Advanced Security**
