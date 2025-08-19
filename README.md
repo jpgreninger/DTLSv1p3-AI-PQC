@@ -13,6 +13,15 @@ This project provides a complete DTLS v1.3 protocol stack implementation with du
 - **🔬 SystemC Model**: Hardware/software co-design model for verification and performance analysis
 - **🛡️ Quantum-Resistant**: Hybrid PQC support for post-quantum security transition
 
+## NOTICE
+
+This entire project has been written by Claude Code. Its an experiment to see if the AI can do all the 
+work without any human intervention except for a human prod here and there. There may be bugs. You'll
+notice all the superlatives the AI uses to describe it's readiness for production and other claims
+such as "World's First". I have been working to increase the code coverage, static code analysis, and
+security analysis to ensure compliance with the RFC. It will be tested vs known good implementations.
+This notice will be removed once it demonstrates it works correctly in all cases
+
 ## Documentation
 
 https://jpgreninger.github.io/DTLSv1p3-AI-PQC/
