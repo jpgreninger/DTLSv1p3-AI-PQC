@@ -1,0 +1,339 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - total_coverage.info - include/dtls/error_handler.h</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="title">LCOV - code coverage report</td></tr>
+            <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+            <tr>
+              <td width="100%">
+                <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="10%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">include/dtls</a> - error_handler.h<span style="font-size: 80%;"> (source / <a href="error_handler.h.func-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="5%"></td>
+            <td width="5%" class="headerCovTableHead">Coverage</td>
+            <td width="5%" class="headerCovTableHead" title="Covered + Uncovered code">Total</td>
+            <td width="5%" class="headerCovTableHead" title="Exercised code only">Hit</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">total_coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntryLo">50.0&nbsp;%</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">1</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test Date:</td>
+            <td class="headerValue">2025-08-17 17:21:18</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntryHi">100.0&nbsp;%</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">1</td>
+          </tr>
+                  <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+                </table>
+              </td>
+            </tr>
+
+            <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+          </table>
+
+          <table cellpadding=0 cellspacing=0 border=0>
+            <tr>
+              <td><br></td>
+            </tr>
+            <tr>
+              <td>
+<pre class="sourceHeading">            Line data    Source code</pre>
+<pre class="source">
+<span id="L1"><span class="lineNum">       1</span>              : #ifndef DTLS_ERROR_HANDLER_H</span>
+<span id="L2"><span class="lineNum">       2</span>              : #define DTLS_ERROR_HANDLER_H</span>
+<span id="L3"><span class="lineNum">       3</span>              : </span>
+<span id="L4"><span class="lineNum">       4</span>              : #include &lt;dtls/config.h&gt;</span>
+<span id="L5"><span class="lineNum">       5</span>              : #include &lt;dtls/error.h&gt;</span>
+<span id="L6"><span class="lineNum">       6</span>              : #include &lt;dtls/result.h&gt;</span>
+<span id="L7"><span class="lineNum">       7</span>              : #include &lt;dtls/types.h&gt;</span>
+<span id="L8"><span class="lineNum">       8</span>              : #include &lt;memory&gt;</span>
+<span id="L9"><span class="lineNum">       9</span>              : #include &lt;functional&gt;</span>
+<span id="L10"><span class="lineNum">      10</span>              : #include &lt;chrono&gt;</span>
+<span id="L11"><span class="lineNum">      11</span>              : #include &lt;string&gt;</span>
+<span id="L12"><span class="lineNum">      12</span>              : #include &lt;atomic&gt;</span>
+<span id="L13"><span class="lineNum">      13</span>              : #include &lt;mutex&gt;</span>
+<span id="L14"><span class="lineNum">      14</span>              : </span>
+<span id="L15"><span class="lineNum">      15</span>              : namespace dtls {</span>
+<span id="L16"><span class="lineNum">      16</span>              : namespace v13 {</span>
+<span id="L17"><span class="lineNum">      17</span>              : </span>
+<span id="L18"><span class="lineNum">      18</span>              : // Forward declarations</span>
+<span id="L19"><span class="lineNum">      19</span>              : class ErrorContext;</span>
+<span id="L20"><span class="lineNum">      20</span>              : class AlertManager;</span>
+<span id="L21"><span class="lineNum">      21</span>              : class ErrorReporter;</span>
+<span id="L22"><span class="lineNum">      22</span>              : </span>
+<span id="L23"><span class="lineNum">      23</span>              : /**</span>
+<span id="L24"><span class="lineNum">      24</span>              :  * RFC 9147 Error Handling Consistency</span>
+<span id="L25"><span class="lineNum">      25</span>              :  * </span>
+<span id="L26"><span class="lineNum">      26</span>              :  * This class provides centralized error handling that ensures consistency</span>
+<span id="L27"><span class="lineNum">      27</span>              :  * across all DTLS protocol layers according to RFC 9147 requirements:</span>
+<span id="L28"><span class="lineNum">      28</span>              :  * </span>
+<span id="L29"><span class="lineNum">      29</span>              :  * 1. Invalid records SHOULD be silently discarded</span>
+<span id="L30"><span class="lineNum">      30</span>              :  * 2. Error MAY be logged for diagnostic purposes</span>
+<span id="L31"><span class="lineNum">      31</span>              :  * 3. Fatal alerts MUST be generated to prevent probing attacks</span>
+<span id="L32"><span class="lineNum">      32</span>              :  * 4. For UDP transports, generating fatal alerts is NOT RECOMMENDED (DoS risk)</span>
+<span id="L33"><span class="lineNum">      33</span>              :  * 5. Security-conscious error handling that doesn't leak sensitive information</span>
+<span id="L34"><span class="lineNum">      34</span>              :  */</span>
+<span id="L35"><span class="lineNum">      35</span>              : class DTLS_API ErrorHandler {</span>
+<span id="L36"><span class="lineNum">      36</span>              : public:</span>
+<span id="L37"><span class="lineNum">      37</span>              :     enum class Transport {</span>
+<span id="L38"><span class="lineNum">      38</span>              :         UDP,              // Susceptible to spoofing - avoid alerts</span>
+<span id="L39"><span class="lineNum">      39</span>              :         DTLS_OVER_SCTP,   // SCTP-AUTH provides security - alerts safer</span>
+<span id="L40"><span class="lineNum">      40</span>              :         DTLS_OVER_TCP,    // Reliable transport - alerts safer</span>
+<span id="L41"><span class="lineNum">      41</span>              :         CUSTOM            // User-defined transport security</span>
+<span id="L42"><span class="lineNum">      42</span>              :     };</span>
+<span id="L43"><span class="lineNum">      43</span>              :     </span>
+<span id="L44"><span class="lineNum">      44</span>              :     enum class SecurityLevel {</span>
+<span id="L45"><span class="lineNum">      45</span>              :         MINIMAL,    // Basic error handling, minimal logging</span>
+<span id="L46"><span class="lineNum">      46</span>              :         STANDARD,   // RFC 9147 compliant handling</span>
+<span id="L47"><span class="lineNum">      47</span>              :         STRICT,     // Enhanced security with detailed monitoring</span>
+<span id="L48"><span class="lineNum">      48</span>              :         PARANOID    // Maximum security, extensive validation</span>
+<span id="L49"><span class="lineNum">      49</span>              :     };</span>
+<span id="L50"><span class="lineNum">      50</span>              :     </span>
+<span id="L51"><span class="lineNum">      51</span>              :     struct Configuration {</span>
+<span id="L52"><span class="lineNum">      52</span>              :         Transport transport_type = Transport::UDP;</span>
+<span id="L53"><span class="lineNum">      53</span>              :         SecurityLevel security_level = SecurityLevel::STANDARD;</span>
+<span id="L54"><span class="lineNum">      54</span>              :         </span>
+<span id="L55"><span class="lineNum">      55</span>              :         // Alert generation policy</span>
+<span id="L56"><span class="lineNum">      56</span>              :         bool generate_alerts_on_invalid_records = false;  // RFC 9147 recommends false for UDP</span>
+<span id="L57"><span class="lineNum">      57</span>              :         bool log_invalid_records = true;                  // For diagnostics</span>
+<span id="L58"><span class="lineNum">      58</span>              :         </span>
+<span id="L59"><span class="lineNum">      59</span>              :         // DoS protection thresholds</span>
+<span id="L60"><span class="lineNum">      60</span>              :         uint32_t max_auth_failures_per_epoch = 10;       // Per RFC 9147</span>
+<span id="L61"><span class="lineNum">      61</span>              :         uint32_t max_invalid_records_per_second = 100;</span>
+<span id="L62"><span class="lineNum">      62</span>              :         uint32_t max_alert_rate_per_minute = 60;</span>
+<span id="L63"><span class="lineNum">      63</span>              :         </span>
+<span id="L64"><span class="lineNum">      64</span>              :         // Error context retention</span>
+<span id="L65"><span class="lineNum">      65</span> <span class="tlaUNC tlaBgUNC">           0 :         std::chrono::seconds error_context_lifetime{300}; // 5 minutes</span></span>
+<span id="L66"><span class="lineNum">      66</span>              :         size_t max_error_contexts = 1000;</span>
+<span id="L67"><span class="lineNum">      67</span>              :         </span>
+<span id="L68"><span class="lineNum">      68</span>              :         // Security monitoring</span>
+<span id="L69"><span class="lineNum">      69</span>              :         bool enable_attack_detection = true;</span>
+<span id="L70"><span class="lineNum">      70</span>              :         bool enable_error_correlation = true;</span>
+<span id="L71"><span class="lineNum">      71</span>              :         bool enable_security_metrics = true;</span>
+<span id="L72"><span class="lineNum">      72</span>              :         </span>
+<span id="L73"><span class="lineNum">      73</span>              :         // Logging configuration  </span>
+<span id="L74"><span class="lineNum">      74</span>              :         bool log_sensitive_data = false;  // Never log keys, plaintext, etc.</span>
+<span id="L75"><span class="lineNum">      75</span>              :         bool log_network_addresses = false; // Privacy consideration</span>
+<span id="L76"><span class="lineNum">      76</span>              :         uint32_t max_log_message_length = 512;</span>
+<span id="L77"><span class="lineNum">      77</span>              :     };</span>
+<span id="L78"><span class="lineNum">      78</span>              : </span>
+<span id="L79"><span class="lineNum">      79</span>              :     ErrorHandler();</span>
+<span id="L80"><span class="lineNum">      80</span>              :     explicit ErrorHandler(const Configuration&amp; config);</span>
+<span id="L81"><span class="lineNum">      81</span>              :     ~ErrorHandler();</span>
+<span id="L82"><span class="lineNum">      82</span>              :     </span>
+<span id="L83"><span class="lineNum">      83</span>              :     // Non-copyable but moveable</span>
+<span id="L84"><span class="lineNum">      84</span>              :     ErrorHandler(const ErrorHandler&amp;) = delete;</span>
+<span id="L85"><span class="lineNum">      85</span>              :     ErrorHandler&amp; operator=(const ErrorHandler&amp;) = delete;</span>
+<span id="L86"><span class="lineNum">      86</span>              :     ErrorHandler(ErrorHandler&amp;&amp;) = default;</span>
+<span id="L87"><span class="lineNum">      87</span>              :     ErrorHandler&amp; operator=(ErrorHandler&amp;&amp;) = default;</span>
+<span id="L88"><span class="lineNum">      88</span>              :     </span>
+<span id="L89"><span class="lineNum">      89</span>              :     // Core error processing functions</span>
+<span id="L90"><span class="lineNum">      90</span>              :     </span>
+<span id="L91"><span class="lineNum">      91</span>              :     /**</span>
+<span id="L92"><span class="lineNum">      92</span>              :      * Process a DTLS error according to RFC 9147 requirements</span>
+<span id="L93"><span class="lineNum">      93</span>              :      * @param error The error that occurred</span>
+<span id="L94"><span class="lineNum">      94</span>              :      * @param context Additional error context (optional)</span>
+<span id="L95"><span class="lineNum">      95</span>              :      * @return Result indicating if connection should continue or terminate</span>
+<span id="L96"><span class="lineNum">      96</span>              :      */</span>
+<span id="L97"><span class="lineNum">      97</span>              :     Result&lt;bool&gt; process_error(DTLSError error, </span>
+<span id="L98"><span class="lineNum">      98</span>              :                               std::shared_ptr&lt;ErrorContext&gt; context = nullptr);</span>
+<span id="L99"><span class="lineNum">      99</span>              :     </span>
+<span id="L100"><span class="lineNum">     100</span>              :     /**</span>
+<span id="L101"><span class="lineNum">     101</span>              :      * Handle invalid record according to RFC 9147 Section 4.2.1</span>
+<span id="L102"><span class="lineNum">     102</span>              :      * &quot;In general, invalid records SHOULD be silently discarded&quot;</span>
+<span id="L103"><span class="lineNum">     103</span>              :      * @param record_type The type of invalid record</span>
+<span id="L104"><span class="lineNum">     104</span>              :      * @param context Error context for diagnostics</span>
+<span id="L105"><span class="lineNum">     105</span>              :      * @return Result indicating action taken</span>
+<span id="L106"><span class="lineNum">     106</span>              :      */</span>
+<span id="L107"><span class="lineNum">     107</span>              :     Result&lt;void&gt; handle_invalid_record(ContentType record_type,</span>
+<span id="L108"><span class="lineNum">     108</span>              :                                       std::shared_ptr&lt;ErrorContext&gt; context);</span>
+<span id="L109"><span class="lineNum">     109</span>              :     </span>
+<span id="L110"><span class="lineNum">     110</span>              :     /**</span>
+<span id="L111"><span class="lineNum">     111</span>              :      * Process authentication failure with DoS protection</span>
+<span id="L112"><span class="lineNum">     112</span>              :      * RFC 9147: &quot;track records that fail authentication&quot;</span>
+<span id="L113"><span class="lineNum">     113</span>              :      * @param epoch The epoch of the failed record</span>
+<span id="L114"><span class="lineNum">     114</span>              :      * @param context Error context</span>
+<span id="L115"><span class="lineNum">     115</span>              :      * @return Result indicating if connection should be closed</span>
+<span id="L116"><span class="lineNum">     116</span>              :      */</span>
+<span id="L117"><span class="lineNum">     117</span>              :     Result&lt;bool&gt; handle_authentication_failure(Epoch epoch,</span>
+<span id="L118"><span class="lineNum">     118</span>              :                                               std::shared_ptr&lt;ErrorContext&gt; context);</span>
+<span id="L119"><span class="lineNum">     119</span>              :     </span>
+<span id="L120"><span class="lineNum">     120</span>              :     /**</span>
+<span id="L121"><span class="lineNum">     121</span>              :      * Generate alert if appropriate based on transport and security policy</span>
+<span id="L122"><span class="lineNum">     122</span>              :      * @param alert_desc The alert to potentially generate</span>
+<span id="L123"><span class="lineNum">     123</span>              :      * @param context Error context</span>
+<span id="L124"><span class="lineNum">     124</span>              :      * @return Result containing alert data if alert should be sent</span>
+<span id="L125"><span class="lineNum">     125</span>              :      */</span>
+<span id="L126"><span class="lineNum">     126</span>              :     Result&lt;std::vector&lt;uint8_t&gt;&gt; generate_alert_if_appropriate(</span>
+<span id="L127"><span class="lineNum">     127</span>              :         AlertDescription alert_desc,</span>
+<span id="L128"><span class="lineNum">     128</span>              :         std::shared_ptr&lt;ErrorContext&gt; context);</span>
+<span id="L129"><span class="lineNum">     129</span>              :     </span>
+<span id="L130"><span class="lineNum">     130</span>              :     /**</span>
+<span id="L131"><span class="lineNum">     131</span>              :      * Check if error should terminate the connection</span>
+<span id="L132"><span class="lineNum">     132</span>              :      * @param error The error to evaluate  </span>
+<span id="L133"><span class="lineNum">     133</span>              :      * @return true if connection should terminate</span>
+<span id="L134"><span class="lineNum">     134</span>              :      */</span>
+<span id="L135"><span class="lineNum">     135</span>              :     bool should_terminate_connection(DTLSError error) const;</span>
+<span id="L136"><span class="lineNum">     136</span>              :     </span>
+<span id="L137"><span class="lineNum">     137</span>              :     /**</span>
+<span id="L138"><span class="lineNum">     138</span>              :      * Check if operation should be retried</span>
+<span id="L139"><span class="lineNum">     139</span>              :      * @param error The error that occurred</span>
+<span id="L140"><span class="lineNum">     140</span>              :      * @param retry_count Current retry attempt</span>
+<span id="L141"><span class="lineNum">     141</span>              :      * @return true if retry is recommended</span>
+<span id="L142"><span class="lineNum">     142</span>              :      */</span>
+<span id="L143"><span class="lineNum">     143</span>              :     bool should_retry_operation(DTLSError error, uint32_t retry_count) const;</span>
+<span id="L144"><span class="lineNum">     144</span>              :     </span>
+<span id="L145"><span class="lineNum">     145</span>              :     // Error context management</span>
+<span id="L146"><span class="lineNum">     146</span>              :     </span>
+<span id="L147"><span class="lineNum">     147</span>              :     /**</span>
+<span id="L148"><span class="lineNum">     148</span>              :      * Create error context for tracking error details</span>
+<span id="L149"><span class="lineNum">     149</span>              :      * @param connection_id Optional connection identifier</span>
+<span id="L150"><span class="lineNum">     150</span>              :      * @param endpoint_address Optional peer address</span>
+<span id="L151"><span class="lineNum">     151</span>              :      * @return Shared pointer to error context</span>
+<span id="L152"><span class="lineNum">     152</span>              :      */</span>
+<span id="L153"><span class="lineNum">     153</span>              :     std::shared_ptr&lt;ErrorContext&gt; create_error_context(</span>
+<span id="L154"><span class="lineNum">     154</span>              :         const std::string&amp; connection_id = &quot;&quot;,</span>
+<span id="L155"><span class="lineNum">     155</span>              :         const NetworkAddress&amp; endpoint_address = NetworkAddress{});</span>
+<span id="L156"><span class="lineNum">     156</span>              :     </span>
+<span id="L157"><span class="lineNum">     157</span>              :     /**</span>
+<span id="L158"><span class="lineNum">     158</span>              :      * Associate error context with current thread (for async operations)</span>
+<span id="L159"><span class="lineNum">     159</span>              :      * @param context Error context to associate</span>
+<span id="L160"><span class="lineNum">     160</span>              :      */</span>
+<span id="L161"><span class="lineNum">     161</span>              :     void set_thread_error_context(std::shared_ptr&lt;ErrorContext&gt; context);</span>
+<span id="L162"><span class="lineNum">     162</span>              :     </span>
+<span id="L163"><span class="lineNum">     163</span>              :     /**</span>
+<span id="L164"><span class="lineNum">     164</span>              :      * Get error context for current thread</span>
+<span id="L165"><span class="lineNum">     165</span>              :      * @return Current thread's error context or nullptr</span>
+<span id="L166"><span class="lineNum">     166</span>              :      */</span>
+<span id="L167"><span class="lineNum">     167</span>              :     std::shared_ptr&lt;ErrorContext&gt; get_thread_error_context() const;</span>
+<span id="L168"><span class="lineNum">     168</span>              :     </span>
+<span id="L169"><span class="lineNum">     169</span>              :     // Configuration and monitoring</span>
+<span id="L170"><span class="lineNum">     170</span>              :     </span>
+<span id="L171"><span class="lineNum">     171</span>              :     /**</span>
+<span id="L172"><span class="lineNum">     172</span>              :      * Update error handler configuration</span>
+<span id="L173"><span class="lineNum">     173</span>              :      * @param config New configuration</span>
+<span id="L174"><span class="lineNum">     174</span>              :      * @return Result of configuration update</span>
+<span id="L175"><span class="lineNum">     175</span>              :      */</span>
+<span id="L176"><span class="lineNum">     176</span>              :     Result&lt;void&gt; update_configuration(const Configuration&amp; config);</span>
+<span id="L177"><span class="lineNum">     177</span>              :     </span>
+<span id="L178"><span class="lineNum">     178</span>              :     /**</span>
+<span id="L179"><span class="lineNum">     179</span>              :      * Get current configuration</span>
+<span id="L180"><span class="lineNum">     180</span>              :      * @return Current error handler configuration</span>
+<span id="L181"><span class="lineNum">     181</span>              :      */</span>
+<span id="L182"><span class="lineNum">     182</span>              :     const Configuration&amp; get_configuration() const { return config_; }</span>
+<span id="L183"><span class="lineNum">     183</span>              :     </span>
+<span id="L184"><span class="lineNum">     184</span>              :     /**</span>
+<span id="L185"><span class="lineNum">     185</span>              :      * Get error statistics for monitoring</span>
+<span id="L186"><span class="lineNum">     186</span>              :      * @return Error statistics structure</span>
+<span id="L187"><span class="lineNum">     187</span>              :      */</span>
+<span id="L188"><span class="lineNum">     188</span>              :     struct ErrorStats {</span>
+<span id="L189"><span class="lineNum">     189</span>              :         std::atomic&lt;uint64_t&gt; total_errors{0};</span>
+<span id="L190"><span class="lineNum">     190</span>              :         std::atomic&lt;uint64_t&gt; fatal_errors{0};</span>
+<span id="L191"><span class="lineNum">     191</span>              :         std::atomic&lt;uint64_t&gt; retryable_errors{0};</span>
+<span id="L192"><span class="lineNum">     192</span>              :         std::atomic&lt;uint64_t&gt; invalid_records_discarded{0};</span>
+<span id="L193"><span class="lineNum">     193</span>              :         std::atomic&lt;uint64_t&gt; authentication_failures{0};</span>
+<span id="L194"><span class="lineNum">     194</span>              :         std::atomic&lt;uint64_t&gt; alerts_generated{0};</span>
+<span id="L195"><span class="lineNum">     195</span>              :         std::atomic&lt;uint64_t&gt; connections_terminated{0};</span>
+<span id="L196"><span class="lineNum">     196</span>              :         std::atomic&lt;uint64_t&gt; dos_attacks_detected{0};</span>
+<span id="L197"><span class="lineNum">     197</span>              :         std::chrono::steady_clock::time_point start_time;</span>
+<span id="L198"><span class="lineNum">     198</span>              :     };</span>
+<span id="L199"><span class="lineNum">     199</span>              :     </span>
+<span id="L200"><span class="lineNum">     200</span> <span class="tlaGNC tlaBgGNC">          14 :     const ErrorStats&amp; get_error_statistics() const { return stats_; }</span></span>
+<span id="L201"><span class="lineNum">     201</span>              :     </span>
+<span id="L202"><span class="lineNum">     202</span>              :     /**</span>
+<span id="L203"><span class="lineNum">     203</span>              :      * Reset error statistics</span>
+<span id="L204"><span class="lineNum">     204</span>              :      */</span>
+<span id="L205"><span class="lineNum">     205</span>              :     void reset_statistics();</span>
+<span id="L206"><span class="lineNum">     206</span>              :     </span>
+<span id="L207"><span class="lineNum">     207</span>              :     // Alert management integration</span>
+<span id="L208"><span class="lineNum">     208</span>              :     </span>
+<span id="L209"><span class="lineNum">     209</span>              :     /**</span>
+<span id="L210"><span class="lineNum">     210</span>              :      * Set alert manager for alert processing</span>
+<span id="L211"><span class="lineNum">     211</span>              :      * @param alert_manager Shared pointer to alert manager</span>
+<span id="L212"><span class="lineNum">     212</span>              :      */</span>
+<span id="L213"><span class="lineNum">     213</span>              :     void set_alert_manager(std::shared_ptr&lt;AlertManager&gt; alert_manager);</span>
+<span id="L214"><span class="lineNum">     214</span>              :     </span>
+<span id="L215"><span class="lineNum">     215</span>              :     /**</span>
+<span id="L216"><span class="lineNum">     216</span>              :      * Set error reporter for logging and diagnostics  </span>
+<span id="L217"><span class="lineNum">     217</span>              :      * @param error_reporter Shared pointer to error reporter</span>
+<span id="L218"><span class="lineNum">     218</span>              :      */</span>
+<span id="L219"><span class="lineNum">     219</span>              :     void set_error_reporter(std::shared_ptr&lt;ErrorReporter&gt; error_reporter);</span>
+<span id="L220"><span class="lineNum">     220</span>              : </span>
+<span id="L221"><span class="lineNum">     221</span>              : private:</span>
+<span id="L222"><span class="lineNum">     222</span>              :     Configuration config_;</span>
+<span id="L223"><span class="lineNum">     223</span>              :     mutable std::mutex config_mutex_;</span>
+<span id="L224"><span class="lineNum">     224</span>              :     </span>
+<span id="L225"><span class="lineNum">     225</span>              :     // Component integration</span>
+<span id="L226"><span class="lineNum">     226</span>              :     std::shared_ptr&lt;AlertManager&gt; alert_manager_;</span>
+<span id="L227"><span class="lineNum">     227</span>              :     std::shared_ptr&lt;ErrorReporter&gt; error_reporter_;</span>
+<span id="L228"><span class="lineNum">     228</span>              :     </span>
+<span id="L229"><span class="lineNum">     229</span>              :     // Statistics and monitoring</span>
+<span id="L230"><span class="lineNum">     230</span>              :     mutable ErrorStats stats_;</span>
+<span id="L231"><span class="lineNum">     231</span>              :     </span>
+<span id="L232"><span class="lineNum">     232</span>              :     // DoS protection state</span>
+<span id="L233"><span class="lineNum">     233</span>              :     struct DoSState {</span>
+<span id="L234"><span class="lineNum">     234</span>              :         std::atomic&lt;uint32_t&gt; auth_failures_this_epoch{0};</span>
+<span id="L235"><span class="lineNum">     235</span>              :         std::atomic&lt;uint32_t&gt; invalid_records_this_second{0};</span>
+<span id="L236"><span class="lineNum">     236</span>              :         std::atomic&lt;uint32_t&gt; alerts_this_minute{0};</span>
+<span id="L237"><span class="lineNum">     237</span>              :         std::chrono::steady_clock::time_point last_second_reset;</span>
+<span id="L238"><span class="lineNum">     238</span>              :         std::chrono::steady_clock::time_point last_minute_reset;</span>
+<span id="L239"><span class="lineNum">     239</span>              :         std::mutex reset_mutex;</span>
+<span id="L240"><span class="lineNum">     240</span>              :     };</span>
+<span id="L241"><span class="lineNum">     241</span>              :     mutable DoSState dos_state_;</span>
+<span id="L242"><span class="lineNum">     242</span>              :     </span>
+<span id="L243"><span class="lineNum">     243</span>              :     // Error context storage</span>
+<span id="L244"><span class="lineNum">     244</span>              :     mutable std::mutex context_mutex_;</span>
+<span id="L245"><span class="lineNum">     245</span>              :     std::unordered_map&lt;std::string, std::weak_ptr&lt;ErrorContext&gt;&gt; error_contexts_;</span>
+<span id="L246"><span class="lineNum">     246</span>              :     </span>
+<span id="L247"><span class="lineNum">     247</span>              :     // Thread-local error context</span>
+<span id="L248"><span class="lineNum">     248</span>              :     static thread_local std::weak_ptr&lt;ErrorContext&gt; thread_error_context_;</span>
+<span id="L249"><span class="lineNum">     249</span>              :     </span>
+<span id="L250"><span class="lineNum">     250</span>              :     // Internal helper methods</span>
+<span id="L251"><span class="lineNum">     251</span>              :     bool is_transport_secure() const;</span>
+<span id="L252"><span class="lineNum">     252</span>              :     bool should_generate_alert_for_error(DTLSError error) const;</span>
+<span id="L253"><span class="lineNum">     253</span>              :     bool is_security_relevant_error(DTLSError error) const;</span>
+<span id="L254"><span class="lineNum">     254</span>              :     void update_dos_counters();</span>
+<span id="L255"><span class="lineNum">     255</span>              :     void cleanup_expired_contexts();</span>
+<span id="L256"><span class="lineNum">     256</span>              :     Result&lt;void&gt; log_error_securely(DTLSError error, </span>
+<span id="L257"><span class="lineNum">     257</span>              :                                    std::shared_ptr&lt;ErrorContext&gt; context);</span>
+<span id="L258"><span class="lineNum">     258</span>              : };</span>
+<span id="L259"><span class="lineNum">     259</span>              : </span>
+<span id="L260"><span class="lineNum">     260</span>              : } // namespace v13</span>
+<span id="L261"><span class="lineNum">     261</span>              : } // namespace dtls</span>
+<span id="L262"><span class="lineNum">     262</span>              : </span>
+<span id="L263"><span class="lineNum">     263</span>              : #endif // DTLS_ERROR_HANDLER_H</span>
+        </pre>
+              </td>
+            </tr>
+          </table>
+          <br>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+            <tr><td class="versionInfo">Generated by: <a href="https://github.com//linux-test-project/lcov" target="_parent">LCOV version 2.0-1</a></td></tr>
+          </table>
+          <br>
+
+</body>
+</html>

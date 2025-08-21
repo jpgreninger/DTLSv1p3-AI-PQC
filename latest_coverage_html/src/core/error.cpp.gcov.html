@@ -1,0 +1,414 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - total_coverage.info - src/core/error.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="title">LCOV - code coverage report</td></tr>
+            <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+            <tr>
+              <td width="100%">
+                <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="10%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">src/core</a> - error.cpp<span style="font-size: 80%;"> (source / <a href="error.cpp.func-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="5%"></td>
+            <td width="5%" class="headerCovTableHead">Coverage</td>
+            <td width="5%" class="headerCovTableHead" title="Covered + Uncovered code">Total</td>
+            <td width="5%" class="headerCovTableHead" title="Exercised code only">Hit</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">total_coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntryLo">28.7&nbsp;%</td>
+            <td class="headerCovTableEntry">136</td>
+            <td class="headerCovTableEntry">39</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test Date:</td>
+            <td class="headerValue">2025-08-17 17:21:18</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntryHi">100.0&nbsp;%</td>
+            <td class="headerCovTableEntry">7</td>
+            <td class="headerCovTableEntry">7</td>
+          </tr>
+                  <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+                </table>
+              </td>
+            </tr>
+
+            <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+          </table>
+
+          <table cellpadding=0 cellspacing=0 border=0>
+            <tr>
+              <td><br></td>
+            </tr>
+            <tr>
+              <td>
+<pre class="sourceHeading">            Line data    Source code</pre>
+<pre class="source">
+<span id="L1"><span class="lineNum">       1</span>              : #include &lt;dtls/error.h&gt;</span>
+<span id="L2"><span class="lineNum">       2</span>              : #include &lt;dtls/types.h&gt;</span>
+<span id="L3"><span class="lineNum">       3</span>              : #include &lt;unordered_map&gt;</span>
+<span id="L4"><span class="lineNum">       4</span>              : </span>
+<span id="L5"><span class="lineNum">       5</span>              : namespace dtls {</span>
+<span id="L6"><span class="lineNum">       6</span>              : namespace v13 {</span>
+<span id="L7"><span class="lineNum">       7</span>              : </span>
+<span id="L8"><span class="lineNum">       8</span>              : // Error message mapping</span>
+<span id="L9"><span class="lineNum">       9</span> <span class="tlaGNC tlaBgGNC">        1032 : std::string DTLSErrorCategory::message(int ev) const {</span></span>
+<span id="L10"><span class="lineNum">      10</span> <span class="tlaGNC">        1032 :     DTLSError error = static_cast&lt;DTLSError&gt;(ev);</span></span>
+<span id="L11"><span class="lineNum">      11</span>              :     </span>
+<span id="L12"><span class="lineNum">      12</span>              :     static const std::unordered_map&lt;DTLSError, std::string&gt; error_messages = {</span>
+<span id="L13"><span class="lineNum">      13</span>              :         // General errors (1-19)</span>
+<span id="L14"><span class="lineNum">      14</span> <span class="tlaUNC tlaBgUNC">           0 :         {DTLSError::SUCCESS, &quot;Success&quot;},</span></span>
+<span id="L15"><span class="lineNum">      15</span> <span class="tlaUNC">           0 :         {DTLSError::INVALID_PARAMETER, &quot;Invalid parameter provided&quot;},</span></span>
+<span id="L16"><span class="lineNum">      16</span> <span class="tlaUNC">           0 :         {DTLSError::INSUFFICIENT_BUFFER, &quot;Buffer too small for operation&quot;},</span></span>
+<span id="L17"><span class="lineNum">      17</span> <span class="tlaUNC">           0 :         {DTLSError::OUT_OF_MEMORY, &quot;Memory allocation failed&quot;},</span></span>
+<span id="L18"><span class="lineNum">      18</span> <span class="tlaUNC">           0 :         {DTLSError::TIMEOUT, &quot;Operation timed out&quot;},</span></span>
+<span id="L19"><span class="lineNum">      19</span> <span class="tlaUNC">           0 :         {DTLSError::OPERATION_ABORTED, &quot;Operation was aborted&quot;},</span></span>
+<span id="L20"><span class="lineNum">      20</span> <span class="tlaUNC">           0 :         {DTLSError::NOT_INITIALIZED, &quot;Component not initialized&quot;},</span></span>
+<span id="L21"><span class="lineNum">      21</span> <span class="tlaUNC">           0 :         {DTLSError::ALREADY_INITIALIZED, &quot;Component already initialized&quot;},</span></span>
+<span id="L22"><span class="lineNum">      22</span> <span class="tlaUNC">           0 :         {DTLSError::RESOURCE_UNAVAILABLE, &quot;Required resource not available&quot;},</span></span>
+<span id="L23"><span class="lineNum">      23</span> <span class="tlaUNC">           0 :         {DTLSError::OPERATION_NOT_SUPPORTED, &quot;Operation not supported&quot;},</span></span>
+<span id="L24"><span class="lineNum">      24</span> <span class="tlaUNC">           0 :         {DTLSError::INTERNAL_ERROR, &quot;Internal implementation error&quot;},</span></span>
+<span id="L25"><span class="lineNum">      25</span>              :         </span>
+<span id="L26"><span class="lineNum">      26</span>              :         // Protocol errors (20-49)</span>
+<span id="L27"><span class="lineNum">      27</span> <span class="tlaUNC">           0 :         {DTLSError::PROTOCOL_VERSION_NOT_SUPPORTED, &quot;DTLS protocol version not supported&quot;},</span></span>
+<span id="L28"><span class="lineNum">      28</span> <span class="tlaUNC">           0 :         {DTLSError::INVALID_MESSAGE_FORMAT, &quot;Invalid message format&quot;},</span></span>
+<span id="L29"><span class="lineNum">      29</span> <span class="tlaUNC">           0 :         {DTLSError::UNEXPECTED_MESSAGE, &quot;Unexpected message type&quot;},</span></span>
+<span id="L30"><span class="lineNum">      30</span> <span class="tlaUNC">           0 :         {DTLSError::MESSAGE_TOO_LARGE, &quot;Message exceeds maximum size&quot;},</span></span>
+<span id="L31"><span class="lineNum">      31</span> <span class="tlaUNC">           0 :         {DTLSError::SEQUENCE_NUMBER_OVERFLOW, &quot;Sequence number overflow&quot;},</span></span>
+<span id="L32"><span class="lineNum">      32</span> <span class="tlaUNC">           0 :         {DTLSError::EPOCH_MISMATCH, &quot;Epoch mismatch in record&quot;},</span></span>
+<span id="L33"><span class="lineNum">      33</span> <span class="tlaUNC">           0 :         {DTLSError::RECORD_OVERFLOW, &quot;Record size overflow&quot;},</span></span>
+<span id="L34"><span class="lineNum">      34</span> <span class="tlaUNC">           0 :         {DTLSError::FRAGMENTATION_ERROR, &quot;Message fragmentation error&quot;},</span></span>
+<span id="L35"><span class="lineNum">      35</span> <span class="tlaUNC">           0 :         {DTLSError::EXTENSION_ERROR, &quot;Extension processing error&quot;},</span></span>
+<span id="L36"><span class="lineNum">      36</span> <span class="tlaUNC">           0 :         {DTLSError::STATE_MACHINE_ERROR, &quot;Invalid state for operation&quot;},</span></span>
+<span id="L37"><span class="lineNum">      37</span>              :         </span>
+<span id="L38"><span class="lineNum">      38</span>              :         // Handshake errors (50-79)</span>
+<span id="L39"><span class="lineNum">      39</span> <span class="tlaUNC">           0 :         {DTLSError::HANDSHAKE_FAILURE, &quot;Handshake negotiation failed&quot;},</span></span>
+<span id="L40"><span class="lineNum">      40</span> <span class="tlaUNC">           0 :         {DTLSError::CERTIFICATE_VERIFY_FAILED, &quot;Certificate verification failed&quot;},</span></span>
+<span id="L41"><span class="lineNum">      41</span> <span class="tlaUNC">           0 :         {DTLSError::CERTIFICATE_EXPIRED, &quot;Certificate has expired&quot;},</span></span>
+<span id="L42"><span class="lineNum">      42</span> <span class="tlaUNC">           0 :         {DTLSError::CERTIFICATE_REVOKED, &quot;Certificate has been revoked&quot;},</span></span>
+<span id="L43"><span class="lineNum">      43</span> <span class="tlaUNC">           0 :         {DTLSError::CERTIFICATE_UNKNOWN, &quot;Unknown certificate error&quot;},</span></span>
+<span id="L44"><span class="lineNum">      44</span> <span class="tlaUNC">           0 :         {DTLSError::UNKNOWN_CA, &quot;Unknown certificate authority&quot;},</span></span>
+<span id="L45"><span class="lineNum">      45</span> <span class="tlaUNC">           0 :         {DTLSError::ACCESS_DENIED, &quot;Access denied&quot;},</span></span>
+<span id="L46"><span class="lineNum">      46</span> <span class="tlaUNC">           0 :         {DTLSError::DECODE_ERROR, &quot;Message decode error&quot;},</span></span>
+<span id="L47"><span class="lineNum">      47</span> <span class="tlaUNC">           0 :         {DTLSError::ILLEGAL_PARAMETER, &quot;Illegal parameter in message&quot;},</span></span>
+<span id="L48"><span class="lineNum">      48</span> <span class="tlaUNC">           0 :         {DTLSError::MISSING_EXTENSION, &quot;Required extension missing&quot;},</span></span>
+<span id="L49"><span class="lineNum">      49</span> <span class="tlaUNC">           0 :         {DTLSError::UNSUPPORTED_EXTENSION, &quot;Unsupported extension&quot;},</span></span>
+<span id="L50"><span class="lineNum">      50</span> <span class="tlaUNC">           0 :         {DTLSError::UNRECOGNIZED_NAME, &quot;Unrecognized server name&quot;},</span></span>
+<span id="L51"><span class="lineNum">      51</span> <span class="tlaUNC">           0 :         {DTLSError::BAD_CERTIFICATE_STATUS_RESPONSE, &quot;Bad certificate status response&quot;},</span></span>
+<span id="L52"><span class="lineNum">      52</span> <span class="tlaUNC">           0 :         {DTLSError::CERTIFICATE_REQUIRED, &quot;Certificate required but not provided&quot;},</span></span>
+<span id="L53"><span class="lineNum">      53</span> <span class="tlaUNC">           0 :         {DTLSError::NO_APPLICATION_PROTOCOL, &quot;No application protocol agreement&quot;},</span></span>
+<span id="L54"><span class="lineNum">      54</span>              :         </span>
+<span id="L55"><span class="lineNum">      55</span>              :         // Cryptographic errors (80-109)</span>
+<span id="L56"><span class="lineNum">      56</span> <span class="tlaUNC">           0 :         {DTLSError::DECRYPT_ERROR, &quot;Decryption failed&quot;},</span></span>
+<span id="L57"><span class="lineNum">      57</span> <span class="tlaUNC">           0 :         {DTLSError::BAD_RECORD_MAC, &quot;Record MAC verification failed&quot;},</span></span>
+<span id="L58"><span class="lineNum">      58</span> <span class="tlaUNC">           0 :         {DTLSError::KEY_DERIVATION_FAILED, &quot;Key derivation failed&quot;},</span></span>
+<span id="L59"><span class="lineNum">      59</span> <span class="tlaUNC">           0 :         {DTLSError::SIGNATURE_VERIFICATION_FAILED, &quot;Digital signature verification failed&quot;},</span></span>
+<span id="L60"><span class="lineNum">      60</span> <span class="tlaUNC">           0 :         {DTLSError::CIPHER_SUITE_NOT_SUPPORTED, &quot;Cipher suite not supported&quot;},</span></span>
+<span id="L61"><span class="lineNum">      61</span> <span class="tlaUNC">           0 :         {DTLSError::CRYPTO_PROVIDER_ERROR, &quot;Cryptographic provider error&quot;},</span></span>
+<span id="L62"><span class="lineNum">      62</span> <span class="tlaUNC">           0 :         {DTLSError::RANDOM_GENERATION_FAILED, &quot;Random number generation failed&quot;},</span></span>
+<span id="L63"><span class="lineNum">      63</span> <span class="tlaUNC">           0 :         {DTLSError::KEY_EXCHANGE_FAILED, &quot;Key exchange failed&quot;},</span></span>
+<span id="L64"><span class="lineNum">      64</span> <span class="tlaUNC">           0 :         {DTLSError::INSUFFICIENT_SECURITY, &quot;Insufficient security level&quot;},</span></span>
+<span id="L65"><span class="lineNum">      65</span> <span class="tlaUNC">           0 :         {DTLSError::CRYPTO_HARDWARE_ERROR, &quot;Cryptographic hardware error&quot;},</span></span>
+<span id="L66"><span class="lineNum">      66</span>              :         </span>
+<span id="L67"><span class="lineNum">      67</span>              :         // Connection errors (110-129)</span>
+<span id="L68"><span class="lineNum">      68</span> <span class="tlaUNC">           0 :         {DTLSError::CONNECTION_CLOSED, &quot;Connection closed by peer&quot;},</span></span>
+<span id="L69"><span class="lineNum">      69</span> <span class="tlaUNC">           0 :         {DTLSError::CONNECTION_RESET, &quot;Connection reset&quot;},</span></span>
+<span id="L70"><span class="lineNum">      70</span> <span class="tlaUNC">           0 :         {DTLSError::CONNECTION_REFUSED, &quot;Connection refused&quot;},</span></span>
+<span id="L71"><span class="lineNum">      71</span> <span class="tlaUNC">           0 :         {DTLSError::CONNECTION_TIMEOUT, &quot;Connection timeout&quot;},</span></span>
+<span id="L72"><span class="lineNum">      72</span> <span class="tlaUNC">           0 :         {DTLSError::CONNECTION_ID_MISMATCH, &quot;Connection ID mismatch&quot;},</span></span>
+<span id="L73"><span class="lineNum">      73</span> <span class="tlaUNC">           0 :         {DTLSError::CONNECTION_MIGRATION_FAILED, &quot;Connection migration failed&quot;},</span></span>
+<span id="L74"><span class="lineNum">      74</span> <span class="tlaUNC">           0 :         {DTLSError::MAX_CONNECTIONS_EXCEEDED, &quot;Maximum connections exceeded&quot;},</span></span>
+<span id="L75"><span class="lineNum">      75</span> <span class="tlaUNC">           0 :         {DTLSError::CONNECTION_NOT_FOUND, &quot;Connection not found&quot;},</span></span>
+<span id="L76"><span class="lineNum">      76</span> <span class="tlaUNC">           0 :         {DTLSError::DUPLICATE_CONNECTION, &quot;Duplicate connection attempt&quot;},</span></span>
+<span id="L77"><span class="lineNum">      77</span> <span class="tlaUNC">           0 :         {DTLSError::CONNECTION_STATE_ERROR, &quot;Invalid connection state&quot;},</span></span>
+<span id="L78"><span class="lineNum">      78</span>              :         </span>
+<span id="L79"><span class="lineNum">      79</span>              :         // Network errors (130-149)</span>
+<span id="L80"><span class="lineNum">      80</span> <span class="tlaUNC">           0 :         {DTLSError::NETWORK_ERROR, &quot;Network error&quot;},</span></span>
+<span id="L81"><span class="lineNum">      81</span> <span class="tlaUNC">           0 :         {DTLSError::ADDRESS_RESOLUTION_FAILED, &quot;Address resolution failed&quot;},</span></span>
+<span id="L82"><span class="lineNum">      82</span> <span class="tlaUNC">           0 :         {DTLSError::SOCKET_ERROR, &quot;Socket operation failed&quot;},</span></span>
+<span id="L83"><span class="lineNum">      83</span> <span class="tlaUNC">           0 :         {DTLSError::SEND_ERROR, &quot;Send operation failed&quot;},</span></span>
+<span id="L84"><span class="lineNum">      84</span> <span class="tlaUNC">           0 :         {DTLSError::RECEIVE_ERROR, &quot;Receive operation failed&quot;},</span></span>
+<span id="L85"><span class="lineNum">      85</span> <span class="tlaUNC">           0 :         {DTLSError::NETWORK_UNREACHABLE, &quot;Network unreachable&quot;},</span></span>
+<span id="L86"><span class="lineNum">      86</span> <span class="tlaUNC">           0 :         {DTLSError::HOST_UNREACHABLE, &quot;Host unreachable&quot;},</span></span>
+<span id="L87"><span class="lineNum">      87</span> <span class="tlaUNC">           0 :         {DTLSError::PORT_UNREACHABLE, &quot;Port unreachable&quot;},</span></span>
+<span id="L88"><span class="lineNum">      88</span> <span class="tlaUNC">           0 :         {DTLSError::NETWORK_DOWN, &quot;Network interface down&quot;},</span></span>
+<span id="L89"><span class="lineNum">      89</span> <span class="tlaUNC">           0 :         {DTLSError::MTU_EXCEEDED, &quot;Maximum transmission unit exceeded&quot;},</span></span>
+<span id="L90"><span class="lineNum">      90</span>              :         </span>
+<span id="L91"><span class="lineNum">      91</span>              :         // Security errors (150-169)</span>
+<span id="L92"><span class="lineNum">      92</span> <span class="tlaUNC">           0 :         {DTLSError::REPLAY_ATTACK_DETECTED, &quot;Replay attack detected&quot;},</span></span>
+<span id="L93"><span class="lineNum">      93</span> <span class="tlaUNC">           0 :         {DTLSError::TAMPERING_DETECTED, &quot;Message tampering detected&quot;},</span></span>
+<span id="L94"><span class="lineNum">      94</span> <span class="tlaUNC">           0 :         {DTLSError::SECURITY_POLICY_VIOLATION, &quot;Security policy violation&quot;},</span></span>
+<span id="L95"><span class="lineNum">      95</span> <span class="tlaUNC">           0 :         {DTLSError::AUTHENTICATION_FAILED, &quot;Authentication failed&quot;},</span></span>
+<span id="L96"><span class="lineNum">      96</span> <span class="tlaUNC">           0 :         {DTLSError::AUTHORIZATION_FAILED, &quot;Authorization failed&quot;},</span></span>
+<span id="L97"><span class="lineNum">      97</span> <span class="tlaUNC">           0 :         {DTLSError::UNKNOWN_PSK_IDENTITY, &quot;Unknown PSK identity&quot;},</span></span>
+<span id="L98"><span class="lineNum">      98</span> <span class="tlaUNC">           0 :         {DTLSError::PSK_IDENTITY_REQUIRED, &quot;PSK identity required&quot;},</span></span>
+<span id="L99"><span class="lineNum">      99</span> <span class="tlaUNC">           0 :         {DTLSError::EARLY_DATA_REJECTED, &quot;Early data rejected&quot;},</span></span>
+<span id="L100"><span class="lineNum">     100</span> <span class="tlaUNC">           0 :         {DTLSError::CERTIFICATE_TRANSPARENCY_ERROR, &quot;Certificate transparency error&quot;},</span></span>
+<span id="L101"><span class="lineNum">     101</span> <span class="tlaUNC">           0 :         {DTLSError::OCSP_ERROR, &quot;OCSP validation error&quot;},</span></span>
+<span id="L102"><span class="lineNum">     102</span>              :         </span>
+<span id="L103"><span class="lineNum">     103</span>              :         // Configuration errors (170-189)</span>
+<span id="L104"><span class="lineNum">     104</span> <span class="tlaUNC">           0 :         {DTLSError::INVALID_CONFIGURATION, &quot;Invalid configuration&quot;},</span></span>
+<span id="L105"><span class="lineNum">     105</span> <span class="tlaUNC">           0 :         {DTLSError::MISSING_CONFIGURATION, &quot;Missing required configuration&quot;},</span></span>
+<span id="L106"><span class="lineNum">     106</span> <span class="tlaUNC">           0 :         {DTLSError::CONFIGURATION_CONFLICT, &quot;Configuration conflict&quot;},</span></span>
+<span id="L107"><span class="lineNum">     107</span> <span class="tlaUNC">           0 :         {DTLSError::FEATURE_NOT_ENABLED, &quot;Feature not enabled&quot;},</span></span>
+<span id="L108"><span class="lineNum">     108</span> <span class="tlaUNC">           0 :         {DTLSError::QUOTA_EXCEEDED, &quot;Resource quota exceeded&quot;},</span></span>
+<span id="L109"><span class="lineNum">     109</span> <span class="tlaUNC">           0 :         {DTLSError::POLICY_VIOLATION, &quot;Policy violation&quot;},</span></span>
+<span id="L110"><span class="lineNum">     110</span> <span class="tlaUNC">           0 :         {DTLSError::LICENSE_ERROR, &quot;License validation error&quot;},</span></span>
+<span id="L111"><span class="lineNum">     111</span> <span class="tlaUNC">           0 :         {DTLSError::VERSION_MISMATCH, &quot;Version mismatch&quot;},</span></span>
+<span id="L112"><span class="lineNum">     112</span> <span class="tlaUNC">           0 :         {DTLSError::COMPATIBILITY_ERROR, &quot;Compatibility error&quot;},</span></span>
+<span id="L113"><span class="lineNum">     113</span> <span class="tlaUNC">           0 :         {DTLSError::DEPENDENCY_ERROR, &quot;Dependency error&quot;},</span></span>
+<span id="L114"><span class="lineNum">     114</span>              :         </span>
+<span id="L115"><span class="lineNum">     115</span>              :         // User errors (190-199)</span>
+<span id="L116"><span class="lineNum">     116</span> <span class="tlaUNC">           0 :         {DTLSError::USER_CANCELED, &quot;Operation canceled by user&quot;},</span></span>
+<span id="L117"><span class="lineNum">     117</span> <span class="tlaUNC">           0 :         {DTLSError::USER_INTERVENTION_REQUIRED, &quot;User intervention required&quot;},</span></span>
+<span id="L118"><span class="lineNum">     118</span> <span class="tlaUNC">           0 :         {DTLSError::PERMISSION_DENIED, &quot;Permission denied&quot;},</span></span>
+<span id="L119"><span class="lineNum">     119</span> <span class="tlaUNC">           0 :         {DTLSError::QUOTA_EXHAUSTED, &quot;User quota exhausted&quot;},</span></span>
+<span id="L120"><span class="lineNum">     120</span> <span class="tlaUNC">           0 :         {DTLSError::RATE_LIMITED, &quot;Rate limit exceeded&quot;},</span></span>
+<span id="L121"><span class="lineNum">     121</span> <span class="tlaUNC">           0 :         {DTLSError::SERVICE_UNAVAILABLE, &quot;Service temporarily unavailable&quot;},</span></span>
+<span id="L122"><span class="lineNum">     122</span> <span class="tlaUNC">           0 :         {DTLSError::MAINTENANCE_MODE, &quot;System in maintenance mode&quot;},</span></span>
+<span id="L123"><span class="lineNum">     123</span> <span class="tlaUNC">           0 :         {DTLSError::DEPRECATED_FEATURE, &quot;Feature is deprecated&quot;},</span></span>
+<span id="L124"><span class="lineNum">     124</span> <span class="tlaUNC">           0 :         {DTLSError::TRIAL_EXPIRED, &quot;Trial period expired&quot;},</span></span>
+<span id="L125"><span class="lineNum">     125</span> <span class="tlaUNC">           0 :         {DTLSError::ACCOUNT_SUSPENDED, &quot;Account suspended&quot;}</span></span>
+<span id="L126"><span class="lineNum">     126</span> <span class="tlaGNC tlaBgGNC">        1620 :     };</span></span>
+<span id="L127"><span class="lineNum">     127</span>              :     </span>
+<span id="L128"><span class="lineNum">     128</span> <span class="tlaGNC">        1032 :     auto it = error_messages.find(error);</span></span>
+<span id="L129"><span class="lineNum">     129</span> <span class="tlaGNC">        1032 :     if (it != error_messages.end()) {</span></span>
+<span id="L130"><span class="lineNum">     130</span> <span class="tlaGNC">         923 :         return it-&gt;second;</span></span>
+<span id="L131"><span class="lineNum">     131</span>              :     }</span>
+<span id="L132"><span class="lineNum">     132</span>              :     </span>
+<span id="L133"><span class="lineNum">     133</span> <span class="tlaGNC">         109 :     return &quot;Unknown DTLS error (&quot; + std::to_string(ev) + &quot;)&quot;;</span></span>
+<span id="L134"><span class="lineNum">     134</span> <span class="tlaGNC">           6 : }</span></span>
+<span id="L135"><span class="lineNum">     135</span>              : </span>
+<span id="L136"><span class="lineNum">     136</span> <span class="tlaGNC">          14 : bool DTLSErrorCategory::equivalent(const std::error_code&amp; code, int condition) const noexcept {</span></span>
+<span id="L137"><span class="lineNum">     137</span>              :     // Only consider equivalent if both the category and value match</span>
+<span id="L138"><span class="lineNum">     138</span> <span class="tlaGNC">          14 :     return (code.category() == *this) &amp;&amp; (code.value() == condition);</span></span>
+<span id="L139"><span class="lineNum">     139</span>              : }</span>
+<span id="L140"><span class="lineNum">     140</span>              : </span>
+<span id="L141"><span class="lineNum">     141</span>              : // Utility functions</span>
+<span id="L142"><span class="lineNum">     142</span> <span class="tlaGNC">         678 : std::string error_message(DTLSError error) {</span></span>
+<span id="L143"><span class="lineNum">     143</span> <span class="tlaGNC">         678 :     return DTLSErrorCategory::instance().message(static_cast&lt;int&gt;(error));</span></span>
+<span id="L144"><span class="lineNum">     144</span>              : }</span>
+<span id="L145"><span class="lineNum">     145</span>              : </span>
+<span id="L146"><span class="lineNum">     146</span> <span class="tlaGNC">        3110 : bool is_fatal_error(DTLSError error) {</span></span>
+<span id="L147"><span class="lineNum">     147</span>              :     // Determine if an error is fatal and should terminate the connection</span>
+<span id="L148"><span class="lineNum">     148</span> <span class="tlaGNC">        3110 :     switch (error) {</span></span>
+<span id="L149"><span class="lineNum">     149</span>              :         // Non-fatal errors that allow retry or recovery</span>
+<span id="L150"><span class="lineNum">     150</span> <span class="tlaGNC">        3038 :         case DTLSError::SUCCESS:</span></span>
+<span id="L151"><span class="lineNum">     151</span>              :         case DTLSError::TIMEOUT:</span>
+<span id="L152"><span class="lineNum">     152</span>              :         case DTLSError::OPERATION_ABORTED:</span>
+<span id="L153"><span class="lineNum">     153</span>              :         case DTLSError::RESOURCE_UNAVAILABLE:</span>
+<span id="L154"><span class="lineNum">     154</span>              :         case DTLSError::CONNECTION_TIMEOUT:</span>
+<span id="L155"><span class="lineNum">     155</span>              :         case DTLSError::NETWORK_UNREACHABLE:</span>
+<span id="L156"><span class="lineNum">     156</span>              :         case DTLSError::HOST_UNREACHABLE:</span>
+<span id="L157"><span class="lineNum">     157</span>              :         case DTLSError::PORT_UNREACHABLE:</span>
+<span id="L158"><span class="lineNum">     158</span>              :         case DTLSError::USER_CANCELED:</span>
+<span id="L159"><span class="lineNum">     159</span>              :         case DTLSError::RATE_LIMITED:</span>
+<span id="L160"><span class="lineNum">     160</span>              :         case DTLSError::SERVICE_UNAVAILABLE:</span>
+<span id="L161"><span class="lineNum">     161</span>              :         case DTLSError::MAINTENANCE_MODE:</span>
+<span id="L162"><span class="lineNum">     162</span>              :         // RFC 9147: Invalid records should be silently discarded (non-fatal)</span>
+<span id="L163"><span class="lineNum">     163</span>              :         case DTLSError::INVALID_RECORD_HEADER:</span>
+<span id="L164"><span class="lineNum">     164</span> <span class="tlaGNC">        3038 :             return false;</span></span>
+<span id="L165"><span class="lineNum">     165</span>              :             </span>
+<span id="L166"><span class="lineNum">     166</span>              :         // Fatal errors that require connection termination</span>
+<span id="L167"><span class="lineNum">     167</span> <span class="tlaGNC">          64 :         case DTLSError::PROTOCOL_VERSION_NOT_SUPPORTED:</span></span>
+<span id="L168"><span class="lineNum">     168</span>              :         case DTLSError::HANDSHAKE_FAILURE:</span>
+<span id="L169"><span class="lineNum">     169</span>              :         case DTLSError::CERTIFICATE_VERIFY_FAILED:</span>
+<span id="L170"><span class="lineNum">     170</span>              :         case DTLSError::CERTIFICATE_EXPIRED:</span>
+<span id="L171"><span class="lineNum">     171</span>              :         case DTLSError::CERTIFICATE_REVOKED:</span>
+<span id="L172"><span class="lineNum">     172</span>              :         case DTLSError::UNKNOWN_CA:</span>
+<span id="L173"><span class="lineNum">     173</span>              :         case DTLSError::ACCESS_DENIED:</span>
+<span id="L174"><span class="lineNum">     174</span>              :         case DTLSError::DECODE_ERROR:</span>
+<span id="L175"><span class="lineNum">     175</span>              :         case DTLSError::ILLEGAL_PARAMETER:</span>
+<span id="L176"><span class="lineNum">     176</span>              :         case DTLSError::DECRYPT_ERROR:</span>
+<span id="L177"><span class="lineNum">     177</span>              :         case DTLSError::BAD_RECORD_MAC:</span>
+<span id="L178"><span class="lineNum">     178</span>              :         case DTLSError::SIGNATURE_VERIFICATION_FAILED:</span>
+<span id="L179"><span class="lineNum">     179</span>              :         case DTLSError::CIPHER_SUITE_NOT_SUPPORTED:</span>
+<span id="L180"><span class="lineNum">     180</span>              :         case DTLSError::KEY_EXCHANGE_FAILED:</span>
+<span id="L181"><span class="lineNum">     181</span>              :         case DTLSError::INSUFFICIENT_SECURITY:</span>
+<span id="L182"><span class="lineNum">     182</span>              :         case DTLSError::REPLAY_ATTACK_DETECTED:</span>
+<span id="L183"><span class="lineNum">     183</span>              :         case DTLSError::TAMPERING_DETECTED:</span>
+<span id="L184"><span class="lineNum">     184</span>              :         case DTLSError::SECURITY_POLICY_VIOLATION:</span>
+<span id="L185"><span class="lineNum">     185</span>              :         case DTLSError::AUTHENTICATION_FAILED:</span>
+<span id="L186"><span class="lineNum">     186</span>              :         case DTLSError::AUTHORIZATION_FAILED:</span>
+<span id="L187"><span class="lineNum">     187</span>              :         case DTLSError::PERMISSION_DENIED:</span>
+<span id="L188"><span class="lineNum">     188</span> <span class="tlaGNC">          64 :             return true;</span></span>
+<span id="L189"><span class="lineNum">     189</span>              :             </span>
+<span id="L190"><span class="lineNum">     190</span> <span class="tlaGNC">           8 :         default:</span></span>
+<span id="L191"><span class="lineNum">     191</span>              :             // Conservative approach: treat unknown errors as fatal</span>
+<span id="L192"><span class="lineNum">     192</span> <span class="tlaGNC">           8 :             return true;</span></span>
+<span id="L193"><span class="lineNum">     193</span>              :     }</span>
+<span id="L194"><span class="lineNum">     194</span>              : }</span>
+<span id="L195"><span class="lineNum">     195</span>              : </span>
+<span id="L196"><span class="lineNum">     196</span> <span class="tlaGNC">         702 : bool is_retryable_error(DTLSError error) {</span></span>
+<span id="L197"><span class="lineNum">     197</span>              :     // Determine if an operation can be retried after this error</span>
+<span id="L198"><span class="lineNum">     198</span> <span class="tlaGNC">         702 :     switch (error) {</span></span>
+<span id="L199"><span class="lineNum">     199</span>              :         // Retryable errors</span>
+<span id="L200"><span class="lineNum">     200</span> <span class="tlaGNC">         678 :         case DTLSError::TIMEOUT:</span></span>
+<span id="L201"><span class="lineNum">     201</span>              :         case DTLSError::RESOURCE_UNAVAILABLE:</span>
+<span id="L202"><span class="lineNum">     202</span>              :         case DTLSError::CONNECTION_TIMEOUT:</span>
+<span id="L203"><span class="lineNum">     203</span>              :         case DTLSError::NETWORK_ERROR:</span>
+<span id="L204"><span class="lineNum">     204</span>              :         case DTLSError::SOCKET_ERROR:</span>
+<span id="L205"><span class="lineNum">     205</span>              :         case DTLSError::SEND_ERROR:</span>
+<span id="L206"><span class="lineNum">     206</span>              :         case DTLSError::RECEIVE_ERROR:</span>
+<span id="L207"><span class="lineNum">     207</span>              :         case DTLSError::NETWORK_UNREACHABLE:</span>
+<span id="L208"><span class="lineNum">     208</span>              :         case DTLSError::HOST_UNREACHABLE:</span>
+<span id="L209"><span class="lineNum">     209</span>              :         case DTLSError::NETWORK_DOWN:</span>
+<span id="L210"><span class="lineNum">     210</span>              :         case DTLSError::RATE_LIMITED:</span>
+<span id="L211"><span class="lineNum">     211</span>              :         case DTLSError::SERVICE_UNAVAILABLE:</span>
+<span id="L212"><span class="lineNum">     212</span>              :         case DTLSError::MAINTENANCE_MODE:</span>
+<span id="L213"><span class="lineNum">     213</span> <span class="tlaGNC">         678 :             return true;</span></span>
+<span id="L214"><span class="lineNum">     214</span>              :             </span>
+<span id="L215"><span class="lineNum">     215</span>              :         // Non-retryable errors</span>
+<span id="L216"><span class="lineNum">     216</span> <span class="tlaGNC">          21 :         case DTLSError::INVALID_PARAMETER:</span></span>
+<span id="L217"><span class="lineNum">     217</span>              :         case DTLSError::OUT_OF_MEMORY:</span>
+<span id="L218"><span class="lineNum">     218</span>              :         case DTLSError::ALREADY_INITIALIZED:</span>
+<span id="L219"><span class="lineNum">     219</span>              :         case DTLSError::OPERATION_NOT_SUPPORTED:</span>
+<span id="L220"><span class="lineNum">     220</span>              :         case DTLSError::PROTOCOL_VERSION_NOT_SUPPORTED:</span>
+<span id="L221"><span class="lineNum">     221</span>              :         case DTLSError::INVALID_MESSAGE_FORMAT:</span>
+<span id="L222"><span class="lineNum">     222</span>              :         case DTLSError::HANDSHAKE_FAILURE:</span>
+<span id="L223"><span class="lineNum">     223</span>              :         case DTLSError::CERTIFICATE_VERIFY_FAILED:</span>
+<span id="L224"><span class="lineNum">     224</span>              :         case DTLSError::CERTIFICATE_EXPIRED:</span>
+<span id="L225"><span class="lineNum">     225</span>              :         case DTLSError::CERTIFICATE_REVOKED:</span>
+<span id="L226"><span class="lineNum">     226</span>              :         case DTLSError::UNKNOWN_CA:</span>
+<span id="L227"><span class="lineNum">     227</span>              :         case DTLSError::ACCESS_DENIED:</span>
+<span id="L228"><span class="lineNum">     228</span>              :         case DTLSError::DECODE_ERROR:</span>
+<span id="L229"><span class="lineNum">     229</span>              :         case DTLSError::ILLEGAL_PARAMETER:</span>
+<span id="L230"><span class="lineNum">     230</span>              :         case DTLSError::DECRYPT_ERROR:</span>
+<span id="L231"><span class="lineNum">     231</span>              :         case DTLSError::BAD_RECORD_MAC:</span>
+<span id="L232"><span class="lineNum">     232</span>              :         case DTLSError::SIGNATURE_VERIFICATION_FAILED:</span>
+<span id="L233"><span class="lineNum">     233</span>              :         case DTLSError::CIPHER_SUITE_NOT_SUPPORTED:</span>
+<span id="L234"><span class="lineNum">     234</span>              :         case DTLSError::INSUFFICIENT_SECURITY:</span>
+<span id="L235"><span class="lineNum">     235</span>              :         case DTLSError::CONNECTION_CLOSED:</span>
+<span id="L236"><span class="lineNum">     236</span>              :         case DTLSError::CONNECTION_RESET:</span>
+<span id="L237"><span class="lineNum">     237</span>              :         case DTLSError::CONNECTION_REFUSED:</span>
+<span id="L238"><span class="lineNum">     238</span>              :         case DTLSError::REPLAY_ATTACK_DETECTED:</span>
+<span id="L239"><span class="lineNum">     239</span>              :         case DTLSError::TAMPERING_DETECTED:</span>
+<span id="L240"><span class="lineNum">     240</span>              :         case DTLSError::AUTHENTICATION_FAILED:</span>
+<span id="L241"><span class="lineNum">     241</span>              :         case DTLSError::AUTHORIZATION_FAILED:</span>
+<span id="L242"><span class="lineNum">     242</span>              :         case DTLSError::PERMISSION_DENIED:</span>
+<span id="L243"><span class="lineNum">     243</span>              :         case DTLSError::USER_CANCELED:</span>
+<span id="L244"><span class="lineNum">     244</span> <span class="tlaGNC">          21 :             return false;</span></span>
+<span id="L245"><span class="lineNum">     245</span>              :             </span>
+<span id="L246"><span class="lineNum">     246</span> <span class="tlaGNC">           3 :         default:</span></span>
+<span id="L247"><span class="lineNum">     247</span>              :             // Conservative approach: don't retry unknown errors</span>
+<span id="L248"><span class="lineNum">     248</span> <span class="tlaGNC">           3 :             return false;</span></span>
+<span id="L249"><span class="lineNum">     249</span>              :     }</span>
+<span id="L250"><span class="lineNum">     250</span>              : }</span>
+<span id="L251"><span class="lineNum">     251</span>              : </span>
+<span id="L252"><span class="lineNum">     252</span> <span class="tlaGNC">         115 : AlertDescription error_to_alert(DTLSError error) {</span></span>
+<span id="L253"><span class="lineNum">     253</span>              :     // Map DTLS errors to appropriate alert descriptions</span>
+<span id="L254"><span class="lineNum">     254</span>              :     static const std::unordered_map&lt;DTLSError, AlertDescription&gt; error_to_alert_map = {</span>
+<span id="L255"><span class="lineNum">     255</span>              :         {DTLSError::PROTOCOL_VERSION_NOT_SUPPORTED, AlertDescription::PROTOCOL_VERSION},</span>
+<span id="L256"><span class="lineNum">     256</span>              :         {DTLSError::INVALID_MESSAGE_FORMAT, AlertDescription::DECODE_ERROR},</span>
+<span id="L257"><span class="lineNum">     257</span>              :         {DTLSError::UNEXPECTED_MESSAGE, AlertDescription::UNEXPECTED_MESSAGE},</span>
+<span id="L258"><span class="lineNum">     258</span>              :         {DTLSError::MESSAGE_TOO_LARGE, AlertDescription::RECORD_OVERFLOW},</span>
+<span id="L259"><span class="lineNum">     259</span>              :         {DTLSError::RECORD_OVERFLOW, AlertDescription::RECORD_OVERFLOW},</span>
+<span id="L260"><span class="lineNum">     260</span>              :         {DTLSError::HANDSHAKE_FAILURE, AlertDescription::HANDSHAKE_FAILURE},</span>
+<span id="L261"><span class="lineNum">     261</span>              :         {DTLSError::CERTIFICATE_VERIFY_FAILED, AlertDescription::BAD_CERTIFICATE},</span>
+<span id="L262"><span class="lineNum">     262</span>              :         {DTLSError::CERTIFICATE_EXPIRED, AlertDescription::CERTIFICATE_EXPIRED},</span>
+<span id="L263"><span class="lineNum">     263</span>              :         {DTLSError::CERTIFICATE_REVOKED, AlertDescription::CERTIFICATE_REVOKED},</span>
+<span id="L264"><span class="lineNum">     264</span>              :         {DTLSError::CERTIFICATE_UNKNOWN, AlertDescription::CERTIFICATE_UNKNOWN},</span>
+<span id="L265"><span class="lineNum">     265</span>              :         {DTLSError::UNKNOWN_CA, AlertDescription::UNKNOWN_CA},</span>
+<span id="L266"><span class="lineNum">     266</span>              :         {DTLSError::ACCESS_DENIED, AlertDescription::ACCESS_DENIED},</span>
+<span id="L267"><span class="lineNum">     267</span>              :         {DTLSError::DECODE_ERROR, AlertDescription::DECODE_ERROR},</span>
+<span id="L268"><span class="lineNum">     268</span>              :         {DTLSError::ILLEGAL_PARAMETER, AlertDescription::ILLEGAL_PARAMETER},</span>
+<span id="L269"><span class="lineNum">     269</span>              :         {DTLSError::MISSING_EXTENSION, AlertDescription::MISSING_EXTENSION},</span>
+<span id="L270"><span class="lineNum">     270</span>              :         {DTLSError::UNSUPPORTED_EXTENSION, AlertDescription::UNSUPPORTED_EXTENSION},</span>
+<span id="L271"><span class="lineNum">     271</span>              :         {DTLSError::UNRECOGNIZED_NAME, AlertDescription::UNRECOGNIZED_NAME},</span>
+<span id="L272"><span class="lineNum">     272</span>              :         {DTLSError::BAD_CERTIFICATE_STATUS_RESPONSE, AlertDescription::BAD_CERTIFICATE_STATUS_RESPONSE},</span>
+<span id="L273"><span class="lineNum">     273</span>              :         {DTLSError::CERTIFICATE_REQUIRED, AlertDescription::CERTIFICATE_REQUIRED},</span>
+<span id="L274"><span class="lineNum">     274</span>              :         {DTLSError::NO_APPLICATION_PROTOCOL, AlertDescription::NO_APPLICATION_PROTOCOL},</span>
+<span id="L275"><span class="lineNum">     275</span>              :         {DTLSError::DECRYPT_ERROR, AlertDescription::DECRYPT_ERROR},</span>
+<span id="L276"><span class="lineNum">     276</span>              :         {DTLSError::BAD_RECORD_MAC, AlertDescription::BAD_RECORD_MAC},</span>
+<span id="L277"><span class="lineNum">     277</span>              :         {DTLSError::INSUFFICIENT_SECURITY, AlertDescription::INSUFFICIENT_SECURITY},</span>
+<span id="L278"><span class="lineNum">     278</span>              :         {DTLSError::INTERNAL_ERROR, AlertDescription::INTERNAL_ERROR},</span>
+<span id="L279"><span class="lineNum">     279</span>              :         {DTLSError::USER_CANCELED, AlertDescription::USER_CANCELED},</span>
+<span id="L280"><span class="lineNum">     280</span>              :         {DTLSError::UNKNOWN_PSK_IDENTITY, AlertDescription::UNKNOWN_PSK_IDENTITY},</span>
+<span id="L281"><span class="lineNum">     281</span>              :         // Additional DTLS v1.3 mappings (RFC 9147)</span>
+<span id="L282"><span class="lineNum">     282</span>              :         {DTLSError::CONNECTION_ID_MISMATCH, AlertDescription::TOO_MANY_CIDS_REQUESTED}</span>
+<span id="L283"><span class="lineNum">     283</span> <span class="tlaGNC">         123 :     };</span></span>
+<span id="L284"><span class="lineNum">     284</span>              :     </span>
+<span id="L285"><span class="lineNum">     285</span> <span class="tlaGNC">         115 :     auto it = error_to_alert_map.find(error);</span></span>
+<span id="L286"><span class="lineNum">     286</span> <span class="tlaGNC">         115 :     if (it != error_to_alert_map.end()) {</span></span>
+<span id="L287"><span class="lineNum">     287</span> <span class="tlaGNC">         106 :         return it-&gt;second;</span></span>
+<span id="L288"><span class="lineNum">     288</span>              :     }</span>
+<span id="L289"><span class="lineNum">     289</span>              :     </span>
+<span id="L290"><span class="lineNum">     290</span>              :     // Default to internal error for unmapped errors</span>
+<span id="L291"><span class="lineNum">     291</span> <span class="tlaGNC">           9 :     return AlertDescription::INTERNAL_ERROR;</span></span>
+<span id="L292"><span class="lineNum">     292</span>              : }</span>
+<span id="L293"><span class="lineNum">     293</span>              : </span>
+<span id="L294"><span class="lineNum">     294</span> <span class="tlaGNC">         111 : DTLSError alert_to_error(AlertDescription alert) {</span></span>
+<span id="L295"><span class="lineNum">     295</span>              :     // Map alert descriptions to DTLS errors</span>
+<span id="L296"><span class="lineNum">     296</span>              :     static const std::unordered_map&lt;AlertDescription, DTLSError&gt; alert_to_error_map = {</span>
+<span id="L297"><span class="lineNum">     297</span>              :         {AlertDescription::UNEXPECTED_MESSAGE, DTLSError::UNEXPECTED_MESSAGE},</span>
+<span id="L298"><span class="lineNum">     298</span>              :         {AlertDescription::BAD_RECORD_MAC, DTLSError::BAD_RECORD_MAC},</span>
+<span id="L299"><span class="lineNum">     299</span>              :         {AlertDescription::RECORD_OVERFLOW, DTLSError::RECORD_OVERFLOW},</span>
+<span id="L300"><span class="lineNum">     300</span>              :         {AlertDescription::HANDSHAKE_FAILURE, DTLSError::HANDSHAKE_FAILURE},</span>
+<span id="L301"><span class="lineNum">     301</span>              :         {AlertDescription::BAD_CERTIFICATE, DTLSError::CERTIFICATE_VERIFY_FAILED},</span>
+<span id="L302"><span class="lineNum">     302</span>              :         {AlertDescription::UNSUPPORTED_CERTIFICATE, DTLSError::CERTIFICATE_VERIFY_FAILED},</span>
+<span id="L303"><span class="lineNum">     303</span>              :         {AlertDescription::CERTIFICATE_REVOKED, DTLSError::CERTIFICATE_REVOKED},</span>
+<span id="L304"><span class="lineNum">     304</span>              :         {AlertDescription::CERTIFICATE_EXPIRED, DTLSError::CERTIFICATE_EXPIRED},</span>
+<span id="L305"><span class="lineNum">     305</span>              :         {AlertDescription::CERTIFICATE_UNKNOWN, DTLSError::CERTIFICATE_UNKNOWN},</span>
+<span id="L306"><span class="lineNum">     306</span>              :         {AlertDescription::ILLEGAL_PARAMETER, DTLSError::ILLEGAL_PARAMETER},</span>
+<span id="L307"><span class="lineNum">     307</span>              :         {AlertDescription::UNKNOWN_CA, DTLSError::UNKNOWN_CA},</span>
+<span id="L308"><span class="lineNum">     308</span>              :         {AlertDescription::ACCESS_DENIED, DTLSError::ACCESS_DENIED},</span>
+<span id="L309"><span class="lineNum">     309</span>              :         {AlertDescription::DECODE_ERROR, DTLSError::DECODE_ERROR},</span>
+<span id="L310"><span class="lineNum">     310</span>              :         {AlertDescription::DECRYPT_ERROR, DTLSError::DECRYPT_ERROR},</span>
+<span id="L311"><span class="lineNum">     311</span>              :         {AlertDescription::PROTOCOL_VERSION, DTLSError::PROTOCOL_VERSION_NOT_SUPPORTED},</span>
+<span id="L312"><span class="lineNum">     312</span>              :         {AlertDescription::INSUFFICIENT_SECURITY, DTLSError::INSUFFICIENT_SECURITY},</span>
+<span id="L313"><span class="lineNum">     313</span>              :         {AlertDescription::INTERNAL_ERROR, DTLSError::INTERNAL_ERROR},</span>
+<span id="L314"><span class="lineNum">     314</span>              :         {AlertDescription::USER_CANCELED, DTLSError::USER_CANCELED},</span>
+<span id="L315"><span class="lineNum">     315</span>              :         {AlertDescription::MISSING_EXTENSION, DTLSError::MISSING_EXTENSION},</span>
+<span id="L316"><span class="lineNum">     316</span>              :         {AlertDescription::UNSUPPORTED_EXTENSION, DTLSError::UNSUPPORTED_EXTENSION},</span>
+<span id="L317"><span class="lineNum">     317</span>              :         {AlertDescription::UNRECOGNIZED_NAME, DTLSError::UNRECOGNIZED_NAME},</span>
+<span id="L318"><span class="lineNum">     318</span>              :         {AlertDescription::BAD_CERTIFICATE_STATUS_RESPONSE, DTLSError::BAD_CERTIFICATE_STATUS_RESPONSE},</span>
+<span id="L319"><span class="lineNum">     319</span>              :         {AlertDescription::UNKNOWN_PSK_IDENTITY, DTLSError::UNKNOWN_PSK_IDENTITY},</span>
+<span id="L320"><span class="lineNum">     320</span>              :         {AlertDescription::CERTIFICATE_REQUIRED, DTLSError::CERTIFICATE_REQUIRED},</span>
+<span id="L321"><span class="lineNum">     321</span>              :         {AlertDescription::NO_APPLICATION_PROTOCOL, DTLSError::NO_APPLICATION_PROTOCOL},</span>
+<span id="L322"><span class="lineNum">     322</span>              :         // Additional DTLS v1.3 reverse mappings (RFC 9147)</span>
+<span id="L323"><span class="lineNum">     323</span>              :         {AlertDescription::TOO_MANY_CIDS_REQUESTED, DTLSError::CONNECTION_ID_MISMATCH},</span>
+<span id="L324"><span class="lineNum">     324</span>              :         // Connection management alerts</span>
+<span id="L325"><span class="lineNum">     325</span>              :         {AlertDescription::CLOSE_NOTIFY, DTLSError::CONNECTION_CLOSED}</span>
+<span id="L326"><span class="lineNum">     326</span> <span class="tlaGNC">         119 :     };</span></span>
+<span id="L327"><span class="lineNum">     327</span>              :     </span>
+<span id="L328"><span class="lineNum">     328</span> <span class="tlaGNC">         111 :     auto it = alert_to_error_map.find(alert);</span></span>
+<span id="L329"><span class="lineNum">     329</span> <span class="tlaGNC">         111 :     if (it != alert_to_error_map.end()) {</span></span>
+<span id="L330"><span class="lineNum">     330</span> <span class="tlaGNC">         111 :         return it-&gt;second;</span></span>
+<span id="L331"><span class="lineNum">     331</span>              :     }</span>
+<span id="L332"><span class="lineNum">     332</span>              :     </span>
+<span id="L333"><span class="lineNum">     333</span>              :     // Default to internal error for unmapped alerts</span>
+<span id="L334"><span class="lineNum">     334</span> <span class="tlaUNC tlaBgUNC">           0 :     return DTLSError::INTERNAL_ERROR;</span></span>
+<span id="L335"><span class="lineNum">     335</span>              : }</span>
+<span id="L336"><span class="lineNum">     336</span>              : </span>
+<span id="L337"><span class="lineNum">     337</span>              : } // namespace v13</span>
+<span id="L338"><span class="lineNum">     338</span>              : } // namespace dtls</span>
+        </pre>
+              </td>
+            </tr>
+          </table>
+          <br>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+            <tr><td class="versionInfo">Generated by: <a href="https://github.com//linux-test-project/lcov" target="_parent">LCOV version 2.0-1</a></td></tr>
+          </table>
+          <br>
+
+</body>
+</html>

@@ -22,19 +22,49 @@ set(SYSTEMC_ROOT "/home/jgreninger/Work/systemc")
 
 # SystemC library and include paths
 set(SYSTEMC_INCLUDE_DIRS "${SYSTEMC_ROOT}/include")
-set(SYSTEMC_LIBRARY_DIRS "${SYSTEMC_ROOT}/lib-linux64")
+set(SYSTEMC_LIBRARY_DIRS "${SYSTEMC_ROOT}/lib")
 set(SYSTEMC_LIBRARIES "systemc")
 
 # Add SystemC library directory to search path
 link_directories(${SYSTEMC_LIBRARY_DIRS})
 
+# Add main DTLS library directory to search path
+link_directories("${CMAKE_CURRENT_SOURCE_DIR}/../build/src")
+
 # Find required packages
 find_package(Threads REQUIRED)
 
 # Find GoogleTest for comprehensive testing
+# First try to find locally built GoogleTest
+set(CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/third_party/gtest_install;${CMAKE_PREFIX_PATH}")
 find_package(GTest QUIET)
 if(NOT GTest_FOUND)
-    message(STATUS "GoogleTest not found, some comprehensive tests may not build")
+    # Try alternative approach with manual paths
+    set(GTEST_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/third_party/gtest_install")
+    set(GTEST_INCLUDE_DIRS "${GTEST_ROOT}/include")
+    set(GTEST_LIBRARIES "${GTEST_ROOT}/lib/libgtest.a")
+    set(GTEST_MAIN_LIBRARIES "${GTEST_ROOT}/lib/libgtest_main.a")
+    
+    if(EXISTS "${GTEST_INCLUDE_DIRS}/gtest/gtest.h" AND EXISTS "${GTEST_LIBRARIES}")
+        message(STATUS "Found local GoogleTest installation")
+        set(GTest_FOUND TRUE)
+        
+        # Create imported targets manually
+        add_library(GTest::gtest STATIC IMPORTED)
+        set_target_properties(GTest::gtest PROPERTIES
+            IMPORTED_LOCATION "${GTEST_LIBRARIES}"
+            INTERFACE_INCLUDE_DIRECTORIES "${GTEST_INCLUDE_DIRS}"
+        )
+        
+        add_library(GTest::gtest_main STATIC IMPORTED)
+        set_target_properties(GTest::gtest_main PROPERTIES
+            IMPORTED_LOCATION "${GTEST_MAIN_LIBRARIES}"
+            INTERFACE_INCLUDE_DIRECTORIES "${GTEST_INCLUDE_DIRS}"
+            INTERFACE_LINK_LIBRARIES "GTest::gtest"
+        )
+    else()
+        message(STATUS "GoogleTest not found, some comprehensive tests may not build")
+    endif()
 endif()
 
 # Create SystemC imported target manually since find_package failed
@@ -49,6 +79,13 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/../include  # Main DTLS headers
     ${SYSTEMC_ROOT}/include  # SystemC headers
+)
+
+# Compiler definitions for SystemC builds
+add_compile_definitions(
+    SC_INCLUDE_DYNAMIC_PROCESSES
+    SC_ENABLE_ASSERTIONS
+    DTLS_BUILD_SYSTEMC
 )
 
 # SystemC TLM source files
@@ -89,7 +126,7 @@ target_link_libraries(dtls_systemc_tlm
         SystemC::systemc
         Threads::Threads
     PRIVATE
-        dtls_core  # Main DTLS library
+        dtlsv13  # Main DTLS library
 )
 
 # Set target properties
@@ -146,6 +183,7 @@ if(DTLS_SYSTEMC_BUILD_TESTS)
         protocol_stack_component_test
         systemc_integration_comprehensive_test
         timing_accuracy_validation_test
+        dtls_cid_test_standalone
     )
     
     # Build basic SystemC tests
@@ -171,10 +209,18 @@ if(DTLS_SYSTEMC_BUILD_TESTS)
     # Build comprehensive SystemC tests (require GoogleTest)
     if(GTest_FOUND)
         foreach(test_name ${COMPREHENSIVE_SYSTEMC_TESTS})
-            add_executable(${test_name}
-                tests/${test_name}.cpp
-                src/dtls_testbench.cpp  # Testbench implementation
-            )
+            if(test_name STREQUAL "dtls_cid_test_standalone")
+                # Standalone test doesn't need testbench
+                add_executable(${test_name}
+                    tests/${test_name}.cpp
+                )
+            else()
+                # Other tests use testbench
+                add_executable(${test_name}
+                    tests/${test_name}.cpp
+                    src/dtls_testbench.cpp  # Testbench implementation
+                )
+            endif()
             
             target_link_libraries(${test_name}
                 PRIVATE

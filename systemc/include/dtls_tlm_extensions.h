@@ -30,6 +30,14 @@ public:
     uint64_t sequence_number{0};
     std::vector<uint8_t> connection_id_data;
     
+    // RFC 9147 Connection ID Extension fields
+    bool cid_negotiation_enabled{false};
+    std::vector<uint8_t> local_cid;           // Local Connection ID
+    std::vector<uint8_t> peer_cid;            // Peer Connection ID
+    uint8_t cid_length{0};                    // CID length (0-20 bytes per RFC)
+    bool cid_present_in_record{false};        // CID present in current record
+    bool cid_sequence_number_length{true};    // Use 8-byte sequence numbers with CID
+    
     // Security parameters
     uint16_t cipher_suite{0};
     uint16_t signature_scheme{0};
@@ -53,6 +61,8 @@ public:
         NEW_SESSION_TICKET = 4,
         END_OF_EARLY_DATA = 5,
         ENCRYPTED_EXTENSIONS = 8,
+        NEW_CONNECTION_ID = 9,        // RFC 9147 CID negotiation
+        REQUEST_CONNECTION_ID = 10,   // RFC 9147 CID negotiation
         CERTIFICATE = 11,
         CERTIFICATE_REQUEST = 13,
         CERTIFICATE_VERIFY = 15,
@@ -110,6 +120,52 @@ public:
         connection_id = conn_id;
         epoch = ep;
         sequence_number = seq_num;
+    }
+    
+    // RFC 9147 Connection ID utility methods
+    void set_connection_context(uint32_t conn_id, uint16_t ep, uint64_t seq_num, const std::vector<uint8_t>& cid_data) {
+        connection_id = conn_id;
+        epoch = ep;
+        sequence_number = seq_num;
+        connection_id_data = cid_data;
+    }
+    
+    void enable_cid_negotiation(const std::vector<uint8_t>& local_connection_id, 
+                               const std::vector<uint8_t>& peer_connection_id = {}) {
+        cid_negotiation_enabled = true;
+        local_cid = local_connection_id;
+        peer_cid = peer_connection_id;
+        cid_length = static_cast<uint8_t>(local_cid.size());
+        
+        // Validate CID length per RFC 9147 (0-20 bytes)
+        if (cid_length > 20) {
+            cid_length = 20;
+            local_cid.resize(20);
+        }
+    }
+    
+    void set_peer_cid(const std::vector<uint8_t>& peer_connection_id) {
+        peer_cid = peer_connection_id;
+        // Validate peer CID length
+        if (peer_cid.size() > 20) {
+            peer_cid.resize(20);
+        }
+    }
+    
+    bool is_cid_enabled() const {
+        return cid_negotiation_enabled && !local_cid.empty();
+    }
+    
+    bool has_peer_cid() const {
+        return !peer_cid.empty();
+    }
+    
+    std::vector<uint8_t> get_local_cid() const {
+        return local_cid;
+    }
+    
+    std::vector<uint8_t> get_peer_cid() const {
+        return peer_cid;
     }
     
     void set_security_parameters(uint16_t cipher, uint16_t sig_scheme, uint16_t group) {
@@ -303,6 +359,42 @@ public:
         extension->connection_id = conn_id;
         extension->priority = dtls_extension::Priority::HIGH;
         payload->set_command(tlm::TLM_WRITE_COMMAND);
+    }
+    
+    // RFC 9147 CID-specific transaction configuration
+    void configure_as_new_connection_id(uint32_t conn_id, const std::vector<uint8_t>& new_cid, 
+                                       uint64_t retire_prior_to = 0) {
+        extension->message_type = dtls_extension::MessageType::HANDSHAKE;
+        extension->handshake_type = dtls_extension::HandshakeType::NEW_CONNECTION_ID;
+        extension->connection_id = conn_id;
+        extension->local_cid = new_cid;
+        extension->sequence_number = retire_prior_to;
+        extension->priority = dtls_extension::Priority::HIGH;
+        payload->set_command(tlm::TLM_WRITE_COMMAND);
+        
+        // Prepare NEW_CONNECTION_ID message data
+        std::vector<uint8_t> cid_message;
+        cid_message.push_back(static_cast<uint8_t>(new_cid.size()));  // CID length
+        cid_message.insert(cid_message.end(), new_cid.begin(), new_cid.end());
+        
+        set_data(cid_message.data(), cid_message.size());
+    }
+    
+    void configure_as_retire_connection_id(uint32_t conn_id, uint64_t sequence_number_to_retire) {
+        extension->message_type = dtls_extension::MessageType::HANDSHAKE;
+        extension->handshake_type = dtls_extension::HandshakeType::REQUEST_CONNECTION_ID;
+        extension->connection_id = conn_id;
+        extension->sequence_number = sequence_number_to_retire;
+        extension->priority = dtls_extension::Priority::HIGH;
+        payload->set_command(tlm::TLM_WRITE_COMMAND);
+        
+        // Prepare RETIRE_CONNECTION_ID message data (just sequence number)
+        std::vector<uint8_t> retire_message(8);
+        for (int i = 7; i >= 0; --i) {
+            retire_message[7-i] = static_cast<uint8_t>((sequence_number_to_retire >> (i * 8)) & 0xFF);
+        }
+        
+        set_data(retire_message.data(), retire_message.size());
     }
     
     void configure_as_application_data(uint32_t conn_id, const unsigned char* data, size_t size) {

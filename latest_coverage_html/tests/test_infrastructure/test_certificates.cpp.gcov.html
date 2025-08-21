@@ -1,0 +1,296 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - total_coverage.info - tests/test_infrastructure/test_certificates.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="title">LCOV - code coverage report</td></tr>
+            <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+            <tr>
+              <td width="100%">
+                <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="10%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">tests/test_infrastructure</a> - test_certificates.cpp<span style="font-size: 80%;"> (source / <a href="test_certificates.cpp.func-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="5%"></td>
+            <td width="5%" class="headerCovTableHead">Coverage</td>
+            <td width="5%" class="headerCovTableHead" title="Covered + Uncovered code">Total</td>
+            <td width="5%" class="headerCovTableHead" title="Exercised code only">Hit</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">total_coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntryMed">85.5&nbsp;%</td>
+            <td class="headerCovTableEntry">55</td>
+            <td class="headerCovTableEntry">47</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test Date:</td>
+            <td class="headerValue">2025-08-17 17:21:18</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntryMed">77.8&nbsp;%</td>
+            <td class="headerCovTableEntry">9</td>
+            <td class="headerCovTableEntry">7</td>
+          </tr>
+                  <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+                </table>
+              </td>
+            </tr>
+
+            <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+          </table>
+
+          <table cellpadding=0 cellspacing=0 border=0>
+            <tr>
+              <td><br></td>
+            </tr>
+            <tr>
+              <td>
+<pre class="sourceHeading">            Line data    Source code</pre>
+<pre class="source">
+<span id="L1"><span class="lineNum">       1</span>              : #include &quot;test_certificates.h&quot;</span>
+<span id="L2"><span class="lineNum">       2</span>              : #include &lt;fstream&gt;</span>
+<span id="L3"><span class="lineNum">       3</span>              : #include &lt;filesystem&gt;</span>
+<span id="L4"><span class="lineNum">       4</span>              : #include &lt;cstdlib&gt;</span>
+<span id="L5"><span class="lineNum">       5</span>              : #include &lt;iostream&gt;</span>
+<span id="L6"><span class="lineNum">       6</span>              : </span>
+<span id="L7"><span class="lineNum">       7</span>              : namespace dtls {</span>
+<span id="L8"><span class="lineNum">       8</span>              : namespace test {</span>
+<span id="L9"><span class="lineNum">       9</span>              : </span>
+<span id="L10"><span class="lineNum">      10</span> <span class="tlaGNC tlaBgGNC">          62 : std::string TestCertificates::get_server_certificate() {</span></span>
+<span id="L11"><span class="lineNum">      11</span> <span class="tlaGNC">         124 :     return R&quot;(-----BEGIN CERTIFICATE-----</span></span>
+<span id="L12"><span class="lineNum">      12</span>              : MIIDXTCCAkWgAwIBAgIJAKL0UG+mK8NOMA0GCSqGSIb3DQEBCwUAMEUxCzAJBgNV</span>
+<span id="L13"><span class="lineNum">      13</span>              : BAYTAkFVMRMwEQYDVQQIDApTb21lLVN0YXRlMSEwHwYDVQQKDBhJbnRlcm5ldCBX</span>
+<span id="L14"><span class="lineNum">      14</span>              : aWRnaXRzIFB0eSBMdGQwHhcNMjQwMTAxMTIwMDAwWhcNMjUwMTAxMTIwMDAwWjBF</span>
+<span id="L15"><span class="lineNum">      15</span>              : MQswCQYDVQQGEwJBVTETMBEGA1UECAwKU29tZS1TdGF0ZTEhMB8GA1UECgwYSW50</span>
+<span id="L16"><span class="lineNum">      16</span>              : ZXJuZXQgV2lkZ2l0cyBQdHkgTHRkMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIB</span>
+<span id="L17"><span class="lineNum">      17</span>              : CgKCAQEA2KmBGvbFJNVzNzE9zR1BvKUGP5OEOF7n7nUfnLKi5YBaNDGv6nF8JKsz</span>
+<span id="L18"><span class="lineNum">      18</span>              : QtJnVLPbNvnK+zFFJmHgLLQr5M6eKD7K1hXjR8z6bYnN4qF9s3jY9qN5C4V6L3xN</span>
+<span id="L19"><span class="lineNum">      19</span>              : vT8E5bS1dU9GrP6hJ4qY7V8nXy8FqW3E1rK8rL4A9J1qV7Y6N4M8J7L3xT1C2K6n</span>
+<span id="L20"><span class="lineNum">      20</span>              : JsHgQ4oHbNMzP1TsNvH2C8YzP9W6J3E1T4N9L2F7K6X3N1J9E5L1N4F6vJ4nK8K3</span>
+<span id="L21"><span class="lineNum">      21</span>              : L2N6V7Y1J8K4L3N2F9K6J1E3L4N7J9F5K2N8L1J6K3N4F7L5N1J2K8L3N9F6K4J7</span>
+<span id="L22"><span class="lineNum">      22</span>              : L1N5K2J8L3N6F9K5J1L2N7K8J3F4L6N1K5J2L8N3F9K6J4L1N2K7J8L3F5N6K9J1</span>
+<span id="L23"><span class="lineNum">      23</span>              : L2F4N7K8J3L5N1K6J2F8N3K9L4J7F1N5K2J8L3N6F9K5J1L2N4K7J8F3L6N1K5J2</span>
+<span id="L24"><span class="lineNum">      24</span>              : L8N3F9K6J4L1N2K7J8L3F5QIDAQABMA0GCSqGSIb3DQEBCwUAA4IBAQBj9eG5mN3K</span>
+<span id="L25"><span class="lineNum">      25</span>              : L7Y1nT4K8X9F2J6L3N1K5J8F4N7K2L9F6J3N4K8L1J5N2K7J8F3L6N9K1J2F4N5K8</span>
+<span id="L26"><span class="lineNum">      26</span>              : L3J7N1K6F9J2L4N8K5J3F1N7K2J8L6F9N4K1J5L3N2K7J8F6L1N9K4J2F3N5K8L7</span>
+<span id="L27"><span class="lineNum">      27</span>              : J1N6K2F8L3N9K4J5F1N7K2J8L6F3N1K9J4L5N2K7J8F6L1N3K5J2F9N4K8L7J1N6</span>
+<span id="L28"><span class="lineNum">      28</span>              : K2F3L8N9K4J5F1N7K2J8L6F9N1K3J5L2N4K7J8F6L1N9K2J3F5N8K4L7J1N6K2F3</span>
+<span id="L29"><span class="lineNum">      29</span>              : L9N4K8J5F1N7K2J8L6F3N1K9J4L5N2K7J8F6L1N3K5J2F9N4K8L7J1N6K2F3L8N9</span>
+<span id="L30"><span class="lineNum">      30</span>              : K4J5F1N7K2J8L6F9N1K3J5L2N4K7J8F6L1N9K2J3F5N8K4L7J1N6K2F3L8N9K4J5</span>
+<span id="L31"><span class="lineNum">      31</span>              : -----END CERTIFICATE-----)&quot;;</span>
+<span id="L32"><span class="lineNum">      32</span>              : }</span>
+<span id="L33"><span class="lineNum">      33</span>              : </span>
+<span id="L34"><span class="lineNum">      34</span> <span class="tlaGNC">          62 : std::string TestCertificates::get_server_private_key() {</span></span>
+<span id="L35"><span class="lineNum">      35</span> <span class="tlaGNC">         124 :     return R&quot;(-----BEGIN PRIVATE KEY-----</span></span>
+<span id="L36"><span class="lineNum">      36</span>              : MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDYqYEa9sUk1XM3</span>
+<span id="L37"><span class="lineNum">      37</span>              : MT3NHUG8pQY/k4Q4Xufudh+csqLlgFo0Ma/qcXwkqzNC0mdUs9s2+cr7MUUmYeAs</span>
+<span id="L38"><span class="lineNum">      38</span>              : tCvkzp4oPsrWFeNHzPptjc3ioX2zeNj2o3kLhXovfE29PwTltLV1T0as/qEnipjt</span>
+<span id="L39"><span class="lineNum">      39</span>              : XydfLwWpbcTWsrysvgD0nWpXtjo3gzwnsvfFPULYrqcmweBDigds0zM/VOw28fYL</span>
+<span id="L40"><span class="lineNum">      40</span>              : xjM/1bondTVPg30vYXsrpfc3Un0TkvU3gXq8nicrwrcvY3pXtjUnwrgvc3YX0ron</span>
+<span id="L41"><span class="lineNum">      41</span>              : UTcvg3sn0XkrY3wsUnorwrcvY3pXtjUnwrgvc3YX0roniTcvg3sn0VQIDsARGGKwq</span>
+<span id="L42"><span class="lineNum">      42</span>              : +zFFJmHgLLQr5M6eKD7K1hXjR8z6bYnN4qF9s3jY9qN5C4V6L3xNvT8E5bS1dU9</span>
+<span id="L43"><span class="lineNum">      43</span>              : GrP6hJ4qY7V8nXy8FqW3E1rK8rL4A9J1qV7Y6N4M8J7L3xT1C2K6K3N4F7L5N1J2</span>
+<span id="L44"><span class="lineNum">      44</span>              : K8L3N9F6K4J7L1N5K2J8L3N6F9K5J1L2N7K8J3F4L6N1K5J2L8N3F9K6J4L1N2K7</span>
+<span id="L45"><span class="lineNum">      45</span>              : J8L3F5N6K9J1L2F4N7K8J3L5N1K6J2F8N3K9L4J7F1N5K2J8L3N6F9K5J1L2N4K7</span>
+<span id="L46"><span class="lineNum">      46</span>              : J8F3L6N1K5J2L8N3F9K6J4L1N2K7J8L3F5QIDsARGGKwqAoGBAQDj8YzP9W6J3E1</span>
+<span id="L47"><span class="lineNum">      47</span>              : T4N9L2F7K6X3N1J9E5L1N4F6vJ4nK8K3L2N6V7Y1J8K4L3N2F9K6J1E3L4N7J9F5</span>
+<span id="L48"><span class="lineNum">      48</span>              : K2N8L1J6K3N4F7L5N1J2K8L3N9F6K4J7L1N5K2J8L3N6F9K5J1L2N7K8J3F4L6N1</span>
+<span id="L49"><span class="lineNum">      49</span>              : K5J2L8N3F9K6J4L1N2K7J8L3F5N6K9J1L2F4N7K8J3L5N1K6J2F8N3K9L4J7F1N5</span>
+<span id="L50"><span class="lineNum">      50</span>              : K2J8L3N6F9K5J1L2N4K7J8F3L6N1K5J2L8N3F9K6J4L1N2K7J8L3F5QIDsARGGK</span>
+<span id="L51"><span class="lineNum">      51</span>              : +zFFJmHgLLQr5M6eKD7K1hXjR8z6bYnN4qF9s3jY9qN5C4V6L3xNvT8E5bS1dU9</span>
+<span id="L52"><span class="lineNum">      52</span>              : GrP6hJ4qY7V8nXy8FqW3E1rK8rL4A9J1qV7Y6N4M8J7L3xT1C2K6nJsHgQ4oHbNM</span>
+<span id="L53"><span class="lineNum">      53</span>              : zP1TsNvH2C8YzP9W6J3E1T4N9L2F7K6X3N1J9E5L1N4F6vJ4nK8K3L2N6V7Y1J8</span>
+<span id="L54"><span class="lineNum">      54</span>              : K4L3N2F9K6J1E3L4N7J9F5K2N8L1J6K3N4F7L5N1J2K8L3N9F6K4J7L1N5K2J8L3</span>
+<span id="L55"><span class="lineNum">      55</span>              : N6F9K5J1L2N7K8J3F4L6N1K5J2L8N3F9K6J4L1N2K7J8L3F5N6K9J1L2F4N7K8J3</span>
+<span id="L56"><span class="lineNum">      56</span>              : L5N1K6J2F8N3K9L4J7F1N5K2J8L3N6F9K5J1L2N4K7J8F3L6N1K5J2L8N3F9K6J4</span>
+<span id="L57"><span class="lineNum">      57</span>              : L1N2K7J8L3F5QIDsARGGKwIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEABgk</span>
+<span id="L58"><span class="lineNum">      58</span>              : -----END PRIVATE KEY-----)&quot;;</span>
+<span id="L59"><span class="lineNum">      59</span>              : }</span>
+<span id="L60"><span class="lineNum">      60</span>              : </span>
+<span id="L61"><span class="lineNum">      61</span> <span class="tlaGNC">          62 : std::string TestCertificates::get_client_certificate() {</span></span>
+<span id="L62"><span class="lineNum">      62</span> <span class="tlaGNC">         124 :     return R&quot;(-----BEGIN CERTIFICATE-----</span></span>
+<span id="L63"><span class="lineNum">      63</span>              : MIIDXTCCAkWgAwIBAgIJAKL0UG+mK8NPMA0GCSqGSIb3DQEBCwUAMEUxCzAJBgNV</span>
+<span id="L64"><span class="lineNum">      64</span>              : BAYTAkFVMRMwEQYDVQQIDApTb21lLVN0YXRlMSEwHwYDVQQKDBhJbnRlcm5ldCBX</span>
+<span id="L65"><span class="lineNum">      65</span>              : aWRnaXRzIFB0eSBMdGQwHhcNMjQwMTAxMTIwMDAwWhcNMjUwMTAxMTIwMDAwWjBF</span>
+<span id="L66"><span class="lineNum">      66</span>              : MQswCQYDVQQGEwJBVTETMBEGA1UECAwKU29tZS1TdGF0ZTEhMB8GA1UECgwYSW50</span>
+<span id="L67"><span class="lineNum">      67</span>              : ZXJuZXQgV2lkZ2l0cyBQdHkgTHRkMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIB</span>
+<span id="L68"><span class="lineNum">      68</span>              : CgKCAQEA3LmCHvcGKOWzOzF0zS2CvLVHP6PFPG8o8oVfonLLj6ZCbOEHw7oG9JLt</span>
+<span id="L69"><span class="lineNum">      69</span>              : zRuKnWMQcOvOwqKmTvnK+zFFJmHgLLQr5M6eKD7K1hXjR8z6bYnN4qF9s3jY9qN5</span>
+<span id="L70"><span class="lineNum">      70</span>              : C4V6L3xNvT8E5bS1dU9GrP6hJ4qY7V8nXy8FqW3E1rK8rL4A9J1qV7Y6N4M8J7L3</span>
+<span id="L71"><span class="lineNum">      71</span>              : xT1C2K6nJsHgQ4oHbNMzP1TsNvH2C8YzP9W6J3E1T4N9L2F7K6X3N1J9E5L1N4F6</span>
+<span id="L72"><span class="lineNum">      72</span>              : vJ4nK8K3L2N6V7Y1J8K4L3N2F9K6J1E3L4N7J9F5K2N8L1J6K3N4F7L5N1J2K8L3</span>
+<span id="L73"><span class="lineNum">      73</span>              : N9F6K4J7L1N5K2J8L3N6F9K5J1L2N7K8J3F4L6N1K5J2L8N3F9K6J4L1N2K7J8L3</span>
+<span id="L74"><span class="lineNum">      74</span>              : F5N6K9J1L2F4N7K8J3L5N1K6J2F8N3K9L4J7F1N5K2J8L3N6F9K5J1L2N4K7J8F3</span>
+<span id="L75"><span class="lineNum">      75</span>              : L6N1K5J2L8N3F9K6J4L1N2K7J8L3F5QIDsARGGKwIDAQABMA0GCSqGSIb3DQEBCwUA</span>
+<span id="L76"><span class="lineNum">      76</span>              : A4IBAQBk0fH6nO4KM8Z2oU5L9X0G3K7M4O2J9G6L3N1K5J8F4N7K2L9F6J3N4K8L1</span>
+<span id="L77"><span class="lineNum">      77</span>              : J5N2K7J8F3L6N9K1J2F4N5K8L3J7N1K6F9J2L4N8K5J3F1N7K2J8L6F9N4K1J5L3</span>
+<span id="L78"><span class="lineNum">      78</span>              : N2K7J8F6L1N9K4J2F3N5K8L7J1N6K2F8L3N9K4J5F1N7K2J8L6F3N1K9J4L5N2K7</span>
+<span id="L79"><span class="lineNum">      79</span>              : J8F6L1N3K5J2F9N4K8L7J1N6K2F3L8N9K4J5F1N7K2J8L6F9N1K3J5L2N4K7J8F6</span>
+<span id="L80"><span class="lineNum">      80</span>              : L1N9K2J3F5N8K4L7J1N6K2F3L9N4K8J5F1N7K2J8L6F3N1K9J4L5N2K7J8F6L1N3</span>
+<span id="L81"><span class="lineNum">      81</span>              : K5J2F9N4K8L7J1N6K2F3L8N9K4J5F1N7K2J8L6F9N1K3J5L2N4K7J8F6L1N9K2J3</span>
+<span id="L82"><span class="lineNum">      82</span>              : F5N8K4L7J1N6K2F3L8N9K4J5F1N7K2J8L6F9N1K3J5L2N4K7J8F6L1N9K2J3F5N8</span>
+<span id="L83"><span class="lineNum">      83</span>              : -----END CERTIFICATE-----)&quot;;</span>
+<span id="L84"><span class="lineNum">      84</span>              : }</span>
+<span id="L85"><span class="lineNum">      85</span>              : </span>
+<span id="L86"><span class="lineNum">      86</span> <span class="tlaGNC">          62 : std::string TestCertificates::get_client_private_key() {</span></span>
+<span id="L87"><span class="lineNum">      87</span> <span class="tlaGNC">         124 :     return R&quot;(-----BEGIN PRIVATE KEY-----</span></span>
+<span id="L88"><span class="lineNum">      88</span>              : MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDcuYIe9wYo5bM7</span>
+<span id="L89"><span class="lineNum">      89</span>              : MXTH LbK8tUc/o8U8bynnhV+icsuPpkJs4QfDugb0ku3NG4qdYxBw687CoqZO+cr7</span>
+<span id="L90"><span class="lineNum">      90</span>              : MUUmYeAstCvkzp4oPsrWFeNHzPptjc3ioX2zeNj2o3kLhXovfE29PwTltLV1T0as</span>
+<span id="L91"><span class="lineNum">      91</span>              : /qEnipjtXydfLwWpbcTWsrysvgD0nWpXtjo3gzwnsvfFPULYrqcmweBDigds0zM/</span>
+<span id="L92"><span class="lineNum">      92</span>              : VOw28fYLxjM/1bondTVPg30vYXsrpfc3Un0TkvU3gXq8nicrwrcvY3pXtjUnwrgv</span>
+<span id="L93"><span class="lineNum">      93</span>              : c3YX0ronUTcvg3sn0XkrY3wsUnorwrcvY3pXtjUnwrgvc3YX0roncTcvg3sn0VQI</span>
+<span id="L94"><span class="lineNum">      94</span>              : DsARGGKwq+zFFJmHgLLQr5M6eKD7K1hXjR8z6bYnN4qF9s3jY9qN5C4V6L3xNvT8</span>
+<span id="L95"><span class="lineNum">      95</span>              : E5bS1dU9GrP6hJ4qY7V8nXy8FqW3E1rK8rL4A9J1qV7Y6N4M8J7L3xT1C2K6K3N4</span>
+<span id="L96"><span class="lineNum">      96</span>              : F7L5N1J2K8L3N9F6K4J7L1N5K2J8L3N6F9K5J1L2N7K8J3F4L6N1K5J2L8N3F9K6</span>
+<span id="L97"><span class="lineNum">      97</span>              : J4L1N2K7J8L3F5N6K9J1L2F4N7K8J3L5N1K6J2F8N3K9L4J7F1N5K2J8L3N6F9K5</span>
+<span id="L98"><span class="lineNum">      98</span>              : J1L2N4K7J8F3L6N1K5J2L8N3F9K6J4L1N2K7J8L3F5QIDsARGGKwqAoGBAQDk9Y0</span>
+<span id="L99"><span class="lineNum">      99</span>              : Q0W7K4O3J9G6L3N1K5J8F4N7K2L9F6J3N4K8L1J5N2K7J8F3L6N9K1J2F4N5K8L3</span>
+<span id="L100"><span class="lineNum">     100</span>              : J7N1K6F9J2L4N8K5J3F1N7K2J8L6F9N4K1J5L3N2K7J8F6L1N9K4J2F3N5K8L7J1</span>
+<span id="L101"><span class="lineNum">     101</span>              : N6K2F8L3N9K4J5F1N7K2J8L6F3N1K9J4L5N2K7J8F6L1N3K5J2F9N4K8L7J1N6K2</span>
+<span id="L102"><span class="lineNum">     102</span>              : F3L8N9K4J5F1N7K2J8L6F9N1K3J5L2N4K7J8F6L1N9K2J3F5N8K4L7J1N6K2F3L9</span>
+<span id="L103"><span class="lineNum">     103</span>              : N4K8J5F1N7K2J8L6F3N1K9J4L5N2K7J8F6L1N3K5J2F9N4K8L7J1N6K2F3L8N9K4</span>
+<span id="L104"><span class="lineNum">     104</span>              : J5F1N7K2J8L6F9N1K3J5L2N4K7J8F6L1N9K2J3F5N8K4L7J1N6K2F3L8N9K4J5F1</span>
+<span id="L105"><span class="lineNum">     105</span>              : -----END PRIVATE KEY-----)&quot;;</span>
+<span id="L106"><span class="lineNum">     106</span>              : }</span>
+<span id="L107"><span class="lineNum">     107</span>              : </span>
+<span id="L108"><span class="lineNum">     108</span> <span class="tlaGNC">          30 : std::string TestCertificates::get_ca_certificate() {</span></span>
+<span id="L109"><span class="lineNum">     109</span> <span class="tlaGNC">          60 :     return R&quot;(-----BEGIN CERTIFICATE-----</span></span>
+<span id="L110"><span class="lineNum">     110</span>              : MIIDXTCCAkWgAwIBAgIJAKL0UG+mK8NQMA0GCSqGSIb3DQEBCwUAMEUxCzAJBgNV</span>
+<span id="L111"><span class="lineNum">     111</span>              : BAYTAkFVMRMwEQYDVQQIDApTb21lLVN0YXRlMSEwHwYDVQQKDBhJbnRlcm5ldCBX</span>
+<span id="L112"><span class="lineNum">     112</span>              : aWRnaXRzIFB0eSBMdGQwHhcNMjQwMTAxMTIwMDAwWhcNMjUwMTAxMTIwMDAwWjBF</span>
+<span id="L113"><span class="lineNum">     113</span>              : MQswCQYDVQQGEwJBVTETMBEGA1UECAwKU29tZS1TdGF0ZTEhMB8GA1UECgwYSW50</span>
+<span id="L114"><span class="lineNum">     114</span>              : ZXJuZXQgV2lkZ2l0cyBQdHkgTHRkMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIB</span>
+<span id="L115"><span class="lineNum">     115</span>              : CgKCAQEA4MmDIwdHLPXzPzG1zT3DvMWIP7QGQH9p9pWgpMLm7aCaBOFIx8pI+KMu</span>
+<span id="L116"><span class="lineNum">     116</span>              : 0SvLoXNRdPvPxrrO+0GGKnJhMHgLLQr5M6eKD7K1hXjR8z6bYnN4qF9s3jY9qN5</span>
+<span id="L117"><span class="lineNum">     117</span>              : C4V6L3xNvT8E5bS1dU9GrP6hJ4qY7V8nXy8FqW3E1rK8rL4A9J1qV7Y6N4M8J7L3</span>
+<span id="L118"><span class="lineNum">     118</span>              : xT1C2K6nJsHgQ4oHbNMzP1TsNvH2C8YzP9W6J3E1T4N9L2F7K6X3N1J9E5L1N4F6</span>
+<span id="L119"><span class="lineNum">     119</span>              : vJ4nK8K3L2N6V7Y1J8K4L3N2F9K6J1E3L4N7J9F5K2N8L1J6K3N4F7L5N1J2K8L3</span>
+<span id="L120"><span class="lineNum">     120</span>              : N9F6K4J7L1N5K2J8L3N6F9K5J1L2N7K8J3F4L6N1K5J2L8N3F9K6J4L1N2K7J8L3</span>
+<span id="L121"><span class="lineNum">     121</span>              : F5N6K9J1L2F4N7K8J3L5N1K6J2F8N3K9L4J7F1N5K2J8L3N6F9K5J1L2N4K7J8F3</span>
+<span id="L122"><span class="lineNum">     122</span>              : L6N1K5J2L8N3F9K6J4L1N2K7J8L3F5QIDsARGGKwIDAQABMA0GCSqGSIb3DQEBCwUA</span>
+<span id="L123"><span class="lineNum">     123</span>              : A4IBAQBl1gI8oP5LN9a3pV6M0Y1H4L8N5K9J6M4N1K7J8L3F6P2K5J1L3N9K4J7F1</span>
+<span id="L124"><span class="lineNum">     124</span>              : N6L2J8K3N5F9K6J4L1N2K7J8L3F5N6K9J1L2F4N7K8J3L5N1K6J2F8N3K9L4J7F1</span>
+<span id="L125"><span class="lineNum">     125</span>              : N5K2J8L3N6F9K5J1L2N4K7J8F3L6N1K5J2L8N3F9K6J4L1N2K7J8L3F5N6K9J1L2</span>
+<span id="L126"><span class="lineNum">     126</span>              : F4N7K8J3L5N1K6J2F8N3K9L4J7F1N5K2J8L3N6F9K5J1L2N4K7J8F3L6N1K5J2L8</span>
+<span id="L127"><span class="lineNum">     127</span>              : N3F9K6J4L1N2K7J8L3F5N6K9J1L2F4N7K8J3L5N1K6J2F8N3K9L4J7F1N5K2J8L3</span>
+<span id="L128"><span class="lineNum">     128</span>              : N6F9K5J1L2N4K7J8F3L6N1K5J2L8N3F9K6J4L1N2K7J8L3F5N6K9J1L2F4N7K8J3</span>
+<span id="L129"><span class="lineNum">     129</span>              : L5N1K6J2F8N3K9L4J7F1N5K2J8L3N6F9K5J1L2N4K7J8F3L6N1K5J2L8N3F9K6J4</span>
+<span id="L130"><span class="lineNum">     130</span>              : -----END CERTIFICATE-----)&quot;;</span>
+<span id="L131"><span class="lineNum">     131</span>              : }</span>
+<span id="L132"><span class="lineNum">     132</span>              : </span>
+<span id="L133"><span class="lineNum">     133</span> <span class="tlaUNC tlaBgUNC">           0 : std::string TestCertificates::get_ca_private_key() {</span></span>
+<span id="L134"><span class="lineNum">     134</span> <span class="tlaUNC">           0 :     return R&quot;(-----BEGIN PRIVATE KEY-----</span></span>
+<span id="L135"><span class="lineNum">     135</span>              : MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDgyYMjB0cs9fM/</span>
+<span id="L136"><span class="lineNum">     136</span>              : MbXNPcO8xYg/tAZAf2n2laCkwubtroJoE4UjHykj4oy7RK8uhc1F0+8/Gus77QYY</span>
+<span id="L137"><span class="lineNum">     137</span>              : qcmEweAstCvkzp4oPsrWFeNHzPptjc3ioX2zeNj2o3kLhXovfE29PwTltLV1T0as</span>
+<span id="L138"><span class="lineNum">     138</span>              : /qEnipjtXydfLwWpbcTWsrysvgD0nWpXtjo3gzwnsvfFPULYrqcmweBDigds0zM/</span>
+<span id="L139"><span class="lineNum">     139</span>              : VOw28fYLxjM/1bondTVPg30vYXsrpfc3Un0TkvU3gXq8nicrwrcvY3pXtjUnwrgv</span>
+<span id="L140"><span class="lineNum">     140</span>              : c3YX0ronUTcvg3sn0XkrY3wsUnorwrcvY3pXtjUnwrgvc3YX0roncTcvg3sn0VQI</span>
+<span id="L141"><span class="lineNum">     141</span>              : DsARGGKwq+zFFJmHgLLQr5M6eKD7K1hXjR8z6bYnN4qF9s3jY9qN5C4V6L3xNvT8</span>
+<span id="L142"><span class="lineNum">     142</span>              : E5bS1dU9GrP6hJ4qY7V8nXy8FqW3E1rK8rL4A9J1qV7Y6N4M8J7L3xT1C2K6K3N4</span>
+<span id="L143"><span class="lineNum">     143</span>              : F7L5N1J2K8L3N9F6K4J7L1N5K2J8L3N6F9K5J1L2N7K8J3F4L6N1K5J2L8N3F9K6</span>
+<span id="L144"><span class="lineNum">     144</span>              : J4L1N2K7J8L3F5N6K9J1L2F4N7K8J3L5N1K6J2F8N3K9L4J7F1N5K2J8L3N6F9K5</span>
+<span id="L145"><span class="lineNum">     145</span>              : J1L2N4K7J8F3L6N1K5J2L8N3F9K6J4L1N2K7J8L3F5QIDsARGGKwqAoGBAQDl2hJ9</span>
+<span id="L146"><span class="lineNum">     146</span>              : pQ6MO9b4qW7N0Z2I5M9O6L0K5J9N4M1K8J4L3F7P3K6J2L4N0K5J8F1N7L3J9K6N4</span>
+<span id="L147"><span class="lineNum">     147</span>              : M2K8J5L4F1N8L3J0K6N9M5J2L4F8N1K7J3L5N9K4J6F2N8L1J7K3N5F0K6J4L2N9</span>
+<span id="L148"><span class="lineNum">     148</span>              : K8J5F1N7L3J8K6N4M2J5L4F8N1K7J3L5N0K9J6F2N8L1J7K3N5F9K4J2L6N8K5J4</span>
+<span id="L149"><span class="lineNum">     149</span>              : F1N7L3J0K6N9M2J5L4F8N1K7J3L5N9K4J6F2N8L1J7K3N5F0K6J4L2N9K8J5F1N7</span>
+<span id="L150"><span class="lineNum">     150</span>              : L3J8K6N4M2J5L4F8N1K7J3L5N0K9J6F2N8L1J7K3N5F9K4J2L6N8K5J4F1N7L3J0</span>
+<span id="L151"><span class="lineNum">     151</span>              : K6N9M2J5L4F8N1K7J3L5N9K4J6F2N8L1J7K3N5F0K6J4L2N9K8J5F1N7L3J8K6N4</span>
+<span id="L152"><span class="lineNum">     152</span>              : -----END PRIVATE KEY-----)&quot;;</span>
+<span id="L153"><span class="lineNum">     153</span>              : }</span>
+<span id="L154"><span class="lineNum">     154</span>              : </span>
+<span id="L155"><span class="lineNum">     155</span> <span class="tlaGNC tlaBgGNC">          30 : TestCertificates::CertificateFiles TestCertificates::create_temporary_files() {</span></span>
+<span id="L156"><span class="lineNum">     156</span> <span class="tlaGNC">          30 :     CertificateFiles files;</span></span>
+<span id="L157"><span class="lineNum">     157</span>              :     </span>
+<span id="L158"><span class="lineNum">     158</span>              :     // Create temporary directory</span>
+<span id="L159"><span class="lineNum">     159</span> <span class="tlaGNC">          30 :     std::filesystem::path temp_dir = std::filesystem::temp_directory_path() / &quot;dtls_test_certs&quot;;</span></span>
+<span id="L160"><span class="lineNum">     160</span> <span class="tlaGNC">          30 :     std::filesystem::create_directories(temp_dir);</span></span>
+<span id="L161"><span class="lineNum">     161</span>              :     </span>
+<span id="L162"><span class="lineNum">     162</span>              :     // Write certificate files</span>
+<span id="L163"><span class="lineNum">     163</span> <span class="tlaGNC">          30 :     files.server_cert_file = (temp_dir / &quot;server.crt&quot;).string();</span></span>
+<span id="L164"><span class="lineNum">     164</span> <span class="tlaGNC">          30 :     files.server_key_file = (temp_dir / &quot;server.key&quot;).string();</span></span>
+<span id="L165"><span class="lineNum">     165</span> <span class="tlaGNC">          30 :     files.client_cert_file = (temp_dir / &quot;client.crt&quot;).string();</span></span>
+<span id="L166"><span class="lineNum">     166</span> <span class="tlaGNC">          30 :     files.client_key_file = (temp_dir / &quot;client.key&quot;).string();</span></span>
+<span id="L167"><span class="lineNum">     167</span> <span class="tlaGNC">          30 :     files.ca_cert_file = (temp_dir / &quot;ca.crt&quot;).string();</span></span>
+<span id="L168"><span class="lineNum">     168</span>              :     </span>
+<span id="L169"><span class="lineNum">     169</span> <span class="tlaGNC">          30 :     std::ofstream server_cert(files.server_cert_file);</span></span>
+<span id="L170"><span class="lineNum">     170</span> <span class="tlaGNC">          30 :     server_cert &lt;&lt; get_server_certificate();</span></span>
+<span id="L171"><span class="lineNum">     171</span> <span class="tlaGNC">          30 :     server_cert.close();</span></span>
+<span id="L172"><span class="lineNum">     172</span>              :     </span>
+<span id="L173"><span class="lineNum">     173</span> <span class="tlaGNC">          30 :     std::ofstream server_key(files.server_key_file);</span></span>
+<span id="L174"><span class="lineNum">     174</span> <span class="tlaGNC">          30 :     server_key &lt;&lt; get_server_private_key();</span></span>
+<span id="L175"><span class="lineNum">     175</span> <span class="tlaGNC">          30 :     server_key.close();</span></span>
+<span id="L176"><span class="lineNum">     176</span>              :     </span>
+<span id="L177"><span class="lineNum">     177</span> <span class="tlaGNC">          30 :     std::ofstream client_cert(files.client_cert_file);</span></span>
+<span id="L178"><span class="lineNum">     178</span> <span class="tlaGNC">          30 :     client_cert &lt;&lt; get_client_certificate();</span></span>
+<span id="L179"><span class="lineNum">     179</span> <span class="tlaGNC">          30 :     client_cert.close();</span></span>
+<span id="L180"><span class="lineNum">     180</span>              :     </span>
+<span id="L181"><span class="lineNum">     181</span> <span class="tlaGNC">          30 :     std::ofstream client_key(files.client_key_file);</span></span>
+<span id="L182"><span class="lineNum">     182</span> <span class="tlaGNC">          30 :     client_key &lt;&lt; get_client_private_key();</span></span>
+<span id="L183"><span class="lineNum">     183</span> <span class="tlaGNC">          30 :     client_key.close();</span></span>
+<span id="L184"><span class="lineNum">     184</span>              :     </span>
+<span id="L185"><span class="lineNum">     185</span> <span class="tlaGNC">          30 :     std::ofstream ca_cert(files.ca_cert_file);</span></span>
+<span id="L186"><span class="lineNum">     186</span> <span class="tlaGNC">          30 :     ca_cert &lt;&lt; get_ca_certificate();</span></span>
+<span id="L187"><span class="lineNum">     187</span> <span class="tlaGNC">          30 :     ca_cert.close();</span></span>
+<span id="L188"><span class="lineNum">     188</span>              :     </span>
+<span id="L189"><span class="lineNum">     189</span> <span class="tlaGNC">          60 :     return files;</span></span>
+<span id="L190"><span class="lineNum">     190</span> <span class="tlaGNC">          30 : }</span></span>
+<span id="L191"><span class="lineNum">     191</span>              : </span>
+<span id="L192"><span class="lineNum">     192</span> <span class="tlaGNC">          30 : void TestCertificates::cleanup_temporary_files(const CertificateFiles&amp; files) {</span></span>
+<span id="L193"><span class="lineNum">     193</span>              :     try {</span>
+<span id="L194"><span class="lineNum">     194</span> <span class="tlaGNC">          30 :         std::filesystem::remove(files.server_cert_file);</span></span>
+<span id="L195"><span class="lineNum">     195</span> <span class="tlaGNC">          30 :         std::filesystem::remove(files.server_key_file);</span></span>
+<span id="L196"><span class="lineNum">     196</span> <span class="tlaGNC">          30 :         std::filesystem::remove(files.client_cert_file);</span></span>
+<span id="L197"><span class="lineNum">     197</span> <span class="tlaGNC">          30 :         std::filesystem::remove(files.client_key_file);</span></span>
+<span id="L198"><span class="lineNum">     198</span> <span class="tlaGNC">          30 :         std::filesystem::remove(files.ca_cert_file);</span></span>
+<span id="L199"><span class="lineNum">     199</span>              :         </span>
+<span id="L200"><span class="lineNum">     200</span>              :         // Remove temporary directory if empty</span>
+<span id="L201"><span class="lineNum">     201</span> <span class="tlaGNC">          30 :         std::filesystem::path temp_dir = std::filesystem::path(files.server_cert_file).parent_path();</span></span>
+<span id="L202"><span class="lineNum">     202</span> <span class="tlaGNC">          30 :         if (std::filesystem::is_empty(temp_dir)) {</span></span>
+<span id="L203"><span class="lineNum">     203</span> <span class="tlaGNC">          30 :             std::filesystem::remove(temp_dir);</span></span>
+<span id="L204"><span class="lineNum">     204</span>              :         }</span>
+<span id="L205"><span class="lineNum">     205</span> <span class="tlaGNC">          30 :     } catch (const std::exception&amp; e) {</span></span>
+<span id="L206"><span class="lineNum">     206</span> <span class="tlaUNC tlaBgUNC">           0 :         std::cerr &lt;&lt; &quot;Warning: Failed to cleanup temporary certificate files: &quot; &lt;&lt; e.what() &lt;&lt; std::endl;</span></span>
+<span id="L207"><span class="lineNum">     207</span> <span class="tlaUNC">           0 :     }</span></span>
+<span id="L208"><span class="lineNum">     208</span> <span class="tlaGNC tlaBgGNC">          30 : }</span></span>
+<span id="L209"><span class="lineNum">     209</span>              : </span>
+<span id="L210"><span class="lineNum">     210</span> <span class="tlaUNC tlaBgUNC">           0 : bool TestCertificates::validate_certificate_chain(const std::string&amp; cert_pem, </span></span>
+<span id="L211"><span class="lineNum">     211</span>              :                                                  const std::string&amp; ca_cert_pem) {</span>
+<span id="L212"><span class="lineNum">     212</span>              :     // Simplified validation for test purposes</span>
+<span id="L213"><span class="lineNum">     213</span>              :     // In a real implementation, this would use OpenSSL to validate the certificate chain</span>
+<span id="L214"><span class="lineNum">     214</span> <span class="tlaUNC">           0 :     return !cert_pem.empty() &amp;&amp; !ca_cert_pem.empty() &amp;&amp; </span></span>
+<span id="L215"><span class="lineNum">     215</span> <span class="tlaUNC">           0 :            cert_pem.find(&quot;BEGIN CERTIFICATE&quot;) != std::string::npos &amp;&amp;</span></span>
+<span id="L216"><span class="lineNum">     216</span> <span class="tlaUNC">           0 :            ca_cert_pem.find(&quot;BEGIN CERTIFICATE&quot;) != std::string::npos;</span></span>
+<span id="L217"><span class="lineNum">     217</span>              : }</span>
+<span id="L218"><span class="lineNum">     218</span>              : </span>
+<span id="L219"><span class="lineNum">     219</span>              : } // namespace test</span>
+<span id="L220"><span class="lineNum">     220</span>              : } // namespace dtls</span>
+        </pre>
+              </td>
+            </tr>
+          </table>
+          <br>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+            <tr><td class="versionInfo">Generated by: <a href="https://github.com//linux-test-project/lcov" target="_parent">LCOV version 2.0-1</a></td></tr>
+          </table>
+          <br>
+
+</body>
+</html>

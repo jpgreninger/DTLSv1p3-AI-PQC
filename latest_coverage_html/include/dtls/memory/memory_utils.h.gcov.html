@@ -1,0 +1,358 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - total_coverage.info - include/dtls/memory/memory_utils.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="title">LCOV - code coverage report</td></tr>
+            <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+            <tr>
+              <td width="100%">
+                <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="10%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">include/dtls/memory</a> - memory_utils.h<span style="font-size: 80%;"> (source / <a href="memory_utils.h.func-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="5%"></td>
+            <td width="5%" class="headerCovTableHead">Coverage</td>
+            <td width="5%" class="headerCovTableHead" title="Covered + Uncovered code">Total</td>
+            <td width="5%" class="headerCovTableHead" title="Exercised code only">Hit</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">total_coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntryLo">0.0&nbsp;%</td>
+            <td class="headerCovTableEntry">12</td>
+            <td class="headerCovTableEntry">0</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test Date:</td>
+            <td class="headerValue">2025-08-17 17:21:18</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntryLo">0.0&nbsp;%</td>
+            <td class="headerCovTableEntry">9</td>
+            <td class="headerCovTableEntry">0</td>
+          </tr>
+                  <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+                </table>
+              </td>
+            </tr>
+
+            <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+          </table>
+
+          <table cellpadding=0 cellspacing=0 border=0>
+            <tr>
+              <td><br></td>
+            </tr>
+            <tr>
+              <td>
+<pre class="sourceHeading">            Line data    Source code</pre>
+<pre class="source">
+<span id="L1"><span class="lineNum">       1</span>              : #ifndef DTLS_MEMORY_UTILS_H</span>
+<span id="L2"><span class="lineNum">       2</span>              : #define DTLS_MEMORY_UTILS_H</span>
+<span id="L3"><span class="lineNum">       3</span>              : </span>
+<span id="L4"><span class="lineNum">       4</span>              : #include &lt;dtls/config.h&gt;</span>
+<span id="L5"><span class="lineNum">       5</span>              : #include &lt;dtls/result.h&gt;</span>
+<span id="L6"><span class="lineNum">       6</span>              : #include &lt;dtls/memory/buffer.h&gt;</span>
+<span id="L7"><span class="lineNum">       7</span>              : #include &lt;dtls/memory/pool.h&gt;</span>
+<span id="L8"><span class="lineNum">       8</span>              : #include &lt;memory&gt;</span>
+<span id="L9"><span class="lineNum">       9</span>              : #include &lt;chrono&gt;</span>
+<span id="L10"><span class="lineNum">      10</span>              : #include &lt;atomic&gt;</span>
+<span id="L11"><span class="lineNum">      11</span>              : #include &lt;unordered_map&gt;</span>
+<span id="L12"><span class="lineNum">      12</span>              : #include &lt;thread&gt;</span>
+<span id="L13"><span class="lineNum">      13</span>              : </span>
+<span id="L14"><span class="lineNum">      14</span>              : namespace dtls {</span>
+<span id="L15"><span class="lineNum">      15</span>              : namespace v13 {</span>
+<span id="L16"><span class="lineNum">      16</span>              : namespace memory {</span>
+<span id="L17"><span class="lineNum">      17</span>              : </span>
+<span id="L18"><span class="lineNum">      18</span>              : /**</span>
+<span id="L19"><span class="lineNum">      19</span>              :  * Memory utilities for DTLS v1.3 implementation</span>
+<span id="L20"><span class="lineNum">      20</span>              :  * </span>
+<span id="L21"><span class="lineNum">      21</span>              :  * Provides memory management helpers, statistics collection,</span>
+<span id="L22"><span class="lineNum">      22</span>              :  * allocation tracking, and memory security utilities.</span>
+<span id="L23"><span class="lineNum">      23</span>              :  */</span>
+<span id="L24"><span class="lineNum">      24</span>              : namespace utils {</span>
+<span id="L25"><span class="lineNum">      25</span>              : </span>
+<span id="L26"><span class="lineNum">      26</span>              : // Memory allocation tracking</span>
+<span id="L27"><span class="lineNum">      27</span>              : struct AllocationInfo {</span>
+<span id="L28"><span class="lineNum">      28</span>              :     size_t size{0};</span>
+<span id="L29"><span class="lineNum">      29</span>              :     std::chrono::steady_clock::time_point allocation_time;</span>
+<span id="L30"><span class="lineNum">      30</span>              :     std::string location; // File:line or function name</span>
+<span id="L31"><span class="lineNum">      31</span>              :     std::thread::id thread_id;</span>
+<span id="L32"><span class="lineNum">      32</span>              : };</span>
+<span id="L33"><span class="lineNum">      33</span>              : </span>
+<span id="L34"><span class="lineNum">      34</span>              : // Statistics snapshot (non-atomic for return values)</span>
+<span id="L35"><span class="lineNum">      35</span>              : struct MemoryStats {</span>
+<span id="L36"><span class="lineNum">      36</span>              :     size_t total_allocations{0};</span>
+<span id="L37"><span class="lineNum">      37</span>              :     size_t total_deallocations{0};</span>
+<span id="L38"><span class="lineNum">      38</span>              :     size_t current_allocations{0};</span>
+<span id="L39"><span class="lineNum">      39</span>              :     size_t peak_allocations{0};</span>
+<span id="L40"><span class="lineNum">      40</span>              :     size_t total_bytes_allocated{0};</span>
+<span id="L41"><span class="lineNum">      41</span>              :     size_t total_bytes_deallocated{0};</span>
+<span id="L42"><span class="lineNum">      42</span>              :     size_t current_bytes_allocated{0};</span>
+<span id="L43"><span class="lineNum">      43</span>              :     size_t peak_bytes_allocated{0};</span>
+<span id="L44"><span class="lineNum">      44</span>              :     size_t allocation_failures{0};</span>
+<span id="L45"><span class="lineNum">      45</span>              :     std::chrono::steady_clock::time_point start_time;</span>
+<span id="L46"><span class="lineNum">      46</span>              : };</span>
+<span id="L47"><span class="lineNum">      47</span>              : </span>
+<span id="L48"><span class="lineNum">      48</span>              : // Internal atomic statistics (for thread-safe updates)</span>
+<span id="L49"><span class="lineNum">      49</span>              : struct AtomicMemoryStats {</span>
+<span id="L50"><span class="lineNum">      50</span>              :     std::atomic&lt;size_t&gt; total_allocations{0};</span>
+<span id="L51"><span class="lineNum">      51</span>              :     std::atomic&lt;size_t&gt; total_deallocations{0};</span>
+<span id="L52"><span class="lineNum">      52</span>              :     std::atomic&lt;size_t&gt; current_allocations{0};</span>
+<span id="L53"><span class="lineNum">      53</span>              :     std::atomic&lt;size_t&gt; peak_allocations{0};</span>
+<span id="L54"><span class="lineNum">      54</span>              :     std::atomic&lt;size_t&gt; total_bytes_allocated{0};</span>
+<span id="L55"><span class="lineNum">      55</span>              :     std::atomic&lt;size_t&gt; total_bytes_deallocated{0};</span>
+<span id="L56"><span class="lineNum">      56</span>              :     std::atomic&lt;size_t&gt; current_bytes_allocated{0};</span>
+<span id="L57"><span class="lineNum">      57</span>              :     std::atomic&lt;size_t&gt; peak_bytes_allocated{0};</span>
+<span id="L58"><span class="lineNum">      58</span>              :     std::atomic&lt;size_t&gt; allocation_failures{0};</span>
+<span id="L59"><span class="lineNum">      59</span>              :     std::chrono::steady_clock::time_point start_time;</span>
+<span id="L60"><span class="lineNum">      60</span>              : };</span>
+<span id="L61"><span class="lineNum">      61</span>              : </span>
+<span id="L62"><span class="lineNum">      62</span>              : // Memory statistics collector</span>
+<span id="L63"><span class="lineNum">      63</span>              : class DTLS_API MemoryStatsCollector {</span>
+<span id="L64"><span class="lineNum">      64</span>              : public:</span>
+<span id="L65"><span class="lineNum">      65</span>              :     static MemoryStatsCollector&amp; instance();</span>
+<span id="L66"><span class="lineNum">      66</span>              :     </span>
+<span id="L67"><span class="lineNum">      67</span>              :     // Statistics tracking</span>
+<span id="L68"><span class="lineNum">      68</span>              :     void record_allocation(size_t size, const std::string&amp; location = &quot;&quot;);</span>
+<span id="L69"><span class="lineNum">      69</span>              :     void record_deallocation(size_t size);</span>
+<span id="L70"><span class="lineNum">      70</span>              :     void record_allocation_failure(size_t size);</span>
+<span id="L71"><span class="lineNum">      71</span>              :     </span>
+<span id="L72"><span class="lineNum">      72</span>              :     // Statistics retrieval</span>
+<span id="L73"><span class="lineNum">      73</span>              :     MemoryStats get_statistics() const;</span>
+<span id="L74"><span class="lineNum">      74</span>              :     void reset_statistics();</span>
+<span id="L75"><span class="lineNum">      75</span>              :     </span>
+<span id="L76"><span class="lineNum">      76</span>              :     // Allocation tracking</span>
+<span id="L77"><span class="lineNum">      77</span> <span class="tlaUNC tlaBgUNC">           0 :     void enable_tracking(bool enabled) { tracking_enabled_ = enabled; }</span></span>
+<span id="L78"><span class="lineNum">      78</span>              :     bool is_tracking_enabled() const { return tracking_enabled_; }</span>
+<span id="L79"><span class="lineNum">      79</span>              :     </span>
+<span id="L80"><span class="lineNum">      80</span>              :     // Leak detection</span>
+<span id="L81"><span class="lineNum">      81</span>              :     std::vector&lt;AllocationInfo&gt; get_active_allocations() const;</span>
+<span id="L82"><span class="lineNum">      82</span>              :     size_t get_leak_count() const;</span>
+<span id="L83"><span class="lineNum">      83</span>              :     void dump_leaks() const;</span>
+<span id="L84"><span class="lineNum">      84</span>              : </span>
+<span id="L85"><span class="lineNum">      85</span>              : private:</span>
+<span id="L86"><span class="lineNum">      86</span>              :     MemoryStatsCollector();</span>
+<span id="L87"><span class="lineNum">      87</span> <span class="tlaUNC">           0 :     ~MemoryStatsCollector() = default;</span></span>
+<span id="L88"><span class="lineNum">      88</span>              :     </span>
+<span id="L89"><span class="lineNum">      89</span>              :     AtomicMemoryStats stats_;</span>
+<span id="L90"><span class="lineNum">      90</span>              :     mutable std::mutex tracking_mutex_;</span>
+<span id="L91"><span class="lineNum">      91</span>              :     std::unordered_map&lt;void*, AllocationInfo&gt; active_allocations_;</span>
+<span id="L92"><span class="lineNum">      92</span>              :     std::atomic&lt;bool&gt; tracking_enabled_{false};</span>
+<span id="L93"><span class="lineNum">      93</span>              : };</span>
+<span id="L94"><span class="lineNum">      94</span>              : </span>
+<span id="L95"><span class="lineNum">      95</span>              : // RAII memory tracker for automatic allocation/deallocation tracking</span>
+<span id="L96"><span class="lineNum">      96</span>              : class DTLS_API MemoryTracker {</span>
+<span id="L97"><span class="lineNum">      97</span>              : public:</span>
+<span id="L98"><span class="lineNum">      98</span>              :     explicit MemoryTracker(size_t size, const std::string&amp; location = &quot;&quot;);</span>
+<span id="L99"><span class="lineNum">      99</span>              :     ~MemoryTracker();</span>
+<span id="L100"><span class="lineNum">     100</span>              :     </span>
+<span id="L101"><span class="lineNum">     101</span>              :     MemoryTracker(const MemoryTracker&amp;) = delete;</span>
+<span id="L102"><span class="lineNum">     102</span>              :     MemoryTracker&amp; operator=(const MemoryTracker&amp;) = delete;</span>
+<span id="L103"><span class="lineNum">     103</span>              :     MemoryTracker(MemoryTracker&amp;&amp;) = delete;</span>
+<span id="L104"><span class="lineNum">     104</span>              :     MemoryTracker&amp; operator=(MemoryTracker&amp;&amp;) = delete;</span>
+<span id="L105"><span class="lineNum">     105</span>              : </span>
+<span id="L106"><span class="lineNum">     106</span>              : private:</span>
+<span id="L107"><span class="lineNum">     107</span>              :     size_t size_;</span>
+<span id="L108"><span class="lineNum">     108</span>              : };</span>
+<span id="L109"><span class="lineNum">     109</span>              : </span>
+<span id="L110"><span class="lineNum">     110</span>              : // Memory alignment utilities</span>
+<span id="L111"><span class="lineNum">     111</span>              : DTLS_API bool is_aligned(const void* ptr, size_t alignment) noexcept;</span>
+<span id="L112"><span class="lineNum">     112</span>              : DTLS_API void* align_pointer(void* ptr, size_t alignment) noexcept;</span>
+<span id="L113"><span class="lineNum">     113</span>              : DTLS_API size_t align_size(size_t size, size_t alignment) noexcept;</span>
+<span id="L114"><span class="lineNum">     114</span>              : </span>
+<span id="L115"><span class="lineNum">     115</span>              : // Memory comparison utilities</span>
+<span id="L116"><span class="lineNum">     116</span>              : DTLS_API bool secure_compare(const void* a, const void* b, size_t size) noexcept;</span>
+<span id="L117"><span class="lineNum">     117</span>              : DTLS_API int secure_memcmp(const void* a, const void* b, size_t size) noexcept;</span>
+<span id="L118"><span class="lineNum">     118</span>              : </span>
+<span id="L119"><span class="lineNum">     119</span>              : // Memory security utilities</span>
+<span id="L120"><span class="lineNum">     120</span>              : DTLS_API void secure_memzero(void* ptr, size_t size) noexcept;</span>
+<span id="L121"><span class="lineNum">     121</span>              : DTLS_API void secure_memset(void* ptr, int value, size_t size) noexcept;</span>
+<span id="L122"><span class="lineNum">     122</span>              : DTLS_API bool is_memory_cleared(const void* ptr, size_t size) noexcept;</span>
+<span id="L123"><span class="lineNum">     123</span>              : </span>
+<span id="L124"><span class="lineNum">     124</span>              : // Buffer conversion utilities</span>
+<span id="L125"><span class="lineNum">     125</span>              : DTLS_API std::vector&lt;uint8_t&gt; buffer_to_vector(const BufferView&amp; buffer);</span>
+<span id="L126"><span class="lineNum">     126</span>              : DTLS_API ZeroCopyBuffer vector_to_buffer(const std::vector&lt;uint8_t&gt;&amp; vec);</span>
+<span id="L127"><span class="lineNum">     127</span>              : DTLS_API std::string buffer_to_string(const BufferView&amp; buffer);</span>
+<span id="L128"><span class="lineNum">     128</span>              : DTLS_API ZeroCopyBuffer string_to_buffer(const std::string&amp; str);</span>
+<span id="L129"><span class="lineNum">     129</span>              : </span>
+<span id="L130"><span class="lineNum">     130</span>              : // Buffer manipulation utilities</span>
+<span id="L131"><span class="lineNum">     131</span>              : DTLS_API Result&lt;ZeroCopyBuffer&gt; copy_buffer(const BufferView&amp; source);</span>
+<span id="L132"><span class="lineNum">     132</span>              : DTLS_API Result&lt;void&gt; copy_buffer_to(const BufferView&amp; source, MutableBufferView&amp; destination);</span>
+<span id="L133"><span class="lineNum">     133</span>              : DTLS_API Result&lt;ZeroCopyBuffer&gt; resize_buffer(ZeroCopyBuffer&amp;&amp; buffer, size_t new_size);</span>
+<span id="L134"><span class="lineNum">     134</span>              : DTLS_API Result&lt;ZeroCopyBuffer&gt; concat_buffers(const std::vector&lt;BufferView&gt;&amp; buffers);</span>
+<span id="L135"><span class="lineNum">     135</span>              : </span>
+<span id="L136"><span class="lineNum">     136</span>              : // Buffer search utilities</span>
+<span id="L137"><span class="lineNum">     137</span>              : DTLS_API size_t find_pattern(const BufferView&amp; buffer, const BufferView&amp; pattern) noexcept;</span>
+<span id="L138"><span class="lineNum">     138</span>              : DTLS_API size_t find_byte_sequence(const BufferView&amp; buffer, const std::vector&lt;std::byte&gt;&amp; sequence) noexcept;</span>
+<span id="L139"><span class="lineNum">     139</span>              : DTLS_API std::vector&lt;size_t&gt; find_all_occurrences(const BufferView&amp; buffer, std::byte value) noexcept;</span>
+<span id="L140"><span class="lineNum">     140</span>              : </span>
+<span id="L141"><span class="lineNum">     141</span>              : // Buffer validation utilities</span>
+<span id="L142"><span class="lineNum">     142</span>              : DTLS_API bool validate_buffer_bounds(const BufferView&amp; buffer, size_t offset, size_t length) noexcept;</span>
+<span id="L143"><span class="lineNum">     143</span>              : DTLS_API bool is_buffer_zero(const BufferView&amp; buffer) noexcept;</span>
+<span id="L144"><span class="lineNum">     144</span>              : DTLS_API bool is_buffer_pattern(const BufferView&amp; buffer, std::byte pattern) noexcept;</span>
+<span id="L145"><span class="lineNum">     145</span>              : </span>
+<span id="L146"><span class="lineNum">     146</span>              : // Memory debugging utilities</span>
+<span id="L147"><span class="lineNum">     147</span>              : class DTLS_API MemoryDebugger {</span>
+<span id="L148"><span class="lineNum">     148</span>              : public:</span>
+<span id="L149"><span class="lineNum">     149</span>              :     static MemoryDebugger&amp; instance();</span>
+<span id="L150"><span class="lineNum">     150</span>              :     </span>
+<span id="L151"><span class="lineNum">     151</span>              :     // Guard patterns for buffer overflow detection</span>
+<span id="L152"><span class="lineNum">     152</span> <span class="tlaUNC">           0 :     void enable_guard_patterns(bool enabled) { guard_patterns_enabled_ = enabled; }</span></span>
+<span id="L153"><span class="lineNum">     153</span>              :     bool are_guard_patterns_enabled() const { return guard_patterns_enabled_; }</span>
+<span id="L154"><span class="lineNum">     154</span>              :     </span>
+<span id="L155"><span class="lineNum">     155</span>              :     // Memory corruption detection</span>
+<span id="L156"><span class="lineNum">     156</span>              :     bool check_buffer_integrity(const ZeroCopyBuffer&amp; buffer) const;</span>
+<span id="L157"><span class="lineNum">     157</span>              :     void add_buffer_checksum(const ZeroCopyBuffer&amp; buffer);</span>
+<span id="L158"><span class="lineNum">     158</span>              :     bool verify_buffer_checksum(const ZeroCopyBuffer&amp; buffer) const;</span>
+<span id="L159"><span class="lineNum">     159</span>              :     </span>
+<span id="L160"><span class="lineNum">     160</span>              :     // Memory usage profiling</span>
+<span id="L161"><span class="lineNum">     161</span>              :     void start_profiling();</span>
+<span id="L162"><span class="lineNum">     162</span>              :     void stop_profiling();</span>
+<span id="L163"><span class="lineNum">     163</span>              :     bool is_profiling() const { return profiling_enabled_; }</span>
+<span id="L164"><span class="lineNum">     164</span>              :     </span>
+<span id="L165"><span class="lineNum">     165</span>              :     // Memory usage report</span>
+<span id="L166"><span class="lineNum">     166</span>              :     void generate_memory_report() const;</span>
+<span id="L167"><span class="lineNum">     167</span>              :     void dump_buffer_contents(const BufferView&amp; buffer, const std::string&amp; label = &quot;&quot;) const;</span>
+<span id="L168"><span class="lineNum">     168</span>              : </span>
+<span id="L169"><span class="lineNum">     169</span>              : private:</span>
+<span id="L170"><span class="lineNum">     170</span> <span class="tlaUNC">           0 :     MemoryDebugger() = default;</span></span>
+<span id="L171"><span class="lineNum">     171</span> <span class="tlaUNC">           0 :     ~MemoryDebugger() = default;</span></span>
+<span id="L172"><span class="lineNum">     172</span>              :     </span>
+<span id="L173"><span class="lineNum">     173</span>              :     std::atomic&lt;bool&gt; guard_patterns_enabled_{false};</span>
+<span id="L174"><span class="lineNum">     174</span>              :     std::atomic&lt;bool&gt; profiling_enabled_{false};</span>
+<span id="L175"><span class="lineNum">     175</span>              :     mutable std::mutex checksums_mutex_;</span>
+<span id="L176"><span class="lineNum">     176</span>              :     std::unordered_map&lt;const void*, uint32_t&gt; buffer_checksums_;</span>
+<span id="L177"><span class="lineNum">     177</span>              : };</span>
+<span id="L178"><span class="lineNum">     178</span>              : </span>
+<span id="L179"><span class="lineNum">     179</span>              : // Performance monitoring for memory operations</span>
+<span id="L180"><span class="lineNum">     180</span>              : class DTLS_API MemoryPerformanceMonitor {</span>
+<span id="L181"><span class="lineNum">     181</span>              : public:</span>
+<span id="L182"><span class="lineNum">     182</span>              :     static MemoryPerformanceMonitor&amp; instance();</span>
+<span id="L183"><span class="lineNum">     183</span>              :     </span>
+<span id="L184"><span class="lineNum">     184</span>              :     // Operation timing</span>
+<span id="L185"><span class="lineNum">     185</span>              :     void record_operation(const std::string&amp; operation, std::chrono::nanoseconds duration);</span>
+<span id="L186"><span class="lineNum">     186</span>              :     </span>
+<span id="L187"><span class="lineNum">     187</span>              :     // Performance statistics</span>
+<span id="L188"><span class="lineNum">     188</span>              :     struct OperationStats {</span>
+<span id="L189"><span class="lineNum">     189</span>              :         std::string name;</span>
+<span id="L190"><span class="lineNum">     190</span>              :         size_t count{0};</span>
+<span id="L191"><span class="lineNum">     191</span> <span class="tlaUNC">           0 :         std::chrono::nanoseconds total_time{0};</span></span>
+<span id="L192"><span class="lineNum">     192</span>              :         std::chrono::nanoseconds min_time{std::chrono::nanoseconds::max()};</span>
+<span id="L193"><span class="lineNum">     193</span> <span class="tlaUNC">           0 :         std::chrono::nanoseconds max_time{0};</span></span>
+<span id="L194"><span class="lineNum">     194</span> <span class="tlaUNC">           0 :         std::chrono::nanoseconds average_time() const {</span></span>
+<span id="L195"><span class="lineNum">     195</span> <span class="tlaUNC">           0 :             return count &gt; 0 ? std::chrono::nanoseconds(total_time / count) : std::chrono::nanoseconds{0};</span></span>
+<span id="L196"><span class="lineNum">     196</span>              :         }</span>
+<span id="L197"><span class="lineNum">     197</span>              :     };</span>
+<span id="L198"><span class="lineNum">     198</span>              :     </span>
+<span id="L199"><span class="lineNum">     199</span>              :     std::vector&lt;OperationStats&gt; get_all_stats() const;</span>
+<span id="L200"><span class="lineNum">     200</span>              :     OperationStats get_operation_stats(const std::string&amp; operation) const;</span>
+<span id="L201"><span class="lineNum">     201</span>              :     void reset_stats();</span>
+<span id="L202"><span class="lineNum">     202</span>              :     </span>
+<span id="L203"><span class="lineNum">     203</span>              :     // Configuration</span>
+<span id="L204"><span class="lineNum">     204</span> <span class="tlaUNC">           0 :     void enable_monitoring(bool enabled) { monitoring_enabled_ = enabled; }</span></span>
+<span id="L205"><span class="lineNum">     205</span>              :     bool is_monitoring_enabled() const { return monitoring_enabled_; }</span>
+<span id="L206"><span class="lineNum">     206</span>              : </span>
+<span id="L207"><span class="lineNum">     207</span>              : private:</span>
+<span id="L208"><span class="lineNum">     208</span> <span class="tlaUNC">           0 :     MemoryPerformanceMonitor() = default;</span></span>
+<span id="L209"><span class="lineNum">     209</span> <span class="tlaUNC">           0 :     ~MemoryPerformanceMonitor() = default;</span></span>
+<span id="L210"><span class="lineNum">     210</span>              :     </span>
+<span id="L211"><span class="lineNum">     211</span>              :     std::atomic&lt;bool&gt; monitoring_enabled_{false};</span>
+<span id="L212"><span class="lineNum">     212</span>              :     mutable std::mutex stats_mutex_;</span>
+<span id="L213"><span class="lineNum">     213</span>              :     std::unordered_map&lt;std::string, OperationStats&gt; operation_stats_;</span>
+<span id="L214"><span class="lineNum">     214</span>              : };</span>
+<span id="L215"><span class="lineNum">     215</span>              : </span>
+<span id="L216"><span class="lineNum">     216</span>              : // RAII timer for memory operations</span>
+<span id="L217"><span class="lineNum">     217</span>              : class DTLS_API MemoryOperationTimer {</span>
+<span id="L218"><span class="lineNum">     218</span>              : public:</span>
+<span id="L219"><span class="lineNum">     219</span>              :     explicit MemoryOperationTimer(const std::string&amp; operation_name);</span>
+<span id="L220"><span class="lineNum">     220</span>              :     ~MemoryOperationTimer();</span>
+<span id="L221"><span class="lineNum">     221</span>              :     </span>
+<span id="L222"><span class="lineNum">     222</span>              :     MemoryOperationTimer(const MemoryOperationTimer&amp;) = delete;</span>
+<span id="L223"><span class="lineNum">     223</span>              :     MemoryOperationTimer&amp; operator=(const MemoryOperationTimer&amp;) = delete;</span>
+<span id="L224"><span class="lineNum">     224</span>              : </span>
+<span id="L225"><span class="lineNum">     225</span>              : private:</span>
+<span id="L226"><span class="lineNum">     226</span>              :     std::string operation_name_;</span>
+<span id="L227"><span class="lineNum">     227</span>              :     std::chrono::steady_clock::time_point start_time_;</span>
+<span id="L228"><span class="lineNum">     228</span>              : };</span>
+<span id="L229"><span class="lineNum">     229</span>              : </span>
+<span id="L230"><span class="lineNum">     230</span>              : // Memory configuration and limits</span>
+<span id="L231"><span class="lineNum">     231</span>              : struct MemoryConfig {</span>
+<span id="L232"><span class="lineNum">     232</span>              :     size_t max_total_memory{1024 * 1024 * 1024}; // 1GB default</span>
+<span id="L233"><span class="lineNum">     233</span>              :     size_t max_single_allocation{64 * 1024 * 1024}; // 64MB default</span>
+<span id="L234"><span class="lineNum">     234</span>              :     size_t warning_threshold{512 * 1024 * 1024}; // 512MB warning</span>
+<span id="L235"><span class="lineNum">     235</span>              :     bool enable_statistics{true};</span>
+<span id="L236"><span class="lineNum">     236</span>              :     bool enable_tracking{false};</span>
+<span id="L237"><span class="lineNum">     237</span>              :     bool enable_debugging{false};</span>
+<span id="L238"><span class="lineNum">     238</span>              :     bool enable_performance_monitoring{false};</span>
+<span id="L239"><span class="lineNum">     239</span>              : };</span>
+<span id="L240"><span class="lineNum">     240</span>              : </span>
+<span id="L241"><span class="lineNum">     241</span>              : // Global memory configuration</span>
+<span id="L242"><span class="lineNum">     242</span>              : DTLS_API Result&lt;void&gt; configure_memory_system(const MemoryConfig&amp; config);</span>
+<span id="L243"><span class="lineNum">     243</span>              : DTLS_API MemoryConfig get_memory_configuration();</span>
+<span id="L244"><span class="lineNum">     244</span>              : DTLS_API void reset_memory_configuration();</span>
+<span id="L245"><span class="lineNum">     245</span>              : </span>
+<span id="L246"><span class="lineNum">     246</span>              : // Memory health check</span>
+<span id="L247"><span class="lineNum">     247</span>              : struct MemoryHealthReport {</span>
+<span id="L248"><span class="lineNum">     248</span>              :     bool overall_healthy{true};</span>
+<span id="L249"><span class="lineNum">     249</span>              :     size_t total_memory_usage{0};</span>
+<span id="L250"><span class="lineNum">     250</span>              :     size_t active_allocations{0};</span>
+<span id="L251"><span class="lineNum">     251</span>              :     size_t memory_leaks{0};</span>
+<span id="L252"><span class="lineNum">     252</span>              :     double fragmentation_ratio{0.0};</span>
+<span id="L253"><span class="lineNum">     253</span>              :     std::vector&lt;std::string&gt; issues;</span>
+<span id="L254"><span class="lineNum">     254</span>              :     std::chrono::steady_clock::time_point check_time;</span>
+<span id="L255"><span class="lineNum">     255</span>              : };</span>
+<span id="L256"><span class="lineNum">     256</span>              : </span>
+<span id="L257"><span class="lineNum">     257</span>              : DTLS_API Result&lt;MemoryHealthReport&gt; perform_memory_health_check();</span>
+<span id="L258"><span class="lineNum">     258</span>              : </span>
+<span id="L259"><span class="lineNum">     259</span>              : // Memory cleanup utilities</span>
+<span id="L260"><span class="lineNum">     260</span>              : DTLS_API void cleanup_memory_system();</span>
+<span id="L261"><span class="lineNum">     261</span>              : DTLS_API void force_garbage_collection();</span>
+<span id="L262"><span class="lineNum">     262</span>              : DTLS_API size_t compact_memory_pools();</span>
+<span id="L263"><span class="lineNum">     263</span>              : </span>
+<span id="L264"><span class="lineNum">     264</span>              : } // namespace utils</span>
+<span id="L265"><span class="lineNum">     265</span>              : </span>
+<span id="L266"><span class="lineNum">     266</span>              : // Convenience macros for memory tracking</span>
+<span id="L267"><span class="lineNum">     267</span>              : #define DTLS_MEMORY_TRACK(size) \</span>
+<span id="L268"><span class="lineNum">     268</span>              :     dtls::v13::memory::utils::MemoryTracker _tracker(size, __FILE__ &quot;:&quot; DTLS_STRINGIFY(__LINE__))</span>
+<span id="L269"><span class="lineNum">     269</span>              : </span>
+<span id="L270"><span class="lineNum">     270</span>              : #define DTLS_MEMORY_TIMER(op_name) \</span>
+<span id="L271"><span class="lineNum">     271</span>              :     dtls::v13::memory::utils::MemoryOperationTimer _timer(op_name)</span>
+<span id="L272"><span class="lineNum">     272</span>              : </span>
+<span id="L273"><span class="lineNum">     273</span>              : #ifndef DTLS_STRINGIFY</span>
+<span id="L274"><span class="lineNum">     274</span>              : #define DTLS_STRINGIFY_IMPL(x) #x</span>
+<span id="L275"><span class="lineNum">     275</span>              : #define DTLS_STRINGIFY(x) DTLS_STRINGIFY_IMPL(x)</span>
+<span id="L276"><span class="lineNum">     276</span>              : #endif</span>
+<span id="L277"><span class="lineNum">     277</span>              : </span>
+<span id="L278"><span class="lineNum">     278</span>              : } // namespace memory</span>
+<span id="L279"><span class="lineNum">     279</span>              : } // namespace v13</span>
+<span id="L280"><span class="lineNum">     280</span>              : } // namespace dtls</span>
+<span id="L281"><span class="lineNum">     281</span>              : </span>
+<span id="L282"><span class="lineNum">     282</span>              : #endif // DTLS_MEMORY_UTILS_H</span>
+        </pre>
+              </td>
+            </tr>
+          </table>
+          <br>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+            <tr><td class="versionInfo">Generated by: <a href="https://github.com//linux-test-project/lcov" target="_parent">LCOV version 2.0-1</a></td></tr>
+          </table>
+          <br>
+
+</body>
+</html>

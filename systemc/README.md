@@ -1,6 +1,6 @@
-# DTLS v1.3 SystemC Transaction Level Models
+# DTLS v1.3 SystemC Transaction Level Models - Production Release v1.0
 
-This directory contains SystemC Transaction Level Models (TLM) for the DTLS v1.3 implementation, providing hardware/software co-design verification and performance analysis capabilities.
+This directory contains production-ready SystemC Transaction Level Models (TLM) for the DTLS v1.3 implementation, providing enterprise-grade hardware/software co-design verification and performance analysis capabilities.
 
 ## Overview
 

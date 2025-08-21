@@ -1,0 +1,468 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - total_coverage.info - include/dtls/protocol/message_layer.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="title">LCOV - code coverage report</td></tr>
+            <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+            <tr>
+              <td width="100%">
+                <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="10%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">include/dtls/protocol</a> - message_layer.h<span style="font-size: 80%;"> (source / <a href="message_layer.h.func-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="5%"></td>
+            <td width="5%" class="headerCovTableHead">Coverage</td>
+            <td width="5%" class="headerCovTableHead" title="Covered + Uncovered code">Total</td>
+            <td width="5%" class="headerCovTableHead" title="Exercised code only">Hit</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">total_coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntryLo">0.0&nbsp;%</td>
+            <td class="headerCovTableEntry">18</td>
+            <td class="headerCovTableEntry">0</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test Date:</td>
+            <td class="headerValue">2025-08-17 17:21:18</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntryLo">0.0&nbsp;%</td>
+            <td class="headerCovTableEntry">10</td>
+            <td class="headerCovTableEntry">0</td>
+          </tr>
+                  <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+                </table>
+              </td>
+            </tr>
+
+            <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+          </table>
+
+          <table cellpadding=0 cellspacing=0 border=0>
+            <tr>
+              <td><br></td>
+            </tr>
+            <tr>
+              <td>
+<pre class="sourceHeading">            Line data    Source code</pre>
+<pre class="source">
+<span id="L1"><span class="lineNum">       1</span>              : #ifndef DTLS_PROTOCOL_MESSAGE_LAYER_H</span>
+<span id="L2"><span class="lineNum">       2</span>              : #define DTLS_PROTOCOL_MESSAGE_LAYER_H</span>
+<span id="L3"><span class="lineNum">       3</span>              : </span>
+<span id="L4"><span class="lineNum">       4</span>              : #include &lt;dtls/config.h&gt;</span>
+<span id="L5"><span class="lineNum">       5</span>              : #include &lt;dtls/types.h&gt;</span>
+<span id="L6"><span class="lineNum">       6</span>              : #include &lt;dtls/result.h&gt;</span>
+<span id="L7"><span class="lineNum">       7</span>              : #include &lt;dtls/protocol/handshake.h&gt;</span>
+<span id="L8"><span class="lineNum">       8</span>              : #include &lt;dtls/protocol/record_layer.h&gt;</span>
+<span id="L9"><span class="lineNum">       9</span>              : #include &lt;memory&gt;</span>
+<span id="L10"><span class="lineNum">      10</span>              : #include &lt;vector&gt;</span>
+<span id="L11"><span class="lineNum">      11</span>              : #include &lt;map&gt;</span>
+<span id="L12"><span class="lineNum">      12</span>              : #include &lt;mutex&gt;</span>
+<span id="L13"><span class="lineNum">      13</span>              : #include &lt;chrono&gt;</span>
+<span id="L14"><span class="lineNum">      14</span>              : #include &lt;functional&gt;</span>
+<span id="L15"><span class="lineNum">      15</span>              : </span>
+<span id="L16"><span class="lineNum">      16</span>              : namespace dtls {</span>
+<span id="L17"><span class="lineNum">      17</span>              : namespace v13 {</span>
+<span id="L18"><span class="lineNum">      18</span>              : namespace protocol {</span>
+<span id="L19"><span class="lineNum">      19</span>              : </span>
+<span id="L20"><span class="lineNum">      20</span>              : /**</span>
+<span id="L21"><span class="lineNum">      21</span>              :  * Message fragment for DTLS handshake message fragmentation</span>
+<span id="L22"><span class="lineNum">      22</span>              :  */</span>
+<span id="L23"><span class="lineNum">      23</span>              : struct MessageFragment {</span>
+<span id="L24"><span class="lineNum">      24</span>              :     uint16_t message_seq;</span>
+<span id="L25"><span class="lineNum">      25</span>              :     uint32_t fragment_offset;</span>
+<span id="L26"><span class="lineNum">      26</span>              :     uint32_t fragment_length;</span>
+<span id="L27"><span class="lineNum">      27</span>              :     uint32_t total_length;</span>
+<span id="L28"><span class="lineNum">      28</span>              :     memory::Buffer fragment_data;</span>
+<span id="L29"><span class="lineNum">      29</span>              :     </span>
+<span id="L30"><span class="lineNum">      30</span>              :     MessageFragment() = default;</span>
+<span id="L31"><span class="lineNum">      31</span> <span class="tlaUNC tlaBgUNC">           0 :     MessageFragment(uint16_t seq, uint32_t offset, uint32_t frag_len, </span></span>
+<span id="L32"><span class="lineNum">      32</span>              :                    uint32_t total_len, memory::Buffer data)</span>
+<span id="L33"><span class="lineNum">      33</span> <span class="tlaUNC">           0 :         : message_seq(seq), fragment_offset(offset), fragment_length(frag_len)</span></span>
+<span id="L34"><span class="lineNum">      34</span> <span class="tlaUNC">           0 :         , total_length(total_len), fragment_data(std::move(data)) {}</span></span>
+<span id="L35"><span class="lineNum">      35</span>              :     </span>
+<span id="L36"><span class="lineNum">      36</span> <span class="tlaUNC">           0 :     bool is_complete_message() const {</span></span>
+<span id="L37"><span class="lineNum">      37</span> <span class="tlaUNC">           0 :         return fragment_offset == 0 &amp;&amp; fragment_length == total_length;</span></span>
+<span id="L38"><span class="lineNum">      38</span>              :     }</span>
+<span id="L39"><span class="lineNum">      39</span>              :     </span>
+<span id="L40"><span class="lineNum">      40</span> <span class="tlaUNC">           0 :     bool is_valid() const {</span></span>
+<span id="L41"><span class="lineNum">      41</span> <span class="tlaUNC">           0 :         return fragment_offset + fragment_length &lt;= total_length &amp;&amp;</span></span>
+<span id="L42"><span class="lineNum">      42</span> <span class="tlaUNC">           0 :                fragment_data.size() == fragment_length;</span></span>
+<span id="L43"><span class="lineNum">      43</span>              :     }</span>
+<span id="L44"><span class="lineNum">      44</span>              : };</span>
+<span id="L45"><span class="lineNum">      45</span>              : </span>
+<span id="L46"><span class="lineNum">      46</span>              : /**</span>
+<span id="L47"><span class="lineNum">      47</span>              :  * Message reassembly buffer for collecting fragments</span>
+<span id="L48"><span class="lineNum">      48</span>              :  */</span>
+<span id="L49"><span class="lineNum">      49</span>              : class DTLS_API MessageReassembler {</span>
+<span id="L50"><span class="lineNum">      50</span>              : public:</span>
+<span id="L51"><span class="lineNum">      51</span> <span class="tlaUNC">           0 :     MessageReassembler() = default;</span></span>
+<span id="L52"><span class="lineNum">      52</span> <span class="tlaUNC">           0 :     ~MessageReassembler() = default;</span></span>
+<span id="L53"><span class="lineNum">      53</span>              :     </span>
+<span id="L54"><span class="lineNum">      54</span>              :     // Non-copyable, movable</span>
+<span id="L55"><span class="lineNum">      55</span>              :     MessageReassembler(const MessageReassembler&amp;) = delete;</span>
+<span id="L56"><span class="lineNum">      56</span>              :     MessageReassembler&amp; operator=(const MessageReassembler&amp;) = delete;</span>
+<span id="L57"><span class="lineNum">      57</span>              :     MessageReassembler(MessageReassembler&amp;&amp;) noexcept = default;</span>
+<span id="L58"><span class="lineNum">      58</span>              :     MessageReassembler&amp; operator=(MessageReassembler&amp;&amp;) noexcept = default;</span>
+<span id="L59"><span class="lineNum">      59</span>              :     </span>
+<span id="L60"><span class="lineNum">      60</span>              :     /**</span>
+<span id="L61"><span class="lineNum">      61</span>              :      * Add a fragment to the reassembly buffer</span>
+<span id="L62"><span class="lineNum">      62</span>              :      */</span>
+<span id="L63"><span class="lineNum">      63</span>              :     Result&lt;bool&gt; add_fragment(const MessageFragment&amp; fragment);</span>
+<span id="L64"><span class="lineNum">      64</span>              :     </span>
+<span id="L65"><span class="lineNum">      65</span>              :     /**</span>
+<span id="L66"><span class="lineNum">      66</span>              :      * Check if message is complete</span>
+<span id="L67"><span class="lineNum">      67</span>              :      */</span>
+<span id="L68"><span class="lineNum">      68</span>              :     bool is_complete() const;</span>
+<span id="L69"><span class="lineNum">      69</span>              :     </span>
+<span id="L70"><span class="lineNum">      70</span>              :     /**</span>
+<span id="L71"><span class="lineNum">      71</span>              :      * Get the complete message (only if is_complete() returns true)</span>
+<span id="L72"><span class="lineNum">      72</span>              :      */</span>
+<span id="L73"><span class="lineNum">      73</span>              :     Result&lt;memory::Buffer&gt; get_complete_message();</span>
+<span id="L74"><span class="lineNum">      74</span>              :     </span>
+<span id="L75"><span class="lineNum">      75</span>              :     /**</span>
+<span id="L76"><span class="lineNum">      76</span>              :      * Clear the reassembly buffer</span>
+<span id="L77"><span class="lineNum">      77</span>              :      */</span>
+<span id="L78"><span class="lineNum">      78</span>              :     void clear();</span>
+<span id="L79"><span class="lineNum">      79</span>              :     </span>
+<span id="L80"><span class="lineNum">      80</span>              :     /**</span>
+<span id="L81"><span class="lineNum">      81</span>              :      * Get reassembly statistics</span>
+<span id="L82"><span class="lineNum">      82</span>              :      */</span>
+<span id="L83"><span class="lineNum">      83</span>              :     struct ReassemblyStats {</span>
+<span id="L84"><span class="lineNum">      84</span>              :         uint32_t total_length{0};</span>
+<span id="L85"><span class="lineNum">      85</span>              :         uint32_t received_bytes{0};</span>
+<span id="L86"><span class="lineNum">      86</span>              :         size_t fragment_count{0};</span>
+<span id="L87"><span class="lineNum">      87</span>              :         size_t gap_count{0};</span>
+<span id="L88"><span class="lineNum">      88</span>              :     };</span>
+<span id="L89"><span class="lineNum">      89</span>              :     </span>
+<span id="L90"><span class="lineNum">      90</span>              :     ReassemblyStats get_stats() const;</span>
+<span id="L91"><span class="lineNum">      91</span>              : </span>
+<span id="L92"><span class="lineNum">      92</span>              : private:</span>
+<span id="L93"><span class="lineNum">      93</span>              :     struct FragmentRange {</span>
+<span id="L94"><span class="lineNum">      94</span>              :         uint32_t start;</span>
+<span id="L95"><span class="lineNum">      95</span>              :         uint32_t end;</span>
+<span id="L96"><span class="lineNum">      96</span>              :         memory::Buffer data;</span>
+<span id="L97"><span class="lineNum">      97</span>              :         </span>
+<span id="L98"><span class="lineNum">      98</span> <span class="tlaUNC">           0 :         FragmentRange(uint32_t s, uint32_t e, memory::Buffer d)</span></span>
+<span id="L99"><span class="lineNum">      99</span> <span class="tlaUNC">           0 :             : start(s), end(e), data(std::move(d)) {}</span></span>
+<span id="L100"><span class="lineNum">     100</span>              :     };</span>
+<span id="L101"><span class="lineNum">     101</span>              :     </span>
+<span id="L102"><span class="lineNum">     102</span>              :     uint32_t total_length_{0};</span>
+<span id="L103"><span class="lineNum">     103</span>              :     std::vector&lt;FragmentRange&gt; fragments_;</span>
+<span id="L104"><span class="lineNum">     104</span>              :     mutable std::mutex mutex_;</span>
+<span id="L105"><span class="lineNum">     105</span>              :     </span>
+<span id="L106"><span class="lineNum">     106</span>              :     void merge_overlapping_fragments();</span>
+<span id="L107"><span class="lineNum">     107</span>              :     bool has_gap() const;</span>
+<span id="L108"><span class="lineNum">     108</span>              : };</span>
+<span id="L109"><span class="lineNum">     109</span>              : </span>
+<span id="L110"><span class="lineNum">     110</span>              : /**</span>
+<span id="L111"><span class="lineNum">     111</span>              :  * DTLS Flight for reliable handshake message delivery</span>
+<span id="L112"><span class="lineNum">     112</span>              :  */</span>
+<span id="L113"><span class="lineNum">     113</span>              : enum class FlightType {</span>
+<span id="L114"><span class="lineNum">     114</span>              :     CLIENT_HELLO_FLIGHT = 1,</span>
+<span id="L115"><span class="lineNum">     115</span>              :     SERVER_HELLO_FLIGHT = 2,</span>
+<span id="L116"><span class="lineNum">     116</span>              :     CLIENT_CERTIFICATE_FLIGHT = 3,</span>
+<span id="L117"><span class="lineNum">     117</span>              :     SERVER_CERTIFICATE_FLIGHT = 4,</span>
+<span id="L118"><span class="lineNum">     118</span>              :     CLIENT_FINISHED_FLIGHT = 5,</span>
+<span id="L119"><span class="lineNum">     119</span>              :     SERVER_FINISHED_FLIGHT = 6</span>
+<span id="L120"><span class="lineNum">     120</span>              : };</span>
+<span id="L121"><span class="lineNum">     121</span>              : </span>
+<span id="L122"><span class="lineNum">     122</span>              : class DTLS_API HandshakeFlight {</span>
+<span id="L123"><span class="lineNum">     123</span>              : public:</span>
+<span id="L124"><span class="lineNum">     124</span>              :     HandshakeFlight(FlightType type, uint16_t message_seq_start);</span>
+<span id="L125"><span class="lineNum">     125</span> <span class="tlaUNC">           0 :     ~HandshakeFlight() = default;</span></span>
+<span id="L126"><span class="lineNum">     126</span>              :     </span>
+<span id="L127"><span class="lineNum">     127</span>              :     // Non-copyable, movable</span>
+<span id="L128"><span class="lineNum">     128</span>              :     HandshakeFlight(const HandshakeFlight&amp;) = delete;</span>
+<span id="L129"><span class="lineNum">     129</span>              :     HandshakeFlight&amp; operator=(const HandshakeFlight&amp;) = delete;</span>
+<span id="L130"><span class="lineNum">     130</span>              :     HandshakeFlight(HandshakeFlight&amp;&amp;) noexcept = default;</span>
+<span id="L131"><span class="lineNum">     131</span>              :     HandshakeFlight&amp; operator=(HandshakeFlight&amp;&amp;) noexcept = default;</span>
+<span id="L132"><span class="lineNum">     132</span>              :     </span>
+<span id="L133"><span class="lineNum">     133</span>              :     /**</span>
+<span id="L134"><span class="lineNum">     134</span>              :      * Add a handshake message to the flight</span>
+<span id="L135"><span class="lineNum">     135</span>              :      */</span>
+<span id="L136"><span class="lineNum">     136</span>              :     void add_message(HandshakeMessage&amp;&amp; message);</span>
+<span id="L137"><span class="lineNum">     137</span>              :     </span>
+<span id="L138"><span class="lineNum">     138</span>              :     /**</span>
+<span id="L139"><span class="lineNum">     139</span>              :      * Get all messages in the flight</span>
+<span id="L140"><span class="lineNum">     140</span>              :      */</span>
+<span id="L141"><span class="lineNum">     141</span>              :     const std::vector&lt;HandshakeMessage&gt;&amp; get_messages() const;</span>
+<span id="L142"><span class="lineNum">     142</span>              :     </span>
+<span id="L143"><span class="lineNum">     143</span>              :     /**</span>
+<span id="L144"><span class="lineNum">     144</span>              :      * Fragment all messages in the flight for transmission</span>
+<span id="L145"><span class="lineNum">     145</span>              :      */</span>
+<span id="L146"><span class="lineNum">     146</span>              :     Result&lt;std::vector&lt;MessageFragment&gt;&gt; fragment_messages(size_t max_fragment_size = 1200) const;</span>
+<span id="L147"><span class="lineNum">     147</span>              :     </span>
+<span id="L148"><span class="lineNum">     148</span>              :     /**</span>
+<span id="L149"><span class="lineNum">     149</span>              :      * Get flight type</span>
+<span id="L150"><span class="lineNum">     150</span>              :      */</span>
+<span id="L151"><span class="lineNum">     151</span> <span class="tlaUNC">           0 :     FlightType get_type() const { return type_; }</span></span>
+<span id="L152"><span class="lineNum">     152</span>              :     </span>
+<span id="L153"><span class="lineNum">     153</span>              :     /**</span>
+<span id="L154"><span class="lineNum">     154</span>              :      * Get message sequence number range</span>
+<span id="L155"><span class="lineNum">     155</span>              :      */</span>
+<span id="L156"><span class="lineNum">     156</span>              :     std::pair&lt;uint16_t, uint16_t&gt; get_sequence_range() const;</span>
+<span id="L157"><span class="lineNum">     157</span>              :     </span>
+<span id="L158"><span class="lineNum">     158</span>              :     /**</span>
+<span id="L159"><span class="lineNum">     159</span>              :      * Check if flight is complete</span>
+<span id="L160"><span class="lineNum">     160</span>              :      */</span>
+<span id="L161"><span class="lineNum">     161</span>              :     bool is_complete() const;</span>
+<span id="L162"><span class="lineNum">     162</span>              :     </span>
+<span id="L163"><span class="lineNum">     163</span>              :     /**</span>
+<span id="L164"><span class="lineNum">     164</span>              :      * Get flight size in bytes</span>
+<span id="L165"><span class="lineNum">     165</span>              :      */</span>
+<span id="L166"><span class="lineNum">     166</span>              :     size_t get_total_size() const;</span>
+<span id="L167"><span class="lineNum">     167</span>              : </span>
+<span id="L168"><span class="lineNum">     168</span>              : private:</span>
+<span id="L169"><span class="lineNum">     169</span>              :     FlightType type_;</span>
+<span id="L170"><span class="lineNum">     170</span>              :     uint16_t message_seq_start_;</span>
+<span id="L171"><span class="lineNum">     171</span>              :     std::vector&lt;HandshakeMessage&gt; messages_;</span>
+<span id="L172"><span class="lineNum">     172</span>              : };</span>
+<span id="L173"><span class="lineNum">     173</span>              : </span>
+<span id="L174"><span class="lineNum">     174</span>              : /**</span>
+<span id="L175"><span class="lineNum">     175</span>              :  * Flight manager for handling DTLS handshake flights</span>
+<span id="L176"><span class="lineNum">     176</span>              :  */</span>
+<span id="L177"><span class="lineNum">     177</span>              : class DTLS_API FlightManager {</span>
+<span id="L178"><span class="lineNum">     178</span>              : public:</span>
+<span id="L179"><span class="lineNum">     179</span>              :     FlightManager();</span>
+<span id="L180"><span class="lineNum">     180</span> <span class="tlaUNC">           0 :     ~FlightManager() = default;</span></span>
+<span id="L181"><span class="lineNum">     181</span>              :     </span>
+<span id="L182"><span class="lineNum">     182</span>              :     // Non-copyable, movable</span>
+<span id="L183"><span class="lineNum">     183</span>              :     FlightManager(const FlightManager&amp;) = delete;</span>
+<span id="L184"><span class="lineNum">     184</span>              :     FlightManager&amp; operator=(const FlightManager&amp;) = delete;</span>
+<span id="L185"><span class="lineNum">     185</span>              :     FlightManager(FlightManager&amp;&amp;) noexcept = default;</span>
+<span id="L186"><span class="lineNum">     186</span>              :     FlightManager&amp; operator=(FlightManager&amp;&amp;) noexcept = default;</span>
+<span id="L187"><span class="lineNum">     187</span>              :     </span>
+<span id="L188"><span class="lineNum">     188</span>              :     /**</span>
+<span id="L189"><span class="lineNum">     189</span>              :      * Create a new flight</span>
+<span id="L190"><span class="lineNum">     190</span>              :      */</span>
+<span id="L191"><span class="lineNum">     191</span>              :     Result&lt;void&gt; create_flight(FlightType type);</span>
+<span id="L192"><span class="lineNum">     192</span>              :     </span>
+<span id="L193"><span class="lineNum">     193</span>              :     /**</span>
+<span id="L194"><span class="lineNum">     194</span>              :      * Add message to current flight</span>
+<span id="L195"><span class="lineNum">     195</span>              :      */</span>
+<span id="L196"><span class="lineNum">     196</span>              :     Result&lt;void&gt; add_message_to_current_flight(HandshakeMessage&amp;&amp; message);</span>
+<span id="L197"><span class="lineNum">     197</span>              :     </span>
+<span id="L198"><span class="lineNum">     198</span>              :     /**</span>
+<span id="L199"><span class="lineNum">     199</span>              :      * Complete current flight and prepare for transmission</span>
+<span id="L200"><span class="lineNum">     200</span>              :      */</span>
+<span id="L201"><span class="lineNum">     201</span>              :     Result&lt;std::unique_ptr&lt;HandshakeFlight&gt;&gt; complete_current_flight();</span>
+<span id="L202"><span class="lineNum">     202</span>              :     </span>
+<span id="L203"><span class="lineNum">     203</span>              :     /**</span>
+<span id="L204"><span class="lineNum">     204</span>              :      * Set retransmission parameters</span>
+<span id="L205"><span class="lineNum">     205</span>              :      */</span>
+<span id="L206"><span class="lineNum">     206</span>              :     void set_retransmission_timeout(std::chrono::milliseconds timeout);</span>
+<span id="L207"><span class="lineNum">     207</span>              :     void set_max_retransmissions(size_t max_retries);</span>
+<span id="L208"><span class="lineNum">     208</span>              :     </span>
+<span id="L209"><span class="lineNum">     209</span>              :     /**</span>
+<span id="L210"><span class="lineNum">     210</span>              :      * Handle flight retransmission</span>
+<span id="L211"><span class="lineNum">     211</span>              :      */</span>
+<span id="L212"><span class="lineNum">     212</span>              :     bool should_retransmit(FlightType flight) const;</span>
+<span id="L213"><span class="lineNum">     213</span>              :     void mark_flight_transmitted(FlightType flight);</span>
+<span id="L214"><span class="lineNum">     214</span>              :     void mark_flight_acknowledged(FlightType flight);</span>
+<span id="L215"><span class="lineNum">     215</span>              :     </span>
+<span id="L216"><span class="lineNum">     216</span>              :     /**</span>
+<span id="L217"><span class="lineNum">     217</span>              :      * Get flight statistics</span>
+<span id="L218"><span class="lineNum">     218</span>              :      */</span>
+<span id="L219"><span class="lineNum">     219</span>              :     struct FlightStats {</span>
+<span id="L220"><span class="lineNum">     220</span>              :         size_t flights_created{0};</span>
+<span id="L221"><span class="lineNum">     221</span>              :         size_t flights_transmitted{0};</span>
+<span id="L222"><span class="lineNum">     222</span>              :         size_t flights_acknowledged{0};</span>
+<span id="L223"><span class="lineNum">     223</span>              :         size_t retransmissions{0};</span>
+<span id="L224"><span class="lineNum">     224</span>              :         std::chrono::milliseconds average_rtt{0};</span>
+<span id="L225"><span class="lineNum">     225</span>              :     };</span>
+<span id="L226"><span class="lineNum">     226</span>              :     </span>
+<span id="L227"><span class="lineNum">     227</span>              :     FlightStats get_stats() const;</span>
+<span id="L228"><span class="lineNum">     228</span>              : </span>
+<span id="L229"><span class="lineNum">     229</span>              : private:</span>
+<span id="L230"><span class="lineNum">     230</span>              :     struct FlightState {</span>
+<span id="L231"><span class="lineNum">     231</span>              :         std::unique_ptr&lt;HandshakeFlight&gt; flight;</span>
+<span id="L232"><span class="lineNum">     232</span>              :         std::chrono::steady_clock::time_point last_transmission;</span>
+<span id="L233"><span class="lineNum">     233</span>              :         size_t retransmission_count{0};</span>
+<span id="L234"><span class="lineNum">     234</span>              :         bool acknowledged{false};</span>
+<span id="L235"><span class="lineNum">     235</span>              :     };</span>
+<span id="L236"><span class="lineNum">     236</span>              :     </span>
+<span id="L237"><span class="lineNum">     237</span>              :     uint16_t next_message_seq_{0};</span>
+<span id="L238"><span class="lineNum">     238</span>              :     std::unique_ptr&lt;HandshakeFlight&gt; current_flight_;</span>
+<span id="L239"><span class="lineNum">     239</span>              :     std::map&lt;FlightType, FlightState&gt; flight_states_;</span>
+<span id="L240"><span class="lineNum">     240</span>              :     </span>
+<span id="L241"><span class="lineNum">     241</span> <span class="tlaUNC">           0 :     std::chrono::milliseconds retransmission_timeout_{1000};</span></span>
+<span id="L242"><span class="lineNum">     242</span>              :     size_t max_retransmissions_{3};</span>
+<span id="L243"><span class="lineNum">     243</span>              :     </span>
+<span id="L244"><span class="lineNum">     244</span>              :     mutable FlightStats stats_;</span>
+<span id="L245"><span class="lineNum">     245</span>              :     mutable std::mutex mutex_;</span>
+<span id="L246"><span class="lineNum">     246</span>              : };</span>
+<span id="L247"><span class="lineNum">     247</span>              : </span>
+<span id="L248"><span class="lineNum">     248</span>              : /**</span>
+<span id="L249"><span class="lineNum">     249</span>              :  * Main DTLS Message Layer</span>
+<span id="L250"><span class="lineNum">     250</span>              :  * </span>
+<span id="L251"><span class="lineNum">     251</span>              :  * Handles message fragmentation, reassembly, flight management,</span>
+<span id="L252"><span class="lineNum">     252</span>              :  * and reliable delivery for DTLS handshake messages.</span>
+<span id="L253"><span class="lineNum">     253</span>              :  */</span>
+<span id="L254"><span class="lineNum">     254</span>              : class DTLS_API MessageLayer {</span>
+<span id="L255"><span class="lineNum">     255</span>              : public:</span>
+<span id="L256"><span class="lineNum">     256</span>              :     MessageLayer(std::unique_ptr&lt;RecordLayer&gt; record_layer);</span>
+<span id="L257"><span class="lineNum">     257</span> <span class="tlaUNC">           0 :     ~MessageLayer() = default;</span></span>
+<span id="L258"><span class="lineNum">     258</span>              :     </span>
+<span id="L259"><span class="lineNum">     259</span>              :     // Non-copyable, movable</span>
+<span id="L260"><span class="lineNum">     260</span>              :     MessageLayer(const MessageLayer&amp;) = delete;</span>
+<span id="L261"><span class="lineNum">     261</span>              :     MessageLayer&amp; operator=(const MessageLayer&amp;) = delete;</span>
+<span id="L262"><span class="lineNum">     262</span>              :     MessageLayer(MessageLayer&amp;&amp;) noexcept = default;</span>
+<span id="L263"><span class="lineNum">     263</span>              :     MessageLayer&amp; operator=(MessageLayer&amp;&amp;) noexcept = default;</span>
+<span id="L264"><span class="lineNum">     264</span>              :     </span>
+<span id="L265"><span class="lineNum">     265</span>              :     /**</span>
+<span id="L266"><span class="lineNum">     266</span>              :      * Initialize the message layer</span>
+<span id="L267"><span class="lineNum">     267</span>              :      */</span>
+<span id="L268"><span class="lineNum">     268</span>              :     Result&lt;void&gt; initialize();</span>
+<span id="L269"><span class="lineNum">     269</span>              :     </span>
+<span id="L270"><span class="lineNum">     270</span>              :     /**</span>
+<span id="L271"><span class="lineNum">     271</span>              :      * Send a handshake message (handles fragmentation automatically)</span>
+<span id="L272"><span class="lineNum">     272</span>              :      */</span>
+<span id="L273"><span class="lineNum">     273</span>              :     Result&lt;void&gt; send_handshake_message(const HandshakeMessage&amp; message);</span>
+<span id="L274"><span class="lineNum">     274</span>              :     </span>
+<span id="L275"><span class="lineNum">     275</span>              :     /**</span>
+<span id="L276"><span class="lineNum">     276</span>              :      * Send a complete flight of handshake messages</span>
+<span id="L277"><span class="lineNum">     277</span>              :      */</span>
+<span id="L278"><span class="lineNum">     278</span>              :     Result&lt;void&gt; send_handshake_flight(std::unique_ptr&lt;HandshakeFlight&gt; flight);</span>
+<span id="L279"><span class="lineNum">     279</span>              :     </span>
+<span id="L280"><span class="lineNum">     280</span>              :     /**</span>
+<span id="L281"><span class="lineNum">     281</span>              :      * Process incoming handshake record (handles reassembly)</span>
+<span id="L282"><span class="lineNum">     282</span>              :      */</span>
+<span id="L283"><span class="lineNum">     283</span>              :     Result&lt;std::vector&lt;HandshakeMessage&gt;&gt; process_incoming_handshake_record(</span>
+<span id="L284"><span class="lineNum">     284</span>              :         const PlaintextRecord&amp; record);</span>
+<span id="L285"><span class="lineNum">     285</span>              :     </span>
+<span id="L286"><span class="lineNum">     286</span>              :     /**</span>
+<span id="L287"><span class="lineNum">     287</span>              :      * Start a new handshake flight</span>
+<span id="L288"><span class="lineNum">     288</span>              :      */</span>
+<span id="L289"><span class="lineNum">     289</span>              :     Result&lt;void&gt; start_flight(FlightType type);</span>
+<span id="L290"><span class="lineNum">     290</span>              :     </span>
+<span id="L291"><span class="lineNum">     291</span>              :     /**</span>
+<span id="L292"><span class="lineNum">     292</span>              :      * Add message to current flight</span>
+<span id="L293"><span class="lineNum">     293</span>              :      */</span>
+<span id="L294"><span class="lineNum">     294</span>              :     Result&lt;void&gt; add_to_current_flight(HandshakeMessage&amp;&amp; message);</span>
+<span id="L295"><span class="lineNum">     295</span>              :     </span>
+<span id="L296"><span class="lineNum">     296</span>              :     /**</span>
+<span id="L297"><span class="lineNum">     297</span>              :      * Complete and send current flight</span>
+<span id="L298"><span class="lineNum">     298</span>              :      */</span>
+<span id="L299"><span class="lineNum">     299</span>              :     Result&lt;void&gt; complete_and_send_flight();</span>
+<span id="L300"><span class="lineNum">     300</span>              :     </span>
+<span id="L301"><span class="lineNum">     301</span>              :     /**</span>
+<span id="L302"><span class="lineNum">     302</span>              :      * Handle retransmissions (should be called periodically)</span>
+<span id="L303"><span class="lineNum">     303</span>              :      */</span>
+<span id="L304"><span class="lineNum">     304</span>              :     Result&lt;void&gt; handle_retransmissions();</span>
+<span id="L305"><span class="lineNum">     305</span>              :     </span>
+<span id="L306"><span class="lineNum">     306</span>              :     /**</span>
+<span id="L307"><span class="lineNum">     307</span>              :      * Set message layer parameters</span>
+<span id="L308"><span class="lineNum">     308</span>              :      */</span>
+<span id="L309"><span class="lineNum">     309</span>              :     void set_max_fragment_size(size_t size);</span>
+<span id="L310"><span class="lineNum">     310</span>              :     void set_retransmission_timeout(std::chrono::milliseconds timeout);</span>
+<span id="L311"><span class="lineNum">     311</span>              :     void set_max_retransmissions(size_t max_retries);</span>
+<span id="L312"><span class="lineNum">     312</span>              :     </span>
+<span id="L313"><span class="lineNum">     313</span>              :     /**</span>
+<span id="L314"><span class="lineNum">     314</span>              :      * Get message layer statistics</span>
+<span id="L315"><span class="lineNum">     315</span>              :      */</span>
+<span id="L316"><span class="lineNum">     316</span>              :     struct MessageLayerStats {</span>
+<span id="L317"><span class="lineNum">     317</span>              :         size_t messages_sent{0};</span>
+<span id="L318"><span class="lineNum">     318</span>              :         size_t messages_received{0};</span>
+<span id="L319"><span class="lineNum">     319</span>              :         size_t fragments_sent{0};</span>
+<span id="L320"><span class="lineNum">     320</span>              :         size_t fragments_received{0};</span>
+<span id="L321"><span class="lineNum">     321</span>              :         size_t messages_reassembled{0};</span>
+<span id="L322"><span class="lineNum">     322</span>              :         size_t flights_sent{0};</span>
+<span id="L323"><span class="lineNum">     323</span>              :         size_t retransmissions{0};</span>
+<span id="L324"><span class="lineNum">     324</span>              :         size_t reassembly_timeouts{0};</span>
+<span id="L325"><span class="lineNum">     325</span>              :     };</span>
+<span id="L326"><span class="lineNum">     326</span>              :     </span>
+<span id="L327"><span class="lineNum">     327</span>              :     MessageLayerStats get_stats() const;</span>
+<span id="L328"><span class="lineNum">     328</span>              : </span>
+<span id="L329"><span class="lineNum">     329</span>              : private:</span>
+<span id="L330"><span class="lineNum">     330</span>              :     std::unique_ptr&lt;RecordLayer&gt; record_layer_;</span>
+<span id="L331"><span class="lineNum">     331</span>              :     std::unique_ptr&lt;FlightManager&gt; flight_manager_;</span>
+<span id="L332"><span class="lineNum">     332</span>              :     </span>
+<span id="L333"><span class="lineNum">     333</span>              :     // Message reassembly</span>
+<span id="L334"><span class="lineNum">     334</span>              :     std::map&lt;uint16_t, std::unique_ptr&lt;MessageReassembler&gt;&gt; reassemblers_;</span>
+<span id="L335"><span class="lineNum">     335</span>              :     </span>
+<span id="L336"><span class="lineNum">     336</span>              :     // Configuration</span>
+<span id="L337"><span class="lineNum">     337</span>              :     size_t max_fragment_size_{1200}; // Conservative size for most networks</span>
+<span id="L338"><span class="lineNum">     338</span> <span class="tlaUNC">           0 :     std::chrono::milliseconds reassembly_timeout_{30000}; // 30 seconds</span></span>
+<span id="L339"><span class="lineNum">     339</span>              :     </span>
+<span id="L340"><span class="lineNum">     340</span>              :     // Statistics</span>
+<span id="L341"><span class="lineNum">     341</span>              :     mutable MessageLayerStats stats_;</span>
+<span id="L342"><span class="lineNum">     342</span>              :     mutable std::mutex stats_mutex_;</span>
+<span id="L343"><span class="lineNum">     343</span>              :     </span>
+<span id="L344"><span class="lineNum">     344</span>              :     // Internal methods</span>
+<span id="L345"><span class="lineNum">     345</span>              :     Result&lt;std::vector&lt;MessageFragment&gt;&gt; fragment_message(</span>
+<span id="L346"><span class="lineNum">     346</span>              :         const HandshakeMessage&amp; message) const;</span>
+<span id="L347"><span class="lineNum">     347</span>              :     </span>
+<span id="L348"><span class="lineNum">     348</span>              :     Result&lt;PlaintextRecord&gt; create_handshake_record(</span>
+<span id="L349"><span class="lineNum">     349</span>              :         const MessageFragment&amp; fragment, uint16_t epoch) const;</span>
+<span id="L350"><span class="lineNum">     350</span>              :     </span>
+<span id="L351"><span class="lineNum">     351</span>              :     void update_stats_message_sent();</span>
+<span id="L352"><span class="lineNum">     352</span>              :     void update_stats_message_received();</span>
+<span id="L353"><span class="lineNum">     353</span>              :     void update_stats_fragment_sent();</span>
+<span id="L354"><span class="lineNum">     354</span>              :     void update_stats_fragment_received();</span>
+<span id="L355"><span class="lineNum">     355</span>              :     void update_stats_message_reassembled();</span>
+<span id="L356"><span class="lineNum">     356</span>              :     void update_stats_flight_sent();</span>
+<span id="L357"><span class="lineNum">     357</span>              :     void update_stats_retransmission();</span>
+<span id="L358"><span class="lineNum">     358</span>              :     void update_stats_reassembly_timeout();</span>
+<span id="L359"><span class="lineNum">     359</span>              :     </span>
+<span id="L360"><span class="lineNum">     360</span>              :     void cleanup_old_reassemblers();</span>
+<span id="L361"><span class="lineNum">     361</span>              : };</span>
+<span id="L362"><span class="lineNum">     362</span>              : </span>
+<span id="L363"><span class="lineNum">     363</span>              : // Utility functions for message layer testing and debugging</span>
+<span id="L364"><span class="lineNum">     364</span>              : namespace message_layer_utils {</span>
+<span id="L365"><span class="lineNum">     365</span>              : </span>
+<span id="L366"><span class="lineNum">     366</span>              : /**</span>
+<span id="L367"><span class="lineNum">     367</span>              :  * Create test message layer with mock dependencies</span>
+<span id="L368"><span class="lineNum">     368</span>              :  */</span>
+<span id="L369"><span class="lineNum">     369</span>              : DTLS_API std::unique_ptr&lt;MessageLayer&gt; create_test_message_layer();</span>
+<span id="L370"><span class="lineNum">     370</span>              : </span>
+<span id="L371"><span class="lineNum">     371</span>              : /**</span>
+<span id="L372"><span class="lineNum">     372</span>              :  * Validate message layer configuration</span>
+<span id="L373"><span class="lineNum">     373</span>              :  */</span>
+<span id="L374"><span class="lineNum">     374</span>              : DTLS_API Result&lt;void&gt; validate_message_layer_config(const MessageLayer&amp; layer);</span>
+<span id="L375"><span class="lineNum">     375</span>              : </span>
+<span id="L376"><span class="lineNum">     376</span>              : /**</span>
+<span id="L377"><span class="lineNum">     377</span>              :  * Generate test handshake messages</span>
+<span id="L378"><span class="lineNum">     378</span>              :  */</span>
+<span id="L379"><span class="lineNum">     379</span>              : DTLS_API Result&lt;std::vector&lt;HandshakeMessage&gt;&gt; generate_test_handshake_messages();</span>
+<span id="L380"><span class="lineNum">     380</span>              : </span>
+<span id="L381"><span class="lineNum">     381</span>              : /**</span>
+<span id="L382"><span class="lineNum">     382</span>              :  * Test message fragmentation and reassembly</span>
+<span id="L383"><span class="lineNum">     383</span>              :  */</span>
+<span id="L384"><span class="lineNum">     384</span>              : DTLS_API Result&lt;bool&gt; test_fragmentation_reassembly(const HandshakeMessage&amp; message,</span>
+<span id="L385"><span class="lineNum">     385</span>              :                                                    size_t fragment_size);</span>
+<span id="L386"><span class="lineNum">     386</span>              : </span>
+<span id="L387"><span class="lineNum">     387</span>              : } // namespace message_layer_utils</span>
+<span id="L388"><span class="lineNum">     388</span>              : } // namespace protocol</span>
+<span id="L389"><span class="lineNum">     389</span>              : } // namespace v13</span>
+<span id="L390"><span class="lineNum">     390</span>              : } // namespace dtls</span>
+<span id="L391"><span class="lineNum">     391</span>              : </span>
+<span id="L392"><span class="lineNum">     392</span>              : #endif // DTLS_PROTOCOL_MESSAGE_LAYER_H</span>
+        </pre>
+              </td>
+            </tr>
+          </table>
+          <br>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+            <tr><td class="versionInfo">Generated by: <a href="https://github.com//linux-test-project/lcov" target="_parent">LCOV version 2.0-1</a></td></tr>
+          </table>
+          <br>
+
+</body>
+</html>

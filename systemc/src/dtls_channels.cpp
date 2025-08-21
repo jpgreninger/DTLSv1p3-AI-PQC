@@ -474,6 +474,14 @@ void RecordOperationChannel::update_processing_statistics(const record_transacti
                 stats_.replay_detections++;
             }
             break;
+        case record_extension::SEQUENCE_NUMBER_GEN:
+            // Handle sequence number generation
+            stats_.records_processed++;
+            break;
+        case record_extension::EPOCH_ADVANCE:
+            // Handle epoch advance
+            stats_.records_processed++;
+            break;
     }
     
     // Calculate processing efficiency
@@ -891,6 +899,17 @@ void MessageOperationChannel::update_operation_statistics(const message_transact
         case message_extension::REASSEMBLE_MESSAGE:
             stats_.reassembly_operations++;
             stats_.active_reassemblies = active_reassembly_count_.load();
+            break;
+        case message_extension::SEND_FLIGHT:
+            stats_.flight_operations++;
+            stats_.active_flights = active_flight_count_.load();
+            break;
+        case message_extension::RECEIVE_FRAGMENT:
+            stats_.fragmentation_operations++;
+            break;
+        case message_extension::RETRANSMIT_FLIGHT:
+            stats_.retransmission_operations++;
+            stats_.flight_operations++;
             break;
         case message_extension::MANAGE_FLIGHT:
             stats_.flight_operations++;

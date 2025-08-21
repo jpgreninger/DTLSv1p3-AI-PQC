@@ -1,0 +1,453 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - total_coverage.info - include/dtls/types.h</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="title">LCOV - code coverage report</td></tr>
+            <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+            <tr>
+              <td width="100%">
+                <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="10%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">include/dtls</a> - types.h<span style="font-size: 80%;"> (source / <a href="types.h.func-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="5%"></td>
+            <td width="5%" class="headerCovTableHead">Coverage</td>
+            <td width="5%" class="headerCovTableHead" title="Covered + Uncovered code">Total</td>
+            <td width="5%" class="headerCovTableHead" title="Exercised code only">Hit</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">total_coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntryHi">100.0&nbsp;%</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntry">4</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test Date:</td>
+            <td class="headerValue">2025-08-17 17:21:18</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntryHi">100.0&nbsp;%</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntry">4</td>
+          </tr>
+                  <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+                </table>
+              </td>
+            </tr>
+
+            <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+          </table>
+
+          <table cellpadding=0 cellspacing=0 border=0>
+            <tr>
+              <td><br></td>
+            </tr>
+            <tr>
+              <td>
+<pre class="sourceHeading">            Line data    Source code</pre>
+<pre class="source">
+<span id="L1"><span class="lineNum">       1</span>              : #ifndef DTLS_TYPES_H</span>
+<span id="L2"><span class="lineNum">       2</span>              : #define DTLS_TYPES_H</span>
+<span id="L3"><span class="lineNum">       3</span>              : </span>
+<span id="L4"><span class="lineNum">       4</span>              : /**</span>
+<span id="L5"><span class="lineNum">       5</span>              :  * @file types.h</span>
+<span id="L6"><span class="lineNum">       6</span>              :  * Core DTLS v1.3 Protocol Types and Constants.</span>
+<span id="L7"><span class="lineNum">       7</span>              :  * </span>
+<span id="L8"><span class="lineNum">       8</span>              :  * Defines fundamental data types, enumerations, and constants used throughout</span>
+<span id="L9"><span class="lineNum">       9</span>              :  * the DTLS v1.3 implementation following RFC 9147 specifications.</span>
+<span id="L10"><span class="lineNum">      10</span>              :  * </span>
+<span id="L11"><span class="lineNum">      11</span>              :  * Key Features:</span>
+<span id="L12"><span class="lineNum">      12</span>              :  * - Type Safety: Strong typing for protocol elements</span>
+<span id="L13"><span class="lineNum">      13</span>              :  * - RFC Compliance: All types mapped to RFC 9147 specifications  </span>
+<span id="L14"><span class="lineNum">      14</span>              :  * - Performance: Optimized primitive types for high-speed operations</span>
+<span id="L15"><span class="lineNum">      15</span>              :  * - Extensibility: Designed for future protocol extensions</span>
+<span id="L16"><span class="lineNum">      16</span>              :  * </span>
+<span id="L17"><span class="lineNum">      17</span>              :  * @author DTLS v1.3 Implementation Team</span>
+<span id="L18"><span class="lineNum">      18</span>              :  * @since v1.0.0</span>
+<span id="L19"><span class="lineNum">      19</span>              :  */</span>
+<span id="L20"><span class="lineNum">      20</span>              : </span>
+<span id="L21"><span class="lineNum">      21</span>              : #include &lt;dtls/config.h&gt;</span>
+<span id="L22"><span class="lineNum">      22</span>              : #include &lt;dtls/result.h&gt;</span>
+<span id="L23"><span class="lineNum">      23</span>              : #include &lt;cstdint&gt;</span>
+<span id="L24"><span class="lineNum">      24</span>              : #include &lt;cstddef&gt;</span>
+<span id="L25"><span class="lineNum">      25</span>              : #include &lt;array&gt;</span>
+<span id="L26"><span class="lineNum">      26</span>              : #include &lt;vector&gt;</span>
+<span id="L27"><span class="lineNum">      27</span>              : #include &lt;string&gt;</span>
+<span id="L28"><span class="lineNum">      28</span>              : #include &lt;chrono&gt;</span>
+<span id="L29"><span class="lineNum">      29</span>              : #include &lt;optional&gt;</span>
+<span id="L30"><span class="lineNum">      30</span>              : </span>
+<span id="L31"><span class="lineNum">      31</span>              : namespace dtls {</span>
+<span id="L32"><span class="lineNum">      32</span>              : namespace v13 {</span>
+<span id="L33"><span class="lineNum">      33</span>              : </span>
+<span id="L34"><span class="lineNum">      34</span>              : /**</span>
+<span id="L35"><span class="lineNum">      35</span>              :  * @defgroup CoreTypes Core Protocol Types</span>
+<span id="L36"><span class="lineNum">      36</span>              :  * Fundamental types used throughout the DTLS v1.3 implementation.</span>
+<span id="L37"><span class="lineNum">      37</span>              :  * @{</span>
+<span id="L38"><span class="lineNum">      38</span>              :  */</span>
+<span id="L39"><span class="lineNum">      39</span>              : </span>
+<span id="L40"><span class="lineNum">      40</span>              : /** Protocol version identifier (network byte order). */</span>
+<span id="L41"><span class="lineNum">      41</span>              : using ProtocolVersion = uint16_t;</span>
+<span id="L42"><span class="lineNum">      42</span>              : </span>
+<span id="L43"><span class="lineNum">      43</span>              : /** Epoch number for key generation sequencing. */</span>
+<span id="L44"><span class="lineNum">      44</span>              : using Epoch = uint16_t;</span>
+<span id="L45"><span class="lineNum">      45</span>              : </span>
+<span id="L46"><span class="lineNum">      46</span>              : /** 64-bit sequence number for replay protection. */</span>
+<span id="L47"><span class="lineNum">      47</span>              : using SequenceNumber = uint64_t;</span>
+<span id="L48"><span class="lineNum">      48</span>              : </span>
+<span id="L49"><span class="lineNum">      49</span>              : /** Generic length field for protocol messages. */</span>
+<span id="L50"><span class="lineNum">      50</span>              : using Length = uint16_t;</span>
+<span id="L51"><span class="lineNum">      51</span>              : </span>
+<span id="L52"><span class="lineNum">      52</span>              : /// @}</span>
+<span id="L53"><span class="lineNum">      53</span>              : </span>
+<span id="L54"><span class="lineNum">      54</span>              : /**</span>
+<span id="L55"><span class="lineNum">      55</span>              :  * @defgroup VersionConstants DTLS Version Constants</span>
+<span id="L56"><span class="lineNum">      56</span>              :  * @brief Protocol version identifiers per @rfc{9147}</span>
+<span id="L57"><span class="lineNum">      57</span>              :  * @{</span>
+<span id="L58"><span class="lineNum">      58</span>              :  */</span>
+<span id="L59"><span class="lineNum">      59</span>              : </span>
+<span id="L60"><span class="lineNum">      60</span>              : /// @brief DTLS v1.0 version identifier (legacy support)</span>
+<span id="L61"><span class="lineNum">      61</span>              : constexpr ProtocolVersion DTLS_V10 = 0xFEFF;</span>
+<span id="L62"><span class="lineNum">      62</span>              : </span>
+<span id="L63"><span class="lineNum">      63</span>              : /// @brief DTLS v1.2 version identifier (backward compatibility)</span>
+<span id="L64"><span class="lineNum">      64</span>              : constexpr ProtocolVersion DTLS_V12 = 0xFEFD;</span>
+<span id="L65"><span class="lineNum">      65</span>              : </span>
+<span id="L66"><span class="lineNum">      66</span>              : /// @brief DTLS v1.3 version identifier (primary target)</span>
+<span id="L67"><span class="lineNum">      67</span>              : constexpr ProtocolVersion DTLS_V13 = 0xFEFC;</span>
+<span id="L68"><span class="lineNum">      68</span>              : </span>
+<span id="L69"><span class="lineNum">      69</span>              : /// @}</span>
+<span id="L70"><span class="lineNum">      70</span>              : </span>
+<span id="L71"><span class="lineNum">      71</span>              : /**</span>
+<span id="L72"><span class="lineNum">      72</span>              :  * @brief DTLS record content types per @rfc{9147} Section 5</span>
+<span id="L73"><span class="lineNum">      73</span>              :  * </span>
+<span id="L74"><span class="lineNum">      74</span>              :  * @details Defines the various types of data that can be transmitted within</span>
+<span id="L75"><span class="lineNum">      75</span>              :  * DTLS records, each serving a specific protocol function.</span>
+<span id="L76"><span class="lineNum">      76</span>              :  */</span>
+<span id="L77"><span class="lineNum">      77</span>              : enum class ContentType : uint8_t {</span>
+<span id="L78"><span class="lineNum">      78</span>              :     INVALID = 0,                ///&lt; @brief Invalid content type (error indicator)</span>
+<span id="L79"><span class="lineNum">      79</span>              :     CHANGE_CIPHER_SPEC = 20,   ///&lt; @brief Legacy cipher spec change (DTLS 1.2 compat)</span>
+<span id="L80"><span class="lineNum">      80</span>              :     ALERT = 21,                ///&lt; @brief Alert messages for error reporting</span>
+<span id="L81"><span class="lineNum">      81</span>              :     HANDSHAKE = 22,            ///&lt; @brief Handshake protocol messages</span>
+<span id="L82"><span class="lineNum">      82</span>              :     APPLICATION_DATA = 23,     ///&lt; @brief Encrypted application payload data</span>
+<span id="L83"><span class="lineNum">      83</span>              :     HEARTBEAT = 24,            ///&lt; @brief Heartbeat extension messages</span>
+<span id="L84"><span class="lineNum">      84</span>              :     TLS12_CID = 25,            ///&lt; @brief Connection ID for DTLS 1.2 compatibility</span>
+<span id="L85"><span class="lineNum">      85</span>              :     ACK = 26                   ///&lt; @brief Acknowledgment messages (DTLS 1.3 feature)</span>
+<span id="L86"><span class="lineNum">      86</span>              : };</span>
+<span id="L87"><span class="lineNum">      87</span>              : </span>
+<span id="L88"><span class="lineNum">      88</span>              : // Handshake message types</span>
+<span id="L89"><span class="lineNum">      89</span>              : enum class HandshakeType : uint8_t {</span>
+<span id="L90"><span class="lineNum">      90</span>              :     HELLO_REQUEST_RESERVED = 0,</span>
+<span id="L91"><span class="lineNum">      91</span>              :     CLIENT_HELLO = 1,</span>
+<span id="L92"><span class="lineNum">      92</span>              :     SERVER_HELLO = 2,</span>
+<span id="L93"><span class="lineNum">      93</span>              :     HELLO_VERIFY_REQUEST_RESERVED = 3,</span>
+<span id="L94"><span class="lineNum">      94</span>              :     NEW_SESSION_TICKET = 4,</span>
+<span id="L95"><span class="lineNum">      95</span>              :     END_OF_EARLY_DATA = 5,</span>
+<span id="L96"><span class="lineNum">      96</span>              :     HELLO_RETRY_REQUEST = 6,</span>
+<span id="L97"><span class="lineNum">      97</span>              :     ENCRYPTED_EXTENSIONS = 8,</span>
+<span id="L98"><span class="lineNum">      98</span>              :     CERTIFICATE = 11,</span>
+<span id="L99"><span class="lineNum">      99</span>              :     SERVER_KEY_EXCHANGE_RESERVED = 12,</span>
+<span id="L100"><span class="lineNum">     100</span>              :     CERTIFICATE_REQUEST = 13,</span>
+<span id="L101"><span class="lineNum">     101</span>              :     SERVER_HELLO_DONE_RESERVED = 14,</span>
+<span id="L102"><span class="lineNum">     102</span>              :     CERTIFICATE_VERIFY = 15,</span>
+<span id="L103"><span class="lineNum">     103</span>              :     CLIENT_KEY_EXCHANGE_RESERVED = 16,</span>
+<span id="L104"><span class="lineNum">     104</span>              :     FINISHED = 20,</span>
+<span id="L105"><span class="lineNum">     105</span>              :     CERTIFICATE_URL_RESERVED = 21,</span>
+<span id="L106"><span class="lineNum">     106</span>              :     CERTIFICATE_STATUS_RESERVED = 22,</span>
+<span id="L107"><span class="lineNum">     107</span>              :     SUPPLEMENTAL_DATA_RESERVED = 23,</span>
+<span id="L108"><span class="lineNum">     108</span>              :     KEY_UPDATE = 24,</span>
+<span id="L109"><span class="lineNum">     109</span>              :     ACK = 26,</span>
+<span id="L110"><span class="lineNum">     110</span>              :     MESSAGE_HASH = 254</span>
+<span id="L111"><span class="lineNum">     111</span>              : };</span>
+<span id="L112"><span class="lineNum">     112</span>              : </span>
+<span id="L113"><span class="lineNum">     113</span>              : // Alert levels</span>
+<span id="L114"><span class="lineNum">     114</span>              : enum class AlertLevel : uint8_t {</span>
+<span id="L115"><span class="lineNum">     115</span>              :     WARNING = 1,</span>
+<span id="L116"><span class="lineNum">     116</span>              :     FATAL = 2</span>
+<span id="L117"><span class="lineNum">     117</span>              : };</span>
+<span id="L118"><span class="lineNum">     118</span>              : </span>
+<span id="L119"><span class="lineNum">     119</span>              : // Alert descriptions</span>
+<span id="L120"><span class="lineNum">     120</span>              : enum class AlertDescription : uint8_t {</span>
+<span id="L121"><span class="lineNum">     121</span>              :     CLOSE_NOTIFY = 0,</span>
+<span id="L122"><span class="lineNum">     122</span>              :     UNEXPECTED_MESSAGE = 10,</span>
+<span id="L123"><span class="lineNum">     123</span>              :     BAD_RECORD_MAC = 20,</span>
+<span id="L124"><span class="lineNum">     124</span>              :     RECORD_OVERFLOW = 22,</span>
+<span id="L125"><span class="lineNum">     125</span>              :     HANDSHAKE_FAILURE = 40,</span>
+<span id="L126"><span class="lineNum">     126</span>              :     BAD_CERTIFICATE = 42,</span>
+<span id="L127"><span class="lineNum">     127</span>              :     UNSUPPORTED_CERTIFICATE = 43,</span>
+<span id="L128"><span class="lineNum">     128</span>              :     CERTIFICATE_REVOKED = 44,</span>
+<span id="L129"><span class="lineNum">     129</span>              :     CERTIFICATE_EXPIRED = 45,</span>
+<span id="L130"><span class="lineNum">     130</span>              :     CERTIFICATE_UNKNOWN = 46,</span>
+<span id="L131"><span class="lineNum">     131</span>              :     ILLEGAL_PARAMETER = 47,</span>
+<span id="L132"><span class="lineNum">     132</span>              :     UNKNOWN_CA = 48,</span>
+<span id="L133"><span class="lineNum">     133</span>              :     ACCESS_DENIED = 49,</span>
+<span id="L134"><span class="lineNum">     134</span>              :     DECODE_ERROR = 50,</span>
+<span id="L135"><span class="lineNum">     135</span>              :     DECRYPT_ERROR = 51,</span>
+<span id="L136"><span class="lineNum">     136</span>              :     PROTOCOL_VERSION = 70,</span>
+<span id="L137"><span class="lineNum">     137</span>              :     INSUFFICIENT_SECURITY = 71,</span>
+<span id="L138"><span class="lineNum">     138</span>              :     INTERNAL_ERROR = 80,</span>
+<span id="L139"><span class="lineNum">     139</span>              :     INAPPROPRIATE_FALLBACK = 86,</span>
+<span id="L140"><span class="lineNum">     140</span>              :     USER_CANCELED = 90,</span>
+<span id="L141"><span class="lineNum">     141</span>              :     MISSING_EXTENSION = 109,</span>
+<span id="L142"><span class="lineNum">     142</span>              :     UNSUPPORTED_EXTENSION = 110,</span>
+<span id="L143"><span class="lineNum">     143</span>              :     UNRECOGNIZED_NAME = 112,</span>
+<span id="L144"><span class="lineNum">     144</span>              :     BAD_CERTIFICATE_STATUS_RESPONSE = 113,</span>
+<span id="L145"><span class="lineNum">     145</span>              :     UNKNOWN_PSK_IDENTITY = 115,</span>
+<span id="L146"><span class="lineNum">     146</span>              :     CERTIFICATE_REQUIRED = 116,</span>
+<span id="L147"><span class="lineNum">     147</span>              :     NO_APPLICATION_PROTOCOL = 120,</span>
+<span id="L148"><span class="lineNum">     148</span>              :     // DTLS v1.3 specific alerts (RFC 9147)</span>
+<span id="L149"><span class="lineNum">     149</span>              :     TOO_MANY_CIDS_REQUESTED = 52</span>
+<span id="L150"><span class="lineNum">     150</span>              : };</span>
+<span id="L151"><span class="lineNum">     151</span>              : </span>
+<span id="L152"><span class="lineNum">     152</span>              : // Cipher suites</span>
+<span id="L153"><span class="lineNum">     153</span>              : enum class CipherSuite : uint16_t {</span>
+<span id="L154"><span class="lineNum">     154</span>              :     TLS_AES_128_GCM_SHA256 = 0x1301,</span>
+<span id="L155"><span class="lineNum">     155</span>              :     TLS_AES_256_GCM_SHA384 = 0x1302,</span>
+<span id="L156"><span class="lineNum">     156</span>              :     TLS_CHACHA20_POLY1305_SHA256 = 0x1303,</span>
+<span id="L157"><span class="lineNum">     157</span>              :     TLS_AES_128_CCM_SHA256 = 0x1304,</span>
+<span id="L158"><span class="lineNum">     158</span>              :     TLS_AES_128_CCM_8_SHA256 = 0x1305</span>
+<span id="L159"><span class="lineNum">     159</span>              : };</span>
+<span id="L160"><span class="lineNum">     160</span>              : </span>
+<span id="L161"><span class="lineNum">     161</span>              : // Named groups (key exchange)</span>
+<span id="L162"><span class="lineNum">     162</span>              : enum class NamedGroup : uint16_t {</span>
+<span id="L163"><span class="lineNum">     163</span>              :     // Elliptic Curve Groups (ECDHE)</span>
+<span id="L164"><span class="lineNum">     164</span>              :     SECP256R1 = 23,</span>
+<span id="L165"><span class="lineNum">     165</span>              :     SECP384R1 = 24,</span>
+<span id="L166"><span class="lineNum">     166</span>              :     SECP521R1 = 25,</span>
+<span id="L167"><span class="lineNum">     167</span>              :     X25519 = 29,</span>
+<span id="L168"><span class="lineNum">     168</span>              :     X448 = 30,</span>
+<span id="L169"><span class="lineNum">     169</span>              :     </span>
+<span id="L170"><span class="lineNum">     170</span>              :     // Finite Field Groups (DHE)</span>
+<span id="L171"><span class="lineNum">     171</span>              :     FFDHE2048 = 256,</span>
+<span id="L172"><span class="lineNum">     172</span>              :     FFDHE3072 = 257,</span>
+<span id="L173"><span class="lineNum">     173</span>              :     FFDHE4096 = 258,</span>
+<span id="L174"><span class="lineNum">     174</span>              :     FFDHE6144 = 259,</span>
+<span id="L175"><span class="lineNum">     175</span>              :     FFDHE8192 = 260,</span>
+<span id="L176"><span class="lineNum">     176</span>              :     </span>
+<span id="L177"><span class="lineNum">     177</span>              :     // Pure Post-Quantum Groups (draft-connolly-tls-mlkem-key-agreement-05)</span>
+<span id="L178"><span class="lineNum">     178</span>              :     MLKEM512 = 0x0200,              ///&lt; ML-KEM-512 pure post-quantum group</span>
+<span id="L179"><span class="lineNum">     179</span>              :     MLKEM768 = 0x0201,              ///&lt; ML-KEM-768 pure post-quantum group</span>
+<span id="L180"><span class="lineNum">     180</span>              :     MLKEM1024 = 0x0202,             ///&lt; ML-KEM-1024 pure post-quantum group</span>
+<span id="L181"><span class="lineNum">     181</span>              :     </span>
+<span id="L182"><span class="lineNum">     182</span>              :     // Hybrid Post-Quantum + Classical Groups (draft-kwiatkowski-tls-ecdhe-mlkem-03)</span>
+<span id="L183"><span class="lineNum">     183</span>              :     ECDHE_P256_MLKEM512 = 0x1140,   ///&lt; P-256 ECDHE + ML-KEM-512 hybrid group</span>
+<span id="L184"><span class="lineNum">     184</span>              :     ECDHE_P384_MLKEM768 = 0x1141,   ///&lt; P-384 ECDHE + ML-KEM-768 hybrid group  </span>
+<span id="L185"><span class="lineNum">     185</span>              :     ECDHE_P521_MLKEM1024 = 0x1142   ///&lt; P-521 ECDHE + ML-KEM-1024 hybrid group</span>
+<span id="L186"><span class="lineNum">     186</span>              : };</span>
+<span id="L187"><span class="lineNum">     187</span>              : </span>
+<span id="L188"><span class="lineNum">     188</span>              : // Signature algorithms</span>
+<span id="L189"><span class="lineNum">     189</span>              : enum class SignatureScheme : uint16_t {</span>
+<span id="L190"><span class="lineNum">     190</span>              :     // RSASSA-PKCS1-v1_5 algorithms</span>
+<span id="L191"><span class="lineNum">     191</span>              :     RSA_PKCS1_SHA256 = 0x0401,</span>
+<span id="L192"><span class="lineNum">     192</span>              :     RSA_PKCS1_SHA384 = 0x0501,</span>
+<span id="L193"><span class="lineNum">     193</span>              :     RSA_PKCS1_SHA512 = 0x0601,</span>
+<span id="L194"><span class="lineNum">     194</span>              :     </span>
+<span id="L195"><span class="lineNum">     195</span>              :     // ECDSA algorithms</span>
+<span id="L196"><span class="lineNum">     196</span>              :     ECDSA_SECP256R1_SHA256 = 0x0403,</span>
+<span id="L197"><span class="lineNum">     197</span>              :     ECDSA_SECP384R1_SHA384 = 0x0503,</span>
+<span id="L198"><span class="lineNum">     198</span>              :     ECDSA_SECP521R1_SHA512 = 0x0603,</span>
+<span id="L199"><span class="lineNum">     199</span>              :     </span>
+<span id="L200"><span class="lineNum">     200</span>              :     // RSASSA-PSS algorithms</span>
+<span id="L201"><span class="lineNum">     201</span>              :     RSA_PSS_RSAE_SHA256 = 0x0804,</span>
+<span id="L202"><span class="lineNum">     202</span>              :     RSA_PSS_RSAE_SHA384 = 0x0805,</span>
+<span id="L203"><span class="lineNum">     203</span>              :     RSA_PSS_RSAE_SHA512 = 0x0806,</span>
+<span id="L204"><span class="lineNum">     204</span>              :     RSA_PSS_PSS_SHA256 = 0x0809,</span>
+<span id="L205"><span class="lineNum">     205</span>              :     RSA_PSS_PSS_SHA384 = 0x080A,</span>
+<span id="L206"><span class="lineNum">     206</span>              :     RSA_PSS_PSS_SHA512 = 0x080B,</span>
+<span id="L207"><span class="lineNum">     207</span>              :     </span>
+<span id="L208"><span class="lineNum">     208</span>              :     // EdDSA algorithms</span>
+<span id="L209"><span class="lineNum">     209</span>              :     ED25519 = 0x0807,</span>
+<span id="L210"><span class="lineNum">     210</span>              :     ED448 = 0x0808</span>
+<span id="L211"><span class="lineNum">     211</span>              : };</span>
+<span id="L212"><span class="lineNum">     212</span>              : </span>
+<span id="L213"><span class="lineNum">     213</span>              : // Hash algorithms</span>
+<span id="L214"><span class="lineNum">     214</span>              : enum class HashAlgorithm : uint8_t {</span>
+<span id="L215"><span class="lineNum">     215</span>              :     NONE = 0,</span>
+<span id="L216"><span class="lineNum">     216</span>              :     MD5 = 1,</span>
+<span id="L217"><span class="lineNum">     217</span>              :     SHA1 = 2,</span>
+<span id="L218"><span class="lineNum">     218</span>              :     SHA224 = 3,</span>
+<span id="L219"><span class="lineNum">     219</span>              :     SHA256 = 4,</span>
+<span id="L220"><span class="lineNum">     220</span>              :     SHA384 = 5,</span>
+<span id="L221"><span class="lineNum">     221</span>              :     SHA512 = 6,</span>
+<span id="L222"><span class="lineNum">     222</span>              :     SHA3_256 = 7,</span>
+<span id="L223"><span class="lineNum">     223</span>              :     SHA3_384 = 8,</span>
+<span id="L224"><span class="lineNum">     224</span>              :     SHA3_512 = 9</span>
+<span id="L225"><span class="lineNum">     225</span>              : };</span>
+<span id="L226"><span class="lineNum">     226</span>              : </span>
+<span id="L227"><span class="lineNum">     227</span>              : // AEAD cipher algorithms</span>
+<span id="L228"><span class="lineNum">     228</span>              : enum class AEADCipher : uint8_t {</span>
+<span id="L229"><span class="lineNum">     229</span>              :     AES_128_GCM = 1,</span>
+<span id="L230"><span class="lineNum">     230</span>              :     AES_256_GCM = 2,</span>
+<span id="L231"><span class="lineNum">     231</span>              :     CHACHA20_POLY1305 = 3,</span>
+<span id="L232"><span class="lineNum">     232</span>              :     AES_128_CCM = 4,</span>
+<span id="L233"><span class="lineNum">     233</span>              :     AES_128_CCM_8 = 5</span>
+<span id="L234"><span class="lineNum">     234</span>              : };</span>
+<span id="L235"><span class="lineNum">     235</span>              : </span>
+<span id="L236"><span class="lineNum">     236</span>              : // Extension types</span>
+<span id="L237"><span class="lineNum">     237</span>              : enum class ExtensionType : uint16_t {</span>
+<span id="L238"><span class="lineNum">     238</span>              :     SERVER_NAME = 0,</span>
+<span id="L239"><span class="lineNum">     239</span>              :     MAX_FRAGMENT_LENGTH = 1,</span>
+<span id="L240"><span class="lineNum">     240</span>              :     STATUS_REQUEST = 5,</span>
+<span id="L241"><span class="lineNum">     241</span>              :     SUPPORTED_GROUPS = 10,</span>
+<span id="L242"><span class="lineNum">     242</span>              :     SIGNATURE_ALGORITHMS = 13,</span>
+<span id="L243"><span class="lineNum">     243</span>              :     USE_SRTP = 14,</span>
+<span id="L244"><span class="lineNum">     244</span>              :     HEARTBEAT = 15,</span>
+<span id="L245"><span class="lineNum">     245</span>              :     APPLICATION_LAYER_PROTOCOL_NEGOTIATION = 16,</span>
+<span id="L246"><span class="lineNum">     246</span>              :     SIGNED_CERTIFICATE_TIMESTAMP = 18,</span>
+<span id="L247"><span class="lineNum">     247</span>              :     CLIENT_CERTIFICATE_TYPE = 19,</span>
+<span id="L248"><span class="lineNum">     248</span>              :     SERVER_CERTIFICATE_TYPE = 20,</span>
+<span id="L249"><span class="lineNum">     249</span>              :     PADDING = 21,</span>
+<span id="L250"><span class="lineNum">     250</span>              :     PRE_SHARED_KEY = 41,</span>
+<span id="L251"><span class="lineNum">     251</span>              :     EARLY_DATA = 42,</span>
+<span id="L252"><span class="lineNum">     252</span>              :     SUPPORTED_VERSIONS = 43,</span>
+<span id="L253"><span class="lineNum">     253</span>              :     COOKIE = 44,</span>
+<span id="L254"><span class="lineNum">     254</span>              :     PSK_KEY_EXCHANGE_MODES = 45,</span>
+<span id="L255"><span class="lineNum">     255</span>              :     CERTIFICATE_AUTHORITIES = 47,</span>
+<span id="L256"><span class="lineNum">     256</span>              :     OID_FILTERS = 48,</span>
+<span id="L257"><span class="lineNum">     257</span>              :     POST_HANDSHAKE_AUTH = 49,</span>
+<span id="L258"><span class="lineNum">     258</span>              :     SIGNATURE_ALGORITHMS_CERT = 50,</span>
+<span id="L259"><span class="lineNum">     259</span>              :     KEY_SHARE = 51,</span>
+<span id="L260"><span class="lineNum">     260</span>              :     CONNECTION_ID = 54,</span>
+<span id="L261"><span class="lineNum">     261</span>              :     EXTERNAL_ID_HASH = 55,</span>
+<span id="L262"><span class="lineNum">     262</span>              :     EXTERNAL_SESSION_ID = 56</span>
+<span id="L263"><span class="lineNum">     263</span>              : };</span>
+<span id="L264"><span class="lineNum">     264</span>              : </span>
+<span id="L265"><span class="lineNum">     265</span>              : // Connection states</span>
+<span id="L266"><span class="lineNum">     266</span>              : enum class ConnectionState : uint8_t {</span>
+<span id="L267"><span class="lineNum">     267</span>              :     INITIAL = 0,</span>
+<span id="L268"><span class="lineNum">     268</span>              :     WAIT_SERVER_HELLO = 1,</span>
+<span id="L269"><span class="lineNum">     269</span>              :     WAIT_ENCRYPTED_EXTENSIONS = 2,</span>
+<span id="L270"><span class="lineNum">     270</span>              :     WAIT_CERTIFICATE_OR_CERT_REQUEST = 3,</span>
+<span id="L271"><span class="lineNum">     271</span>              :     WAIT_CERTIFICATE_VERIFY = 4,</span>
+<span id="L272"><span class="lineNum">     272</span>              :     WAIT_SERVER_FINISHED = 5,</span>
+<span id="L273"><span class="lineNum">     273</span>              :     WAIT_CLIENT_CERTIFICATE = 6,</span>
+<span id="L274"><span class="lineNum">     274</span>              :     WAIT_CLIENT_CERTIFICATE_VERIFY = 7,</span>
+<span id="L275"><span class="lineNum">     275</span>              :     WAIT_CLIENT_FINISHED = 8,</span>
+<span id="L276"><span class="lineNum">     276</span>              :     CONNECTED = 9,</span>
+<span id="L277"><span class="lineNum">     277</span>              :     CLOSED = 10,</span>
+<span id="L278"><span class="lineNum">     278</span>              :     // Early data states (RFC 9147 Section 4.2.10)</span>
+<span id="L279"><span class="lineNum">     279</span>              :     EARLY_DATA = 11,           // Client sending early data</span>
+<span id="L280"><span class="lineNum">     280</span>              :     WAIT_END_OF_EARLY_DATA = 12, // Server waiting for EndOfEarlyData</span>
+<span id="L281"><span class="lineNum">     281</span>              :     EARLY_DATA_REJECTED = 13   // Early data was rejected by server</span>
+<span id="L282"><span class="lineNum">     282</span>              : };</span>
+<span id="L283"><span class="lineNum">     283</span>              : </span>
+<span id="L284"><span class="lineNum">     284</span>              : // Security levels</span>
+<span id="L285"><span class="lineNum">     285</span>              : enum class SecurityLevel : uint8_t {</span>
+<span id="L286"><span class="lineNum">     286</span>              :     NONE = 0,</span>
+<span id="L287"><span class="lineNum">     287</span>              :     LOW = 1,</span>
+<span id="L288"><span class="lineNum">     288</span>              :     MEDIUM = 2,</span>
+<span id="L289"><span class="lineNum">     289</span>              :     HIGH = 3,</span>
+<span id="L290"><span class="lineNum">     290</span>              :     MAXIMUM = 4</span>
+<span id="L291"><span class="lineNum">     291</span>              : };</span>
+<span id="L292"><span class="lineNum">     292</span>              : </span>
+<span id="L293"><span class="lineNum">     293</span>              : // Connection ID type (max 20 bytes)</span>
+<span id="L294"><span class="lineNum">     294</span>              : using ConnectionID = std::vector&lt;uint8_t&gt;;</span>
+<span id="L295"><span class="lineNum">     295</span>              : </span>
+<span id="L296"><span class="lineNum">     296</span>              : // Random value (32 bytes)</span>
+<span id="L297"><span class="lineNum">     297</span>              : using Random = std::array&lt;uint8_t, 32&gt;;</span>
+<span id="L298"><span class="lineNum">     298</span>              : </span>
+<span id="L299"><span class="lineNum">     299</span>              : // Session ID (max 32 bytes)</span>
+<span id="L300"><span class="lineNum">     300</span>              : using SessionID = std::vector&lt;uint8_t&gt;;</span>
+<span id="L301"><span class="lineNum">     301</span>              : </span>
+<span id="L302"><span class="lineNum">     302</span>              : // Cookie (max 255 bytes)</span>
+<span id="L303"><span class="lineNum">     303</span>              : using Cookie = std::vector&lt;uint8_t&gt;;</span>
+<span id="L304"><span class="lineNum">     304</span>              : </span>
+<span id="L305"><span class="lineNum">     305</span>              : // Key material</span>
+<span id="L306"><span class="lineNum">     306</span>              : using KeyMaterial = std::vector&lt;uint8_t&gt;;</span>
+<span id="L307"><span class="lineNum">     307</span>              : </span>
+<span id="L308"><span class="lineNum">     308</span>              : // Certificate data</span>
+<span id="L309"><span class="lineNum">     309</span>              : using CertificateData = std::vector&lt;uint8_t&gt;;</span>
+<span id="L310"><span class="lineNum">     310</span>              : </span>
+<span id="L311"><span class="lineNum">     311</span>              : // Timing types</span>
+<span id="L312"><span class="lineNum">     312</span>              : using Timestamp = std::chrono::steady_clock::time_point;</span>
+<span id="L313"><span class="lineNum">     313</span>              : using Duration = std::chrono::milliseconds;</span>
+<span id="L314"><span class="lineNum">     314</span>              : </span>
+<span id="L315"><span class="lineNum">     315</span>              : // Network address types</span>
+<span id="L316"><span class="lineNum">     316</span>              : struct NetworkAddress {</span>
+<span id="L317"><span class="lineNum">     317</span>              :     enum class Family : uint8_t {</span>
+<span id="L318"><span class="lineNum">     318</span>              :         IPv4 = 4,</span>
+<span id="L319"><span class="lineNum">     319</span>              :         IPv6 = 6</span>
+<span id="L320"><span class="lineNum">     320</span>              :     };</span>
+<span id="L321"><span class="lineNum">     321</span>              :     </span>
+<span id="L322"><span class="lineNum">     322</span>              :     Family family;</span>
+<span id="L323"><span class="lineNum">     323</span>              :     std::array&lt;uint8_t, 16&gt; address{}; // IPv6 size covers IPv4</span>
+<span id="L324"><span class="lineNum">     324</span>              :     uint16_t port{0};</span>
+<span id="L325"><span class="lineNum">     325</span>              :     </span>
+<span id="L326"><span class="lineNum">     326</span> <span class="tlaGNC tlaBgGNC">     1363570 :     bool is_ipv4() const noexcept { return family == Family::IPv4; }</span></span>
+<span id="L327"><span class="lineNum">     327</span> <span class="tlaGNC">           8 :     bool is_ipv6() const noexcept { return family == Family::IPv6; }</span></span>
+<span id="L328"><span class="lineNum">     328</span>              :     </span>
+<span id="L329"><span class="lineNum">     329</span>              :     // Comparison operators</span>
+<span id="L330"><span class="lineNum">     330</span>              :     bool operator==(const NetworkAddress&amp; other) const noexcept;</span>
+<span id="L331"><span class="lineNum">     331</span>              :     bool operator!=(const NetworkAddress&amp; other) const noexcept;</span>
+<span id="L332"><span class="lineNum">     332</span>              :     bool operator&lt;(const NetworkAddress&amp; other) const noexcept;</span>
+<span id="L333"><span class="lineNum">     333</span>              :     </span>
+<span id="L334"><span class="lineNum">     334</span>              :     // Constructors</span>
+<span id="L335"><span class="lineNum">     335</span> <span class="tlaGNC">       24950 :     NetworkAddress() = default;</span></span>
+<span id="L336"><span class="lineNum">     336</span>              :     NetworkAddress(const std::string&amp; ip, uint16_t port_num);</span>
+<span id="L337"><span class="lineNum">     337</span>              :     </span>
+<span id="L338"><span class="lineNum">     338</span>              :     // Factory methods</span>
+<span id="L339"><span class="lineNum">     339</span>              :     static NetworkAddress from_ipv4(uint32_t ipv4_addr, uint16_t port_num);</span>
+<span id="L340"><span class="lineNum">     340</span>              :     static NetworkAddress from_ipv6(const std::array&lt;uint8_t, 16&gt;&amp; ipv6_addr, uint16_t port_num);</span>
+<span id="L341"><span class="lineNum">     341</span>              :     static Result&lt;NetworkAddress&gt; from_string(const std::string&amp; address_with_port);</span>
+<span id="L342"><span class="lineNum">     342</span>              :     </span>
+<span id="L343"><span class="lineNum">     343</span>              :     // Conversion methods</span>
+<span id="L344"><span class="lineNum">     344</span>              :     uint32_t to_ipv4() const;</span>
+<span id="L345"><span class="lineNum">     345</span>              :     std::array&lt;uint8_t, 16&gt; to_ipv6() const;</span>
+<span id="L346"><span class="lineNum">     346</span>              :     </span>
+<span id="L347"><span class="lineNum">     347</span>              :     // Accessors for rate limiting compatibility</span>
+<span id="L348"><span class="lineNum">     348</span>              :     std::string get_ip() const;</span>
+<span id="L349"><span class="lineNum">     349</span> <span class="tlaGNC">      761841 :     uint16_t get_port() const { return port; }</span></span>
+<span id="L350"><span class="lineNum">     350</span>              : };</span>
+<span id="L351"><span class="lineNum">     351</span>              : </span>
+<span id="L352"><span class="lineNum">     352</span>              : // Utility functions</span>
+<span id="L353"><span class="lineNum">     353</span>              : DTLS_API std::string to_string(ContentType type);</span>
+<span id="L354"><span class="lineNum">     354</span>              : DTLS_API std::string to_string(HandshakeType type);</span>
+<span id="L355"><span class="lineNum">     355</span>              : DTLS_API std::string to_string(AlertLevel level);</span>
+<span id="L356"><span class="lineNum">     356</span>              : DTLS_API std::string to_string(AlertDescription desc);</span>
+<span id="L357"><span class="lineNum">     357</span>              : DTLS_API std::string to_string(CipherSuite suite);</span>
+<span id="L358"><span class="lineNum">     358</span>              : DTLS_API std::string to_string(ConnectionState state);</span>
+<span id="L359"><span class="lineNum">     359</span>              : DTLS_API std::string to_string(const NetworkAddress&amp; addr);</span>
+<span id="L360"><span class="lineNum">     360</span>              : </span>
+<span id="L361"><span class="lineNum">     361</span>              : // Size constants</span>
+<span id="L362"><span class="lineNum">     362</span>              : constexpr size_t MAX_RECORD_LENGTH = 16384;</span>
+<span id="L363"><span class="lineNum">     363</span>              : constexpr size_t MAX_HANDSHAKE_MESSAGE_LENGTH = 16777215;</span>
+<span id="L364"><span class="lineNum">     364</span>              : constexpr size_t MAX_CONNECTION_ID_LENGTH = 20;</span>
+<span id="L365"><span class="lineNum">     365</span>              : constexpr size_t MAX_COOKIE_LENGTH = 255;</span>
+<span id="L366"><span class="lineNum">     366</span>              : constexpr size_t RANDOM_LENGTH = 32;</span>
+<span id="L367"><span class="lineNum">     367</span>              : constexpr size_t MAX_SESSION_ID_LENGTH = 32;</span>
+<span id="L368"><span class="lineNum">     368</span>              : </span>
+<span id="L369"><span class="lineNum">     369</span>              : // Timing constants</span>
+<span id="L370"><span class="lineNum">     370</span>              : constexpr Duration DEFAULT_RETRANSMISSION_TIMEOUT{1000};</span>
+<span id="L371"><span class="lineNum">     371</span>              : constexpr Duration MAX_RETRANSMISSION_TIMEOUT{60000};</span>
+<span id="L372"><span class="lineNum">     372</span>              : constexpr size_t MAX_RETRANSMISSIONS = 3;</span>
+<span id="L373"><span class="lineNum">     373</span>              : </span>
+<span id="L374"><span class="lineNum">     374</span>              : } // namespace v13</span>
+<span id="L375"><span class="lineNum">     375</span>              : } // namespace dtls</span>
+<span id="L376"><span class="lineNum">     376</span>              : </span>
+<span id="L377"><span class="lineNum">     377</span>              : #endif // DTLS_TYPES_H</span>
+        </pre>
+              </td>
+            </tr>
+          </table>
+          <br>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+            <tr><td class="versionInfo">Generated by: <a href="https://github.com//linux-test-project/lcov" target="_parent">LCOV version 2.0-1</a></td></tr>
+          </table>
+          <br>
+
+</body>
+</html>

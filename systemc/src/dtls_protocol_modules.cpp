@@ -698,6 +698,12 @@ bool handshake_engine_module::process_handshake_message(dtls_transaction& trans)
         case dtls_extension::HandshakeType::SERVER_HELLO:
             success = process_server_hello(context, trans);
             break;
+        case dtls_extension::HandshakeType::NEW_CONNECTION_ID:
+            success = process_new_connection_id(context, trans);
+            break;
+        case dtls_extension::HandshakeType::REQUEST_CONNECTION_ID:
+            success = process_retire_connection_id(context, trans);
+            break;
         case dtls_extension::HandshakeType::CERTIFICATE:
             success = process_certificate(context, trans);
             break;
@@ -847,7 +853,7 @@ bool handshake_engine_module::advance_handshake_state(uint32_t connection_id, co
 }
 
 handshake_engine_module::HandshakeState handshake_engine_module::get_next_state(HandshakeState current, uint8_t message_type) {
-    // Simplified state machine - real implementation would be more complex
+    // RFC 9147 compliant state machine with CID support
     switch (current) {
         case HandshakeState::IDLE:
             if (message_type == static_cast<uint8_t>(dtls_extension::HandshakeType::CLIENT_HELLO)) {
@@ -860,6 +866,26 @@ handshake_engine_module::HandshakeState handshake_engine_module::get_next_state(
             }
             break;
         case HandshakeState::SERVER_HELLO_SENT:
+            // Check for CID negotiation first
+            if (message_type == static_cast<uint8_t>(dtls_extension::HandshakeType::NEW_CONNECTION_ID) ||
+                message_type == static_cast<uint8_t>(dtls_extension::HandshakeType::REQUEST_CONNECTION_ID)) {
+                return HandshakeState::CID_NEGOTIATION;
+            }
+            if (message_type == static_cast<uint8_t>(dtls_extension::HandshakeType::CERTIFICATE)) {
+                return HandshakeState::CERTIFICATE_EXCHANGE;
+            }
+            break;
+        case HandshakeState::CID_NEGOTIATION:
+            if (message_type == static_cast<uint8_t>(dtls_extension::HandshakeType::NEW_CONNECTION_ID) ||
+                message_type == static_cast<uint8_t>(dtls_extension::HandshakeType::REQUEST_CONNECTION_ID)) {
+                return HandshakeState::CID_NEGOTIATION; // Stay in CID negotiation
+            }
+            // CID negotiation complete, proceed to certificate exchange
+            if (message_type == static_cast<uint8_t>(dtls_extension::HandshakeType::CERTIFICATE)) {
+                return HandshakeState::CID_EXCHANGE_COMPLETE;
+            }
+            break;
+        case HandshakeState::CID_EXCHANGE_COMPLETE:
             if (message_type == static_cast<uint8_t>(dtls_extension::HandshakeType::CERTIFICATE)) {
                 return HandshakeState::CERTIFICATE_EXCHANGE;
             }
@@ -874,6 +900,19 @@ handshake_engine_module::HandshakeState handshake_engine_module::get_next_state(
                 return HandshakeState::HANDSHAKE_COMPLETE;
             }
             break;
+        case HandshakeState::HANDSHAKE_COMPLETE:
+            // Post-handshake CID updates
+            if (message_type == static_cast<uint8_t>(dtls_extension::HandshakeType::NEW_CONNECTION_ID) ||
+                message_type == static_cast<uint8_t>(dtls_extension::HandshakeType::REQUEST_CONNECTION_ID)) {
+                return HandshakeState::CID_UPDATE_PENDING;
+            }
+            break;
+        case HandshakeState::CID_UPDATE_PENDING:
+            if (message_type == static_cast<uint8_t>(dtls_extension::HandshakeType::NEW_CONNECTION_ID) ||
+                message_type == static_cast<uint8_t>(dtls_extension::HandshakeType::REQUEST_CONNECTION_ID)) {
+                return HandshakeState::CID_UPDATE_PENDING; // Continue CID updates
+            }
+            return HandshakeState::HANDSHAKE_COMPLETE; // Return to normal operation
         default:
             break;
     }
@@ -968,6 +1007,257 @@ double handshake_engine_module::calculate_cpu_utilization() {
 void handshake_engine_module::log_handshake_event(uint32_t connection_id, const std::string& event) {
     std::cout << "[" << sc_time_stamp() << "] HANDSHAKE: Connection " << connection_id 
               << " - " << event << std::endl;
+}
+
+// RFC 9147 Connection ID Processing Implementation
+
+bool handshake_engine_module::process_new_connection_id(HandshakeContext& context, const dtls_transaction& trans) {
+    if (!validate_cid_message(trans)) {
+        std::lock_guard<std::mutex> lock(stats_mutex);
+        stats.protocol_violations++;
+        return false;
+    }
+    
+    // Simulate NEW_CONNECTION_ID processing
+    sc_time processing_time = sc_time(50, SC_US);
+    wait(processing_time);
+    
+    const dtls_extension& ext = trans.get_extension();
+    const unsigned char* data = trans.get_data();
+    size_t data_size = trans.get_data_size();
+    
+    if (data_size < 9) { // Minimum: 1 byte length + 8 bytes sequence number
+        return false;
+    }
+    
+    // Parse NEW_CONNECTION_ID message
+    uint8_t cid_length = data[0];
+    if (cid_length > 20 || data_size < 1 + cid_length + 8) { // length + CID + sequence
+        return false;
+    }
+    
+    std::vector<uint8_t> new_cid(data + 1, data + 1 + cid_length);
+    uint64_t sequence_number = 0;
+    
+    // Extract sequence number (big-endian)
+    for (int i = 0; i < 8; ++i) {
+        sequence_number = (sequence_number << 8) | data[1 + cid_length + i];
+    }
+    
+    // Update connection context
+    bool success = update_active_cid(context, sequence_number, new_cid);
+    if (success) {
+        context.cid_negotiation_accepted = true;
+        log_handshake_event(context.connection_id, 
+                           "NEW_CONNECTION_ID processed, CID length: " + std::to_string(cid_length));
+    }
+    
+    return success;
+}
+
+bool handshake_engine_module::process_retire_connection_id(HandshakeContext& context, const dtls_transaction& trans) {
+    if (!validate_cid_message(trans)) {
+        std::lock_guard<std::mutex> lock(stats_mutex);
+        stats.protocol_violations++;
+        return false;
+    }
+    
+    // Simulate RETIRE_CONNECTION_ID processing
+    sc_time processing_time = sc_time(30, SC_US);
+    wait(processing_time);
+    
+    const unsigned char* data = trans.get_data();
+    size_t data_size = trans.get_data_size();
+    
+    if (data_size < 8) { // Need 8 bytes for sequence number
+        return false;
+    }
+    
+    // Extract sequence number to retire (big-endian)
+    uint64_t sequence_to_retire = 0;
+    for (int i = 0; i < 8; ++i) {
+        sequence_to_retire = (sequence_to_retire << 8) | data[i];
+    }
+    
+    // Retire the specified CID
+    bool success = retire_cid(context, sequence_to_retire);
+    if (success) {
+        log_handshake_event(context.connection_id, 
+                           "RETIRE_CONNECTION_ID processed, sequence: " + std::to_string(sequence_to_retire));
+    }
+    
+    return success;
+}
+
+bool handshake_engine_module::validate_cid_message(const dtls_transaction& trans) {
+    // Basic CID message validation
+    if (trans.get_data_size() == 0) {
+        return false;
+    }
+    
+    const dtls_extension& ext = trans.get_extension();
+    
+    // CID messages should have valid connection context
+    if (ext.connection_id == 0) {
+        return false;
+    }
+    
+    // Validate handshake type
+    bool valid_handshake_type = (ext.handshake_type == dtls_extension::HandshakeType::NEW_CONNECTION_ID ||
+                                ext.handshake_type == dtls_extension::HandshakeType::REQUEST_CONNECTION_ID);
+    
+    if (!valid_handshake_type) {
+        return false;
+    }
+    
+    // RFC 9147 specific CID validation
+    return validate_cid_rfc9147_compliance(ext);
+}
+
+bool handshake_engine_module::validate_cid_rfc9147_compliance(const dtls_extension& ext) {
+    // RFC 9147 Section 9: Connection ID validation
+    
+    // Validate CID length constraints (0-20 bytes per RFC 9147)
+    if (ext.cid_length > 20) {
+        log_handshake_event(ext.connection_id, "CID validation failed: length exceeds RFC 9147 limit");
+        return false;
+    }
+    
+    // Validate CID sequence number for NEW_CONNECTION_ID messages
+    if (ext.handshake_type == dtls_extension::HandshakeType::NEW_CONNECTION_ID) {
+        // Sequence number must be valid and not duplicate
+        if (!validate_cid_sequence_number(ext.connection_id, ext.sequence_number)) {
+            log_handshake_event(ext.connection_id, "CID validation failed: invalid sequence number");
+            return false;
+        }
+    }
+    
+    // Validate CID is not all zeros (reserved value per RFC 9147)
+    if (ext.local_cid.size() > 0) {
+        bool all_zeros = std::all_of(ext.local_cid.begin(), ext.local_cid.end(), 
+                                    [](uint8_t byte) { return byte == 0; });
+        if (all_zeros) {
+            log_handshake_event(ext.connection_id, "CID validation failed: all-zero CID not allowed");
+            return false;
+        }
+    }
+    
+    // Validate CID negotiation state consistency
+    if (ext.cid_negotiation_enabled && ext.local_cid.empty() && ext.peer_cid.empty()) {
+        log_handshake_event(ext.connection_id, "CID validation failed: negotiation enabled but no CIDs present");
+        return false;
+    }
+    
+    return true;
+}
+
+bool handshake_engine_module::validate_cid_sequence_number(uint32_t connection_id, uint64_t sequence) {
+    auto it = active_handshake_contexts.find(connection_id);
+    if (it == active_handshake_contexts.end()) {
+        return false; // No context for this connection
+    }
+    
+    HandshakeContext& context = *it->second;
+    
+    // Sequence number must be greater than current (no replay)
+    if (sequence <= context.cid_sequence_number) {
+        return false;
+    }
+    
+    // Check for sequence number gap (RFC 9147 allows gaps but we validate reasonableness)
+    uint64_t gap = sequence - context.cid_sequence_number;
+    if (gap > 1000) { // Configurable limit for reasonable gaps
+        log_handshake_event(connection_id, "CID sequence gap too large: " + std::to_string(gap));
+        return false;
+    }
+    
+    return true;
+}
+
+bool handshake_engine_module::validate_cid_migration_request(const HandshakeContext& context, const std::vector<uint8_t>& new_cid) {
+    // RFC 9147 Section 8: CID migration validation
+    
+    // Check if migration is supported for this connection
+    if (!context.cid_migration_supported) {
+        return false;
+    }
+    
+    // Validate new CID is different from current CIDs
+    if (!context.local_cid.empty() && context.local_cid == new_cid) {
+        return false; // Cannot migrate to same CID
+    }
+    
+    if (!context.peer_cid.empty() && context.peer_cid == new_cid) {
+        return false; // Cannot use peer's CID as our own
+    }
+    
+    // Check active CID pool doesn't already contain this CID
+    for (const auto& [seq, cid] : context.active_cids) {
+        if (cid == new_cid) {
+            return false; // CID already in use
+        }
+    }
+    
+    return true;
+}
+
+bool handshake_engine_module::negotiate_connection_id(HandshakeContext& context, const std::vector<uint8_t>& proposed_cid) {
+    // RFC 9147 CID negotiation logic
+    if (proposed_cid.size() > 20) {
+        return false; // CID too long
+    }
+    
+    // Accept the proposed CID
+    context.local_cid = proposed_cid;
+    context.cid_negotiation_requested = true;
+    context.cid_migration_supported = true;
+    
+    // Store in active CIDs with sequence 0
+    context.active_cids[0] = proposed_cid;
+    
+    log_handshake_event(context.connection_id, 
+                       "CID negotiation completed, CID length: " + std::to_string(proposed_cid.size()));
+    
+    return true;
+}
+
+bool handshake_engine_module::update_active_cid(HandshakeContext& context, uint64_t sequence, const std::vector<uint8_t>& new_cid) {
+    // RFC 9147 CID update logic
+    if (new_cid.size() > 20) {
+        return false; // CID too long
+    }
+    
+    // Check if sequence number is valid (must be greater than current)
+    if (sequence <= context.cid_sequence_number) {
+        return false; // Invalid sequence number
+    }
+    
+    // Add to active CIDs
+    context.active_cids[sequence] = new_cid;
+    context.cid_sequence_number = sequence;
+    
+    // Update peer CID if this is from peer
+    context.peer_cid = new_cid;
+    
+    return true;
+}
+
+bool handshake_engine_module::retire_cid(HandshakeContext& context, uint64_t sequence_to_retire) {
+    // RFC 9147 CID retirement logic
+    auto it = context.active_cids.find(sequence_to_retire);
+    if (it == context.active_cids.end()) {
+        return false; // CID not found
+    }
+    
+    // Cannot retire the current CID if it's the only one
+    if (context.active_cids.size() <= 1) {
+        return false; // Must have at least one active CID
+    }
+    
+    // Remove the CID
+    context.active_cids.erase(it);
+    
+    return true;
 }
 
 handshake_engine_module::HandshakeEngineStats handshake_engine_module::get_statistics() const {

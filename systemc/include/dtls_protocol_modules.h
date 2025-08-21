@@ -229,12 +229,15 @@ public:
         IDLE,
         CLIENT_HELLO_RECEIVED,
         SERVER_HELLO_SENT,
+        CID_NEGOTIATION,              // RFC 9147 CID negotiation phase
+        CID_EXCHANGE_COMPLETE,        // CID exchange completed
         CERTIFICATE_EXCHANGE,
         KEY_EXCHANGE,
         CERTIFICATE_VERIFY,
         FINISHED_EXCHANGE,
         HANDSHAKE_COMPLETE,
-        HANDSHAKE_FAILED
+        HANDSHAKE_FAILED,
+        CID_UPDATE_PENDING            // Runtime CID update
     };
     
     /**
@@ -257,6 +260,15 @@ public:
         uint16_t selected_cipher_suite{0};
         uint16_t signature_scheme{0};
         uint16_t named_group{0};
+        
+        // RFC 9147 Connection ID context
+        bool cid_negotiation_requested{false};
+        bool cid_negotiation_accepted{false};
+        std::vector<uint8_t> local_cid;
+        std::vector<uint8_t> peer_cid;
+        uint64_t cid_sequence_number{0};
+        std::map<uint64_t, std::vector<uint8_t>> active_cids;  // sequence -> CID mapping
+        bool cid_migration_supported{false};
         
         // Performance tracking
         sc_time crypto_processing_time{SC_ZERO_TIME};
@@ -380,6 +392,19 @@ public:
     bool process_certificate(HandshakeContext& context, const dtls_transaction& trans);
     bool process_certificate_verify(HandshakeContext& context, const dtls_transaction& trans);
     bool process_finished(HandshakeContext& context, const dtls_transaction& trans);
+    
+    // RFC 9147 CID message processing methods
+    bool process_new_connection_id(HandshakeContext& context, const dtls_transaction& trans);
+    bool process_retire_connection_id(HandshakeContext& context, const dtls_transaction& trans);
+    bool validate_cid_message(const dtls_transaction& trans);
+    bool negotiate_connection_id(HandshakeContext& context, const std::vector<uint8_t>& proposed_cid);
+    bool update_active_cid(HandshakeContext& context, uint64_t sequence, const std::vector<uint8_t>& new_cid);
+    bool retire_cid(HandshakeContext& context, uint64_t sequence_to_retire);
+    
+    // RFC 9147 CID validation methods
+    bool validate_cid_rfc9147_compliance(const dtls_extension& ext);
+    bool validate_cid_sequence_number(uint32_t connection_id, uint64_t sequence);
+    bool validate_cid_migration_request(const HandshakeContext& context, const std::vector<uint8_t>& new_cid);
     
     // State machine methods
     HandshakeState get_next_state(HandshakeState current, uint8_t message_type);

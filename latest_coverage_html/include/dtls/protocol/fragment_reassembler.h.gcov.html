@@ -1,0 +1,399 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - total_coverage.info - include/dtls/protocol/fragment_reassembler.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="title">LCOV - code coverage report</td></tr>
+            <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+            <tr>
+              <td width="100%">
+                <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="10%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">include/dtls/protocol</a> - fragment_reassembler.h<span style="font-size: 80%;"> (source / <a href="fragment_reassembler.h.func-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="5%"></td>
+            <td width="5%" class="headerCovTableHead">Coverage</td>
+            <td width="5%" class="headerCovTableHead" title="Covered + Uncovered code">Total</td>
+            <td width="5%" class="headerCovTableHead" title="Exercised code only">Hit</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">total_coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntryLo">20.0&nbsp;%</td>
+            <td class="headerCovTableEntry">10</td>
+            <td class="headerCovTableEntry">2</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test Date:</td>
+            <td class="headerValue">2025-08-17 17:21:18</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntryLo">50.0&nbsp;%</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntry">2</td>
+          </tr>
+                  <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+                </table>
+              </td>
+            </tr>
+
+            <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+          </table>
+
+          <table cellpadding=0 cellspacing=0 border=0>
+            <tr>
+              <td><br></td>
+            </tr>
+            <tr>
+              <td>
+<pre class="sourceHeading">            Line data    Source code</pre>
+<pre class="source">
+<span id="L1"><span class="lineNum">       1</span>              : #pragma once</span>
+<span id="L2"><span class="lineNum">       2</span>              : </span>
+<span id="L3"><span class="lineNum">       3</span>              : #include &lt;dtls/error.h&gt;</span>
+<span id="L4"><span class="lineNum">       4</span>              : #include &lt;dtls/result.h&gt;</span>
+<span id="L5"><span class="lineNum">       5</span>              : #include &lt;dtls/memory/buffer.h&gt;</span>
+<span id="L6"><span class="lineNum">       6</span>              : #include &lt;dtls/protocol/handshake.h&gt;</span>
+<span id="L7"><span class="lineNum">       7</span>              : </span>
+<span id="L8"><span class="lineNum">       8</span>              : #include &lt;memory&gt;</span>
+<span id="L9"><span class="lineNum">       9</span>              : #include &lt;unordered_map&gt;</span>
+<span id="L10"><span class="lineNum">      10</span>              : #include &lt;chrono&gt;</span>
+<span id="L11"><span class="lineNum">      11</span>              : #include &lt;mutex&gt;</span>
+<span id="L12"><span class="lineNum">      12</span>              : #include &lt;atomic&gt;</span>
+<span id="L13"><span class="lineNum">      13</span>              : #include &lt;vector&gt;</span>
+<span id="L14"><span class="lineNum">      14</span>              : </span>
+<span id="L15"><span class="lineNum">      15</span>              : namespace dtls {</span>
+<span id="L16"><span class="lineNum">      16</span>              : namespace v13 {</span>
+<span id="L17"><span class="lineNum">      17</span>              : namespace protocol {</span>
+<span id="L18"><span class="lineNum">      18</span>              : </span>
+<span id="L19"><span class="lineNum">      19</span>              : /**</span>
+<span id="L20"><span class="lineNum">      20</span>              :  * Configuration for fragment reassembly behavior</span>
+<span id="L21"><span class="lineNum">      21</span>              :  */</span>
+<span id="L22"><span class="lineNum">      22</span>              : struct FragmentReassemblyConfig {</span>
+<span id="L23"><span class="lineNum">      23</span>              :     // Timeout for incomplete fragment reassembly</span>
+<span id="L24"><span class="lineNum">      24</span>              :     std::chrono::milliseconds reassembly_timeout{30000}; // 30 seconds</span>
+<span id="L25"><span class="lineNum">      25</span>              :     </span>
+<span id="L26"><span class="lineNum">      26</span>              :     // Maximum number of concurrent reassembly operations</span>
+<span id="L27"><span class="lineNum">      27</span>              :     size_t max_concurrent_reassemblies{100};</span>
+<span id="L28"><span class="lineNum">      28</span>              :     </span>
+<span id="L29"><span class="lineNum">      29</span>              :     // Maximum total memory used for fragment reassembly (bytes)</span>
+<span id="L30"><span class="lineNum">      30</span>              :     size_t max_reassembly_memory{1048576}; // 1MB</span>
+<span id="L31"><span class="lineNum">      31</span>              :     </span>
+<span id="L32"><span class="lineNum">      32</span>              :     // Maximum message size for reassembly</span>
+<span id="L33"><span class="lineNum">      33</span>              :     size_t max_message_size{65536}; // 64KB</span>
+<span id="L34"><span class="lineNum">      34</span>              :     </span>
+<span id="L35"><span class="lineNum">      35</span>              :     // Maximum number of fragments per message</span>
+<span id="L36"><span class="lineNum">      36</span>              :     size_t max_fragments_per_message{64};</span>
+<span id="L37"><span class="lineNum">      37</span>              :     </span>
+<span id="L38"><span class="lineNum">      38</span>              :     // Enable strict fragment validation</span>
+<span id="L39"><span class="lineNum">      39</span>              :     bool strict_validation{true};</span>
+<span id="L40"><span class="lineNum">      40</span>              :     </span>
+<span id="L41"><span class="lineNum">      41</span>              :     // Enable duplicate fragment detection</span>
+<span id="L42"><span class="lineNum">      42</span>              :     bool detect_duplicates{true};</span>
+<span id="L43"><span class="lineNum">      43</span>              :     </span>
+<span id="L44"><span class="lineNum">      44</span>              :     // Enable out-of-order fragment handling</span>
+<span id="L45"><span class="lineNum">      45</span>              :     bool handle_out_of_order{true};</span>
+<span id="L46"><span class="lineNum">      46</span>              :     </span>
+<span id="L47"><span class="lineNum">      47</span>              :     FragmentReassemblyConfig() = default;</span>
+<span id="L48"><span class="lineNum">      48</span>              : };</span>
+<span id="L49"><span class="lineNum">      49</span>              : </span>
+<span id="L50"><span class="lineNum">      50</span>              : /**</span>
+<span id="L51"><span class="lineNum">      51</span>              :  * Statistics for fragment reassembly operations</span>
+<span id="L52"><span class="lineNum">      52</span>              :  */</span>
+<span id="L53"><span class="lineNum">      53</span>              : struct FragmentReassemblyStats {</span>
+<span id="L54"><span class="lineNum">      54</span>              :     // Message reassembly statistics</span>
+<span id="L55"><span class="lineNum">      55</span>              :     std::atomic&lt;uint64_t&gt; messages_started{0};</span>
+<span id="L56"><span class="lineNum">      56</span>              :     std::atomic&lt;uint64_t&gt; messages_completed{0};</span>
+<span id="L57"><span class="lineNum">      57</span>              :     std::atomic&lt;uint64_t&gt; messages_timed_out{0};</span>
+<span id="L58"><span class="lineNum">      58</span>              :     std::atomic&lt;uint64_t&gt; messages_failed{0};</span>
+<span id="L59"><span class="lineNum">      59</span>              :     </span>
+<span id="L60"><span class="lineNum">      60</span>              :     // Fragment statistics</span>
+<span id="L61"><span class="lineNum">      61</span>              :     std::atomic&lt;uint64_t&gt; fragments_received{0};</span>
+<span id="L62"><span class="lineNum">      62</span>              :     std::atomic&lt;uint64_t&gt; fragments_duplicate{0};</span>
+<span id="L63"><span class="lineNum">      63</span>              :     std::atomic&lt;uint64_t&gt; fragments_out_of_order{0};</span>
+<span id="L64"><span class="lineNum">      64</span>              :     std::atomic&lt;uint64_t&gt; fragments_invalid{0};</span>
+<span id="L65"><span class="lineNum">      65</span>              :     </span>
+<span id="L66"><span class="lineNum">      66</span>              :     // Performance statistics</span>
+<span id="L67"><span class="lineNum">      67</span>              :     std::atomic&lt;uint64_t&gt; total_reassembly_time_ns{0};</span>
+<span id="L68"><span class="lineNum">      68</span>              :     std::atomic&lt;uint64_t&gt; peak_memory_usage{0};</span>
+<span id="L69"><span class="lineNum">      69</span>              :     std::atomic&lt;uint32_t&gt; peak_concurrent_reassemblies{0};</span>
+<span id="L70"><span class="lineNum">      70</span>              :     </span>
+<span id="L71"><span class="lineNum">      71</span>              :     // Current state</span>
+<span id="L72"><span class="lineNum">      72</span>              :     std::atomic&lt;uint32_t&gt; active_reassemblies{0};</span>
+<span id="L73"><span class="lineNum">      73</span>              :     std::atomic&lt;uint64_t&gt; current_memory_usage{0};</span>
+<span id="L74"><span class="lineNum">      74</span>              :     </span>
+<span id="L75"><span class="lineNum">      75</span> <span class="tlaGNC tlaBgGNC">        1038 :     FragmentReassemblyStats() = default;</span></span>
+<span id="L76"><span class="lineNum">      76</span>              :     </span>
+<span id="L77"><span class="lineNum">      77</span>              :     // Delete copy and move constructors/assignments due to atomic members</span>
+<span id="L78"><span class="lineNum">      78</span>              :     FragmentReassemblyStats(const FragmentReassemblyStats&amp;) = delete;</span>
+<span id="L79"><span class="lineNum">      79</span>              :     FragmentReassemblyStats&amp; operator=(const FragmentReassemblyStats&amp;) = delete;</span>
+<span id="L80"><span class="lineNum">      80</span>              :     FragmentReassemblyStats(FragmentReassemblyStats&amp;&amp;) = delete;</span>
+<span id="L81"><span class="lineNum">      81</span>              :     FragmentReassemblyStats&amp; operator=(FragmentReassemblyStats&amp;&amp;) = delete;</span>
+<span id="L82"><span class="lineNum">      82</span>              :     </span>
+<span id="L83"><span class="lineNum">      83</span>              :     // Calculate average reassembly time in microseconds</span>
+<span id="L84"><span class="lineNum">      84</span>              :     double get_average_reassembly_time_us() const {</span>
+<span id="L85"><span class="lineNum">      85</span>              :         uint64_t completed = messages_completed.load();</span>
+<span id="L86"><span class="lineNum">      86</span>              :         if (completed == 0) return 0.0;</span>
+<span id="L87"><span class="lineNum">      87</span>              :         return static_cast&lt;double&gt;(total_reassembly_time_ns.load()) / (completed * 1000.0);</span>
+<span id="L88"><span class="lineNum">      88</span>              :     }</span>
+<span id="L89"><span class="lineNum">      89</span>              :     </span>
+<span id="L90"><span class="lineNum">      90</span>              :     // Calculate success rate (0.0 to 1.0)</span>
+<span id="L91"><span class="lineNum">      91</span>              :     double get_success_rate() const {</span>
+<span id="L92"><span class="lineNum">      92</span>              :         uint64_t total = messages_started.load();</span>
+<span id="L93"><span class="lineNum">      93</span>              :         if (total == 0) return 0.0;</span>
+<span id="L94"><span class="lineNum">      94</span>              :         return static_cast&lt;double&gt;(messages_completed.load()) / total;</span>
+<span id="L95"><span class="lineNum">      95</span>              :     }</span>
+<span id="L96"><span class="lineNum">      96</span>              : };</span>
+<span id="L97"><span class="lineNum">      97</span>              : </span>
+<span id="L98"><span class="lineNum">      98</span>              : /**</span>
+<span id="L99"><span class="lineNum">      99</span>              :  * Enhanced Fragment Reassembler with timeout management and security validation</span>
+<span id="L100"><span class="lineNum">     100</span>              :  * </span>
+<span id="L101"><span class="lineNum">     101</span>              :  * This class provides a robust fragment reassembly system with the following features:</span>
+<span id="L102"><span class="lineNum">     102</span>              :  * - Automatic timeout and cleanup of incomplete reassemblies</span>
+<span id="L103"><span class="lineNum">     103</span>              :  * - Memory usage tracking and limits</span>
+<span id="L104"><span class="lineNum">     104</span>              :  * - Security validation against malicious fragments</span>
+<span id="L105"><span class="lineNum">     105</span>              :  * - Performance optimization for large messages</span>
+<span id="L106"><span class="lineNum">     106</span>              :  * - Thread-safe operation with minimal lock contention</span>
+<span id="L107"><span class="lineNum">     107</span>              :  */</span>
+<span id="L108"><span class="lineNum">     108</span>              : class DTLS_API FragmentReassembler {</span>
+<span id="L109"><span class="lineNum">     109</span>              : public:</span>
+<span id="L110"><span class="lineNum">     110</span>              :     /**</span>
+<span id="L111"><span class="lineNum">     111</span>              :      * Create a new fragment reassembler with the given configuration</span>
+<span id="L112"><span class="lineNum">     112</span>              :      */</span>
+<span id="L113"><span class="lineNum">     113</span>              :     explicit FragmentReassembler(const FragmentReassemblyConfig&amp; config = FragmentReassemblyConfig{});</span>
+<span id="L114"><span class="lineNum">     114</span>              :     </span>
+<span id="L115"><span class="lineNum">     115</span>              :     ~FragmentReassembler();</span>
+<span id="L116"><span class="lineNum">     116</span>              :     </span>
+<span id="L117"><span class="lineNum">     117</span>              :     // Non-copyable, movable</span>
+<span id="L118"><span class="lineNum">     118</span>              :     FragmentReassembler(const FragmentReassembler&amp;) = delete;</span>
+<span id="L119"><span class="lineNum">     119</span>              :     FragmentReassembler&amp; operator=(const FragmentReassembler&amp;) = delete;</span>
+<span id="L120"><span class="lineNum">     120</span>              :     FragmentReassembler(FragmentReassembler&amp;&amp;) noexcept = default;</span>
+<span id="L121"><span class="lineNum">     121</span>              :     FragmentReassembler&amp; operator=(FragmentReassembler&amp;&amp;) noexcept = default;</span>
+<span id="L122"><span class="lineNum">     122</span>              :     </span>
+<span id="L123"><span class="lineNum">     123</span>              :     /**</span>
+<span id="L124"><span class="lineNum">     124</span>              :      * Add a handshake message fragment for reassembly</span>
+<span id="L125"><span class="lineNum">     125</span>              :      * </span>
+<span id="L126"><span class="lineNum">     126</span>              :      * @param message_seq Message sequence number (identifies the message)</span>
+<span id="L127"><span class="lineNum">     127</span>              :      * @param fragment_offset Offset of this fragment within the complete message</span>
+<span id="L128"><span class="lineNum">     128</span>              :      * @param fragment_length Length of this fragment</span>
+<span id="L129"><span class="lineNum">     129</span>              :      * @param total_message_length Total length of the complete message</span>
+<span id="L130"><span class="lineNum">     130</span>              :      * @param fragment_data The fragment payload data</span>
+<span id="L131"><span class="lineNum">     131</span>              :      * @return Result indicating success and whether message is now complete</span>
+<span id="L132"><span class="lineNum">     132</span>              :      */</span>
+<span id="L133"><span class="lineNum">     133</span>              :     Result&lt;bool&gt; add_fragment(</span>
+<span id="L134"><span class="lineNum">     134</span>              :         uint16_t message_seq,</span>
+<span id="L135"><span class="lineNum">     135</span>              :         uint32_t fragment_offset,</span>
+<span id="L136"><span class="lineNum">     136</span>              :         uint32_t fragment_length,</span>
+<span id="L137"><span class="lineNum">     137</span>              :         uint32_t total_message_length,</span>
+<span id="L138"><span class="lineNum">     138</span>              :         const memory::ZeroCopyBuffer&amp; fragment_data</span>
+<span id="L139"><span class="lineNum">     139</span>              :     );</span>
+<span id="L140"><span class="lineNum">     140</span>              :     </span>
+<span id="L141"><span class="lineNum">     141</span>              :     /**</span>
+<span id="L142"><span class="lineNum">     142</span>              :      * Check if a message is completely reassembled</span>
+<span id="L143"><span class="lineNum">     143</span>              :      */</span>
+<span id="L144"><span class="lineNum">     144</span>              :     bool is_message_complete(uint16_t message_seq) const;</span>
+<span id="L145"><span class="lineNum">     145</span>              :     </span>
+<span id="L146"><span class="lineNum">     146</span>              :     /**</span>
+<span id="L147"><span class="lineNum">     147</span>              :      * Get the complete reassembled message</span>
+<span id="L148"><span class="lineNum">     148</span>              :      * </span>
+<span id="L149"><span class="lineNum">     149</span>              :      * @param message_seq Message sequence number</span>
+<span id="L150"><span class="lineNum">     150</span>              :      * @return Complete message buffer, or error if not complete</span>
+<span id="L151"><span class="lineNum">     151</span>              :      */</span>
+<span id="L152"><span class="lineNum">     152</span>              :     Result&lt;memory::ZeroCopyBuffer&gt; get_complete_message(uint16_t message_seq);</span>
+<span id="L153"><span class="lineNum">     153</span>              :     </span>
+<span id="L154"><span class="lineNum">     154</span>              :     /**</span>
+<span id="L155"><span class="lineNum">     155</span>              :      * Remove and cleanup a specific message reassembly</span>
+<span id="L156"><span class="lineNum">     156</span>              :      */</span>
+<span id="L157"><span class="lineNum">     157</span>              :     void remove_message(uint16_t message_seq);</span>
+<span id="L158"><span class="lineNum">     158</span>              :     </span>
+<span id="L159"><span class="lineNum">     159</span>              :     /**</span>
+<span id="L160"><span class="lineNum">     160</span>              :      * Clean up timed-out reassembly operations</span>
+<span id="L161"><span class="lineNum">     161</span>              :      * This should be called periodically to prevent memory leaks</span>
+<span id="L162"><span class="lineNum">     162</span>              :      */</span>
+<span id="L163"><span class="lineNum">     163</span>              :     void cleanup_timed_out_reassemblies();</span>
+<span id="L164"><span class="lineNum">     164</span>              :     </span>
+<span id="L165"><span class="lineNum">     165</span>              :     /**</span>
+<span id="L166"><span class="lineNum">     166</span>              :      * Force cleanup of all reassembly operations</span>
+<span id="L167"><span class="lineNum">     167</span>              :      */</span>
+<span id="L168"><span class="lineNum">     168</span>              :     void clear_all_reassemblies();</span>
+<span id="L169"><span class="lineNum">     169</span>              :     </span>
+<span id="L170"><span class="lineNum">     170</span>              :     /**</span>
+<span id="L171"><span class="lineNum">     171</span>              :      * Get current reassembly statistics</span>
+<span id="L172"><span class="lineNum">     172</span>              :      */</span>
+<span id="L173"><span class="lineNum">     173</span>              :     const FragmentReassemblyStats&amp; get_stats() const;</span>
+<span id="L174"><span class="lineNum">     174</span>              :     </span>
+<span id="L175"><span class="lineNum">     175</span>              :     /**</span>
+<span id="L176"><span class="lineNum">     176</span>              :      * Reset statistics counters</span>
+<span id="L177"><span class="lineNum">     177</span>              :      */</span>
+<span id="L178"><span class="lineNum">     178</span>              :     void reset_stats();</span>
+<span id="L179"><span class="lineNum">     179</span>              :     </span>
+<span id="L180"><span class="lineNum">     180</span>              :     /**</span>
+<span id="L181"><span class="lineNum">     181</span>              :      * Get current configuration</span>
+<span id="L182"><span class="lineNum">     182</span>              :      */</span>
+<span id="L183"><span class="lineNum">     183</span>              :     const FragmentReassemblyConfig&amp; get_config() const { return config_; }</span>
+<span id="L184"><span class="lineNum">     184</span>              :     </span>
+<span id="L185"><span class="lineNum">     185</span>              :     /**</span>
+<span id="L186"><span class="lineNum">     186</span>              :      * Update configuration (thread-safe)</span>
+<span id="L187"><span class="lineNum">     187</span>              :      */</span>
+<span id="L188"><span class="lineNum">     188</span>              :     void update_config(const FragmentReassemblyConfig&amp; new_config);</span>
+<span id="L189"><span class="lineNum">     189</span>              : </span>
+<span id="L190"><span class="lineNum">     190</span>              : private:</span>
+<span id="L191"><span class="lineNum">     191</span>              :     struct FragmentInfo {</span>
+<span id="L192"><span class="lineNum">     192</span>              :         uint32_t offset;</span>
+<span id="L193"><span class="lineNum">     193</span>              :         uint32_t length;</span>
+<span id="L194"><span class="lineNum">     194</span>              :         memory::ZeroCopyBuffer data;</span>
+<span id="L195"><span class="lineNum">     195</span>              :         std::chrono::steady_clock::time_point arrival_time;</span>
+<span id="L196"><span class="lineNum">     196</span>              :         </span>
+<span id="L197"><span class="lineNum">     197</span> <span class="tlaUNC tlaBgUNC">           0 :         FragmentInfo(uint32_t off, uint32_t len, memory::ZeroCopyBuffer d)</span></span>
+<span id="L198"><span class="lineNum">     198</span> <span class="tlaUNC">           0 :             : offset(off), length(len), data(std::move(d))</span></span>
+<span id="L199"><span class="lineNum">     199</span> <span class="tlaUNC">           0 :             , arrival_time(std::chrono::steady_clock::now()) {}</span></span>
+<span id="L200"><span class="lineNum">     200</span>              :     };</span>
+<span id="L201"><span class="lineNum">     201</span>              :     </span>
+<span id="L202"><span class="lineNum">     202</span>              :     struct MessageReassemblyState {</span>
+<span id="L203"><span class="lineNum">     203</span>              :         uint32_t total_length;</span>
+<span id="L204"><span class="lineNum">     204</span>              :         uint32_t received_bytes;</span>
+<span id="L205"><span class="lineNum">     205</span>              :         std::vector&lt;FragmentInfo&gt; fragments;</span>
+<span id="L206"><span class="lineNum">     206</span>              :         std::chrono::steady_clock::time_point start_time;</span>
+<span id="L207"><span class="lineNum">     207</span>              :         std::chrono::steady_clock::time_point last_fragment_time;</span>
+<span id="L208"><span class="lineNum">     208</span>              :         uint32_t expected_fragments;</span>
+<span id="L209"><span class="lineNum">     209</span>              :         bool is_complete;</span>
+<span id="L210"><span class="lineNum">     210</span>              :         </span>
+<span id="L211"><span class="lineNum">     211</span> <span class="tlaUNC">           0 :         MessageReassemblyState(uint32_t total_len)</span></span>
+<span id="L212"><span class="lineNum">     212</span> <span class="tlaUNC">           0 :             : total_length(total_len), received_bytes(0)</span></span>
+<span id="L213"><span class="lineNum">     213</span> <span class="tlaUNC">           0 :             , start_time(std::chrono::steady_clock::now())</span></span>
+<span id="L214"><span class="lineNum">     214</span> <span class="tlaUNC">           0 :             , last_fragment_time(start_time)</span></span>
+<span id="L215"><span class="lineNum">     215</span> <span class="tlaUNC">           0 :             , expected_fragments(0), is_complete(false) {}</span></span>
+<span id="L216"><span class="lineNum">     216</span>              :     };</span>
+<span id="L217"><span class="lineNum">     217</span>              :     </span>
+<span id="L218"><span class="lineNum">     218</span>              :     // Configuration</span>
+<span id="L219"><span class="lineNum">     219</span>              :     FragmentReassemblyConfig config_;</span>
+<span id="L220"><span class="lineNum">     220</span>              :     </span>
+<span id="L221"><span class="lineNum">     221</span>              :     // Active reassembly operations</span>
+<span id="L222"><span class="lineNum">     222</span>              :     std::unordered_map&lt;uint16_t, std::unique_ptr&lt;MessageReassemblyState&gt;&gt; active_reassemblies_;</span>
+<span id="L223"><span class="lineNum">     223</span>              :     mutable std::mutex reassembly_mutex_;</span>
+<span id="L224"><span class="lineNum">     224</span>              :     </span>
+<span id="L225"><span class="lineNum">     225</span>              :     // Statistics</span>
+<span id="L226"><span class="lineNum">     226</span>              :     mutable FragmentReassemblyStats stats_;</span>
+<span id="L227"><span class="lineNum">     227</span>              :     </span>
+<span id="L228"><span class="lineNum">     228</span>              :     // Helper methods</span>
+<span id="L229"><span class="lineNum">     229</span>              :     bool validate_fragment(</span>
+<span id="L230"><span class="lineNum">     230</span>              :         uint16_t message_seq,</span>
+<span id="L231"><span class="lineNum">     231</span>              :         uint32_t fragment_offset,</span>
+<span id="L232"><span class="lineNum">     232</span>              :         uint32_t fragment_length,</span>
+<span id="L233"><span class="lineNum">     233</span>              :         uint32_t total_message_length,</span>
+<span id="L234"><span class="lineNum">     234</span>              :         const memory::ZeroCopyBuffer&amp; fragment_data</span>
+<span id="L235"><span class="lineNum">     235</span>              :     ) const;</span>
+<span id="L236"><span class="lineNum">     236</span>              :     </span>
+<span id="L237"><span class="lineNum">     237</span>              :     bool check_memory_limits(uint32_t additional_bytes) const;</span>
+<span id="L238"><span class="lineNum">     238</span>              :     bool check_concurrency_limits() const;</span>
+<span id="L239"><span class="lineNum">     239</span>              :     </span>
+<span id="L240"><span class="lineNum">     240</span>              :     Result&lt;void&gt; add_fragment_to_state(</span>
+<span id="L241"><span class="lineNum">     241</span>              :         MessageReassemblyState&amp; state,</span>
+<span id="L242"><span class="lineNum">     242</span>              :         uint32_t fragment_offset,</span>
+<span id="L243"><span class="lineNum">     243</span>              :         uint32_t fragment_length,</span>
+<span id="L244"><span class="lineNum">     244</span>              :         const memory::ZeroCopyBuffer&amp; fragment_data</span>
+<span id="L245"><span class="lineNum">     245</span>              :     );</span>
+<span id="L246"><span class="lineNum">     246</span>              :     </span>
+<span id="L247"><span class="lineNum">     247</span>              :     bool check_message_complete(MessageReassemblyState&amp; state);</span>
+<span id="L248"><span class="lineNum">     248</span>              :     Result&lt;memory::ZeroCopyBuffer&gt; assemble_complete_message(MessageReassemblyState&amp; state);</span>
+<span id="L249"><span class="lineNum">     249</span>              :     </span>
+<span id="L250"><span class="lineNum">     250</span>              :     void update_memory_usage(int64_t delta);</span>
+<span id="L251"><span class="lineNum">     251</span>              :     void record_reassembly_completion(const MessageReassemblyState&amp; state, bool success);</span>
+<span id="L252"><span class="lineNum">     252</span>              :     </span>
+<span id="L253"><span class="lineNum">     253</span>              :     bool is_duplicate_fragment(</span>
+<span id="L254"><span class="lineNum">     254</span>              :         const MessageReassemblyState&amp; state,</span>
+<span id="L255"><span class="lineNum">     255</span>              :         uint32_t fragment_offset,</span>
+<span id="L256"><span class="lineNum">     256</span>              :         uint32_t fragment_length</span>
+<span id="L257"><span class="lineNum">     257</span>              :     ) const;</span>
+<span id="L258"><span class="lineNum">     258</span>              :     </span>
+<span id="L259"><span class="lineNum">     259</span>              :     void sort_fragments(std::vector&lt;FragmentInfo&gt;&amp; fragments) const;</span>
+<span id="L260"><span class="lineNum">     260</span>              :     bool has_fragment_gaps(const std::vector&lt;FragmentInfo&gt;&amp; fragments, uint32_t total_length) const;</span>
+<span id="L261"><span class="lineNum">     261</span>              : };</span>
+<span id="L262"><span class="lineNum">     262</span>              : </span>
+<span id="L263"><span class="lineNum">     263</span>              : /**</span>
+<span id="L264"><span class="lineNum">     264</span>              :  * Connection-level fragment reassembly manager</span>
+<span id="L265"><span class="lineNum">     265</span>              :  * </span>
+<span id="L266"><span class="lineNum">     266</span>              :  * Manages fragment reassembly for a specific DTLS connection with:</span>
+<span id="L267"><span class="lineNum">     267</span>              :  * - Per-connection reassembly isolation</span>
+<span id="L268"><span class="lineNum">     268</span>              :  * - Automatic cleanup on connection close</span>
+<span id="L269"><span class="lineNum">     269</span>              :  * - Integration with connection statistics</span>
+<span id="L270"><span class="lineNum">     270</span>              :  */</span>
+<span id="L271"><span class="lineNum">     271</span>              : class DTLS_API ConnectionFragmentManager {</span>
+<span id="L272"><span class="lineNum">     272</span>              : public:</span>
+<span id="L273"><span class="lineNum">     273</span>              :     explicit ConnectionFragmentManager(const FragmentReassemblyConfig&amp; config = FragmentReassemblyConfig{});</span>
+<span id="L274"><span class="lineNum">     274</span> <span class="tlaGNC tlaBgGNC">        1038 :     ~ConnectionFragmentManager() = default;</span></span>
+<span id="L275"><span class="lineNum">     275</span>              :     </span>
+<span id="L276"><span class="lineNum">     276</span>              :     // Non-copyable, movable</span>
+<span id="L277"><span class="lineNum">     277</span>              :     ConnectionFragmentManager(const ConnectionFragmentManager&amp;) = delete;</span>
+<span id="L278"><span class="lineNum">     278</span>              :     ConnectionFragmentManager&amp; operator=(const ConnectionFragmentManager&amp;) = delete;</span>
+<span id="L279"><span class="lineNum">     279</span>              :     ConnectionFragmentManager(ConnectionFragmentManager&amp;&amp;) noexcept = default;</span>
+<span id="L280"><span class="lineNum">     280</span>              :     ConnectionFragmentManager&amp; operator=(ConnectionFragmentManager&amp;&amp;) noexcept = default;</span>
+<span id="L281"><span class="lineNum">     281</span>              :     </span>
+<span id="L282"><span class="lineNum">     282</span>              :     /**</span>
+<span id="L283"><span class="lineNum">     283</span>              :      * Process an incoming handshake fragment</span>
+<span id="L284"><span class="lineNum">     284</span>              :      */</span>
+<span id="L285"><span class="lineNum">     285</span>              :     Result&lt;bool&gt; process_handshake_fragment(const HandshakeHeader&amp; header, </span>
+<span id="L286"><span class="lineNum">     286</span>              :                                            const memory::ZeroCopyBuffer&amp; fragment_data);</span>
+<span id="L287"><span class="lineNum">     287</span>              :     </span>
+<span id="L288"><span class="lineNum">     288</span>              :     /**</span>
+<span id="L289"><span class="lineNum">     289</span>              :      * Get a complete handshake message if available</span>
+<span id="L290"><span class="lineNum">     290</span>              :      */</span>
+<span id="L291"><span class="lineNum">     291</span>              :     Result&lt;HandshakeMessage&gt; get_complete_handshake_message(uint16_t message_seq);</span>
+<span id="L292"><span class="lineNum">     292</span>              :     </span>
+<span id="L293"><span class="lineNum">     293</span>              :     /**</span>
+<span id="L294"><span class="lineNum">     294</span>              :      * Clean up resources (called on connection close)</span>
+<span id="L295"><span class="lineNum">     295</span>              :      */</span>
+<span id="L296"><span class="lineNum">     296</span>              :     void cleanup();</span>
+<span id="L297"><span class="lineNum">     297</span>              :     </span>
+<span id="L298"><span class="lineNum">     298</span>              :     /**</span>
+<span id="L299"><span class="lineNum">     299</span>              :      * Get reassembly statistics</span>
+<span id="L300"><span class="lineNum">     300</span>              :      */</span>
+<span id="L301"><span class="lineNum">     301</span>              :     const FragmentReassemblyStats&amp; get_stats() const;</span>
+<span id="L302"><span class="lineNum">     302</span>              :     </span>
+<span id="L303"><span class="lineNum">     303</span>              :     /**</span>
+<span id="L304"><span class="lineNum">     304</span>              :      * Perform periodic maintenance (cleanup timeouts)</span>
+<span id="L305"><span class="lineNum">     305</span>              :      */</span>
+<span id="L306"><span class="lineNum">     306</span>              :     void perform_maintenance();</span>
+<span id="L307"><span class="lineNum">     307</span>              : </span>
+<span id="L308"><span class="lineNum">     308</span>              : private:</span>
+<span id="L309"><span class="lineNum">     309</span>              :     std::unique_ptr&lt;FragmentReassembler&gt; reassembler_;</span>
+<span id="L310"><span class="lineNum">     310</span>              :     </span>
+<span id="L311"><span class="lineNum">     311</span>              :     // Cache for complete messages awaiting retrieval</span>
+<span id="L312"><span class="lineNum">     312</span>              :     std::unordered_map&lt;uint16_t, HandshakeMessage&gt; completed_messages_;</span>
+<span id="L313"><span class="lineNum">     313</span>              :     mutable std::mutex completed_messages_mutex_;</span>
+<span id="L314"><span class="lineNum">     314</span>              :     </span>
+<span id="L315"><span class="lineNum">     315</span>              :     Result&lt;HandshakeMessage&gt; deserialize_handshake_message(</span>
+<span id="L316"><span class="lineNum">     316</span>              :         HandshakeType msg_type, </span>
+<span id="L317"><span class="lineNum">     317</span>              :         const memory::ZeroCopyBuffer&amp; message_data</span>
+<span id="L318"><span class="lineNum">     318</span>              :     );</span>
+<span id="L319"><span class="lineNum">     319</span>              : };</span>
+<span id="L320"><span class="lineNum">     320</span>              : </span>
+<span id="L321"><span class="lineNum">     321</span>              : } // namespace protocol</span>
+<span id="L322"><span class="lineNum">     322</span>              : } // namespace v13</span>
+<span id="L323"><span class="lineNum">     323</span>              : } // namespace dtls</span>
+        </pre>
+              </td>
+            </tr>
+          </table>
+          <br>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+            <tr><td class="versionInfo">Generated by: <a href="https://github.com//linux-test-project/lcov" target="_parent">LCOV version 2.0-1</a></td></tr>
+          </table>
+          <br>
+
+</body>
+</html>
