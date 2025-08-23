@@ -298,13 +298,6 @@ server->start();  // Production-ready server
 
 © John Peter Greninger 2025 • All Rights Reserved
 
-This proprietary software requires appropriate licensing for use. For licensing information, visit: https://jgreninger.wixsite.com/protocolpp/protocolpp-legal
-
-- **Binary Distribution**: Permitted with attribution and disclaimer requirements
-- **Commercial Use**: Requires fee-based license (contact: protocolpp@outlook.com)
-- **Academic/Research Use**: Requires written permission
-- **Source Code Access**: Available for purchase
-
 See the [LICENSE](LICENSE) file for complete terms and conditions.
 
 ## 🔗 **References & Standards**
