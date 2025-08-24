@@ -1,64 +1,30 @@
 © John Peter Greninger 2025 • All Rights Reserved
 
-The source code contained or described herein and all documents related to the
-source code (herein called "Material") are owned by John Peter Greninger and 
-Sheila Rocha Greninger. Title to the Material remains with John Peter Greninger
-and Sheila Rocha Greninger. The Material contains trade secrets and proprietary
-and confidential information of John Peter Greninger and Sheila Rocha Greninger
-The Material is protected by worldwide copyright and trade secret laws and treaty
-provisions. No part of the Material may be used, copied, reproduced, modified,
-published, uploaded, posted, transmitted, distributed, or disclosed in any way
-without prior express written consent of John Peter Greninger and Sheila Rocha
-Greninger (both are required)
-
-No license under any patent, copyright, trade secret, or other intellectual
-property right is granted to or conferred upon you by disclosure or delivery of
-the Materials, either expressly, by implication, inducement, estoppel, or otherwise
-Any license under such intellectual property rights must be express and approved
-by John Peter Greninger and Sheila Rocha Greninger in writing
-
-Licensing information can be found at https://jgreninger.wixsite.com/protocolpp/protocolpp-legal
-with use of the binary forms permitted provided that the following conditions are met:
-
-    Redistributions in binary form must reproduce the above copyright notice, this
-    list of conditions and the following disclaimer in the documentation and/or other
-    materials provided with the distribution
-        
-    Any and all modifications must be returned to John Peter Greninger at GitHub.com
-    https://github.com/jpgreninger/protocolpp for evaluation. Inclusion of modifications
-    in the source code shall be determined solely by John Peter Greninger. Failure to
-    provide modifications shall render this license NULL and VOID and revoke any rights
-    to use of Protocol++®
-        
-    Commercial use (incidental or not) requires a fee-based license obtainable by
-    contacting John Peter Greninger at protocolpp@outlook.com
-        
-    Academic or research use requires prior written and notarized permission from
-    John Peter and Sheila Rocha Greninger
-    
-    Use of the source code requires purchase of the source code. Source code can be
-    purchased by contacting John Peter Greninger at protocolpp@outlook.com
-
-    US Copyrights at https://www.copyright.gov/
-        TXu002059872 (Version 1.0.0)
-        TXu002066632 (Version 1.2.7)
-        TXu002082674 (Version 1.4.0)
-        TXu002097880 (Version 2.0.0)
-        TXu002169236 (Version 3.0.1)
-        TXu002182417 (Version 4.0.0)
-        TXu002219402 (Version 5.0.0)
-        TXu002272076 (Version 5.2.1)
-        TXu002383571 (Version 5.4.3)
-
-The name of its contributor may not be used to endorse or promote products derived
-from this software without specific prior written permission and licensing
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER AND CONTRIBUTOR "AS IS" AND ANY
-EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
-OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
-SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
-OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
-TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
-EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE 
+BSD License
+ 
+For DTLSv1p3-AI-PQC software
+ 
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+ 
+ * Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+ 
+ * Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+ 
+ * Neither the name John Peter Greninger, nor the names of its contributors may
+   be used to endorse or promote products derived from this software without
+   specific prior written permission.
+ 
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
