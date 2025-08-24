@@ -3559,6 +3559,60 @@ Result<PureMLKEMKeyExchangeResult> dtls::v13::crypto::BotanProvider::perform_pur
     return Result<PureMLKEMKeyExchangeResult>(std::move(result));
 }
 
+// Post-Quantum Signature stub implementations (simulation mode)
+
+Result<std::pair<std::vector<uint8_t>, std::vector<uint8_t>>> 
+BotanProvider::ml_dsa_generate_keypair(const MLDSAKeyGenParams& params) {
+    (void)params; // Suppress unused parameter warning
+    return Result<std::pair<std::vector<uint8_t>, std::vector<uint8_t>>>(DTLSError::OPERATION_NOT_SUPPORTED);
+}
+
+Result<std::vector<uint8_t>> BotanProvider::ml_dsa_sign(const MLDSASignatureParams& params) {
+    (void)params; // Suppress unused parameter warning
+    return Result<std::vector<uint8_t>>(DTLSError::OPERATION_NOT_SUPPORTED);
+}
+
+Result<bool> BotanProvider::ml_dsa_verify(const MLDSAVerificationParams& params) {
+    (void)params; // Suppress unused parameter warning
+    return Result<bool>(DTLSError::OPERATION_NOT_SUPPORTED);
+}
+
+Result<std::pair<std::vector<uint8_t>, std::vector<uint8_t>>> 
+BotanProvider::slh_dsa_generate_keypair(const SLHDSAKeyGenParams& params) {
+    (void)params; // Suppress unused parameter warning
+    return Result<std::pair<std::vector<uint8_t>, std::vector<uint8_t>>>(DTLSError::OPERATION_NOT_SUPPORTED);
+}
+
+Result<std::vector<uint8_t>> BotanProvider::slh_dsa_sign(const SLHDSASignatureParams& params) {
+    (void)params; // Suppress unused parameter warning
+    return Result<std::vector<uint8_t>>(DTLSError::OPERATION_NOT_SUPPORTED);
+}
+
+Result<bool> BotanProvider::slh_dsa_verify(const SLHDSAVerificationParams& params) {
+    (void)params; // Suppress unused parameter warning
+    return Result<bool>(DTLSError::OPERATION_NOT_SUPPORTED);
+}
+
+Result<std::vector<uint8_t>> BotanProvider::pure_pqc_sign(const PurePQCSignatureParams& params) {
+    (void)params; // Suppress unused parameter warning
+    return Result<std::vector<uint8_t>>(DTLSError::OPERATION_NOT_SUPPORTED);
+}
+
+Result<bool> BotanProvider::pure_pqc_verify(const PurePQCVerificationParams& params) {
+    (void)params; // Suppress unused parameter warning
+    return Result<bool>(DTLSError::OPERATION_NOT_SUPPORTED);
+}
+
+Result<HybridSignatureResult> BotanProvider::hybrid_pqc_sign(const HybridPQCSignatureParams& params) {
+    (void)params; // Suppress unused parameter warning
+    return Result<HybridSignatureResult>(DTLSError::OPERATION_NOT_SUPPORTED);
+}
+
+Result<bool> BotanProvider::hybrid_pqc_verify(const HybridPQCVerificationParams& params) {
+    (void)params; // Suppress unused parameter warning
+    return Result<bool>(DTLSError::OPERATION_NOT_SUPPORTED);
+}
+
 } // namespace crypto
 } // namespace v13
 } // namespace dtls

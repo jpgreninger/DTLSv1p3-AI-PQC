@@ -7,8 +7,8 @@
  */
 
 #include "dtls/crypto/openssl_provider.h"
-#include "dtls/core/error.h"
-#include "dtls/core/result.h"
+#include "dtls/error.h"
+#include "dtls/result.h"
 
 #include <openssl/evp.h>
 #include <openssl/provider.h>

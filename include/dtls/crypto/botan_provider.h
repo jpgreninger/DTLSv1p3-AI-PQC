@@ -191,7 +191,7 @@ public:
     // Helper methods for PQC parameter conversion (Botan-specific)
     static Result<std::string> ml_dsa_params_to_botan_name(MLDSAParameterSet params);
     static Result<std::string> slh_dsa_params_to_botan_name(SLHDSAParameterSet params);
-    }
+    
     
     // Performance and security features
     bool has_hardware_acceleration() const override;
@@ -251,7 +251,7 @@ private:
     
     // Random generation helper functions
     bool validate_random_entropy(const std::vector<uint8_t>& random_data) const;
-};
+};  // End of BotanProvider class
 
 /**
  * Botan private key implementation

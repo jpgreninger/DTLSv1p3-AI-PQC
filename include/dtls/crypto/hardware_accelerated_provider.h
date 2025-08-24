@@ -225,8 +225,21 @@ private:
                                    bool used_hardware) const;
     float get_hardware_speedup(const std::string& operation) const;
     std::string classify_operation(const AEADParams& params) const;
+    std::string classify_operation(const AEADEncryptionParams& params) const;
+    std::string classify_operation(const AEADDecryptionParams& params) const;
     std::string classify_operation(const HashParams& params) const;
     std::string classify_operation(const SignatureParams& params) const;
+    
+    // Hardware-specific in-place operation helpers
+    Result<void> aead_encrypt_inplace_hw(
+        const AEADParams& params,
+        std::vector<uint8_t>& data,
+        size_t plaintext_len);
+    
+    Result<void> aead_decrypt_inplace_hw(
+        const AEADParams& params,
+        std::vector<uint8_t>& data,
+        size_t ciphertext_len);
     
     // Batch operation helpers
     Result<std::vector<AEADEncryptionOutput>> batch_encrypt_simd(

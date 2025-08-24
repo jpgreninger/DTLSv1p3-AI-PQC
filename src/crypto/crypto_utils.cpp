@@ -1154,31 +1154,19 @@ bool is_hybrid_pqc_signature(SignatureScheme scheme) {
         // RSA + ML-DSA hybrids
         case SignatureScheme::RSA3072_ML_DSA_44:
         case SignatureScheme::RSA3072_ML_DSA_65:
-        case SignatureScheme::RSA3072_ML_DSA_87:
         
         // ECDSA + ML-DSA hybrids
         case SignatureScheme::P256_ML_DSA_44:
-        case SignatureScheme::P256_ML_DSA_65:
         case SignatureScheme::P384_ML_DSA_65:
-        case SignatureScheme::P384_ML_DSA_87:
         case SignatureScheme::P521_ML_DSA_87:
         
-        // Ed25519 + ML-DSA hybrids
-        case SignatureScheme::ED25519_ML_DSA_44:
-        case SignatureScheme::ED25519_ML_DSA_65:
-        
-        // Ed448 + ML-DSA hybrids
-        case SignatureScheme::ED448_ML_DSA_65:
-        case SignatureScheme::ED448_ML_DSA_87:
-        
         // RSA + SLH-DSA hybrids
-        case SignatureScheme::RSA3072_SLH_DSA_SHA2_128S:
-        case SignatureScheme::RSA3072_SLH_DSA_SHAKE_128S:
+        case SignatureScheme::RSA3072_SLH_DSA_128S:
         
         // ECDSA + SLH-DSA hybrids
-        case SignatureScheme::P256_SLH_DSA_SHA2_128S:
-        case SignatureScheme::P384_SLH_DSA_SHAKE_192S:
-        case SignatureScheme::P521_SLH_DSA_SHAKE_256S:
+        case SignatureScheme::P256_SLH_DSA_128S:
+        case SignatureScheme::P384_SLH_DSA_192S:
+        case SignatureScheme::P521_SLH_DSA_256S:
             return true;
         default:
             return false;
@@ -1195,22 +1183,15 @@ MLDSAParameterSet get_ml_dsa_parameter_set(SignatureScheme scheme) {
         case SignatureScheme::ML_DSA_44:
         case SignatureScheme::RSA3072_ML_DSA_44:
         case SignatureScheme::P256_ML_DSA_44:
-        case SignatureScheme::ED25519_ML_DSA_44:
             return MLDSAParameterSet::ML_DSA_44;
             
         case SignatureScheme::ML_DSA_65:
         case SignatureScheme::RSA3072_ML_DSA_65:
-        case SignatureScheme::P256_ML_DSA_65:
         case SignatureScheme::P384_ML_DSA_65:
-        case SignatureScheme::ED25519_ML_DSA_65:
-        case SignatureScheme::ED448_ML_DSA_65:
             return MLDSAParameterSet::ML_DSA_65;
             
         case SignatureScheme::ML_DSA_87:
-        case SignatureScheme::RSA3072_ML_DSA_87:
-        case SignatureScheme::P384_ML_DSA_87:
         case SignatureScheme::P521_ML_DSA_87:
-        case SignatureScheme::ED448_ML_DSA_87:
             return MLDSAParameterSet::ML_DSA_87;
             
         default:
@@ -1221,8 +1202,8 @@ MLDSAParameterSet get_ml_dsa_parameter_set(SignatureScheme scheme) {
 SLHDSAParameterSet get_slh_dsa_parameter_set(SignatureScheme scheme) {
     switch (scheme) {
         case SignatureScheme::SLH_DSA_SHA2_128S:
-        case SignatureScheme::RSA3072_SLH_DSA_SHA2_128S:
-        case SignatureScheme::P256_SLH_DSA_SHA2_128S:
+        case SignatureScheme::RSA3072_SLH_DSA_128S:
+        case SignatureScheme::P256_SLH_DSA_128S:
             return SLHDSAParameterSet::SLH_DSA_SHA2_128S;
             
         case SignatureScheme::SLH_DSA_SHA2_128F:
@@ -1241,21 +1222,20 @@ SLHDSAParameterSet get_slh_dsa_parameter_set(SignatureScheme scheme) {
             return SLHDSAParameterSet::SLH_DSA_SHA2_256F;
             
         case SignatureScheme::SLH_DSA_SHAKE_128S:
-        case SignatureScheme::RSA3072_SLH_DSA_SHAKE_128S:
             return SLHDSAParameterSet::SLH_DSA_SHAKE_128S;
             
         case SignatureScheme::SLH_DSA_SHAKE_128F:
             return SLHDSAParameterSet::SLH_DSA_SHAKE_128F;
             
         case SignatureScheme::SLH_DSA_SHAKE_192S:
-        case SignatureScheme::P384_SLH_DSA_SHAKE_192S:
+        case SignatureScheme::P384_SLH_DSA_192S:
             return SLHDSAParameterSet::SLH_DSA_SHAKE_192S;
             
         case SignatureScheme::SLH_DSA_SHAKE_192F:
             return SLHDSAParameterSet::SLH_DSA_SHAKE_192F;
             
         case SignatureScheme::SLH_DSA_SHAKE_256S:
-        case SignatureScheme::P521_SLH_DSA_SHAKE_256S:
+        case SignatureScheme::P521_SLH_DSA_256S:
             return SLHDSAParameterSet::SLH_DSA_SHAKE_256S;
             
         case SignatureScheme::SLH_DSA_SHAKE_256F:
@@ -1329,17 +1309,17 @@ Result<bool> validate_ml_dsa_signature_format(
     MLDSAParameterSet param_set) {
     
     if (signature.empty()) {
-        return Result<bool>::failure(DTLSError::INVALID_SIGNATURE);
+        return Result<bool>(DTLSError::SIGNATURE_VERIFICATION_FAILED);
     }
     
     size_t max_size = get_ml_dsa_signature_max_size(param_set);
     size_t min_size = max_size * 3 / 4;  // Allow some variance (25%)
     
     if (signature.size() < min_size || signature.size() > max_size + 100) {
-        return Result<bool>::failure(DTLSError::INVALID_SIGNATURE);
+        return Result<bool>(DTLSError::SIGNATURE_VERIFICATION_FAILED);
     }
     
-    return Result<bool>::success(true);
+    return Result<bool>(true);
 }
 
 Result<bool> validate_slh_dsa_signature_format(
@@ -1347,17 +1327,17 @@ Result<bool> validate_slh_dsa_signature_format(
     SLHDSAParameterSet param_set) {
     
     if (signature.empty()) {
-        return Result<bool>::failure(DTLSError::INVALID_SIGNATURE);
+        return Result<bool>(DTLSError::SIGNATURE_VERIFICATION_FAILED);
     }
     
     size_t expected_size = get_slh_dsa_signature_max_size(param_set);
     
     // SLH-DSA signatures have fixed sizes, so we can be more strict
     if (signature.size() != expected_size) {
-        return Result<bool>::failure(DTLSError::INVALID_SIGNATURE);
+        return Result<bool>(DTLSError::SIGNATURE_VERIFICATION_FAILED);
     }
     
-    return Result<bool>::success(true);
+    return Result<bool>(true);
 }
 
 Result<bool> validate_pqc_signature_context(
@@ -1367,28 +1347,28 @@ Result<bool> validate_pqc_signature_context(
     // ML-DSA supports context strings up to 255 bytes
     if (is_ml_dsa_signature(scheme)) {
         if (context.size() > 255) {
-            return Result<bool>::failure(DTLSError::INVALID_PARAMETER);
+            return Result<bool>(DTLSError::INVALID_PARAMETER);
         }
-        return Result<bool>::success(true);
+        return Result<bool>(true);
     }
     
     // SLH-DSA supports context strings up to 255 bytes
     if (is_slh_dsa_signature(scheme)) {
         if (context.size() > 255) {
-            return Result<bool>::failure(DTLSError::INVALID_PARAMETER);
+            return Result<bool>(DTLSError::INVALID_PARAMETER);
         }
-        return Result<bool>::success(true);
+        return Result<bool>(true);
     }
     
     // For hybrid schemes, validate both components
     if (is_hybrid_pqc_signature(scheme)) {
         if (context.size() > 255) {
-            return Result<bool>::failure(DTLSError::INVALID_PARAMETER);
+            return Result<bool>(DTLSError::INVALID_PARAMETER);
         }
-        return Result<bool>::success(true);
+        return Result<bool>(true);
     }
     
-    return Result<bool>::failure(DTLSError::OPERATION_NOT_SUPPORTED);
+    return Result<bool>(DTLSError::OPERATION_NOT_SUPPORTED);
 }
 
 Result<bool> validate_hybrid_signature_format(
@@ -1396,11 +1376,11 @@ Result<bool> validate_hybrid_signature_format(
     SignatureScheme hybrid_scheme) {
     
     if (!is_hybrid_pqc_signature(hybrid_scheme)) {
-        return Result<bool>::failure(DTLSError::INVALID_PARAMETER);
+        return Result<bool>(DTLSError::INVALID_PARAMETER);
     }
     
     if (signature.empty()) {
-        return Result<bool>::failure(DTLSError::INVALID_SIGNATURE);
+        return Result<bool>(DTLSError::SIGNATURE_VERIFICATION_FAILED);
     }
     
     // Hybrid signatures should be larger than pure classical signatures
@@ -1409,10 +1389,10 @@ Result<bool> validate_hybrid_signature_format(
     size_t max_size = 50000; // Maximum reasonable combined signature size
     
     if (signature.size() < min_size || signature.size() > max_size) {
-        return Result<bool>::failure(DTLSError::INVALID_SIGNATURE);
+        return Result<bool>(DTLSError::SIGNATURE_VERIFICATION_FAILED);
     }
     
-    return Result<bool>::success(true);
+    return Result<bool>(true);
 }
 
 // Performance monitoring

@@ -84,7 +84,7 @@ Result<void> HardwareAcceleratedProvider::initialize() {
         }
     }
     
-    return Result<void>::success();
+    return Result<void>();
 }
 
 void HardwareAcceleratedProvider::cleanup() {
@@ -141,7 +141,7 @@ Result<std::vector<uint8_t>> HardwareAcceleratedProvider::derive_key_pbkdf2(cons
 Result<AEADEncryptionOutput> HardwareAcceleratedProvider::encrypt_aead(const AEADEncryptionParams& params) {
     operations_count_++;
     
-    std::string operation = classify_operation(static_cast<const AEADParams&>(params));
+    std::string operation = classify_operation(params);
     bool use_hw = should_use_hardware_for_operation(operation);
     auto start_time = std::chrono::high_resolution_clock::now();
     
@@ -158,7 +158,7 @@ Result<AEADEncryptionOutput> HardwareAcceleratedProvider::encrypt_aead(const AEA
 Result<std::vector<uint8_t>> HardwareAcceleratedProvider::decrypt_aead(const AEADDecryptionParams& params) {
     operations_count_++;
     
-    std::string operation = classify_operation(static_cast<const AEADParams&>(params));
+    std::string operation = classify_operation(params);
     bool use_hw = should_use_hardware_for_operation(operation);
     auto start_time = std::chrono::high_resolution_clock::now();
     
@@ -208,14 +208,60 @@ Result<void> HardwareAcceleratedProvider::aead_encrypt_inplace(
     data.insert(data.end(), output.ciphertext.begin(), output.ciphertext.end());
     data.insert(data.end(), output.tag.begin(), output.tag.end());
     
-    return Result<void>::success();
+    return Result<void>();
+}
+
+Result<void> HardwareAcceleratedProvider::aead_decrypt_inplace(
+    const AEADParams& params,
+    std::vector<uint8_t>& data,
+    size_t ciphertext_len) {
+    
+    operations_count_++;
+    
+    std::string operation = classify_operation(params);
+    bool use_hw = should_use_hardware_for_operation(operation);
+    auto start_time = std::chrono::high_resolution_clock::now();
+    
+    if (use_hw && operation.find("aes-gcm") != std::string::npos) {
+        // Hardware-optimized in-place decryption for AES-GCM
+        auto result = aead_decrypt_inplace_hw(params, data, ciphertext_len);
+        auto end_time = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
+        update_performance_metrics(operation, duration, true);
+        return result;
+    }
+    
+    // Fallback to base provider's implementation via decrypt_aead
+    AEADDecryptionParams dec_params;
+    dec_params.key = params.key;
+    dec_params.nonce = params.nonce;
+    dec_params.additional_data = params.additional_data;
+    dec_params.cipher = params.cipher;
+    dec_params.ciphertext = std::vector<uint8_t>(data.begin(), data.begin() + ciphertext_len);
+    
+    auto result = decrypt_aead(dec_params);
+    
+    auto end_time = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
+    update_performance_metrics(operation, duration, false);
+    
+    if (!result) {
+        return Result<void>(result.error());
+    }
+    
+    // Replace data with plaintext
+    const auto& plaintext = result.value();
+    data.clear();
+    data.insert(data.end(), plaintext.begin(), plaintext.end());
+    
+    return Result<void>();
 }
 
 Result<std::vector<AEADEncryptionOutput>> HardwareAcceleratedProvider::batch_encrypt_aead(
     const std::vector<AEADEncryptionParams>& params_batch) {
     
     if (params_batch.empty()) {
-        return Result<std::vector<AEADEncryptionOutput>>::success({});
+        return Result<std::vector<AEADEncryptionOutput>>({});
     }
     
     // Check if we can use SIMD batch processing
@@ -237,14 +283,14 @@ Result<std::vector<AEADEncryptionOutput>> HardwareAcceleratedProvider::batch_enc
         results.push_back(result.value());
     }
     
-    return Result<std::vector<AEADEncryptionOutput>>::success(std::move(results));
+    return Result<std::vector<AEADEncryptionOutput>>(std::move(results));
 }
 
 Result<std::vector<std::vector<uint8_t>>> HardwareAcceleratedProvider::batch_decrypt_aead(
     const std::vector<AEADDecryptionParams>& params_batch) {
     
     if (params_batch.empty()) {
-        return Result<std::vector<std::vector<uint8_t>>>::success({});
+        return Result<std::vector<std::vector<uint8_t>>>({});
     }
     
     bool use_simd = should_use_hardware_for_operation("bulk-ops") && params_batch.size() >= 4;
@@ -265,7 +311,7 @@ Result<std::vector<std::vector<uint8_t>>> HardwareAcceleratedProvider::batch_dec
         results.push_back(result.value());
     }
     
-    return Result<std::vector<std::vector<uint8_t>>>::success(std::move(results));
+    return Result<std::vector<std::vector<uint8_t>>>(std::move(results));
 }
 
 // Forward remaining methods to base provider
@@ -642,7 +688,7 @@ Result<void> HardwareAcceleratedProvider::set_security_level(SecurityLevel level
 EnhancedProviderCapabilities HardwareAcceleratedProvider::enhanced_capabilities() const {
     auto caps = base_provider_->enhanced_capabilities();
     caps.supports_batch_operations = true;
-    caps.performance.hardware_accelerated = has_hardware_acceleration();
+    // Note: hardware_accelerated field not available in ProviderPerformanceMetrics
     caps.performance.throughput_mbps *= hw_profile_.overall_performance_score;
     return caps;
 }
@@ -660,7 +706,7 @@ ProviderPerformanceMetrics HardwareAcceleratedProvider::get_performance_metrics(
     
     // Add hardware acceleration metrics
     metrics.success_count += operations_count_.load();
-    metrics.hardware_accelerated = has_hardware_acceleration();
+    // Note: hardware_accelerated field not available in ProviderPerformanceMetrics
     
     float hw_ratio = operations_count_.load() > 0 ? 
         static_cast<float>(hw_accelerated_ops_.load()) / operations_count_.load() : 0.0f;
@@ -712,7 +758,7 @@ Result<std::future<std::vector<uint8_t>>> HardwareAcceleratedProvider::async_dec
 }
 
 Result<HardwareAccelerationProfile> HardwareAcceleratedProvider::get_hardware_profile() const {
-    return Result<HardwareAccelerationProfile>::success(hw_profile_);
+    return Result<HardwareAccelerationProfile>(hw_profile_);
 }
 
 Result<void> HardwareAcceleratedProvider::enable_hardware_acceleration(HardwareCapability capability) {
@@ -721,10 +767,10 @@ Result<void> HardwareAcceleratedProvider::enable_hardware_acceleration(HardwareC
     auto it = enabled_capabilities_.find(capability);
     if (it != enabled_capabilities_.end()) {
         it->second = true;
-        return Result<void>::success();
+        return Result<void>();
     }
     
-    return Result<void>::error(DTLSError::OPERATION_NOT_SUPPORTED);
+    return Result<void>(DTLSError::OPERATION_NOT_SUPPORTED);
 }
 
 Result<void> HardwareAcceleratedProvider::disable_hardware_acceleration(HardwareCapability capability) {
@@ -733,10 +779,10 @@ Result<void> HardwareAcceleratedProvider::disable_hardware_acceleration(Hardware
     auto it = enabled_capabilities_.find(capability);
     if (it != enabled_capabilities_.end()) {
         it->second = false;
-        return Result<void>::success();
+        return Result<void>();
     }
     
-    return Result<void>::success(); // Not an error if not found
+    return Result<void>(); // Not an error if not found
 }
 
 bool HardwareAcceleratedProvider::is_hardware_accelerated(const std::string& operation) const {
@@ -744,7 +790,7 @@ bool HardwareAcceleratedProvider::is_hardware_accelerated(const std::string& ope
 }
 
 Result<float> HardwareAcceleratedProvider::benchmark_hardware_operation(const std::string& operation) {
-    return Result<float>::success(get_hardware_speedup(operation));
+    return Result<float>(get_hardware_speedup(operation));
 }
 
 // Private helper methods
@@ -789,7 +835,37 @@ std::string HardwareAcceleratedProvider::classify_operation(const AEADParams& pa
         case AEADCipher::AES_256_GCM:
             return "aes-gcm";
         case AEADCipher::AES_128_CCM:
-        case AEADCipher::AES_256_CCM:
+        case AEADCipher::AES_128_CCM_8:
+            return "aes-ccm";
+        case AEADCipher::CHACHA20_POLY1305:
+            return "chacha20-poly1305";
+        default:
+            return "unknown-aead";
+    }
+}
+
+std::string HardwareAcceleratedProvider::classify_operation(const AEADEncryptionParams& params) const {
+    switch (params.cipher) {
+        case AEADCipher::AES_128_GCM:
+        case AEADCipher::AES_256_GCM:
+            return "aes-gcm";
+        case AEADCipher::AES_128_CCM:
+        case AEADCipher::AES_128_CCM_8:
+            return "aes-ccm";
+        case AEADCipher::CHACHA20_POLY1305:
+            return "chacha20-poly1305";
+        default:
+            return "unknown-aead";
+    }
+}
+
+std::string HardwareAcceleratedProvider::classify_operation(const AEADDecryptionParams& params) const {
+    switch (params.cipher) {
+        case AEADCipher::AES_128_GCM:
+        case AEADCipher::AES_256_GCM:
+            return "aes-gcm";
+        case AEADCipher::AES_128_CCM:
+        case AEADCipher::AES_128_CCM_8:
             return "aes-ccm";
         case AEADCipher::CHACHA20_POLY1305:
             return "chacha20-poly1305";
@@ -849,7 +925,34 @@ Result<void> HardwareAcceleratedProvider::aead_encrypt_inplace_hw(
     data.insert(data.end(), output.ciphertext.begin(), output.ciphertext.end());
     data.insert(data.end(), output.tag.begin(), output.tag.end());
     
-    return Result<void>::success();
+    return Result<void>();
+}
+
+Result<void> HardwareAcceleratedProvider::aead_decrypt_inplace_hw(
+    const AEADParams& params,
+    std::vector<uint8_t>& data,
+    size_t ciphertext_len) {
+    
+    // This would implement hardware-specific in-place decryption
+    // For now, fallback to the base implementation via decrypt_aead
+    AEADDecryptionParams dec_params;
+    dec_params.key = params.key;
+    dec_params.nonce = params.nonce;
+    dec_params.additional_data = params.additional_data;
+    dec_params.cipher = params.cipher;
+    dec_params.ciphertext = std::vector<uint8_t>(data.begin(), data.begin() + ciphertext_len);
+    
+    auto result = decrypt_aead(dec_params);
+    if (!result) {
+        return Result<void>(result.error());
+    }
+    
+    // Replace data with plaintext
+    const auto& plaintext = result.value();
+    data.clear();
+    data.insert(data.end(), plaintext.begin(), plaintext.end());
+    
+    return Result<void>();
 }
 
 Result<std::vector<AEADEncryptionOutput>> HardwareAcceleratedProvider::batch_encrypt_simd(
@@ -878,7 +981,7 @@ Result<std::vector<AEADEncryptionOutput>> HardwareAcceleratedProvider::batch_enc
                 thread_results.push_back(result.value());
             }
             // This is simplified - in practice we'd need to handle the vector properly
-            return Result<AEADEncryptionOutput>::success(thread_results[0]);
+            return Result<AEADEncryptionOutput>(thread_results[0]);
         }));
     }
     
@@ -899,7 +1002,7 @@ Result<std::vector<AEADEncryptionOutput>> HardwareAcceleratedProvider::batch_enc
         results.push_back(result.value());
     }
     
-    return Result<std::vector<AEADEncryptionOutput>>::success(std::move(results));
+    return Result<std::vector<AEADEncryptionOutput>>(std::move(results));
 }
 
 Result<std::vector<std::vector<uint8_t>>> HardwareAcceleratedProvider::batch_decrypt_simd(
@@ -917,7 +1020,7 @@ Result<std::vector<std::vector<uint8_t>>> HardwareAcceleratedProvider::batch_dec
         results.push_back(result.value());
     }
     
-    return Result<std::vector<std::vector<uint8_t>>>::success(std::move(results));
+    return Result<std::vector<std::vector<uint8_t>>>(std::move(results));
 }
 
 // Factory implementation
@@ -933,7 +1036,7 @@ Result<std::unique_ptr<HardwareAcceleratedProvider>> HardwareAcceleratedProvider
     auto hw_provider = std::make_unique<HardwareAcceleratedProvider>(
         std::move(base_provider), hw_profile_result.value());
     
-    return Result<std::unique_ptr<HardwareAcceleratedProvider>>::success(std::move(hw_provider));
+    return Result<std::unique_ptr<HardwareAcceleratedProvider>>(std::move(hw_provider));
 }
 
 Result<std::unique_ptr<HardwareAcceleratedProvider>> HardwareAcceleratedProviderFactory::create_optimized(
@@ -951,18 +1054,18 @@ Result<std::unique_ptr<HardwareAcceleratedProvider>> HardwareAcceleratedProvider
     
     // Get base provider from factory
     auto& factory = ProviderFactory::instance();
-    auto base_provider = factory.get_provider(provider_name);
-    if (!base_provider) {
-        return Result<std::unique_ptr<HardwareAcceleratedProvider>>(DTLSError::PROVIDER_NOT_AVAILABLE);
+    auto base_provider_result = factory.create_provider(provider_name);
+    if (!base_provider_result) {
+        return Result<std::unique_ptr<HardwareAcceleratedProvider>>(DTLSError::CRYPTO_PROVIDER_NOT_AVAILABLE);
     }
     
-    return create(std::move(base_provider));
+    return create(std::move(base_provider_result.value()));
 }
 
 Result<std::string> HardwareAcceleratedProviderFactory::get_optimal_base_provider() {
     auto hw_profile_result = detect_and_cache_hardware();
     if (!hw_profile_result) {
-        return Result<std::string>::success("openssl"); // Safe default
+        return Result<std::string>("openssl"); // Safe default
     }
     
     const auto& profile = hw_profile_result.value();
@@ -984,7 +1087,7 @@ Result<HardwareAccelerationProfile> HardwareAcceleratedProviderFactory::detect_a
         hw_profile_detected_.store(true);
     }
     
-    return Result<HardwareAccelerationProfile>::success(cached_hw_profile_);
+    return Result<HardwareAccelerationProfile>(cached_hw_profile_);
 }
 
 } // namespace crypto
