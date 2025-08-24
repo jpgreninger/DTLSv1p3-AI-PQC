@@ -353,12 +353,18 @@ ZeroCopyBuffer ZeroCopyBuffer::create_slice(size_t offset, size_t length) const 
 Result<ZeroCopyBuffer> ZeroCopyBuffer::share_buffer() const {
     if (is_shared_buffer_ && shared_state_) {
         // Already shared, create another reference
+        shared_state_->ref_count.fetch_add(1, std::memory_order_relaxed);
         return Result<ZeroCopyBuffer>(ZeroCopyBuffer(shared_state_, offset_, size_));
     } else if (data_ && size_ > 0) {
-        // Convert to shared buffer
-        auto shared_state = std::make_shared<BufferSharedState>(std::make_unique<std::byte[]>(capacity_), capacity_);
-        std::memcpy(shared_state->mutable_data(), data_.get(), size_);
-        return Result<ZeroCopyBuffer>(ZeroCopyBuffer(shared_state, 0, size_));
+        // Need to convert both this buffer and the returned buffer to shared state
+        // Since this is const, we use mutable for internal sharing conversion
+        const_cast<ZeroCopyBuffer*>(this)->convert_to_shared();
+        
+        if (shared_state_) {
+            // Now create another reference
+            shared_state_->ref_count.fetch_add(1, std::memory_order_relaxed);
+            return Result<ZeroCopyBuffer>(ZeroCopyBuffer(shared_state_, offset_, size_));
+        }
     }
     
     return Result<ZeroCopyBuffer>(DTLSError::INVALID_PARAMETER);
@@ -454,6 +460,18 @@ void ZeroCopyBuffer::initialize_shared_state() {
         is_shared_buffer_ = true;
         offset_ = 0;
     }
+}
+
+void ZeroCopyBuffer::convert_to_shared() {
+    if (is_shared_buffer_ || !data_) {
+        return; // Already shared or no data to share
+    }
+    
+    // Create shared state from current data
+    shared_state_ = std::make_shared<BufferSharedState>(std::move(data_), capacity_);
+    is_shared_buffer_ = true;
+    offset_ = 0;
+    // ref_count starts at 1 by default in BufferSharedState constructor
 }
 
 // BufferView implementation

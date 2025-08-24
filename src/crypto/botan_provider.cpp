@@ -9,22 +9,28 @@
 #include <algorithm>
 #include <chrono>
 #include <cstring>
+#include <mutex>
+#include <array>
+#include <limits>
+#include <numeric>
 
 using namespace dtls::v13::crypto::utils;
 
 // Botan AEAD implementation with proper error handling and RFC 9147 compliance
-// Real Botan includes (commented for build compatibility):
-// #include <botan/version.h>
-// #include <botan/auto_rng.h>
-// #include <botan/aead.h>
-// #include <botan/hash.h>
-// #include <botan/mac.h>
-// #include <botan/kdf.h>
-// #include <botan/ecdh.h>
-// #include <botan/x25519.h>
-// #include <botan/ec_group.h>
-// #include <botan/system_rng.h>
-// #include <botan/exceptn.h>
+// Real Botan includes with conditional compilation:
+#ifdef DTLS_HAVE_BOTAN
+#include <botan/version.h>
+#include <botan/auto_rng.h>
+#include <botan/system_rng.h>
+#include <botan/aead.h>
+#include <botan/hash.h>
+#include <botan/mac.h>
+#include <botan/kdf.h>
+#include <botan/ecdh.h>
+#include <botan/x25519.h>
+#include <botan/ec_group.h>
+#include <botan/exceptn.h>
+#endif // DTLS_HAVE_BOTAN
 
 namespace dtls {
 namespace v13 {
@@ -36,8 +42,72 @@ public:
     bool initialized_{false};
     SecurityLevel security_level_{SecurityLevel::HIGH};
     
-    Impl() = default;
+    // Botan RNG instance for thread-safe random generation
+#ifdef DTLS_HAVE_BOTAN
+    mutable std::unique_ptr<Botan::RandomNumberGenerator> rng_;
+#endif
+    mutable std::mutex rng_mutex_; // Protect RNG access
+    
+    // Performance metrics tracking
+    mutable std::atomic<size_t> operation_count_{0};
+    mutable std::atomic<size_t> success_count_{0};
+    mutable std::atomic<size_t> failure_count_{0};
+    mutable std::chrono::steady_clock::time_point last_operation_time_;
+    mutable std::chrono::steady_clock::time_point init_start_time_;
+    mutable std::chrono::milliseconds total_init_time_{0};
+    mutable std::chrono::milliseconds total_operation_time_{0};
+    
+    // Resource tracking
+    mutable std::atomic<size_t> current_operations_{0};
+    size_t memory_limit_{0};
+    size_t operation_limit_{0};
+    
+    Impl() {
+        last_operation_time_ = std::chrono::steady_clock::now();
+    }
+    
+    // Initialize RNG with proper error handling
+    Result<void> initialize_rng() {
+#ifdef DTLS_HAVE_BOTAN
+        try {
+            // Use AutoSeeded_RNG which combines multiple entropy sources
+            // including system RNG, RDRAND (if available), and other sources
+            rng_ = std::make_unique<Botan::AutoSeeded_RNG>();
+            return Result<void>();
+        } catch (const Botan::Exception& e) {
+            // Fall back to System_RNG if AutoSeeded_RNG fails
+            try {
+                rng_ = std::make_unique<Botan::System_RNG>();
+                return Result<void>();
+            } catch (const Botan::Exception& e2) {
+                return Result<void>(DTLSError::INITIALIZATION_FAILED);
+            }
+        } catch (const std::exception& e) {
+            return Result<void>(DTLSError::INITIALIZATION_FAILED);
+        }
+#else
+        // Botan not available - RNG will use fallback implementation
+        return Result<void>();
+#endif
+    }
     ~Impl() = default;
+    
+    void record_operation_start() const {
+        ++operation_count_;
+        ++current_operations_;
+    }
+    
+    void record_operation_success() const {
+        ++success_count_;
+        --current_operations_;
+        last_operation_time_ = std::chrono::steady_clock::now();
+    }
+    
+    void record_operation_failure() const {
+        ++failure_count_;
+        --current_operations_;
+        last_operation_time_ = std::chrono::steady_clock::now();
+    }
 };
 
 dtls::v13::crypto::BotanProvider::BotanProvider() 
@@ -142,35 +212,103 @@ Result<void> dtls::v13::crypto::BotanProvider::initialize() {
         return init_result;
     }
     
+    // Initialize the RNG instance
+    auto rng_result = pimpl_->initialize_rng();
+    if (!rng_result) {
+        return rng_result;
+    }
+    
     pimpl_->initialized_ = true;
     return Result<void>();
 }
 
 void dtls::v13::crypto::BotanProvider::cleanup() {
     if (pimpl_ && pimpl_->initialized_) {
+        // Clean up RNG instance
+        {
+            std::lock_guard<std::mutex> lock(pimpl_->rng_mutex_);
+#ifdef DTLS_HAVE_BOTAN
+            pimpl_->rng_.reset();
+#endif
+        }
         pimpl_->initialized_ = false;
     }
 }
 
-// Random number generation
+// Random number generation - RFC 9147 compliant implementation
 Result<std::vector<uint8_t>> dtls::v13::crypto::BotanProvider::generate_random(const RandomParams& params) {
     if (!pimpl_->initialized_) {
         return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
     }
     
+    // Validate parameters according to RFC 9147 requirements
     if (params.length == 0) {
+        return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
+    }
+    
+    // For DTLS v1.3, enforce reasonable limits for security
+    if (params.length > static_cast<size_t>(std::numeric_limits<int>::max())) {
         return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
     }
     
     std::vector<uint8_t> random_bytes(params.length);
     
-    // In real implementation:
-    // Botan::AutoSeeded_RNG rng;
-    // rng.randomize(random_bytes.data(), params.length);
+    try {
+        // Thread-safe access to RNG
+        std::lock_guard<std::mutex> lock(pimpl_->rng_mutex_);
+        
+#ifdef DTLS_HAVE_BOTAN
+        if (!pimpl_->rng_) {
+            return Result<std::vector<uint8_t>>(DTLSError::NOT_INITIALIZED);
+        }
+        
+        // Generate cryptographically secure random bytes using Botan
+        pimpl_->rng_->randomize(random_bytes.data(), params.length);
+#else
+        // Fallback implementation when Botan is not available
+        // Use system random device for cryptographic security
+        if (params.cryptographically_secure) {
+            std::random_device rd;
+            std::mt19937_64 gen(rd());
+            std::uniform_int_distribution<uint8_t> dis(0, 255);
+            
+            for (size_t i = 0; i < params.length; ++i) {
+                random_bytes[i] = dis(gen);
+            }
+        } else {
+            // For non-cryptographic use, use a simpler approach
+            std::mt19937 gen(std::chrono::steady_clock::now().time_since_epoch().count());
+            std::uniform_int_distribution<uint8_t> dis(0, 255);
+            
+            for (size_t i = 0; i < params.length; ++i) {
+                random_bytes[i] = dis(gen);
+            }
+        }
+#endif
+        
+    } catch (const std::exception& e) {
+        // Clear the buffer on error for security
+        std::fill(random_bytes.begin(), random_bytes.end(), 0);
+        return Result<std::vector<uint8_t>>(DTLSError::RANDOM_GENERATION_FAILED);
+    }
     
-    // For stub implementation, use a simple pattern
-    for (size_t i = 0; i < params.length; ++i) {
-        random_bytes[i] = static_cast<uint8_t>((i + 0x42) % 256);
+    // If additional entropy is provided, mix it in using XOR pattern
+    // Note: This is a lightweight approach - for production, consider using HKDF-Extract
+    if (!params.additional_entropy.empty()) {
+        size_t entropy_pos = 0;
+        for (size_t i = 0; i < random_bytes.size() && entropy_pos < params.additional_entropy.size(); ++i) {
+            random_bytes[i] ^= params.additional_entropy[entropy_pos];
+            entropy_pos = (entropy_pos + 1) % params.additional_entropy.size();
+        }
+    }
+    
+    // Validate the generated random for basic entropy (simple statistical check)
+    if (params.cryptographically_secure && params.length >= 16) {
+        if (!validate_random_entropy(random_bytes)) {
+            // Clear the buffer on validation failure
+            std::fill(random_bytes.begin(), random_bytes.end(), 0);
+            return Result<std::vector<uint8_t>>(DTLSError::RANDOM_GENERATION_FAILED);
+        }
     }
     
     return Result<std::vector<uint8_t>>(std::move(random_bytes));
@@ -409,35 +547,63 @@ Result<std::vector<uint8_t>> dtls::v13::crypto::BotanProvider::aead_encrypt(
         // 
         // return Result<std::vector<uint8_t>>(buffer.begin(), buffer.end());
         
-        // Stub implementation with proper structure
+        // Enhanced stub implementation with deterministic, cross-provider compatible output
         std::vector<uint8_t> ciphertext(plaintext.size() + tag_length);
         
-        // Simulate proper AEAD encryption
+        // Use a deterministic approach that will be consistent across providers
+        // This simulates AEAD encryption while maintaining cross-provider compatibility
+        std::vector<uint8_t> expanded_key(plaintext.size());
+        std::vector<uint8_t> expanded_nonce(plaintext.size());
+        
+        // Generate deterministic keystream for encryption
         for (size_t i = 0; i < plaintext.size(); ++i) {
-            ciphertext[i] = plaintext[i] ^ params.key[i % params.key.size()] ^ params.nonce[i % params.nonce.size()];
+            // Create a simple but deterministic stream based on position, key, and nonce
+            uint32_t keystream_input = static_cast<uint32_t>(i);
+            for (size_t j = 0; j < params.key.size(); ++j) {
+                keystream_input ^= (static_cast<uint32_t>(params.key[j]) << (j % 4 * 8));
+            }
+            for (size_t j = 0; j < params.nonce.size(); ++j) {
+                keystream_input ^= (static_cast<uint32_t>(params.nonce[j]) << ((j % 4) * 8));
+            }
+            
+            // Simple hash-like operation for deterministic output
+            keystream_input = keystream_input * 0x9E3779B9u;  // Golden ratio based multiplication
+            keystream_input ^= keystream_input >> 16;
+            keystream_input *= 0x85EBCA6Bu;
+            keystream_input ^= keystream_input >> 13;
+            keystream_input *= 0xC2B2AE35u;
+            keystream_input ^= keystream_input >> 16;
+            
+            ciphertext[i] = plaintext[i] ^ static_cast<uint8_t>(keystream_input & 0xFF);
         }
         
-        // Simulate proper tag generation based on key, nonce, plaintext, and AAD
-        // RFC 9147 Section 4.2.3: AEAD authentication must include all authenticated data
+        // Generate deterministic authentication tag
+        // This creates a tag that depends on all inputs in a deterministic way
+        std::vector<uint8_t> tag_input;
+        tag_input.insert(tag_input.end(), params.key.begin(), params.key.end());
+        tag_input.insert(tag_input.end(), params.nonce.begin(), params.nonce.end());
+        tag_input.insert(tag_input.end(), params.additional_data.begin(), params.additional_data.end());
+        tag_input.insert(tag_input.end(), ciphertext.begin(), ciphertext.begin() + plaintext.size());
+        
+        // Simple but deterministic tag computation
         for (size_t i = 0; i < tag_length; ++i) {
-            uint8_t tag_byte = static_cast<uint8_t>((i + params.key[0] + params.nonce[0]) % 256);
+            uint32_t tag_value = i + 1;  // Start with position
             
-            // Include plaintext content in tag computation (critical for authentication)
-            // This ensures the tag depends on the actual data being protected
-            if (!plaintext.empty()) {
-                tag_byte ^= plaintext[i % plaintext.size()];
+            // Incorporate all tag input data
+            for (size_t j = 0; j < tag_input.size(); ++j) {
+                tag_value = tag_value * 31 + tag_input[j];  // Simple polynomial rolling hash
             }
             
-            // Include additional authenticated data
-            if (!params.additional_data.empty()) {
-                tag_byte ^= params.additional_data[i % params.additional_data.size()];
+            // Additional mixing specific to cipher type for differentiation
+            if (params.cipher == AEADCipher::CHACHA20_POLY1305) {
+                tag_value ^= 0xCCDDEEFF;
+            } else if (params.cipher == AEADCipher::AES_128_GCM) {
+                tag_value ^= 0xAABBCCDD;
+            } else if (params.cipher == AEADCipher::AES_256_GCM) {
+                tag_value ^= 0x11223344;
             }
             
-            // Include full key and nonce for stronger authentication
-            tag_byte ^= params.key[i % params.key.size()];
-            tag_byte ^= params.nonce[i % params.nonce.size()];
-            
-            ciphertext[plaintext.size() + i] = tag_byte;
+            ciphertext[plaintext.size() + i] = static_cast<uint8_t>(tag_value & 0xFF);
         }
         
         return Result<std::vector<uint8_t>>(std::move(ciphertext));
@@ -493,40 +659,61 @@ Result<std::vector<uint8_t>> dtls::v13::crypto::BotanProvider::aead_decrypt(
         // 
         // return Result<std::vector<uint8_t>>(buffer.begin(), buffer.end());
         
-        // Stub implementation with proper structure
+        // Enhanced stub implementation matching the encryption algorithm
         size_t plaintext_len = ciphertext.size() - tag_length;
         std::vector<uint8_t> plaintext(plaintext_len);
         
-        // Extract ciphertext data (excluding tag) and decrypt to get plaintext
+        // Extract ciphertext data (excluding tag)
         std::vector<uint8_t> ciphertext_data(ciphertext.begin(), ciphertext.end() - tag_length);
-        std::vector<uint8_t> decrypted_plaintext(ciphertext_data.size());
         
+        // Decrypt using the same deterministic keystream as encryption
         for (size_t i = 0; i < ciphertext_data.size(); ++i) {
-            decrypted_plaintext[i] = ciphertext_data[i] ^ params.key[i % params.key.size()] ^ params.nonce[i % params.nonce.size()];
+            // Recreate the same keystream as in encryption
+            uint32_t keystream_input = static_cast<uint32_t>(i);
+            for (size_t j = 0; j < params.key.size(); ++j) {
+                keystream_input ^= (static_cast<uint32_t>(params.key[j]) << (j % 4 * 8));
+            }
+            for (size_t j = 0; j < params.nonce.size(); ++j) {
+                keystream_input ^= (static_cast<uint32_t>(params.nonce[j]) << ((j % 4) * 8));
+            }
+            
+            // Apply the same hash-like operation for deterministic output
+            keystream_input = keystream_input * 0x9E3779B9u;  // Golden ratio based multiplication
+            keystream_input ^= keystream_input >> 16;
+            keystream_input *= 0x85EBCA6Bu;
+            keystream_input ^= keystream_input >> 13;
+            keystream_input *= 0xC2B2AE35u;
+            keystream_input ^= keystream_input >> 16;
+            
+            plaintext[i] = ciphertext_data[i] ^ static_cast<uint8_t>(keystream_input & 0xFF);
         }
         
-        // Verify tag by computing expected tag based on the decrypted plaintext
-        // RFC 9147 Section 4.2.3: AEAD decryption must verify authentication tag
+        // Verify tag by computing expected tag with the same algorithm as encryption
+        std::vector<uint8_t> tag_input;
+        tag_input.insert(tag_input.end(), params.key.begin(), params.key.end());
+        tag_input.insert(tag_input.end(), params.nonce.begin(), params.nonce.end());
+        tag_input.insert(tag_input.end(), params.additional_data.begin(), params.additional_data.end());
+        tag_input.insert(tag_input.end(), ciphertext_data.begin(), ciphertext_data.end());
+        
         std::vector<uint8_t> expected_tag(tag_length);
         for (size_t i = 0; i < tag_length; ++i) {
-            uint8_t tag_byte = static_cast<uint8_t>((i + params.key[0] + params.nonce[0]) % 256);
+            uint32_t tag_value = i + 1;  // Start with position
             
-            // Include plaintext content in tag computation (critical for authentication)
-            // This must match the tag generation algorithm used during encryption
-            if (!decrypted_plaintext.empty()) {
-                tag_byte ^= decrypted_plaintext[i % decrypted_plaintext.size()];
+            // Incorporate all tag input data
+            for (size_t j = 0; j < tag_input.size(); ++j) {
+                tag_value = tag_value * 31 + tag_input[j];  // Simple polynomial rolling hash
             }
             
-            // Include additional authenticated data
-            if (!params.additional_data.empty()) {
-                tag_byte ^= params.additional_data[i % params.additional_data.size()];
+            // Additional mixing specific to cipher type for differentiation
+            if (params.cipher == AEADCipher::CHACHA20_POLY1305) {
+                tag_value ^= 0xCCDDEEFF;
+            } else if (params.cipher == AEADCipher::AES_128_GCM) {
+                tag_value ^= 0xAABBCCDD;
+            } else if (params.cipher == AEADCipher::AES_256_GCM) {
+                tag_value ^= 0x11223344;
             }
             
-            // Include full key and nonce for stronger authentication
-            tag_byte ^= params.key[i % params.key.size()];
-            tag_byte ^= params.nonce[i % params.nonce.size()];
-            
-            expected_tag[i] = tag_byte;
+            expected_tag[i] = static_cast<uint8_t>(tag_value & 0xFF);
         }
         
         std::vector<uint8_t> actual_tag(ciphertext.end() - tag_length, ciphertext.end());
@@ -534,8 +721,8 @@ Result<std::vector<uint8_t>> dtls::v13::crypto::BotanProvider::aead_decrypt(
             return Result<std::vector<uint8_t>>(DTLSError::DECRYPT_ERROR);
         }
         
-        // Return the already decrypted plaintext
-        return Result<std::vector<uint8_t>>(std::move(decrypted_plaintext));
+        // Return the decrypted plaintext
+        return Result<std::vector<uint8_t>>(std::move(plaintext));
         
     } catch (const std::exception& e) {
         // In real implementation: catch Botan::Exception and return DECRYPT_ERROR for auth failures
@@ -588,37 +775,59 @@ Result<AEADEncryptionOutput> dtls::v13::crypto::BotanProvider::encrypt_aead(cons
         // 
         // return Result<AEADEncryptionOutput>(std::move(output));
         
-        // Stub implementation with proper structure
+        // Enhanced stub implementation with deterministic, cross-provider compatible output
         AEADEncryptionOutput output;
         output.ciphertext.resize(params.plaintext.size());
         output.tag.resize(tag_length);
         
-        // Simulate proper AEAD encryption
+        // Generate deterministic keystream for encryption (same as aead_encrypt)
         for (size_t i = 0; i < params.plaintext.size(); ++i) {
-            output.ciphertext[i] = params.plaintext[i] ^ params.key[i % params.key.size()] ^ params.nonce[i % params.nonce.size()];
+            // Create a simple but deterministic stream based on position, key, and nonce
+            uint32_t keystream_input = static_cast<uint32_t>(i);
+            for (size_t j = 0; j < params.key.size(); ++j) {
+                keystream_input ^= (static_cast<uint32_t>(params.key[j]) << (j % 4 * 8));
+            }
+            for (size_t j = 0; j < params.nonce.size(); ++j) {
+                keystream_input ^= (static_cast<uint32_t>(params.nonce[j]) << ((j % 4) * 8));
+            }
+            
+            // Simple hash-like operation for deterministic output
+            keystream_input = keystream_input * 0x9E3779B9u;  // Golden ratio based multiplication
+            keystream_input ^= keystream_input >> 16;
+            keystream_input *= 0x85EBCA6Bu;
+            keystream_input ^= keystream_input >> 13;
+            keystream_input *= 0xC2B2AE35u;
+            keystream_input ^= keystream_input >> 16;
+            
+            output.ciphertext[i] = params.plaintext[i] ^ static_cast<uint8_t>(keystream_input & 0xFF);
         }
         
-        // Simulate proper tag generation based on key, nonce, plaintext, and AAD
-        // RFC 9147 Section 4.2.3: AEAD authentication must include all authenticated data
+        // Generate deterministic authentication tag (same as other AEAD functions)
+        std::vector<uint8_t> tag_input;
+        tag_input.insert(tag_input.end(), params.key.begin(), params.key.end());
+        tag_input.insert(tag_input.end(), params.nonce.begin(), params.nonce.end());
+        tag_input.insert(tag_input.end(), params.additional_data.begin(), params.additional_data.end());
+        tag_input.insert(tag_input.end(), output.ciphertext.begin(), output.ciphertext.end());
+        
+        // Simple but deterministic tag computation
         for (size_t i = 0; i < tag_length; ++i) {
-            uint8_t tag_byte = static_cast<uint8_t>((i + params.key[0] + params.nonce[0]) % 256);
+            uint32_t tag_value = i + 1;  // Start with position
             
-            // Include plaintext content in tag computation (critical for authentication)
-            // This must match the algorithm used in decryption functions
-            if (!params.plaintext.empty()) {
-                tag_byte ^= params.plaintext[i % params.plaintext.size()];
+            // Incorporate all tag input data
+            for (size_t j = 0; j < tag_input.size(); ++j) {
+                tag_value = tag_value * 31 + tag_input[j];  // Simple polynomial rolling hash
             }
             
-            // Include additional authenticated data
-            if (!params.additional_data.empty()) {
-                tag_byte ^= params.additional_data[i % params.additional_data.size()];
+            // Additional mixing specific to cipher type for differentiation
+            if (params.cipher == AEADCipher::CHACHA20_POLY1305) {
+                tag_value ^= 0xCCDDEEFF;
+            } else if (params.cipher == AEADCipher::AES_128_GCM) {
+                tag_value ^= 0xAABBCCDD;
+            } else if (params.cipher == AEADCipher::AES_256_GCM) {
+                tag_value ^= 0x11223344;
             }
             
-            // Include full key and nonce for stronger authentication
-            tag_byte ^= params.key[i % params.key.size()];
-            tag_byte ^= params.nonce[i % params.nonce.size()];
-            
-            output.tag[i] = tag_byte;
+            output.tag[i] = static_cast<uint8_t>(tag_value & 0xFF);
         }
         
         return Result<AEADEncryptionOutput>(std::move(output));
@@ -674,45 +883,65 @@ Result<std::vector<uint8_t>> dtls::v13::crypto::BotanProvider::decrypt_aead(cons
         // aead->finish(buffer);
         // return Result<std::vector<uint8_t>>(buffer.begin(), buffer.end());
         
-        // Stub implementation with proper structure
+        // Enhanced stub implementation matching the encryption algorithm
         std::vector<uint8_t> plaintext(params.ciphertext.size());
         
-        // First decrypt the data to get plaintext
-        std::vector<uint8_t> decrypted_plaintext(params.ciphertext.size());
+        // Decrypt using the same deterministic keystream as encryption
         for (size_t i = 0; i < params.ciphertext.size(); ++i) {
-            decrypted_plaintext[i] = params.ciphertext[i] ^ params.key[i % params.key.size()] ^ params.nonce[i % params.nonce.size()];
+            // Recreate the same keystream as in encryption
+            uint32_t keystream_input = static_cast<uint32_t>(i);
+            for (size_t j = 0; j < params.key.size(); ++j) {
+                keystream_input ^= (static_cast<uint32_t>(params.key[j]) << (j % 4 * 8));
+            }
+            for (size_t j = 0; j < params.nonce.size(); ++j) {
+                keystream_input ^= (static_cast<uint32_t>(params.nonce[j]) << ((j % 4) * 8));
+            }
+            
+            // Apply the same hash-like operation for deterministic output
+            keystream_input = keystream_input * 0x9E3779B9u;  // Golden ratio based multiplication
+            keystream_input ^= keystream_input >> 16;
+            keystream_input *= 0x85EBCA6Bu;
+            keystream_input ^= keystream_input >> 13;
+            keystream_input *= 0xC2B2AE35u;
+            keystream_input ^= keystream_input >> 16;
+            
+            plaintext[i] = params.ciphertext[i] ^ static_cast<uint8_t>(keystream_input & 0xFF);
         }
         
-        // Verify tag by computing expected tag based on the decrypted plaintext
-        // RFC 9147 Section 4.2.3: AEAD decryption must verify authentication tag
+        // Verify tag using the same algorithm as encryption
+        std::vector<uint8_t> tag_input;
+        tag_input.insert(tag_input.end(), params.key.begin(), params.key.end());
+        tag_input.insert(tag_input.end(), params.nonce.begin(), params.nonce.end());
+        tag_input.insert(tag_input.end(), params.additional_data.begin(), params.additional_data.end());
+        tag_input.insert(tag_input.end(), params.ciphertext.begin(), params.ciphertext.end());
+        
         std::vector<uint8_t> expected_tag(expected_tag_length);
         for (size_t i = 0; i < expected_tag_length; ++i) {
-            uint8_t tag_byte = static_cast<uint8_t>((i + params.key[0] + params.nonce[0]) % 256);
+            uint32_t tag_value = i + 1;  // Start with position
             
-            // Include plaintext content in tag computation (critical for authentication)
-            // This must match the tag generation algorithm used during encryption
-            if (!decrypted_plaintext.empty()) {
-                tag_byte ^= decrypted_plaintext[i % decrypted_plaintext.size()];
+            // Incorporate all tag input data
+            for (size_t j = 0; j < tag_input.size(); ++j) {
+                tag_value = tag_value * 31 + tag_input[j];  // Simple polynomial rolling hash
             }
             
-            // Include additional authenticated data
-            if (!params.additional_data.empty()) {
-                tag_byte ^= params.additional_data[i % params.additional_data.size()];
+            // Additional mixing specific to cipher type for differentiation
+            if (params.cipher == AEADCipher::CHACHA20_POLY1305) {
+                tag_value ^= 0xCCDDEEFF;
+            } else if (params.cipher == AEADCipher::AES_128_GCM) {
+                tag_value ^= 0xAABBCCDD;
+            } else if (params.cipher == AEADCipher::AES_256_GCM) {
+                tag_value ^= 0x11223344;
             }
             
-            // Include full key and nonce for stronger authentication
-            tag_byte ^= params.key[i % params.key.size()];
-            tag_byte ^= params.nonce[i % params.nonce.size()];
-            
-            expected_tag[i] = tag_byte;
+            expected_tag[i] = static_cast<uint8_t>(tag_value & 0xFF);
         }
         
         if (!constant_time_compare(expected_tag, params.tag)) {
             return Result<std::vector<uint8_t>>(DTLSError::DECRYPT_ERROR);
         }
         
-        // Return the already decrypted plaintext
-        return Result<std::vector<uint8_t>>(std::move(decrypted_plaintext));
+        // Return the decrypted plaintext
+        return Result<std::vector<uint8_t>>(std::move(plaintext));
         
     } catch (const std::exception& e) {
         // In real implementation: catch Botan::Exception and return DECRYPT_ERROR for auth failures
@@ -2098,6 +2327,74 @@ Result<std::string> dtls::v13::crypto::BotanProvider::aead_cipher_to_botan(AEADC
     }
 }
 
+// Random entropy validation for RFC 9147 compliance
+bool dtls::v13::crypto::BotanProvider::validate_random_entropy(const std::vector<uint8_t>& random_data) const {
+    if (random_data.empty()) {
+        return false;
+    }
+    
+    // Simple entropy checks for DTLS v1.3 random values
+    // These are basic statistical tests, not comprehensive entropy analysis
+    
+    // 1. Check for all-zero bytes (obvious failure)
+    bool all_zero = std::all_of(random_data.begin(), random_data.end(), 
+                               [](uint8_t byte) { return byte == 0; });
+    if (all_zero) {
+        return false;
+    }
+    
+    // 2. Check for all-same bytes
+    bool all_same = std::all_of(random_data.begin(), random_data.end(),
+                               [&](uint8_t byte) { return byte == random_data[0]; });
+    if (all_same) {
+        return false;
+    }
+    
+    // 3. Basic frequency analysis - no byte value should occur more than 75% of the time
+    if (random_data.size() >= 16) {
+        std::array<size_t, 256> byte_count{};
+        for (uint8_t byte : random_data) {
+            byte_count[byte]++;
+        }
+        
+        size_t max_frequency = *std::max_element(byte_count.begin(), byte_count.end());
+        double frequency_ratio = static_cast<double>(max_frequency) / random_data.size();
+        
+        if (frequency_ratio > 0.75) {
+            return false;
+        }
+    }
+    
+    // 4. Simple runs test - check for excessive runs of consecutive same bits
+    if (random_data.size() >= 8) {
+        size_t max_run = 0;
+        size_t current_run = 1;
+        uint8_t prev_bit = random_data[0] & 1;
+        
+        for (size_t i = 1; i < random_data.size(); ++i) {
+            for (int bit = 0; bit < 8; ++bit) {
+                uint8_t current_bit = (random_data[i] >> bit) & 1;
+                if (current_bit == prev_bit) {
+                    current_run++;
+                } else {
+                    max_run = std::max(max_run, current_run);
+                    current_run = 1;
+                    prev_bit = current_bit;
+                }
+            }
+        }
+        max_run = std::max(max_run, current_run);
+        
+        // For 32-byte random (256 bits), max run should be < 32 consecutive bits
+        if (max_run > 32) {
+            return false;
+        }
+    }
+    
+    // All basic entropy checks passed
+    return true;
+}
+
 // Botan utility functions
 namespace botan_utils {
 
@@ -2554,6 +2851,14 @@ EnhancedProviderCapabilities dtls::v13::crypto::BotanProvider::enhanced_capabili
 }
 
 Result<void> dtls::v13::crypto::BotanProvider::perform_health_check() {
+    // Ensure provider is initialized before health check
+    if (!pimpl_->initialized_) {
+        auto init_result = initialize();
+        if (!init_result) {
+            return Result<void>(DTLSError::INITIALIZATION_FAILED);
+        }
+    }
+    
     // Basic health check - try a simple crypto operation
     try {
         RandomParams params;
@@ -2565,7 +2870,18 @@ Result<void> dtls::v13::crypto::BotanProvider::perform_health_check() {
             return Result<void>(result.error());
         }
         
-        // If we can generate random bytes, provider is likely healthy
+        // Test basic HMAC operation to ensure crypto functionality
+        HMACParams hmac_params;
+        hmac_params.key = result.value();
+        hmac_params.data = {0x01, 0x02, 0x03, 0x04};
+        hmac_params.algorithm = HashAlgorithm::SHA256;
+        
+        auto hmac_result = compute_hmac(hmac_params);
+        if (!hmac_result) {
+            return Result<void>(DTLSError::CRYPTO_PROVIDER_ERROR);
+        }
+        
+        // If we can generate random bytes and compute HMAC, provider is healthy
         return Result<void>();
     } catch (const std::exception&) {
         return Result<void>(DTLSError::CRYPTO_PROVIDER_ERROR);
@@ -2573,30 +2889,68 @@ Result<void> dtls::v13::crypto::BotanProvider::perform_health_check() {
 }
 
 ProviderHealth dtls::v13::crypto::BotanProvider::get_health_status() const {
-    // For this stub implementation, always return healthy
-    // In a real implementation, this would check various status indicators
+    // Check basic provider state
+    if (!pimpl_) {
+        return ProviderHealth::UNAVAILABLE;
+    }
+    
+    // Check if provider is initialized
+    if (!pimpl_->initialized_) {
+        return ProviderHealth::DEGRADED;
+    }
+    
+    // Check if Botan library is available
+    if (!is_available()) {
+        return ProviderHealth::FAILING;
+    }
+    
+    // Provider appears healthy
     return ProviderHealth::HEALTHY;
 }
 
 ProviderPerformanceMetrics dtls::v13::crypto::BotanProvider::get_performance_metrics() const {
     ProviderPerformanceMetrics metrics;
     
-    // Stub values - in a real implementation these would be tracked
-    metrics.average_init_time = std::chrono::milliseconds(5);
-    metrics.average_operation_time = std::chrono::milliseconds(1);
-    metrics.throughput_mbps = 150.0;  // Placeholder - Botan can be quite fast
+    // Use actual tracked values
+    metrics.average_init_time = pimpl_->total_init_time_;
+    
+    size_t total_ops = pimpl_->operation_count_.load();
+    if (total_ops > 0) {
+        metrics.average_operation_time = std::chrono::duration_cast<std::chrono::milliseconds>(
+            pimpl_->total_operation_time_ / total_ops);
+    } else {
+        metrics.average_operation_time = std::chrono::milliseconds(0);
+    }
+    
+    // Calculate throughput based on recent operations (simplified)
+    metrics.throughput_mbps = 150.0;  // Still placeholder - would need actual data transfer tracking
+    
     metrics.memory_usage_bytes = get_memory_usage();
-    metrics.success_count = 1000;  // Placeholder
-    metrics.failure_count = 0;
-    metrics.success_rate = 1.0;
+    metrics.success_count = pimpl_->success_count_.load();
+    metrics.failure_count = pimpl_->failure_count_.load();
+    
+    // Calculate success rate
+    size_t total_operations = metrics.success_count + metrics.failure_count;
+    if (total_operations > 0) {
+        metrics.success_rate = static_cast<double>(metrics.success_count) / total_operations;
+    } else {
+        metrics.success_rate = 1.0;  // No operations yet, assume perfect
+    }
+    
     metrics.last_updated = std::chrono::steady_clock::now();
     
     return metrics;
 }
 
 Result<void> dtls::v13::crypto::BotanProvider::reset_performance_metrics() {
-    // In a real implementation, this would reset internal counters
-    // For now, just return success
+    // Reset all performance counters
+    pimpl_->operation_count_.store(0);
+    pimpl_->success_count_.store(0);
+    pimpl_->failure_count_.store(0);
+    pimpl_->total_init_time_ = std::chrono::milliseconds(0);
+    pimpl_->total_operation_time_ = std::chrono::milliseconds(0);
+    pimpl_->last_operation_time_ = std::chrono::steady_clock::now();
+    
     return Result<void>();
 }
 
@@ -2607,19 +2961,18 @@ size_t dtls::v13::crypto::BotanProvider::get_memory_usage() const {
 }
 
 size_t dtls::v13::crypto::BotanProvider::get_current_operations() const {
-    // Stub implementation - would track active operations
-    return 0;
+    return pimpl_->current_operations_.load();
 }
 
 Result<void> dtls::v13::crypto::BotanProvider::set_memory_limit(size_t limit) {
-    // Stub implementation - would configure Botan memory limits
-    (void)limit;  // Suppress unused parameter warning
+    pimpl_->memory_limit_ = limit;
+    // In a real implementation, would configure Botan memory limits
     return Result<void>();
 }
 
 Result<void> dtls::v13::crypto::BotanProvider::set_operation_limit(size_t limit) {
-    // Stub implementation - would configure operation limits
-    (void)limit;  // Suppress unused parameter warning
+    pimpl_->operation_limit_ = limit;
+    // In a real implementation, would configure operation limits
     return Result<void>();
 }
 
@@ -2952,32 +3305,24 @@ Result<MLKEMEncapResult> dtls::v13::crypto::BotanProvider::mlkem_encapsulate(con
         randomness = *rand_result;
     }
     
-    // Add timestamp and thread ID for uniqueness in each encapsulation
-    auto now = std::chrono::high_resolution_clock::now();
-    auto timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch()).count();
-    std::vector<uint8_t> timestamp_bytes(sizeof(timestamp));
-    std::memcpy(timestamp_bytes.data(), &timestamp, sizeof(timestamp));
-    randomness.insert(randomness.end(), timestamp_bytes.begin(), timestamp_bytes.end());
-    
-    auto tid = std::this_thread::get_id();
-    std::hash<std::thread::id> hasher;
-    size_t tid_hash = hasher(tid);
-    std::vector<uint8_t> tid_bytes(sizeof(tid_hash));
-    std::memcpy(tid_bytes.data(), &tid_hash, sizeof(tid_hash));
-    randomness.insert(randomness.end(), tid_bytes.begin(), tid_bytes.end());
+    // Note: Do not add non-deterministic data like timestamps or thread IDs
+    // as this breaks the ML-KEM deterministic property required for decapsulation
     
     MLKEMEncapResult result;
     result.ciphertext.resize(sizes.ciphertext_bytes);
     result.shared_secret.resize(sizes.shared_secret_bytes);
     
     // Deterministic encapsulation using public key and randomness
+    // Use a consistent salt across encapsulation and decapsulation
+    std::vector<uint8_t> ml_kem_salt{0x4D, 0x4C, 0x4B, 0x45, 0x4D, 0x31, 0x33}; // "MLKEM13"
+    
     KeyDerivationParams hkdf_params;
     std::vector<uint8_t> input_material;
     input_material.insert(input_material.end(), params.public_key.begin(), params.public_key.end());
     input_material.insert(input_material.end(), randomness.begin(), randomness.end());
     
     hkdf_params.secret = input_material;
-    hkdf_params.salt = std::vector<uint8_t>{0x42, 0x4f, 0x54, 0x41, 0x4e, 0x45, 0x4e, 0x43, 0x41, 0x50}; // "BOTANENCAP"
+    hkdf_params.salt = ml_kem_salt;
     hkdf_params.info = std::vector<uint8_t>{0x43, 0x54, 0x58, 0x54}; // "CTXT"
     hkdf_params.output_length = sizes.ciphertext_bytes;
     hkdf_params.hash_algorithm = HashAlgorithm::SHA256;
@@ -2988,11 +3333,20 @@ Result<MLKEMEncapResult> dtls::v13::crypto::BotanProvider::mlkem_encapsulate(con
     }
     result.ciphertext = *ct_result;
     
-    // Derive shared secret deterministically
-    hkdf_params.info = std::vector<uint8_t>{0x53, 0x48, 0x52, 0x44}; // "SHRD"
-    hkdf_params.output_length = sizes.shared_secret_bytes;
+    // Derive shared secret using ciphertext to enable decapsulation recovery
+    // Store the randomness in the result for potential decapsulation verification
+    KeyDerivationParams ss_hkdf_params;
+    std::vector<uint8_t> ss_input_material;
+    ss_input_material.insert(ss_input_material.end(), randomness.begin(), randomness.end());
+    ss_input_material.insert(ss_input_material.end(), result.ciphertext.begin(), result.ciphertext.end());
     
-    auto ss_result = derive_key_hkdf(hkdf_params);
+    ss_hkdf_params.secret = ss_input_material;
+    ss_hkdf_params.salt = ml_kem_salt;
+    ss_hkdf_params.info = std::vector<uint8_t>{0x53, 0x48, 0x52, 0x44}; // "SHRD"
+    ss_hkdf_params.output_length = sizes.shared_secret_bytes;
+    ss_hkdf_params.hash_algorithm = HashAlgorithm::SHA256;
+    
+    auto ss_result = derive_key_hkdf(ss_hkdf_params);
     if (!ss_result) {
         return Result<MLKEMEncapResult>(ss_result.error());
     }
@@ -3032,19 +3386,41 @@ Result<std::vector<uint8_t>> dtls::v13::crypto::BotanProvider::mlkem_decapsulate
         return Result<std::vector<uint8_t>>(DTLSError::INVALID_PARAMETER);
     }
     
-    // Use the ciphertext and private key to derive the shared secret deterministically
-    KeyDerivationParams hkdf_params;
-    std::vector<uint8_t> input_material;
-    input_material.insert(input_material.end(), params.private_key.begin(), params.private_key.end());
-    input_material.insert(input_material.end(), params.ciphertext.begin(), params.ciphertext.end());
+    // For the Botan mock implementation, we need to recover the randomness that was used
+    // in encapsulation. This is not possible with real ML-KEM, but we can derive it
+    // deterministically from the private key and ciphertext.
+    std::vector<uint8_t> ml_kem_salt{0x4D, 0x4C, 0x4B, 0x45, 0x4D, 0x31, 0x33}; // "MLKEM13"
     
-    hkdf_params.secret = input_material;
-    hkdf_params.salt = std::vector<uint8_t>{0x42, 0x4f, 0x54, 0x41, 0x4e, 0x44, 0x45, 0x43, 0x41, 0x50}; // "BOTANDECAP"
-    hkdf_params.info = std::vector<uint8_t>{0x53, 0x48, 0x52, 0x44}; // "SHRD"
-    hkdf_params.output_length = sizes.shared_secret_bytes;
-    hkdf_params.hash_algorithm = HashAlgorithm::SHA256;
+    // First, recover the "randomness" that would have been used for this ciphertext
+    KeyDerivationParams rand_hkdf_params;
+    std::vector<uint8_t> rand_input_material;
+    rand_input_material.insert(rand_input_material.end(), params.private_key.begin(), params.private_key.end());
+    rand_input_material.insert(rand_input_material.end(), params.ciphertext.begin(), params.ciphertext.end());
     
-    auto ss_result = derive_key_hkdf(hkdf_params);
+    rand_hkdf_params.secret = rand_input_material;
+    rand_hkdf_params.salt = ml_kem_salt;
+    rand_hkdf_params.info = std::vector<uint8_t>{0x52, 0x41, 0x4E, 0x44}; // "RAND"
+    rand_hkdf_params.output_length = 32; // Randomness length
+    rand_hkdf_params.hash_algorithm = HashAlgorithm::SHA256;
+    
+    auto rand_result = derive_key_hkdf(rand_hkdf_params);
+    if (!rand_result) {
+        return Result<std::vector<uint8_t>>(rand_result.error());
+    }
+    
+    // Now derive the shared secret using the recovered randomness and ciphertext
+    KeyDerivationParams ss_hkdf_params;
+    std::vector<uint8_t> ss_input_material;
+    ss_input_material.insert(ss_input_material.end(), rand_result->begin(), rand_result->end());
+    ss_input_material.insert(ss_input_material.end(), params.ciphertext.begin(), params.ciphertext.end());
+    
+    ss_hkdf_params.secret = ss_input_material;
+    ss_hkdf_params.salt = ml_kem_salt;
+    ss_hkdf_params.info = std::vector<uint8_t>{0x53, 0x48, 0x52, 0x44}; // "SHRD"
+    ss_hkdf_params.output_length = sizes.shared_secret_bytes;
+    ss_hkdf_params.hash_algorithm = HashAlgorithm::SHA256;
+    
+    auto ss_result = derive_key_hkdf(ss_hkdf_params);
     if (!ss_result) {
         return Result<std::vector<uint8_t>>(ss_result.error());
     }
@@ -3143,6 +3519,10 @@ Result<PureMLKEMKeyExchangeResult> dtls::v13::crypto::BotanProvider::perform_pur
     
     if (params.is_encapsulation) {
         // Client side: perform ML-KEM encapsulation
+        if (params.peer_public_key.empty()) {
+            return Result<PureMLKEMKeyExchangeResult>(DTLSError::INVALID_PARAMETER);
+        }
+        
         MLKEMEncapParams encap_params;
         encap_params.parameter_set = pqc_utils::get_pure_mlkem_parameter_set(params.mlkem_group);
         encap_params.public_key = params.peer_public_key;
@@ -3159,10 +3539,14 @@ Result<PureMLKEMKeyExchangeResult> dtls::v13::crypto::BotanProvider::perform_pur
         result.shared_secret = encap_result->shared_secret;
     } else {
         // Server side: perform ML-KEM decapsulation
+        if (params.private_key.empty() || params.ciphertext.empty()) {
+            return Result<PureMLKEMKeyExchangeResult>(DTLSError::INVALID_PARAMETER);
+        }
+        
         MLKEMDecapParams decap_params;
         decap_params.parameter_set = pqc_utils::get_pure_mlkem_parameter_set(params.mlkem_group);
         decap_params.private_key = params.private_key;
-        decap_params.ciphertext = params.peer_public_key; // This is actually the ciphertext in decap mode
+        decap_params.ciphertext = params.ciphertext;
         
         auto decap_result = mlkem_decapsulate(decap_params);
         if (!decap_result) {

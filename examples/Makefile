@@ -276,6 +276,20 @@ dtls_multi_connection_server_example/fast:
 .PHONY : dtls_multi_connection_server_example/fast
 
 # Convenience name for target.
+examples/CMakeFiles/error_handling_example.dir/rule:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 examples/CMakeFiles/error_handling_example.dir/rule
+.PHONY : examples/CMakeFiles/error_handling_example.dir/rule
+
+# Convenience name for target.
+error_handling_example: examples/CMakeFiles/error_handling_example.dir/rule
+.PHONY : error_handling_example
+
+# fast build rule for target.
+error_handling_example/fast:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f examples/CMakeFiles/error_handling_example.dir/build.make examples/CMakeFiles/error_handling_example.dir/build
+.PHONY : error_handling_example/fast
+
+# Convenience name for target.
 examples/CMakeFiles/run_basic_examples.dir/rule:
 	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 examples/CMakeFiles/run_basic_examples.dir/rule
 .PHONY : examples/CMakeFiles/run_basic_examples.dir/rule
@@ -577,6 +591,30 @@ dtls_server_example.cpp.s:
 	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f examples/CMakeFiles/dtls_server_example.dir/build.make examples/CMakeFiles/dtls_server_example.dir/dtls_server_example.cpp.s
 .PHONY : dtls_server_example.cpp.s
 
+error_handling_example.o: error_handling_example.cpp.o
+.PHONY : error_handling_example.o
+
+# target to build an object file
+error_handling_example.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f examples/CMakeFiles/error_handling_example.dir/build.make examples/CMakeFiles/error_handling_example.dir/error_handling_example.cpp.o
+.PHONY : error_handling_example.cpp.o
+
+error_handling_example.i: error_handling_example.cpp.i
+.PHONY : error_handling_example.i
+
+# target to preprocess a source file
+error_handling_example.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f examples/CMakeFiles/error_handling_example.dir/build.make examples/CMakeFiles/error_handling_example.dir/error_handling_example.cpp.i
+.PHONY : error_handling_example.cpp.i
+
+error_handling_example.s: error_handling_example.cpp.s
+.PHONY : error_handling_example.s
+
+# target to generate assembly for a file
+error_handling_example.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f examples/CMakeFiles/error_handling_example.dir/build.make examples/CMakeFiles/error_handling_example.dir/error_handling_example.cpp.s
+.PHONY : error_handling_example.cpp.s
+
 transport_example.o: transport_example.cpp.o
 .PHONY : transport_example.o
 
@@ -634,6 +672,7 @@ help:
 	@echo "... dtls_early_data_example"
 	@echo "... dtls_multi_connection_server_example"
 	@echo "... dtls_server_example"
+	@echo "... error_handling_example"
 	@echo "... transport_example"
 	@echo "... dtls_client_example.o"
 	@echo "... dtls_client_example.i"
@@ -650,6 +689,9 @@ help:
 	@echo "... dtls_server_example.o"
 	@echo "... dtls_server_example.i"
 	@echo "... dtls_server_example.s"
+	@echo "... error_handling_example.o"
+	@echo "... error_handling_example.i"
+	@echo "... error_handling_example.s"
 	@echo "... transport_example.o"
 	@echo "... transport_example.i"
 	@echo "... transport_example.s"

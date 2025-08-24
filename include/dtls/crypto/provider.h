@@ -172,10 +172,15 @@ struct MLKEMEncapResult {
 // Pure ML-KEM key exchange parameters (draft-connolly-tls-mlkem-key-agreement-05)
 struct PureMLKEMKeyExchangeParams {
     NamedGroup mlkem_group{NamedGroup::MLKEM512};
-    std::vector<uint8_t> peer_public_key;           ///< ML-KEM public key from peer
-    std::vector<uint8_t> private_key;               ///< Our ML-KEM private key (for decap)
     bool is_encapsulation{true};                    ///< true=encap (client), false=decap (server)
+    
+    // Encapsulation parameters (client side)
+    std::vector<uint8_t> peer_public_key;           ///< ML-KEM public key from peer (encap only)
     std::vector<uint8_t> encap_randomness;          ///< Optional randomness for encapsulation
+    
+    // Decapsulation parameters (server side)
+    std::vector<uint8_t> private_key;               ///< Our ML-KEM private key (decap only)
+    std::vector<uint8_t> ciphertext;                ///< ML-KEM ciphertext to decapsulate (decap only)
 };
 
 // Pure ML-KEM key exchange result
@@ -274,6 +279,128 @@ struct DTLSCertificateVerifyParams {
     
     // Optional certificate information for enhanced validation
     std::vector<uint8_t> certificate_der;       // DER-encoded certificate for compatibility checking
+};
+
+// ML-DSA parameter sets (FIPS 204)
+enum class MLDSAParameterSet : uint8_t {
+    ML_DSA_44 = 1,    ///< ML-DSA-44: (2,4) lattice, ~1312 byte signatures, Security Level 2
+    ML_DSA_65 = 2,    ///< ML-DSA-65: (3,5) lattice, ~2420 byte signatures, Security Level 3
+    ML_DSA_87 = 3     ///< ML-DSA-87: (4,7) lattice, ~3309 byte signatures, Security Level 5
+};
+
+// SLH-DSA parameter sets (FIPS 205)
+enum class SLHDSAParameterSet : uint8_t {
+    SLH_DSA_SHA2_128S = 1,    ///< SHA2-128s: small signatures, slow signing
+    SLH_DSA_SHA2_128F = 2,    ///< SHA2-128f: larger signatures, fast signing
+    SLH_DSA_SHA2_192S = 3,    ///< SHA2-192s: small signatures, slow signing
+    SLH_DSA_SHA2_192F = 4,    ///< SHA2-192f: larger signatures, fast signing
+    SLH_DSA_SHA2_256S = 5,    ///< SHA2-256s: small signatures, slow signing
+    SLH_DSA_SHA2_256F = 6,    ///< SHA2-256f: larger signatures, fast signing
+    SLH_DSA_SHAKE_128S = 7,   ///< SHAKE-128s: small signatures, slow signing
+    SLH_DSA_SHAKE_128F = 8,   ///< SHAKE-128f: larger signatures, fast signing
+    SLH_DSA_SHAKE_192S = 9,   ///< SHAKE-192s: small signatures, slow signing
+    SLH_DSA_SHAKE_192F = 10,  ///< SHAKE-192f: larger signatures, fast signing
+    SLH_DSA_SHAKE_256S = 11,  ///< SHAKE-256s: small signatures, slow signing
+    SLH_DSA_SHAKE_256F = 12   ///< SHAKE-256f: larger signatures, fast signing
+};
+
+// ML-DSA key generation parameters
+struct MLDSAKeyGenParams {
+    MLDSAParameterSet parameter_set{MLDSAParameterSet::ML_DSA_44};
+    std::vector<uint8_t> seed;                   ///< Optional deterministic seed (32 bytes)
+    std::vector<uint8_t> additional_entropy;     ///< Additional entropy source
+};
+
+// ML-DSA signature parameters
+struct MLDSASignatureParams {
+    MLDSAParameterSet parameter_set{MLDSAParameterSet::ML_DSA_44};
+    std::vector<uint8_t> message;                ///< Message to sign
+    std::vector<uint8_t> private_key;            ///< ML-DSA private key
+    std::vector<uint8_t> context;                ///< Optional context string
+    bool deterministic{false};                   ///< Use deterministic signing
+};
+
+// ML-DSA verification parameters
+struct MLDSAVerificationParams {
+    MLDSAParameterSet parameter_set{MLDSAParameterSet::ML_DSA_44};
+    std::vector<uint8_t> message;                ///< Message to verify
+    std::vector<uint8_t> signature;              ///< ML-DSA signature
+    std::vector<uint8_t> public_key;             ///< ML-DSA public key
+    std::vector<uint8_t> context;                ///< Optional context string
+};
+
+// SLH-DSA key generation parameters
+struct SLHDSAKeyGenParams {
+    SLHDSAParameterSet parameter_set{SLHDSAParameterSet::SLH_DSA_SHA2_128S};
+    std::vector<uint8_t> seed;                   ///< Optional deterministic seed
+    std::vector<uint8_t> additional_entropy;     ///< Additional entropy source
+};
+
+// SLH-DSA signature parameters
+struct SLHDSASignatureParams {
+    SLHDSAParameterSet parameter_set{SLHDSAParameterSet::SLH_DSA_SHA2_128S};
+    std::vector<uint8_t> message;                ///< Message to sign
+    std::vector<uint8_t> private_key;            ///< SLH-DSA private key
+    std::vector<uint8_t> context;                ///< Optional context string
+    bool use_prehash{false};                     ///< Use pre-hash variant
+};
+
+// SLH-DSA verification parameters
+struct SLHDSAVerificationParams {
+    SLHDSAParameterSet parameter_set{SLHDSAParameterSet::SLH_DSA_SHA2_128S};
+    std::vector<uint8_t> message;                ///< Message to verify
+    std::vector<uint8_t> signature;              ///< SLH-DSA signature
+    std::vector<uint8_t> public_key;             ///< SLH-DSA public key
+    std::vector<uint8_t> context;                ///< Optional context string
+    bool use_prehash{false};                     ///< Use pre-hash variant
+};
+
+// Pure PQC signature parameters (unified interface)
+struct PurePQCSignatureParams {
+    SignatureScheme scheme{SignatureScheme::ML_DSA_44};
+    std::vector<uint8_t> message;                ///< Message to sign
+    std::vector<uint8_t> private_key;            ///< PQC private key
+    std::vector<uint8_t> context;                ///< Optional context string
+    std::vector<uint8_t> additional_entropy;     ///< Additional randomness
+    bool deterministic{false};                   ///< Use deterministic signing (ML-DSA only)
+    bool use_prehash{false};                     ///< Use pre-hash variant (SLH-DSA only)
+};
+
+// Pure PQC verification parameters (unified interface)
+struct PurePQCVerificationParams {
+    SignatureScheme scheme{SignatureScheme::ML_DSA_44};
+    std::vector<uint8_t> message;                ///< Message to verify
+    std::vector<uint8_t> signature;              ///< PQC signature
+    std::vector<uint8_t> public_key;             ///< PQC public key
+    std::vector<uint8_t> context;                ///< Optional context string
+    bool use_prehash{false};                     ///< Use pre-hash variant (SLH-DSA only)
+};
+
+// Hybrid PQC signature parameters (classical + PQC)
+struct HybridPQCSignatureParams {
+    SignatureScheme hybrid_scheme{SignatureScheme::RSA3072_ML_DSA_44};
+    std::vector<uint8_t> message;                ///< Message to sign
+    const PrivateKey* classical_private_key{nullptr}; ///< Classical private key
+    std::vector<uint8_t> pqc_private_key;        ///< PQC private key
+    std::vector<uint8_t> context;                ///< Optional context string
+    std::vector<uint8_t> additional_entropy;     ///< Additional randomness
+};
+
+// Hybrid PQC verification parameters
+struct HybridPQCVerificationParams {
+    SignatureScheme hybrid_scheme{SignatureScheme::RSA3072_ML_DSA_44};
+    std::vector<uint8_t> message;                ///< Message to verify
+    std::vector<uint8_t> hybrid_signature;       ///< Combined classical+PQC signature
+    const PublicKey* classical_public_key{nullptr}; ///< Classical public key
+    std::vector<uint8_t> pqc_public_key;         ///< PQC public key
+    std::vector<uint8_t> context;                ///< Optional context string
+};
+
+// Hybrid signature result
+struct HybridSignatureResult {
+    std::vector<uint8_t> classical_signature;    ///< Classical signature component
+    std::vector<uint8_t> pqc_signature;          ///< PQC signature component
+    std::vector<uint8_t> combined_signature;     ///< Concatenated hybrid signature
 };
 
 // Provider health status
@@ -432,6 +559,40 @@ public:
         const DTLSCertificateVerifyParams& params,
         const std::vector<uint8_t>& signature) = 0;
     
+    // Pure Post-Quantum Signatures (FIPS 204 - ML-DSA)
+    virtual Result<std::pair<std::vector<uint8_t>, std::vector<uint8_t>>> 
+        ml_dsa_generate_keypair(const MLDSAKeyGenParams& params) = 0;
+    
+    virtual Result<std::vector<uint8_t>> 
+        ml_dsa_sign(const MLDSASignatureParams& params) = 0;
+    
+    virtual Result<bool> 
+        ml_dsa_verify(const MLDSAVerificationParams& params) = 0;
+    
+    // Pure Post-Quantum Signatures (FIPS 205 - SLH-DSA)
+    virtual Result<std::pair<std::vector<uint8_t>, std::vector<uint8_t>>> 
+        slh_dsa_generate_keypair(const SLHDSAKeyGenParams& params) = 0;
+    
+    virtual Result<std::vector<uint8_t>> 
+        slh_dsa_sign(const SLHDSASignatureParams& params) = 0;
+    
+    virtual Result<bool> 
+        slh_dsa_verify(const SLHDSAVerificationParams& params) = 0;
+    
+    // Unified Pure PQC Signature Interface
+    virtual Result<std::vector<uint8_t>> 
+        pure_pqc_sign(const PurePQCSignatureParams& params) = 0;
+    
+    virtual Result<bool> 
+        pure_pqc_verify(const PurePQCVerificationParams& params) = 0;
+    
+    // Hybrid PQC Signature Interface (Classical + PQC)
+    virtual Result<HybridSignatureResult> 
+        hybrid_pqc_sign(const HybridPQCSignatureParams& params) = 0;
+    
+    virtual Result<bool> 
+        hybrid_pqc_verify(const HybridPQCVerificationParams& params) = 0;
+    
     // Key exchange
     virtual Result<std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>> 
         generate_key_pair(NamedGroup group) = 0;
@@ -504,6 +665,57 @@ public:
     
     virtual bool is_hybrid_group(NamedGroup group) const {
         return supports_hybrid_group(group);
+    }
+    
+    // Pure PQC signature utility functions
+    virtual bool supports_pure_pqc_signature(SignatureScheme scheme) const {
+        return is_ml_dsa_signature(scheme) || is_slh_dsa_signature(scheme);
+    }
+    
+    virtual bool is_ml_dsa_signature(SignatureScheme scheme) const {
+        return scheme == SignatureScheme::ML_DSA_44 ||
+               scheme == SignatureScheme::ML_DSA_65 ||
+               scheme == SignatureScheme::ML_DSA_87;
+    }
+    
+    virtual bool is_slh_dsa_signature(SignatureScheme scheme) const {
+        return scheme == SignatureScheme::SLH_DSA_SHA2_128S ||
+               scheme == SignatureScheme::SLH_DSA_SHA2_128F ||
+               scheme == SignatureScheme::SLH_DSA_SHA2_192S ||
+               scheme == SignatureScheme::SLH_DSA_SHA2_192F ||
+               scheme == SignatureScheme::SLH_DSA_SHA2_256S ||
+               scheme == SignatureScheme::SLH_DSA_SHA2_256F ||
+               scheme == SignatureScheme::SLH_DSA_SHAKE_128S ||
+               scheme == SignatureScheme::SLH_DSA_SHAKE_128F ||
+               scheme == SignatureScheme::SLH_DSA_SHAKE_192S ||
+               scheme == SignatureScheme::SLH_DSA_SHAKE_192F ||
+               scheme == SignatureScheme::SLH_DSA_SHAKE_256S ||
+               scheme == SignatureScheme::SLH_DSA_SHAKE_256F;
+    }
+    
+    // Hybrid PQC signature utility functions
+    virtual bool supports_hybrid_pqc_signature(SignatureScheme scheme) const {
+        return is_hybrid_ml_dsa_signature(scheme) || is_hybrid_slh_dsa_signature(scheme);
+    }
+    
+    virtual bool is_hybrid_ml_dsa_signature(SignatureScheme scheme) const {
+        return scheme == SignatureScheme::RSA3072_ML_DSA_44 ||
+               scheme == SignatureScheme::P256_ML_DSA_44 ||
+               scheme == SignatureScheme::RSA3072_ML_DSA_65 ||
+               scheme == SignatureScheme::P384_ML_DSA_65 ||
+               scheme == SignatureScheme::P521_ML_DSA_87;
+    }
+    
+    virtual bool is_hybrid_slh_dsa_signature(SignatureScheme scheme) const {
+        return scheme == SignatureScheme::RSA3072_SLH_DSA_128S ||
+               scheme == SignatureScheme::P256_SLH_DSA_128S ||
+               scheme == SignatureScheme::RSA3072_SLH_DSA_192S ||
+               scheme == SignatureScheme::P384_SLH_DSA_192S ||
+               scheme == SignatureScheme::P521_SLH_DSA_256S;
+    }
+    
+    virtual bool is_any_pqc_signature(SignatureScheme scheme) const {
+        return supports_pure_pqc_signature(scheme) || supports_hybrid_pqc_signature(scheme);
     }
     
     // Performance and security features

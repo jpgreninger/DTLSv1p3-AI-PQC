@@ -154,22 +154,24 @@ Result<std::unique_ptr<CryptoProvider>> ProviderFactory::create_provider(const s
 }
 
 Result<std::unique_ptr<CryptoProvider>> ProviderFactory::create_best_provider(const ProviderSelection& criteria) const {
-    std::lock_guard<std::mutex> lock(mutex_);
-    
-    // Score all available providers
     std::vector<std::pair<int, std::string>> scored_providers;
     
-    for (const auto& [name, registration] : providers_) {
-        if (!registration.is_available) {
-            continue;
-        }
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
         
-        if (!meets_selection_criteria(registration, criteria)) {
-            continue;
+        // Score all available providers
+        for (const auto& [name, registration] : providers_) {
+            if (!registration.is_available) {
+                continue;
+            }
+            
+            if (!meets_selection_criteria(registration, criteria)) {
+                continue;
+            }
+            
+            int score = calculate_provider_score(registration, criteria);
+            scored_providers.emplace_back(score, name);
         }
-        
-        int score = calculate_provider_score(registration, criteria);
-        scored_providers.emplace_back(score, name);
     }
     
     if (scored_providers.empty()) {
@@ -180,7 +182,7 @@ Result<std::unique_ptr<CryptoProvider>> ProviderFactory::create_best_provider(co
     std::sort(scored_providers.begin(), scored_providers.end(), 
               [](const auto& a, const auto& b) { return a.first > b.first; });
     
-    // Try to create the highest-scored provider
+    // Try to create the highest-scored provider (now without holding lock)
     for (const auto& [score, name] : scored_providers) {
         auto result = create_provider(name);
         if (result.is_success()) {
@@ -192,37 +194,44 @@ Result<std::unique_ptr<CryptoProvider>> ProviderFactory::create_best_provider(co
 }
 
 Result<std::unique_ptr<CryptoProvider>> ProviderFactory::create_default_provider() const {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::string provider_name;
     
-    // Try default provider first
-    if (!default_provider_.empty()) {
-        auto it = providers_.find(default_provider_);
-        if (it != providers_.end() && it->second.is_available) {
-            auto unlock_guard = std::unique_lock<std::mutex>(mutex_, std::adopt_lock);
-            unlock_guard.unlock();
-            return create_provider(default_provider_);
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        
+        // Try default provider first
+        if (!default_provider_.empty()) {
+            auto it = providers_.find(default_provider_);
+            if (it != providers_.end() && it->second.is_available) {
+                provider_name = default_provider_;
+            }
+        }
+        
+        // Try preference order if no default provider found
+        if (provider_name.empty()) {
+            for (const std::string& name : preference_order_) {
+                auto it = providers_.find(name);
+                if (it != providers_.end() && it->second.is_available) {
+                    provider_name = name;
+                    break;
+                }
+            }
+        }
+        
+        // Fall back to highest priority available provider
+        if (provider_name.empty()) {
+            auto available = available_providers_unlocked();
+            if (!available.empty()) {
+                provider_name = available[0];
+            }
         }
     }
     
-    // Try preference order
-    for (const std::string& name : preference_order_) {
-        auto it = providers_.find(name);
-        if (it != providers_.end() && it->second.is_available) {
-            auto unlock_guard = std::unique_lock<std::mutex>(mutex_, std::adopt_lock);
-            unlock_guard.unlock();
-            return create_provider(name);
-        }
+    if (provider_name.empty()) {
+        return Result<std::unique_ptr<CryptoProvider>>(DTLSError::RESOURCE_UNAVAILABLE);
     }
     
-    // Fall back to highest priority available provider
-    auto available = available_providers_unlocked();
-    if (!available.empty()) {
-        auto unlock_guard = std::unique_lock<std::mutex>(mutex_, std::adopt_lock);
-        unlock_guard.unlock();
-        return create_provider(available[0]);
-    }
-    
-    return Result<std::unique_ptr<CryptoProvider>>(DTLSError::RESOURCE_UNAVAILABLE);
+    return create_provider(provider_name);
 }
 
 bool ProviderFactory::meets_selection_criteria(
@@ -336,6 +345,201 @@ void ProviderFactory::update_provider_stats(
     }
 }
 
+// Enhanced internal helper methods
+double ProviderFactory::calculate_compatibility_score(
+    const ProviderRegistration& registration,
+    const ProviderSelection& criteria) const {
+    
+    double score = 0.0;
+    
+    // Base score from priority
+    score += registration.priority * 10.0;
+    
+    const auto& caps = registration.capabilities;
+    
+    // Feature bonuses
+    if (caps.hardware_acceleration && criteria.require_hardware_acceleration) {
+        score += 50.0;
+    }
+    if (caps.fips_mode && criteria.require_fips_compliance) {
+        score += 40.0;
+    }
+    
+    // Algorithm support scoring
+    score += caps.supported_cipher_suites.size() * 2.0;
+    score += caps.supported_groups.size() * 1.5;
+    score += caps.supported_signatures.size() * 1.5;
+    score += caps.supported_hashes.size() * 1.0;
+    
+    // Health status bonus
+    if (registration.health_status == ProviderHealth::HEALTHY) {
+        score += 20.0;
+    } else if (registration.health_status == ProviderHealth::DEGRADED) {
+        score += 5.0;
+    }
+    
+    // Failure rate penalty
+    if (registration.consecutive_failures > 0) {
+        score -= registration.consecutive_failures * 10.0;
+    }
+    
+    // Performance metrics bonus
+    auto stats_it = stats_.find(registration.name);
+    if (stats_it != stats_.end() && stats_it->second.creation_count > 0) {
+        double success_rate = static_cast<double>(stats_it->second.success_count) / 
+                             stats_it->second.creation_count;
+        score += success_rate * 30.0;
+        
+        // Penalize slow initialization
+        if (stats_it->second.average_init_time.count() > 100) { // > 100ms
+            score -= (stats_it->second.average_init_time.count() / 100.0) * 5.0;
+        }
+    }
+    
+    return std::max(0.0, score);
+}
+
+Result<void> ProviderFactory::validate_provider_health(
+    const std::string& name, 
+    ProviderRegistration& registration) const {
+    
+    try {
+        // Basic availability check
+        if (!registration.is_available) {
+            return Result<void>(DTLSError::RESOURCE_UNAVAILABLE);
+        }
+        
+        // Try to create a provider instance
+        auto provider = registration.factory();
+        if (!provider) {
+            return Result<void>(DTLSError::CRYPTO_PROVIDER_ERROR);
+        }
+        
+        // Test basic functionality
+        if (!provider->is_available()) {
+            return Result<void>(DTLSError::RESOURCE_UNAVAILABLE);
+        }
+        
+        // Test initialization and cleanup
+        auto init_result = provider->initialize();
+        if (init_result.is_error()) {
+            return init_result;
+        }
+        
+        // Test basic operation (random generation)
+        RandomParams params;
+        params.length = 16;
+        params.cryptographically_secure = true;
+        
+        auto random_result = provider->generate_random(params);
+        if (random_result.is_error()) {
+            provider->cleanup();
+            return Result<void>(random_result.error());
+        }
+        
+        provider->cleanup();
+        return Result<void>();
+        
+    } catch (const DTLSException& e) {
+        return Result<void>(e.dtls_error());
+    } catch (...) {
+        return Result<void>(DTLSError::INTERNAL_ERROR);
+    }
+}
+
+void ProviderFactory::update_provider_health_status(
+    const std::string& name,
+    ProviderHealth status,
+    const std::string& message) const {
+    
+    // Note: This method needs to modify mutable state through const method
+    // The mutex and maps should be mutable for this design pattern
+    std::lock_guard<std::mutex> lock(mutex_);
+    auto it = providers_.find(name);
+    if (it != providers_.end()) {
+        // Need to cast away const to modify - this is a design pattern for thread-safe modification
+        const_cast<ProviderRegistration&>(it->second).health_status = status;
+        const_cast<ProviderRegistration&>(it->second).last_health_check = std::chrono::steady_clock::now();
+        
+        if (status != ProviderHealth::HEALTHY) {
+            const_cast<ProviderRegistration&>(it->second).consecutive_failures++;
+        } else {
+            const_cast<ProviderRegistration&>(it->second).consecutive_failures = 0;
+        }
+    }
+}
+
+std::string ProviderFactory::select_provider_with_strategy(
+    const std::vector<std::string>& candidates,
+    LoadBalancingStrategy strategy) const {
+    
+    if (candidates.empty()) {
+        return "";
+    }
+    
+    switch (strategy) {
+        case LoadBalancingStrategy::ROUND_ROBIN: {
+            size_t index = round_robin_counter_.fetch_add(1) % candidates.size();
+            return candidates[index];
+        }
+        
+        case LoadBalancingStrategy::LEAST_LOADED: {
+            // For now, just return the provider with lowest creation count
+            std::string least_loaded = candidates[0];
+            size_t min_count = SIZE_MAX;
+            
+            for (const auto& name : candidates) {
+                auto stats_it = stats_.find(name);
+                size_t count = (stats_it != stats_.end()) ? stats_it->second.creation_count : 0;
+                if (count < min_count) {
+                    min_count = count;
+                    least_loaded = name;
+                }
+            }
+            return least_loaded;
+        }
+        
+        case LoadBalancingStrategy::PERFORMANCE_BASED: {
+            // Select provider with best performance metrics
+            std::string best_provider = candidates[0];
+            double best_score = -1.0;
+            
+            for (const auto& name : candidates) {
+                auto stats_it = stats_.find(name);
+                if (stats_it != stats_.end() && stats_it->second.creation_count > 0) {
+                    double success_rate = static_cast<double>(stats_it->second.success_count) / 
+                                         stats_it->second.creation_count;
+                    double init_time_penalty = stats_it->second.average_init_time.count() / 1000.0;
+                    double score = success_rate - init_time_penalty;
+                    
+                    if (score > best_score) {
+                        best_score = score;
+                        best_provider = name;
+                    }
+                }
+            }
+            return best_provider;
+        }
+        
+        case LoadBalancingStrategy::HEALTH_BASED: {
+            // Prefer healthy providers
+            for (const auto& name : candidates) {
+                auto it = providers_.find(name);
+                if (it != providers_.end() && it->second.health_status == ProviderHealth::HEALTHY) {
+                    return name;
+                }
+            }
+            // Fallback to first candidate if none are healthy
+            return candidates[0];
+        }
+        
+        case LoadBalancingStrategy::CUSTOM:
+        default:
+            // Default to first candidate
+            return candidates[0];
+    }
+}
+
 Result<ProviderCapabilities> ProviderFactory::get_capabilities(const std::string& name) const {
     std::lock_guard<std::mutex> lock(mutex_);
     auto it = providers_.find(name);
@@ -344,6 +548,42 @@ Result<ProviderCapabilities> ProviderFactory::get_capabilities(const std::string
     }
     
     return Result<ProviderCapabilities>(it->second.capabilities);
+}
+
+Result<EnhancedProviderCapabilities> ProviderFactory::get_enhanced_capabilities(const std::string& name) const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    auto it = providers_.find(name);
+    if (it == providers_.end()) {
+        return Result<EnhancedProviderCapabilities>(DTLSError::CRYPTO_PROVIDER_ERROR);
+    }
+    
+    if (!it->second.is_available) {
+        return Result<EnhancedProviderCapabilities>(DTLSError::RESOURCE_UNAVAILABLE);
+    }
+    
+    try {
+        // Create provider to get enhanced capabilities
+        auto provider = it->second.factory();
+        if (!provider) {
+            return Result<EnhancedProviderCapabilities>(DTLSError::CRYPTO_PROVIDER_ERROR);
+        }
+        
+        // Initialize if needed for enhanced capabilities
+        auto init_result = provider->initialize();
+        if (init_result.is_error()) {
+            return Result<EnhancedProviderCapabilities>(init_result.error());
+        }
+        
+        auto enhanced_caps = provider->enhanced_capabilities();
+        provider->cleanup();
+        
+        return Result<EnhancedProviderCapabilities>(enhanced_caps);
+        
+    } catch (const DTLSException& e) {
+        return Result<EnhancedProviderCapabilities>(e.dtls_error());
+    } catch (...) {
+        return Result<EnhancedProviderCapabilities>(DTLSError::INTERNAL_ERROR);
+    }
 }
 
 bool ProviderFactory::supports_cipher_suite(const std::string& provider_name, CipherSuite suite) const {
@@ -561,6 +801,228 @@ Result<std::string> ProviderFactory::select_provider_for_signature(SignatureSche
         });
     
     return Result<std::string>(candidates.front().first);
+}
+
+// Enhanced compatibility checking
+Result<ProviderCompatibilityResult> ProviderFactory::check_compatibility(
+    const std::string& provider_name, const ProviderSelection& criteria) const {
+    
+    std::lock_guard<std::mutex> lock(mutex_);
+    auto it = providers_.find(provider_name);
+    if (it == providers_.end()) {
+        return Result<ProviderCompatibilityResult>(DTLSError::CRYPTO_PROVIDER_ERROR);
+    }
+    
+    ProviderCompatibilityResult result;
+    const auto& registration = it->second;
+    
+    if (!registration.is_available) {
+        result.is_compatible = false;
+        result.warnings.push_back("Provider is not available");
+        return Result<ProviderCompatibilityResult>(result);
+    }
+    
+    if (meets_selection_criteria(registration, criteria)) {
+        result.is_compatible = true;
+        result.compatibility_score = calculate_compatibility_score(registration, criteria);
+    } else {
+        result.is_compatible = false;
+        result.compatibility_score = 0.0;
+    }
+    
+    return Result<ProviderCompatibilityResult>(result);
+}
+
+std::vector<std::string> ProviderFactory::find_compatible_providers(
+    const ProviderSelection& criteria) const {
+    
+    std::lock_guard<std::mutex> lock(mutex_);
+    std::vector<std::string> compatible;
+    
+    for (const auto& [name, registration] : providers_) {
+        if (registration.is_available && meets_selection_criteria(registration, criteria)) {
+            compatible.push_back(name);
+        }
+    }
+    
+    return compatible;
+}
+
+Result<std::string> ProviderFactory::select_best_compatible_provider(
+    const ProviderSelection& criteria) const {
+    
+    auto compatible = find_compatible_providers(criteria);
+    if (compatible.empty()) {
+        return Result<std::string>(DTLSError::RESOURCE_UNAVAILABLE);
+    }
+    
+    // Score compatible providers
+    std::vector<std::pair<double, std::string>> scored_providers;
+    for (const auto& name : compatible) {
+        auto it = providers_.find(name);
+        if (it != providers_.end()) {
+            double score = calculate_compatibility_score(it->second, criteria);
+            scored_providers.emplace_back(score, name);
+        }
+    }
+    
+    if (scored_providers.empty()) {
+        return Result<std::string>(DTLSError::RESOURCE_UNAVAILABLE);
+    }
+    
+    // Sort by score (highest first)
+    std::sort(scored_providers.begin(), scored_providers.end(), 
+              [](const auto& a, const auto& b) { return a.first > b.first; });
+    
+    return Result<std::string>(scored_providers.front().second);
+}
+
+// Provider ranking algorithms
+Result<std::vector<std::string>> ProviderFactory::rank_providers_by_performance() const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    std::vector<std::pair<double, std::string>> scored_providers;
+    
+    for (const auto& [name, registration] : providers_) {
+        if (!registration.is_available) continue;
+        
+        double score = 0.0;
+        auto stats_it = stats_.find(name);
+        if (stats_it != stats_.end() && stats_it->second.creation_count > 0) {
+            // Score based on success rate and average init time
+            double success_rate = static_cast<double>(stats_it->second.success_count) / 
+                                 stats_it->second.creation_count;
+            double init_time_penalty = stats_it->second.average_init_time.count() / 1000.0; // Convert to seconds
+            score = success_rate * 100.0 - init_time_penalty;
+        } else {
+            // Default score based on priority
+            score = registration.priority;
+        }
+        
+        scored_providers.emplace_back(score, name);
+    }
+    
+    // Sort by score (highest first)
+    std::sort(scored_providers.begin(), scored_providers.end(), 
+              [](const auto& a, const auto& b) { return a.first > b.first; });
+    
+    std::vector<std::string> ranked;
+    for (const auto& [score, name] : scored_providers) {
+        ranked.push_back(name);
+    }
+    
+    return Result<std::vector<std::string>>(ranked);
+}
+
+Result<std::vector<std::string>> ProviderFactory::rank_providers_by_compatibility(
+    const ProviderSelection& criteria) const {
+    
+    std::lock_guard<std::mutex> lock(mutex_);
+    std::vector<std::pair<double, std::string>> scored_providers;
+    
+    for (const auto& [name, registration] : providers_) {
+        if (!registration.is_available) continue;
+        
+        if (meets_selection_criteria(registration, criteria)) {
+            double score = calculate_compatibility_score(registration, criteria);
+            scored_providers.emplace_back(score, name);
+        }
+    }
+    
+    // Sort by score (highest first)
+    std::sort(scored_providers.begin(), scored_providers.end(), 
+              [](const auto& a, const auto& b) { return a.first > b.first; });
+    
+    std::vector<std::string> ranked;
+    for (const auto& [score, name] : scored_providers) {
+        ranked.push_back(name);
+    }
+    
+    return Result<std::vector<std::string>>(ranked);
+}
+
+Result<std::string> ProviderFactory::select_provider_with_load_balancing(
+    const ProviderSelection& criteria,
+    LoadBalancingStrategy strategy) const {
+    
+    auto compatible = find_compatible_providers(criteria);
+    if (compatible.empty()) {
+        return Result<std::string>(DTLSError::RESOURCE_UNAVAILABLE);
+    }
+    
+    std::string selected = select_provider_with_strategy(compatible, strategy);
+    if (selected.empty()) {
+        // Fallback to first compatible provider
+        selected = compatible.front();
+    }
+    
+    return Result<std::string>(selected);
+}
+
+// Health monitoring
+Result<void> ProviderFactory::perform_health_checks() {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    for (auto& [name, registration] : providers_) {
+        auto health_result = validate_provider_health(name, registration);
+        if (health_result.is_error()) {
+            registration.health_status = ProviderHealth::FAILING;
+            registration.consecutive_failures++;
+        } else {
+            registration.health_status = ProviderHealth::HEALTHY;
+            registration.consecutive_failures = 0;
+        }
+        registration.last_health_check = std::chrono::steady_clock::now();
+    }
+    
+    last_global_health_check_ = std::chrono::steady_clock::now();
+    return Result<void>();
+}
+
+Result<void> ProviderFactory::perform_health_check(const std::string& provider_name) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    auto it = providers_.find(provider_name);
+    if (it == providers_.end()) {
+        return Result<void>(DTLSError::CRYPTO_PROVIDER_ERROR);
+    }
+    
+    auto health_result = validate_provider_health(provider_name, it->second);
+    if (health_result.is_error()) {
+        it->second.health_status = ProviderHealth::FAILING;
+        it->second.consecutive_failures++;
+    } else {
+        it->second.health_status = ProviderHealth::HEALTHY;
+        it->second.consecutive_failures = 0;
+    }
+    it->second.last_health_check = std::chrono::steady_clock::now();
+    
+    return health_result;
+}
+
+std::vector<std::string> ProviderFactory::get_healthy_providers() const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    std::vector<std::string> healthy;
+    
+    for (const auto& [name, registration] : providers_) {
+        if (registration.is_available && registration.health_status == ProviderHealth::HEALTHY) {
+            healthy.push_back(name);
+        }
+    }
+    
+    return healthy;
+}
+
+std::vector<std::string> ProviderFactory::get_unhealthy_providers() const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    std::vector<std::string> unhealthy;
+    
+    for (const auto& [name, registration] : providers_) {
+        if (registration.health_status == ProviderHealth::FAILING || 
+            registration.health_status == ProviderHealth::UNAVAILABLE) {
+            unhealthy.push_back(name);
+        }
+    }
+    
+    return unhealthy;
 }
 
 ProviderFactory::ProviderStats ProviderFactory::get_provider_stats(const std::string& name) const {

@@ -13,7 +13,7 @@ bool AntiReplayCore::is_valid_sequence_number(uint64_t sequence_number, const Wi
     
     // Packet too old (outside window)
     if (sequence_number < state.highest_sequence_number && 
-        (state.highest_sequence_number - sequence_number) > window_size) {
+        (state.highest_sequence_number - sequence_number) >= window_size) {
         return false;
     }
     

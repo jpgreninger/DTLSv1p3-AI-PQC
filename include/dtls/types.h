@@ -207,7 +207,42 @@ enum class SignatureScheme : uint16_t {
     
     // EdDSA algorithms
     ED25519 = 0x0807,
-    ED448 = 0x0808
+    ED448 = 0x0808,
+    
+    // Pure Post-Quantum Signature Algorithms (FIPS 204 - ML-DSA)
+    ML_DSA_44 = 0x0A00,            ///< ML-DSA-44 (NIST Security Level 2, ~1312 byte signatures)
+    ML_DSA_65 = 0x0A01,            ///< ML-DSA-65 (NIST Security Level 3, ~2420 byte signatures)
+    ML_DSA_87 = 0x0A02,            ///< ML-DSA-87 (NIST Security Level 5, ~3309 byte signatures)
+    
+    // Pure Post-Quantum Signature Algorithms (FIPS 205 - SLH-DSA)
+    SLH_DSA_SHA2_128S = 0x0A10,    ///< SLH-DSA-SHA2-128s (NIST Security Level 1, small signatures)
+    SLH_DSA_SHA2_128F = 0x0A11,    ///< SLH-DSA-SHA2-128f (NIST Security Level 1, fast signing)
+    SLH_DSA_SHA2_192S = 0x0A12,    ///< SLH-DSA-SHA2-192s (NIST Security Level 3, small signatures)
+    SLH_DSA_SHA2_192F = 0x0A13,    ///< SLH-DSA-SHA2-192f (NIST Security Level 3, fast signing)
+    SLH_DSA_SHA2_256S = 0x0A14,    ///< SLH-DSA-SHA2-256s (NIST Security Level 5, small signatures)
+    SLH_DSA_SHA2_256F = 0x0A15,    ///< SLH-DSA-SHA2-256f (NIST Security Level 5, fast signing)
+    
+    // SLH-DSA with SHAKE variants for diversity
+    SLH_DSA_SHAKE_128S = 0x0A20,   ///< SLH-DSA-SHAKE-128s (NIST Security Level 1, small)
+    SLH_DSA_SHAKE_128F = 0x0A21,   ///< SLH-DSA-SHAKE-128f (NIST Security Level 1, fast)
+    SLH_DSA_SHAKE_192S = 0x0A22,   ///< SLH-DSA-SHAKE-192s (NIST Security Level 3, small)
+    SLH_DSA_SHAKE_192F = 0x0A23,   ///< SLH-DSA-SHAKE-192f (NIST Security Level 3, fast)
+    SLH_DSA_SHAKE_256S = 0x0A24,   ///< SLH-DSA-SHAKE-256s (NIST Security Level 5, small)
+    SLH_DSA_SHAKE_256F = 0x0A25,   ///< SLH-DSA-SHAKE-256f (NIST Security Level 5, fast)
+    
+    // Hybrid Post-Quantum + Classical Signature Algorithms (FIPS 204 Hybrid)
+    RSA3072_ML_DSA_44 = 0x0B00,    ///< RSA-3072 + ML-DSA-44 hybrid
+    P256_ML_DSA_44 = 0x0B01,       ///< ECDSA P-256 + ML-DSA-44 hybrid
+    RSA3072_ML_DSA_65 = 0x0B02,    ///< RSA-3072 + ML-DSA-65 hybrid
+    P384_ML_DSA_65 = 0x0B03,       ///< ECDSA P-384 + ML-DSA-65 hybrid
+    P521_ML_DSA_87 = 0x0B04,       ///< ECDSA P-521 + ML-DSA-87 hybrid
+    
+    // Hybrid Post-Quantum + Classical Signature Algorithms (FIPS 205 Hybrid)
+    RSA3072_SLH_DSA_128S = 0x0B10, ///< RSA-3072 + SLH-DSA-SHA2-128s hybrid
+    P256_SLH_DSA_128S = 0x0B11,    ///< ECDSA P-256 + SLH-DSA-SHA2-128s hybrid
+    RSA3072_SLH_DSA_192S = 0x0B12, ///< RSA-3072 + SLH-DSA-SHA2-192s hybrid
+    P384_SLH_DSA_192S = 0x0B13,    ///< ECDSA P-384 + SLH-DSA-SHA2-192s hybrid
+    P521_SLH_DSA_256S = 0x0B14     ///< ECDSA P-521 + SLH-DSA-SHA2-256s hybrid
 };
 
 // Hash algorithms

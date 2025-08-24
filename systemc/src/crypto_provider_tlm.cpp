@@ -99,6 +99,24 @@ void CryptoProviderTLM::perform_crypto_operation(tlm::tlm_generic_payload& trans
         case crypto_extension::HASH_COMPUTE:
             perform_hash_computation(trans, ext);
             break;
+        case crypto_extension::PQC_SIGN:
+            perform_pqc_signing(trans, ext);
+            break;
+        case crypto_extension::PQC_VERIFY:
+            perform_pqc_verification(trans, ext);
+            break;
+        case crypto_extension::PQC_KEYGEN:
+            perform_pqc_key_generation(trans, ext);
+            break;
+        case crypto_extension::HYBRID_PQC_SIGN:
+            perform_hybrid_pqc_signing(trans, ext);
+            break;
+        case crypto_extension::HYBRID_PQC_VERIFY:
+            perform_hybrid_pqc_verification(trans, ext);
+            break;
+        case crypto_extension::HYBRID_PQC_KEYGEN:
+            perform_hybrid_pqc_key_generation(trans, ext);
+            break;
         default:
             // Unknown operation
             break;
@@ -173,6 +191,182 @@ void CryptoProviderTLM::perform_hash_computation(tlm::tlm_generic_payload& trans
     );
 }
 
+// Post-Quantum Cryptographic operations
+void CryptoProviderTLM::perform_pqc_signing(tlm::tlm_generic_payload& trans, crypto_extension& ext) {
+    // Simulate PQC signature generation with algorithm-specific timing
+    size_t message_length = trans.get_data_length();
+    ext.operations_count = 1;
+    
+    // PQC signing typically takes longer than classical algorithms
+    // ML-DSA (Dilithium) has faster signing than SLH-DSA (SPHINCS+)
+    sc_time base_time = sc_time(10, SC_US);  // Base 10µs for PQC signing
+    
+    // Adjust timing based on signature scheme
+    double multiplier = 1.0;
+    if (ext.signature_scheme >= SignatureScheme::ML_DSA_44 && 
+        ext.signature_scheme <= SignatureScheme::ML_DSA_87) {
+        // ML-DSA has faster signing
+        multiplier = 0.8;
+    } else if (ext.signature_scheme >= SignatureScheme::SLH_DSA_SHA2_128S &&
+               ext.signature_scheme <= SignatureScheme::SLH_DSA_SHAKE_256F) {
+        // SLH-DSA has slower signing but faster verification
+        multiplier = 2.5;
+    }
+    
+    ext.processing_time = utils::calculate_processing_time(
+        message_length,
+        base_time * multiplier,
+        sc_time(100, SC_NS)
+    );
+    
+    if (hardware_accelerated_) {
+        ext.processing_time *= 0.6; // 40% speedup with hardware acceleration
+    }
+}
+
+void CryptoProviderTLM::perform_pqc_verification(tlm::tlm_generic_payload& trans, crypto_extension& ext) {
+    // Simulate PQC signature verification
+    size_t message_length = trans.get_data_length();
+    ext.operations_count = 1;
+    
+    // PQC verification timing varies by algorithm
+    sc_time base_time = sc_time(5, SC_US);  // Base 5µs for PQC verification
+    
+    double multiplier = 1.0;
+    if (ext.signature_scheme >= SignatureScheme::ML_DSA_44 && 
+        ext.signature_scheme <= SignatureScheme::ML_DSA_87) {
+        // ML-DSA has moderate verification time
+        multiplier = 1.2;
+    } else if (ext.signature_scheme >= SignatureScheme::SLH_DSA_SHA2_128S &&
+               ext.signature_scheme <= SignatureScheme::SLH_DSA_SHAKE_256F) {
+        // SLH-DSA has fast verification
+        multiplier = 0.3;
+    }
+    
+    ext.processing_time = utils::calculate_processing_time(
+        message_length,
+        base_time * multiplier,
+        sc_time(50, SC_NS)
+    );
+    
+    if (hardware_accelerated_) {
+        ext.processing_time *= 0.5; // 50% speedup with hardware acceleration
+    }
+}
+
+void CryptoProviderTLM::perform_pqc_key_generation(tlm::tlm_generic_payload& trans, crypto_extension& ext) {
+    // Simulate PQC key generation
+    ext.operations_count = 1;
+    
+    // PQC key generation typically takes significantly longer than classical
+    sc_time base_time = sc_time(50, SC_US);  // Base 50µs for PQC keygen
+    
+    double multiplier = 1.0;
+    if (ext.signature_scheme >= SignatureScheme::ML_DSA_44 && 
+        ext.signature_scheme <= SignatureScheme::ML_DSA_87) {
+        // ML-DSA key generation timing based on parameter set
+        switch (ext.signature_scheme) {
+            case SignatureScheme::ML_DSA_44:
+                multiplier = 0.8; // Fastest
+                break;
+            case SignatureScheme::ML_DSA_65:
+                multiplier = 1.2; // Medium
+                break;
+            case SignatureScheme::ML_DSA_87:
+                multiplier = 1.8; // Slowest
+                break;
+            default:
+                break;
+        }
+    } else if (ext.signature_scheme >= SignatureScheme::SLH_DSA_SHA2_128S &&
+               ext.signature_scheme <= SignatureScheme::SLH_DSA_SHAKE_256F) {
+        // SLH-DSA key generation is typically faster
+        multiplier = 0.4;
+    }
+    
+    ext.processing_time = base_time * multiplier;
+    
+    if (hardware_accelerated_) {
+        ext.processing_time *= 0.7; // 30% speedup with hardware RNG
+    }
+}
+
+// Hybrid Post-Quantum + Classical operations
+void CryptoProviderTLM::perform_hybrid_pqc_signing(tlm::tlm_generic_payload& trans, crypto_extension& ext) {
+    // Simulate hybrid signature generation (both classical and PQC components)
+    size_t message_length = trans.get_data_length();
+    ext.operations_count = 2; // Both classical and PQC signatures
+    
+    // Hybrid operations require both classical and PQC computations
+    sc_time classical_time = sc_time(2, SC_US);  // Classical signature time
+    sc_time pqc_time = sc_time(15, SC_US);       // PQC signature time
+    
+    // Adjust PQC time based on scheme
+    double pqc_multiplier = 1.0;
+    if (ext.signature_scheme >= SignatureScheme::RSA3072_ML_DSA_44 && 
+        ext.signature_scheme <= SignatureScheme::P521_ML_DSA_87) {
+        // Hybrid with ML-DSA
+        pqc_multiplier = 0.8;
+    }
+    
+    ext.processing_time = classical_time + (pqc_time * pqc_multiplier) + 
+                         utils::calculate_processing_time(message_length, sc_time(1, SC_US), sc_time(10, SC_NS));
+    
+    if (hardware_accelerated_) {
+        ext.processing_time *= 0.65; // Combined acceleration benefits
+    }
+}
+
+void CryptoProviderTLM::perform_hybrid_pqc_verification(tlm::tlm_generic_payload& trans, crypto_extension& ext) {
+    // Simulate hybrid signature verification (both components must verify)
+    size_t message_length = trans.get_data_length();
+    ext.operations_count = 2;
+    
+    sc_time classical_time = sc_time(1, SC_US);  // Classical verification
+    sc_time pqc_time = sc_time(8, SC_US);        // PQC verification
+    
+    double pqc_multiplier = 1.0;
+    if (ext.signature_scheme >= SignatureScheme::RSA3072_ML_DSA_44 && 
+        ext.signature_scheme <= SignatureScheme::P521_ML_DSA_87) {
+        // Hybrid with ML-DSA
+        pqc_multiplier = 1.2;
+    }
+    
+    ext.processing_time = classical_time + (pqc_time * pqc_multiplier) + 
+                         utils::calculate_processing_time(message_length, sc_time(500, SC_NS), sc_time(5, SC_NS));
+    
+    if (hardware_accelerated_) {
+        ext.processing_time *= 0.55; // Better acceleration due to parallel processing
+    }
+}
+
+void CryptoProviderTLM::perform_hybrid_pqc_key_generation(tlm::tlm_generic_payload& trans, crypto_extension& ext) {
+    // Simulate hybrid key generation (generate both key pairs)
+    ext.operations_count = 2;
+    
+    sc_time classical_time = sc_time(5, SC_US);   // Classical key generation
+    sc_time pqc_time = sc_time(60, SC_US);        // PQC key generation
+    
+    double pqc_multiplier = 1.0;
+    if (ext.signature_scheme >= SignatureScheme::RSA3072_ML_DSA_44 && 
+        ext.signature_scheme <= SignatureScheme::P521_ML_DSA_87) {
+        // Hybrid with ML-DSA - adjust based on parameter set
+        if (ext.signature_scheme <= SignatureScheme::P521_ML_DSA_44) {
+            pqc_multiplier = 0.8;
+        } else if (ext.signature_scheme <= SignatureScheme::P521_ML_DSA_65) {
+            pqc_multiplier = 1.2;
+        } else {
+            pqc_multiplier = 1.8;
+        }
+    }
+    
+    ext.processing_time = classical_time + (pqc_time * pqc_multiplier);
+    
+    if (hardware_accelerated_) {
+        ext.processing_time *= 0.6; // Hardware acceleration for both components
+    }
+}
+
 void CryptoProviderTLM::set_hardware_acceleration(bool enabled) {
     hardware_accelerated_ = enabled;
     stats_.hardware_accelerated = enabled;
@@ -210,9 +404,15 @@ void CryptoProviderTLM::update_statistics(const crypto_extension& ext) {
             break;
         case crypto_extension::SIGN:
         case crypto_extension::VERIFY:
+        case crypto_extension::PQC_SIGN:
+        case crypto_extension::PQC_VERIFY:
+        case crypto_extension::HYBRID_PQC_SIGN:
+        case crypto_extension::HYBRID_PQC_VERIFY:
             stats_.signature_operations++;
             break;
         case crypto_extension::KEY_DERIVE:
+        case crypto_extension::PQC_KEYGEN:
+        case crypto_extension::HYBRID_PQC_KEYGEN:
             stats_.key_derivation_operations++;
             break;
         case crypto_extension::RANDOM_GENERATE:

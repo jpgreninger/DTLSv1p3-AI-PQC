@@ -248,6 +248,20 @@ dtls_connection_test/fast:
 .PHONY : dtls_connection_test/fast
 
 # Convenience name for target.
+tests/CMakeFiles/dtls_core_protocol_test.dir/rule:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/dtls_core_protocol_test.dir/rule
+.PHONY : tests/CMakeFiles/dtls_core_protocol_test.dir/rule
+
+# Convenience name for target.
+dtls_core_protocol_test: tests/CMakeFiles/dtls_core_protocol_test.dir/rule
+.PHONY : dtls_core_protocol_test
+
+# fast build rule for target.
+dtls_core_protocol_test/fast:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_core_protocol_test.dir/build.make tests/CMakeFiles/dtls_core_protocol_test.dir/build
+.PHONY : dtls_core_protocol_test/fast
+
+# Convenience name for target.
 tests/CMakeFiles/dtls_integration_test.dir/rule:
 	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/dtls_integration_test.dir/rule
 .PHONY : tests/CMakeFiles/dtls_integration_test.dir/rule
@@ -262,6 +276,104 @@ dtls_integration_test/fast:
 .PHONY : dtls_integration_test/fast
 
 # Convenience name for target.
+tests/CMakeFiles/dtls_memory_test.dir/rule:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/dtls_memory_test.dir/rule
+.PHONY : tests/CMakeFiles/dtls_memory_test.dir/rule
+
+# Convenience name for target.
+dtls_memory_test: tests/CMakeFiles/dtls_memory_test.dir/rule
+.PHONY : dtls_memory_test
+
+# fast build rule for target.
+dtls_memory_test/fast:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_memory_test.dir/build.make tests/CMakeFiles/dtls_memory_test.dir/build
+.PHONY : dtls_memory_test/fast
+
+# Convenience name for target.
+tests/CMakeFiles/dtls_core_test.dir/rule:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/dtls_core_test.dir/rule
+.PHONY : tests/CMakeFiles/dtls_core_test.dir/rule
+
+# Convenience name for target.
+dtls_core_test: tests/CMakeFiles/dtls_core_test.dir/rule
+.PHONY : dtls_core_test
+
+# fast build rule for target.
+dtls_core_test/fast:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_core_test.dir/build.make tests/CMakeFiles/dtls_core_test.dir/build
+.PHONY : dtls_core_test/fast
+
+# Convenience name for target.
+tests/CMakeFiles/dtls_transport_test.dir/rule:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/dtls_transport_test.dir/rule
+.PHONY : tests/CMakeFiles/dtls_transport_test.dir/rule
+
+# Convenience name for target.
+dtls_transport_test: tests/CMakeFiles/dtls_transport_test.dir/rule
+.PHONY : dtls_transport_test
+
+# fast build rule for target.
+dtls_transport_test/fast:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_transport_test.dir/build.make tests/CMakeFiles/dtls_transport_test.dir/build
+.PHONY : dtls_transport_test/fast
+
+# Convenience name for target.
+tests/CMakeFiles/dtls_security_comprehensive_test.dir/rule:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/dtls_security_comprehensive_test.dir/rule
+.PHONY : tests/CMakeFiles/dtls_security_comprehensive_test.dir/rule
+
+# Convenience name for target.
+dtls_security_comprehensive_test: tests/CMakeFiles/dtls_security_comprehensive_test.dir/rule
+.PHONY : dtls_security_comprehensive_test
+
+# fast build rule for target.
+dtls_security_comprehensive_test/fast:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_security_comprehensive_test.dir/build.make tests/CMakeFiles/dtls_security_comprehensive_test.dir/build
+.PHONY : dtls_security_comprehensive_test/fast
+
+# Convenience name for target.
+tests/CMakeFiles/dtls_protocol_comprehensive_test.dir/rule:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/dtls_protocol_comprehensive_test.dir/rule
+.PHONY : tests/CMakeFiles/dtls_protocol_comprehensive_test.dir/rule
+
+# Convenience name for target.
+dtls_protocol_comprehensive_test: tests/CMakeFiles/dtls_protocol_comprehensive_test.dir/rule
+.PHONY : dtls_protocol_comprehensive_test
+
+# fast build rule for target.
+dtls_protocol_comprehensive_test/fast:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_protocol_comprehensive_test.dir/build.make tests/CMakeFiles/dtls_protocol_comprehensive_test.dir/build
+.PHONY : dtls_protocol_comprehensive_test/fast
+
+# Convenience name for target.
+tests/CMakeFiles/dtls_coverage_enhancement_test.dir/rule:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/dtls_coverage_enhancement_test.dir/rule
+.PHONY : tests/CMakeFiles/dtls_coverage_enhancement_test.dir/rule
+
+# Convenience name for target.
+dtls_coverage_enhancement_test: tests/CMakeFiles/dtls_coverage_enhancement_test.dir/rule
+.PHONY : dtls_coverage_enhancement_test
+
+# fast build rule for target.
+dtls_coverage_enhancement_test/fast:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_coverage_enhancement_test.dir/build.make tests/CMakeFiles/dtls_coverage_enhancement_test.dir/build
+.PHONY : dtls_coverage_enhancement_test/fast
+
+# Convenience name for target.
+tests/CMakeFiles/dtls_simple_coverage_test.dir/rule:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/dtls_simple_coverage_test.dir/rule
+.PHONY : tests/CMakeFiles/dtls_simple_coverage_test.dir/rule
+
+# Convenience name for target.
+dtls_simple_coverage_test: tests/CMakeFiles/dtls_simple_coverage_test.dir/rule
+.PHONY : dtls_simple_coverage_test
+
+# fast build rule for target.
+dtls_simple_coverage_test/fast:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_simple_coverage_test.dir/build.make tests/CMakeFiles/dtls_simple_coverage_test.dir/build
+.PHONY : dtls_simple_coverage_test/fast
+
+# Convenience name for target.
 tests/CMakeFiles/dtls_performance_test.dir/rule:
 	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/dtls_performance_test.dir/rule
 .PHONY : tests/CMakeFiles/dtls_performance_test.dir/rule
@@ -274,6 +386,20 @@ dtls_performance_test: tests/CMakeFiles/dtls_performance_test.dir/rule
 dtls_performance_test/fast:
 	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_performance_test.dir/build.make tests/CMakeFiles/dtls_performance_test.dir/build
 .PHONY : dtls_performance_test/fast
+
+# Convenience name for target.
+tests/CMakeFiles/dtls_error_handling_test.dir/rule:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/dtls_error_handling_test.dir/rule
+.PHONY : tests/CMakeFiles/dtls_error_handling_test.dir/rule
+
+# Convenience name for target.
+dtls_error_handling_test: tests/CMakeFiles/dtls_error_handling_test.dir/rule
+.PHONY : dtls_error_handling_test
+
+# fast build rule for target.
+dtls_error_handling_test/fast:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_error_handling_test.dir/build.make tests/CMakeFiles/dtls_error_handling_test.dir/build
+.PHONY : dtls_error_handling_test/fast
 
 # Convenience name for target.
 tests/CMakeFiles/dtls_security_test.dir/rule:
@@ -444,18 +570,130 @@ run_interop_tests/fast:
 .PHONY : run_interop_tests/fast
 
 # Convenience name for target.
-tests/CMakeFiles/test_coverage.dir/rule:
-	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/test_coverage.dir/rule
-.PHONY : tests/CMakeFiles/test_coverage.dir/rule
+tests/CMakeFiles/dtls_coverage.dir/rule:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/dtls_coverage.dir/rule
+.PHONY : tests/CMakeFiles/dtls_coverage.dir/rule
 
 # Convenience name for target.
-test_coverage: tests/CMakeFiles/test_coverage.dir/rule
-.PHONY : test_coverage
+dtls_coverage: tests/CMakeFiles/dtls_coverage.dir/rule
+.PHONY : dtls_coverage
 
 # fast build rule for target.
-test_coverage/fast:
-	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_coverage.dir/build.make tests/CMakeFiles/test_coverage.dir/build
-.PHONY : test_coverage/fast
+dtls_coverage/fast:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_coverage.dir/build.make tests/CMakeFiles/dtls_coverage.dir/build
+.PHONY : dtls_coverage/fast
+
+# Convenience name for target.
+tests/CMakeFiles/dtls_coverage_clean.dir/rule:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/dtls_coverage_clean.dir/rule
+.PHONY : tests/CMakeFiles/dtls_coverage_clean.dir/rule
+
+# Convenience name for target.
+dtls_coverage_clean: tests/CMakeFiles/dtls_coverage_clean.dir/rule
+.PHONY : dtls_coverage_clean
+
+# fast build rule for target.
+dtls_coverage_clean/fast:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_coverage_clean.dir/build.make tests/CMakeFiles/dtls_coverage_clean.dir/build
+.PHONY : dtls_coverage_clean/fast
+
+# Convenience name for target.
+tests/CMakeFiles/dtls_protocol_coverage.dir/rule:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/dtls_protocol_coverage.dir/rule
+.PHONY : tests/CMakeFiles/dtls_protocol_coverage.dir/rule
+
+# Convenience name for target.
+dtls_protocol_coverage: tests/CMakeFiles/dtls_protocol_coverage.dir/rule
+.PHONY : dtls_protocol_coverage
+
+# fast build rule for target.
+dtls_protocol_coverage/fast:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_protocol_coverage.dir/build.make tests/CMakeFiles/dtls_protocol_coverage.dir/build
+.PHONY : dtls_protocol_coverage/fast
+
+# Convenience name for target.
+tests/CMakeFiles/dtls_protocol_coverage_clean.dir/rule:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/dtls_protocol_coverage_clean.dir/rule
+.PHONY : tests/CMakeFiles/dtls_protocol_coverage_clean.dir/rule
+
+# Convenience name for target.
+dtls_protocol_coverage_clean: tests/CMakeFiles/dtls_protocol_coverage_clean.dir/rule
+.PHONY : dtls_protocol_coverage_clean
+
+# fast build rule for target.
+dtls_protocol_coverage_clean/fast:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_protocol_coverage_clean.dir/build.make tests/CMakeFiles/dtls_protocol_coverage_clean.dir/build
+.PHONY : dtls_protocol_coverage_clean/fast
+
+# Convenience name for target.
+tests/CMakeFiles/dtls_crypto_coverage.dir/rule:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/dtls_crypto_coverage.dir/rule
+.PHONY : tests/CMakeFiles/dtls_crypto_coverage.dir/rule
+
+# Convenience name for target.
+dtls_crypto_coverage: tests/CMakeFiles/dtls_crypto_coverage.dir/rule
+.PHONY : dtls_crypto_coverage
+
+# fast build rule for target.
+dtls_crypto_coverage/fast:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_coverage.dir/build.make tests/CMakeFiles/dtls_crypto_coverage.dir/build
+.PHONY : dtls_crypto_coverage/fast
+
+# Convenience name for target.
+tests/CMakeFiles/dtls_crypto_coverage_clean.dir/rule:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/dtls_crypto_coverage_clean.dir/rule
+.PHONY : tests/CMakeFiles/dtls_crypto_coverage_clean.dir/rule
+
+# Convenience name for target.
+dtls_crypto_coverage_clean: tests/CMakeFiles/dtls_crypto_coverage_clean.dir/rule
+.PHONY : dtls_crypto_coverage_clean
+
+# fast build rule for target.
+dtls_crypto_coverage_clean/fast:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_coverage_clean.dir/build.make tests/CMakeFiles/dtls_crypto_coverage_clean.dir/build
+.PHONY : dtls_crypto_coverage_clean/fast
+
+# Convenience name for target.
+tests/CMakeFiles/dtls_integration_coverage.dir/rule:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/dtls_integration_coverage.dir/rule
+.PHONY : tests/CMakeFiles/dtls_integration_coverage.dir/rule
+
+# Convenience name for target.
+dtls_integration_coverage: tests/CMakeFiles/dtls_integration_coverage.dir/rule
+.PHONY : dtls_integration_coverage
+
+# fast build rule for target.
+dtls_integration_coverage/fast:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_integration_coverage.dir/build.make tests/CMakeFiles/dtls_integration_coverage.dir/build
+.PHONY : dtls_integration_coverage/fast
+
+# Convenience name for target.
+tests/CMakeFiles/dtls_integration_coverage_clean.dir/rule:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/dtls_integration_coverage_clean.dir/rule
+.PHONY : tests/CMakeFiles/dtls_integration_coverage_clean.dir/rule
+
+# Convenience name for target.
+dtls_integration_coverage_clean: tests/CMakeFiles/dtls_integration_coverage_clean.dir/rule
+.PHONY : dtls_integration_coverage_clean
+
+# fast build rule for target.
+dtls_integration_coverage_clean/fast:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_integration_coverage_clean.dir/build.make tests/CMakeFiles/dtls_integration_coverage_clean.dir/build
+.PHONY : dtls_integration_coverage_clean/fast
+
+# Convenience name for target.
+tests/CMakeFiles/coverage_validate.dir/rule:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/coverage_validate.dir/rule
+.PHONY : tests/CMakeFiles/coverage_validate.dir/rule
+
+# Convenience name for target.
+coverage_validate: tests/CMakeFiles/coverage_validate.dir/rule
+.PHONY : coverage_validate
+
+# fast build rule for target.
+coverage_validate/fast:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/coverage_validate.dir/build.make tests/CMakeFiles/coverage_validate.dir/build
+.PHONY : coverage_validate/fast
 
 # Convenience name for target.
 tests/CMakeFiles/test_memcheck.dir/rule:
@@ -641,6 +879,150 @@ connection/test_state_transitions.cpp.s:
 	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_connection_test.dir/build.make tests/CMakeFiles/dtls_connection_test.dir/connection/test_state_transitions.cpp.s
 .PHONY : connection/test_state_transitions.cpp.s
 
+core/test_alert_manager.o: core/test_alert_manager.cpp.o
+.PHONY : core/test_alert_manager.o
+
+# target to build an object file
+core/test_alert_manager.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_core_test.dir/build.make tests/CMakeFiles/dtls_core_test.dir/core/test_alert_manager.cpp.o
+.PHONY : core/test_alert_manager.cpp.o
+
+core/test_alert_manager.i: core/test_alert_manager.cpp.i
+.PHONY : core/test_alert_manager.i
+
+# target to preprocess a source file
+core/test_alert_manager.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_core_test.dir/build.make tests/CMakeFiles/dtls_core_test.dir/core/test_alert_manager.cpp.i
+.PHONY : core/test_alert_manager.cpp.i
+
+core/test_alert_manager.s: core/test_alert_manager.cpp.s
+.PHONY : core/test_alert_manager.s
+
+# target to generate assembly for a file
+core/test_alert_manager.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_core_test.dir/build.make tests/CMakeFiles/dtls_core_test.dir/core/test_alert_manager.cpp.s
+.PHONY : core/test_alert_manager.cpp.s
+
+core/test_error.o: core/test_error.cpp.o
+.PHONY : core/test_error.o
+
+# target to build an object file
+core/test_error.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_core_test.dir/build.make tests/CMakeFiles/dtls_core_test.dir/core/test_error.cpp.o
+.PHONY : core/test_error.cpp.o
+
+core/test_error.i: core/test_error.cpp.i
+.PHONY : core/test_error.i
+
+# target to preprocess a source file
+core/test_error.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_core_test.dir/build.make tests/CMakeFiles/dtls_core_test.dir/core/test_error.cpp.i
+.PHONY : core/test_error.cpp.i
+
+core/test_error.s: core/test_error.cpp.s
+.PHONY : core/test_error.s
+
+# target to generate assembly for a file
+core/test_error.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_core_test.dir/build.make tests/CMakeFiles/dtls_core_test.dir/core/test_error.cpp.s
+.PHONY : core/test_error.cpp.s
+
+core/test_result.o: core/test_result.cpp.o
+.PHONY : core/test_result.o
+
+# target to build an object file
+core/test_result.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_core_test.dir/build.make tests/CMakeFiles/dtls_core_test.dir/core/test_result.cpp.o
+.PHONY : core/test_result.cpp.o
+
+core/test_result.i: core/test_result.cpp.i
+.PHONY : core/test_result.i
+
+# target to preprocess a source file
+core/test_result.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_core_test.dir/build.make tests/CMakeFiles/dtls_core_test.dir/core/test_result.cpp.i
+.PHONY : core/test_result.cpp.i
+
+core/test_result.s: core/test_result.cpp.s
+.PHONY : core/test_result.s
+
+# target to generate assembly for a file
+core/test_result.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_core_test.dir/build.make tests/CMakeFiles/dtls_core_test.dir/core/test_result.cpp.s
+.PHONY : core/test_result.cpp.s
+
+core/test_types.o: core/test_types.cpp.o
+.PHONY : core/test_types.o
+
+# target to build an object file
+core/test_types.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_core_test.dir/build.make tests/CMakeFiles/dtls_core_test.dir/core/test_types.cpp.o
+.PHONY : core/test_types.cpp.o
+
+core/test_types.i: core/test_types.cpp.i
+.PHONY : core/test_types.i
+
+# target to preprocess a source file
+core/test_types.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_core_test.dir/build.make tests/CMakeFiles/dtls_core_test.dir/core/test_types.cpp.i
+.PHONY : core/test_types.cpp.i
+
+core/test_types.s: core/test_types.cpp.s
+.PHONY : core/test_types.s
+
+# target to generate assembly for a file
+core/test_types.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_core_test.dir/build.make tests/CMakeFiles/dtls_core_test.dir/core/test_types.cpp.s
+.PHONY : core/test_types.cpp.s
+
+core_protocol/test_anti_replay_core.o: core_protocol/test_anti_replay_core.cpp.o
+.PHONY : core_protocol/test_anti_replay_core.o
+
+# target to build an object file
+core_protocol/test_anti_replay_core.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_core_protocol_test.dir/build.make tests/CMakeFiles/dtls_core_protocol_test.dir/core_protocol/test_anti_replay_core.cpp.o
+.PHONY : core_protocol/test_anti_replay_core.cpp.o
+
+core_protocol/test_anti_replay_core.i: core_protocol/test_anti_replay_core.cpp.i
+.PHONY : core_protocol/test_anti_replay_core.i
+
+# target to preprocess a source file
+core_protocol/test_anti_replay_core.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_core_protocol_test.dir/build.make tests/CMakeFiles/dtls_core_protocol_test.dir/core_protocol/test_anti_replay_core.cpp.i
+.PHONY : core_protocol/test_anti_replay_core.cpp.i
+
+core_protocol/test_anti_replay_core.s: core_protocol/test_anti_replay_core.cpp.s
+.PHONY : core_protocol/test_anti_replay_core.s
+
+# target to generate assembly for a file
+core_protocol/test_anti_replay_core.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_core_protocol_test.dir/build.make tests/CMakeFiles/dtls_core_protocol_test.dir/core_protocol/test_anti_replay_core.cpp.s
+.PHONY : core_protocol/test_anti_replay_core.cpp.s
+
+coverage_enhancement_test.o: coverage_enhancement_test.cpp.o
+.PHONY : coverage_enhancement_test.o
+
+# target to build an object file
+coverage_enhancement_test.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_coverage_enhancement_test.dir/build.make tests/CMakeFiles/dtls_coverage_enhancement_test.dir/coverage_enhancement_test.cpp.o
+.PHONY : coverage_enhancement_test.cpp.o
+
+coverage_enhancement_test.i: coverage_enhancement_test.cpp.i
+.PHONY : coverage_enhancement_test.i
+
+# target to preprocess a source file
+coverage_enhancement_test.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_coverage_enhancement_test.dir/build.make tests/CMakeFiles/dtls_coverage_enhancement_test.dir/coverage_enhancement_test.cpp.i
+.PHONY : coverage_enhancement_test.cpp.i
+
+coverage_enhancement_test.s: coverage_enhancement_test.cpp.s
+.PHONY : coverage_enhancement_test.s
+
+# target to generate assembly for a file
+coverage_enhancement_test.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_coverage_enhancement_test.dir/build.make tests/CMakeFiles/dtls_coverage_enhancement_test.dir/coverage_enhancement_test.cpp.s
+.PHONY : coverage_enhancement_test.cpp.s
+
 crypto/test_aead_operations.o: crypto/test_aead_operations.cpp.o
 .PHONY : crypto/test_aead_operations.o
 
@@ -689,6 +1071,174 @@ crypto/test_botan_signature_operations.cpp.s:
 	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_botan_signature_operations.cpp.s
 .PHONY : crypto/test_botan_signature_operations.cpp.s
 
+crypto/test_cross_provider_comprehensive.o: crypto/test_cross_provider_comprehensive.cpp.o
+.PHONY : crypto/test_cross_provider_comprehensive.o
+
+# target to build an object file
+crypto/test_cross_provider_comprehensive.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_cross_provider_comprehensive.cpp.o
+.PHONY : crypto/test_cross_provider_comprehensive.cpp.o
+
+crypto/test_cross_provider_comprehensive.i: crypto/test_cross_provider_comprehensive.cpp.i
+.PHONY : crypto/test_cross_provider_comprehensive.i
+
+# target to preprocess a source file
+crypto/test_cross_provider_comprehensive.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_cross_provider_comprehensive.cpp.i
+.PHONY : crypto/test_cross_provider_comprehensive.cpp.i
+
+crypto/test_cross_provider_comprehensive.s: crypto/test_cross_provider_comprehensive.cpp.s
+.PHONY : crypto/test_cross_provider_comprehensive.s
+
+# target to generate assembly for a file
+crypto/test_cross_provider_comprehensive.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_cross_provider_comprehensive.cpp.s
+.PHONY : crypto/test_cross_provider_comprehensive.cpp.s
+
+crypto/test_crypto_coverage_comprehensive.o: crypto/test_crypto_coverage_comprehensive.cpp.o
+.PHONY : crypto/test_crypto_coverage_comprehensive.o
+
+# target to build an object file
+crypto/test_crypto_coverage_comprehensive.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_crypto_coverage_comprehensive.cpp.o
+.PHONY : crypto/test_crypto_coverage_comprehensive.cpp.o
+
+crypto/test_crypto_coverage_comprehensive.i: crypto/test_crypto_coverage_comprehensive.cpp.i
+.PHONY : crypto/test_crypto_coverage_comprehensive.i
+
+# target to preprocess a source file
+crypto/test_crypto_coverage_comprehensive.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_crypto_coverage_comprehensive.cpp.i
+.PHONY : crypto/test_crypto_coverage_comprehensive.cpp.i
+
+crypto/test_crypto_coverage_comprehensive.s: crypto/test_crypto_coverage_comprehensive.cpp.s
+.PHONY : crypto/test_crypto_coverage_comprehensive.s
+
+# target to generate assembly for a file
+crypto/test_crypto_coverage_comprehensive.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_crypto_coverage_comprehensive.cpp.s
+.PHONY : crypto/test_crypto_coverage_comprehensive.cpp.s
+
+crypto/test_crypto_dependency_reduction.o: crypto/test_crypto_dependency_reduction.cpp.o
+.PHONY : crypto/test_crypto_dependency_reduction.o
+
+# target to build an object file
+crypto/test_crypto_dependency_reduction.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_crypto_dependency_reduction.cpp.o
+.PHONY : crypto/test_crypto_dependency_reduction.cpp.o
+
+crypto/test_crypto_dependency_reduction.i: crypto/test_crypto_dependency_reduction.cpp.i
+.PHONY : crypto/test_crypto_dependency_reduction.i
+
+# target to preprocess a source file
+crypto/test_crypto_dependency_reduction.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_crypto_dependency_reduction.cpp.i
+.PHONY : crypto/test_crypto_dependency_reduction.cpp.i
+
+crypto/test_crypto_dependency_reduction.s: crypto/test_crypto_dependency_reduction.cpp.s
+.PHONY : crypto/test_crypto_dependency_reduction.s
+
+# target to generate assembly for a file
+crypto/test_crypto_dependency_reduction.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_crypto_dependency_reduction.cpp.s
+.PHONY : crypto/test_crypto_dependency_reduction.cpp.s
+
+crypto/test_crypto_edge_cases.o: crypto/test_crypto_edge_cases.cpp.o
+.PHONY : crypto/test_crypto_edge_cases.o
+
+# target to build an object file
+crypto/test_crypto_edge_cases.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_crypto_edge_cases.cpp.o
+.PHONY : crypto/test_crypto_edge_cases.cpp.o
+
+crypto/test_crypto_edge_cases.i: crypto/test_crypto_edge_cases.cpp.i
+.PHONY : crypto/test_crypto_edge_cases.i
+
+# target to preprocess a source file
+crypto/test_crypto_edge_cases.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_crypto_edge_cases.cpp.i
+.PHONY : crypto/test_crypto_edge_cases.cpp.i
+
+crypto/test_crypto_edge_cases.s: crypto/test_crypto_edge_cases.cpp.s
+.PHONY : crypto/test_crypto_edge_cases.s
+
+# target to generate assembly for a file
+crypto/test_crypto_edge_cases.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_crypto_edge_cases.cpp.s
+.PHONY : crypto/test_crypto_edge_cases.cpp.s
+
+crypto/test_crypto_operations_abstraction.o: crypto/test_crypto_operations_abstraction.cpp.o
+.PHONY : crypto/test_crypto_operations_abstraction.o
+
+# target to build an object file
+crypto/test_crypto_operations_abstraction.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_crypto_operations_abstraction.cpp.o
+.PHONY : crypto/test_crypto_operations_abstraction.cpp.o
+
+crypto/test_crypto_operations_abstraction.i: crypto/test_crypto_operations_abstraction.cpp.i
+.PHONY : crypto/test_crypto_operations_abstraction.i
+
+# target to preprocess a source file
+crypto/test_crypto_operations_abstraction.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_crypto_operations_abstraction.cpp.i
+.PHONY : crypto/test_crypto_operations_abstraction.cpp.i
+
+crypto/test_crypto_operations_abstraction.s: crypto/test_crypto_operations_abstraction.cpp.s
+.PHONY : crypto/test_crypto_operations_abstraction.s
+
+# target to generate assembly for a file
+crypto/test_crypto_operations_abstraction.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_crypto_operations_abstraction.cpp.s
+.PHONY : crypto/test_crypto_operations_abstraction.cpp.s
+
+crypto/test_crypto_operations_comprehensive.o: crypto/test_crypto_operations_comprehensive.cpp.o
+.PHONY : crypto/test_crypto_operations_comprehensive.o
+
+# target to build an object file
+crypto/test_crypto_operations_comprehensive.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_crypto_operations_comprehensive.cpp.o
+.PHONY : crypto/test_crypto_operations_comprehensive.cpp.o
+
+crypto/test_crypto_operations_comprehensive.i: crypto/test_crypto_operations_comprehensive.cpp.i
+.PHONY : crypto/test_crypto_operations_comprehensive.i
+
+# target to preprocess a source file
+crypto/test_crypto_operations_comprehensive.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_crypto_operations_comprehensive.cpp.i
+.PHONY : crypto/test_crypto_operations_comprehensive.cpp.i
+
+crypto/test_crypto_operations_comprehensive.s: crypto/test_crypto_operations_comprehensive.cpp.s
+.PHONY : crypto/test_crypto_operations_comprehensive.s
+
+# target to generate assembly for a file
+crypto/test_crypto_operations_comprehensive.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_crypto_operations_comprehensive.cpp.s
+.PHONY : crypto/test_crypto_operations_comprehensive.cpp.s
+
+crypto/test_crypto_security_validation.o: crypto/test_crypto_security_validation.cpp.o
+.PHONY : crypto/test_crypto_security_validation.o
+
+# target to build an object file
+crypto/test_crypto_security_validation.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_crypto_security_validation.cpp.o
+.PHONY : crypto/test_crypto_security_validation.cpp.o
+
+crypto/test_crypto_security_validation.i: crypto/test_crypto_security_validation.cpp.i
+.PHONY : crypto/test_crypto_security_validation.i
+
+# target to preprocess a source file
+crypto/test_crypto_security_validation.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_crypto_security_validation.cpp.i
+.PHONY : crypto/test_crypto_security_validation.cpp.i
+
+crypto/test_crypto_security_validation.s: crypto/test_crypto_security_validation.cpp.s
+.PHONY : crypto/test_crypto_security_validation.s
+
+# target to generate assembly for a file
+crypto/test_crypto_security_validation.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_crypto_security_validation.cpp.s
+.PHONY : crypto/test_crypto_security_validation.cpp.s
+
 crypto/test_crypto_security_vectors.o: crypto/test_crypto_security_vectors.cpp.o
 .PHONY : crypto/test_crypto_security_vectors.o
 
@@ -712,6 +1262,78 @@ crypto/test_crypto_security_vectors.s: crypto/test_crypto_security_vectors.cpp.s
 crypto/test_crypto_security_vectors.cpp.s:
 	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_crypto_security_vectors.cpp.s
 .PHONY : crypto/test_crypto_security_vectors.cpp.s
+
+crypto/test_crypto_system_comprehensive.o: crypto/test_crypto_system_comprehensive.cpp.o
+.PHONY : crypto/test_crypto_system_comprehensive.o
+
+# target to build an object file
+crypto/test_crypto_system_comprehensive.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_crypto_system_comprehensive.cpp.o
+.PHONY : crypto/test_crypto_system_comprehensive.cpp.o
+
+crypto/test_crypto_system_comprehensive.i: crypto/test_crypto_system_comprehensive.cpp.i
+.PHONY : crypto/test_crypto_system_comprehensive.i
+
+# target to preprocess a source file
+crypto/test_crypto_system_comprehensive.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_crypto_system_comprehensive.cpp.i
+.PHONY : crypto/test_crypto_system_comprehensive.cpp.i
+
+crypto/test_crypto_system_comprehensive.s: crypto/test_crypto_system_comprehensive.cpp.s
+.PHONY : crypto/test_crypto_system_comprehensive.s
+
+# target to generate assembly for a file
+crypto/test_crypto_system_comprehensive.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_crypto_system_comprehensive.cpp.s
+.PHONY : crypto/test_crypto_system_comprehensive.cpp.s
+
+crypto/test_enhanced_crypto_providers.o: crypto/test_enhanced_crypto_providers.cpp.o
+.PHONY : crypto/test_enhanced_crypto_providers.o
+
+# target to build an object file
+crypto/test_enhanced_crypto_providers.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_enhanced_crypto_providers.cpp.o
+.PHONY : crypto/test_enhanced_crypto_providers.cpp.o
+
+crypto/test_enhanced_crypto_providers.i: crypto/test_enhanced_crypto_providers.cpp.i
+.PHONY : crypto/test_enhanced_crypto_providers.i
+
+# target to preprocess a source file
+crypto/test_enhanced_crypto_providers.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_enhanced_crypto_providers.cpp.i
+.PHONY : crypto/test_enhanced_crypto_providers.cpp.i
+
+crypto/test_enhanced_crypto_providers.s: crypto/test_enhanced_crypto_providers.cpp.s
+.PHONY : crypto/test_enhanced_crypto_providers.s
+
+# target to generate assembly for a file
+crypto/test_enhanced_crypto_providers.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_enhanced_crypto_providers.cpp.s
+.PHONY : crypto/test_enhanced_crypto_providers.cpp.s
+
+crypto/test_hardware_acceleration_comprehensive.o: crypto/test_hardware_acceleration_comprehensive.cpp.o
+.PHONY : crypto/test_hardware_acceleration_comprehensive.o
+
+# target to build an object file
+crypto/test_hardware_acceleration_comprehensive.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_hardware_acceleration_comprehensive.cpp.o
+.PHONY : crypto/test_hardware_acceleration_comprehensive.cpp.o
+
+crypto/test_hardware_acceleration_comprehensive.i: crypto/test_hardware_acceleration_comprehensive.cpp.i
+.PHONY : crypto/test_hardware_acceleration_comprehensive.i
+
+# target to preprocess a source file
+crypto/test_hardware_acceleration_comprehensive.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_hardware_acceleration_comprehensive.cpp.i
+.PHONY : crypto/test_hardware_acceleration_comprehensive.cpp.i
+
+crypto/test_hardware_acceleration_comprehensive.s: crypto/test_hardware_acceleration_comprehensive.cpp.s
+.PHONY : crypto/test_hardware_acceleration_comprehensive.s
+
+# target to generate assembly for a file
+crypto/test_hardware_acceleration_comprehensive.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_hardware_acceleration_comprehensive.cpp.s
+.PHONY : crypto/test_hardware_acceleration_comprehensive.cpp.s
 
 crypto/test_hkdf_expand_label.o: crypto/test_hkdf_expand_label.cpp.o
 .PHONY : crypto/test_hkdf_expand_label.o
@@ -737,6 +1359,102 @@ crypto/test_hkdf_expand_label.cpp.s:
 	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_hkdf_expand_label.cpp.s
 .PHONY : crypto/test_hkdf_expand_label.cpp.s
 
+crypto/test_hybrid_pqc_compliance.o: crypto/test_hybrid_pqc_compliance.cpp.o
+.PHONY : crypto/test_hybrid_pqc_compliance.o
+
+# target to build an object file
+crypto/test_hybrid_pqc_compliance.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_hybrid_pqc_compliance.cpp.o
+.PHONY : crypto/test_hybrid_pqc_compliance.cpp.o
+
+crypto/test_hybrid_pqc_compliance.i: crypto/test_hybrid_pqc_compliance.cpp.i
+.PHONY : crypto/test_hybrid_pqc_compliance.i
+
+# target to preprocess a source file
+crypto/test_hybrid_pqc_compliance.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_hybrid_pqc_compliance.cpp.i
+.PHONY : crypto/test_hybrid_pqc_compliance.cpp.i
+
+crypto/test_hybrid_pqc_compliance.s: crypto/test_hybrid_pqc_compliance.cpp.s
+.PHONY : crypto/test_hybrid_pqc_compliance.s
+
+# target to generate assembly for a file
+crypto/test_hybrid_pqc_compliance.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_hybrid_pqc_compliance.cpp.s
+.PHONY : crypto/test_hybrid_pqc_compliance.cpp.s
+
+crypto/test_hybrid_pqc_key_exchange.o: crypto/test_hybrid_pqc_key_exchange.cpp.o
+.PHONY : crypto/test_hybrid_pqc_key_exchange.o
+
+# target to build an object file
+crypto/test_hybrid_pqc_key_exchange.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_hybrid_pqc_key_exchange.cpp.o
+.PHONY : crypto/test_hybrid_pqc_key_exchange.cpp.o
+
+crypto/test_hybrid_pqc_key_exchange.i: crypto/test_hybrid_pqc_key_exchange.cpp.i
+.PHONY : crypto/test_hybrid_pqc_key_exchange.i
+
+# target to preprocess a source file
+crypto/test_hybrid_pqc_key_exchange.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_hybrid_pqc_key_exchange.cpp.i
+.PHONY : crypto/test_hybrid_pqc_key_exchange.cpp.i
+
+crypto/test_hybrid_pqc_key_exchange.s: crypto/test_hybrid_pqc_key_exchange.cpp.s
+.PHONY : crypto/test_hybrid_pqc_key_exchange.s
+
+# target to generate assembly for a file
+crypto/test_hybrid_pqc_key_exchange.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_hybrid_pqc_key_exchange.cpp.s
+.PHONY : crypto/test_hybrid_pqc_key_exchange.cpp.s
+
+crypto/test_hybrid_pqc_mlkem_operations.o: crypto/test_hybrid_pqc_mlkem_operations.cpp.o
+.PHONY : crypto/test_hybrid_pqc_mlkem_operations.o
+
+# target to build an object file
+crypto/test_hybrid_pqc_mlkem_operations.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_hybrid_pqc_mlkem_operations.cpp.o
+.PHONY : crypto/test_hybrid_pqc_mlkem_operations.cpp.o
+
+crypto/test_hybrid_pqc_mlkem_operations.i: crypto/test_hybrid_pqc_mlkem_operations.cpp.i
+.PHONY : crypto/test_hybrid_pqc_mlkem_operations.i
+
+# target to preprocess a source file
+crypto/test_hybrid_pqc_mlkem_operations.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_hybrid_pqc_mlkem_operations.cpp.i
+.PHONY : crypto/test_hybrid_pqc_mlkem_operations.cpp.i
+
+crypto/test_hybrid_pqc_mlkem_operations.s: crypto/test_hybrid_pqc_mlkem_operations.cpp.s
+.PHONY : crypto/test_hybrid_pqc_mlkem_operations.s
+
+# target to generate assembly for a file
+crypto/test_hybrid_pqc_mlkem_operations.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_hybrid_pqc_mlkem_operations.cpp.s
+.PHONY : crypto/test_hybrid_pqc_mlkem_operations.cpp.s
+
+crypto/test_hybrid_pqc_test_vectors.o: crypto/test_hybrid_pqc_test_vectors.cpp.o
+.PHONY : crypto/test_hybrid_pqc_test_vectors.o
+
+# target to build an object file
+crypto/test_hybrid_pqc_test_vectors.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_hybrid_pqc_test_vectors.cpp.o
+.PHONY : crypto/test_hybrid_pqc_test_vectors.cpp.o
+
+crypto/test_hybrid_pqc_test_vectors.i: crypto/test_hybrid_pqc_test_vectors.cpp.i
+.PHONY : crypto/test_hybrid_pqc_test_vectors.i
+
+# target to preprocess a source file
+crypto/test_hybrid_pqc_test_vectors.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_hybrid_pqc_test_vectors.cpp.i
+.PHONY : crypto/test_hybrid_pqc_test_vectors.cpp.i
+
+crypto/test_hybrid_pqc_test_vectors.s: crypto/test_hybrid_pqc_test_vectors.cpp.s
+.PHONY : crypto/test_hybrid_pqc_test_vectors.s
+
+# target to generate assembly for a file
+crypto/test_hybrid_pqc_test_vectors.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_hybrid_pqc_test_vectors.cpp.s
+.PHONY : crypto/test_hybrid_pqc_test_vectors.cpp.s
+
 crypto/test_mac_validation.o: crypto/test_mac_validation.cpp.o
 .PHONY : crypto/test_mac_validation.o
 
@@ -761,6 +1479,102 @@ crypto/test_mac_validation.cpp.s:
 	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_mac_validation.cpp.s
 .PHONY : crypto/test_mac_validation.cpp.s
 
+crypto/test_mlkem_comprehensive.o: crypto/test_mlkem_comprehensive.cpp.o
+.PHONY : crypto/test_mlkem_comprehensive.o
+
+# target to build an object file
+crypto/test_mlkem_comprehensive.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_mlkem_comprehensive.cpp.o
+.PHONY : crypto/test_mlkem_comprehensive.cpp.o
+
+crypto/test_mlkem_comprehensive.i: crypto/test_mlkem_comprehensive.cpp.i
+.PHONY : crypto/test_mlkem_comprehensive.i
+
+# target to preprocess a source file
+crypto/test_mlkem_comprehensive.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_mlkem_comprehensive.cpp.i
+.PHONY : crypto/test_mlkem_comprehensive.cpp.i
+
+crypto/test_mlkem_comprehensive.s: crypto/test_mlkem_comprehensive.cpp.s
+.PHONY : crypto/test_mlkem_comprehensive.s
+
+# target to generate assembly for a file
+crypto/test_mlkem_comprehensive.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_mlkem_comprehensive.cpp.s
+.PHONY : crypto/test_mlkem_comprehensive.cpp.s
+
+crypto/test_mlkem_security.o: crypto/test_mlkem_security.cpp.o
+.PHONY : crypto/test_mlkem_security.o
+
+# target to build an object file
+crypto/test_mlkem_security.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_mlkem_security.cpp.o
+.PHONY : crypto/test_mlkem_security.cpp.o
+
+crypto/test_mlkem_security.i: crypto/test_mlkem_security.cpp.i
+.PHONY : crypto/test_mlkem_security.i
+
+# target to preprocess a source file
+crypto/test_mlkem_security.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_mlkem_security.cpp.i
+.PHONY : crypto/test_mlkem_security.cpp.i
+
+crypto/test_mlkem_security.s: crypto/test_mlkem_security.cpp.s
+.PHONY : crypto/test_mlkem_security.s
+
+# target to generate assembly for a file
+crypto/test_mlkem_security.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_mlkem_security.cpp.s
+.PHONY : crypto/test_mlkem_security.cpp.s
+
+crypto/test_openssl_provider_comprehensive.o: crypto/test_openssl_provider_comprehensive.cpp.o
+.PHONY : crypto/test_openssl_provider_comprehensive.o
+
+# target to build an object file
+crypto/test_openssl_provider_comprehensive.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_openssl_provider_comprehensive.cpp.o
+.PHONY : crypto/test_openssl_provider_comprehensive.cpp.o
+
+crypto/test_openssl_provider_comprehensive.i: crypto/test_openssl_provider_comprehensive.cpp.i
+.PHONY : crypto/test_openssl_provider_comprehensive.i
+
+# target to preprocess a source file
+crypto/test_openssl_provider_comprehensive.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_openssl_provider_comprehensive.cpp.i
+.PHONY : crypto/test_openssl_provider_comprehensive.cpp.i
+
+crypto/test_openssl_provider_comprehensive.s: crypto/test_openssl_provider_comprehensive.cpp.s
+.PHONY : crypto/test_openssl_provider_comprehensive.s
+
+# target to generate assembly for a file
+crypto/test_openssl_provider_comprehensive.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_openssl_provider_comprehensive.cpp.s
+.PHONY : crypto/test_openssl_provider_comprehensive.cpp.s
+
+crypto/test_performance_benchmarks_comprehensive.o: crypto/test_performance_benchmarks_comprehensive.cpp.o
+.PHONY : crypto/test_performance_benchmarks_comprehensive.o
+
+# target to build an object file
+crypto/test_performance_benchmarks_comprehensive.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_performance_benchmarks_comprehensive.cpp.o
+.PHONY : crypto/test_performance_benchmarks_comprehensive.cpp.o
+
+crypto/test_performance_benchmarks_comprehensive.i: crypto/test_performance_benchmarks_comprehensive.cpp.i
+.PHONY : crypto/test_performance_benchmarks_comprehensive.i
+
+# target to preprocess a source file
+crypto/test_performance_benchmarks_comprehensive.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_performance_benchmarks_comprehensive.cpp.i
+.PHONY : crypto/test_performance_benchmarks_comprehensive.cpp.i
+
+crypto/test_performance_benchmarks_comprehensive.s: crypto/test_performance_benchmarks_comprehensive.cpp.s
+.PHONY : crypto/test_performance_benchmarks_comprehensive.s
+
+# target to generate assembly for a file
+crypto/test_performance_benchmarks_comprehensive.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_performance_benchmarks_comprehensive.cpp.s
+.PHONY : crypto/test_performance_benchmarks_comprehensive.cpp.s
+
 crypto/test_performance_validation_working.o: crypto/test_performance_validation_working.cpp.o
 .PHONY : crypto/test_performance_validation_working.o
 
@@ -784,6 +1598,30 @@ crypto/test_performance_validation_working.s: crypto/test_performance_validation
 crypto/test_performance_validation_working.cpp.s:
 	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_performance_validation_working.cpp.s
 .PHONY : crypto/test_performance_validation_working.cpp.s
+
+crypto/test_pure_mlkem_support.o: crypto/test_pure_mlkem_support.cpp.o
+.PHONY : crypto/test_pure_mlkem_support.o
+
+# target to build an object file
+crypto/test_pure_mlkem_support.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_pure_mlkem_support.cpp.o
+.PHONY : crypto/test_pure_mlkem_support.cpp.o
+
+crypto/test_pure_mlkem_support.i: crypto/test_pure_mlkem_support.cpp.i
+.PHONY : crypto/test_pure_mlkem_support.i
+
+# target to preprocess a source file
+crypto/test_pure_mlkem_support.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_pure_mlkem_support.cpp.i
+.PHONY : crypto/test_pure_mlkem_support.cpp.i
+
+crypto/test_pure_mlkem_support.s: crypto/test_pure_mlkem_support.cpp.s
+.PHONY : crypto/test_pure_mlkem_support.s
+
+# target to generate assembly for a file
+crypto/test_pure_mlkem_support.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_pure_mlkem_support.cpp.s
+.PHONY : crypto/test_pure_mlkem_support.cpp.s
 
 crypto/test_random_generation.o: crypto/test_random_generation.cpp.o
 .PHONY : crypto/test_random_generation.o
@@ -881,6 +1719,30 @@ crypto/test_signature_verification.cpp.s:
 	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_crypto_test.dir/build.make tests/CMakeFiles/dtls_crypto_test.dir/crypto/test_signature_verification.cpp.s
 .PHONY : crypto/test_signature_verification.cpp.s
 
+error_handling_test.o: error_handling_test.cpp.o
+.PHONY : error_handling_test.o
+
+# target to build an object file
+error_handling_test.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_error_handling_test.dir/build.make tests/CMakeFiles/dtls_error_handling_test.dir/error_handling_test.cpp.o
+.PHONY : error_handling_test.cpp.o
+
+error_handling_test.i: error_handling_test.cpp.i
+.PHONY : error_handling_test.i
+
+# target to preprocess a source file
+error_handling_test.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_error_handling_test.dir/build.make tests/CMakeFiles/dtls_error_handling_test.dir/error_handling_test.cpp.i
+.PHONY : error_handling_test.cpp.i
+
+error_handling_test.s: error_handling_test.cpp.s
+.PHONY : error_handling_test.s
+
+# target to generate assembly for a file
+error_handling_test.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_error_handling_test.dir/build.make tests/CMakeFiles/dtls_error_handling_test.dir/error_handling_test.cpp.s
+.PHONY : error_handling_test.cpp.s
+
 integration/dtls_integration_test.o: integration/dtls_integration_test.cpp.o
 .PHONY : integration/dtls_integration_test.o
 
@@ -928,6 +1790,102 @@ interoperability/dtls_interop_test.s: interoperability/dtls_interop_test.cpp.s
 interoperability/dtls_interop_test.cpp.s:
 	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_interop_test.dir/build.make tests/CMakeFiles/dtls_interop_test.dir/interoperability/dtls_interop_test.cpp.s
 .PHONY : interoperability/dtls_interop_test.cpp.s
+
+interoperability/test_hybrid_pqc_interop.o: interoperability/test_hybrid_pqc_interop.cpp.o
+.PHONY : interoperability/test_hybrid_pqc_interop.o
+
+# target to build an object file
+interoperability/test_hybrid_pqc_interop.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_interop_test.dir/build.make tests/CMakeFiles/dtls_interop_test.dir/interoperability/test_hybrid_pqc_interop.cpp.o
+.PHONY : interoperability/test_hybrid_pqc_interop.cpp.o
+
+interoperability/test_hybrid_pqc_interop.i: interoperability/test_hybrid_pqc_interop.cpp.i
+.PHONY : interoperability/test_hybrid_pqc_interop.i
+
+# target to preprocess a source file
+interoperability/test_hybrid_pqc_interop.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_interop_test.dir/build.make tests/CMakeFiles/dtls_interop_test.dir/interoperability/test_hybrid_pqc_interop.cpp.i
+.PHONY : interoperability/test_hybrid_pqc_interop.cpp.i
+
+interoperability/test_hybrid_pqc_interop.s: interoperability/test_hybrid_pqc_interop.cpp.s
+.PHONY : interoperability/test_hybrid_pqc_interop.s
+
+# target to generate assembly for a file
+interoperability/test_hybrid_pqc_interop.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_interop_test.dir/build.make tests/CMakeFiles/dtls_interop_test.dir/interoperability/test_hybrid_pqc_interop.cpp.s
+.PHONY : interoperability/test_hybrid_pqc_interop.cpp.s
+
+interoperability/test_mlkem_interop.o: interoperability/test_mlkem_interop.cpp.o
+.PHONY : interoperability/test_mlkem_interop.o
+
+# target to build an object file
+interoperability/test_mlkem_interop.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_interop_test.dir/build.make tests/CMakeFiles/dtls_interop_test.dir/interoperability/test_mlkem_interop.cpp.o
+.PHONY : interoperability/test_mlkem_interop.cpp.o
+
+interoperability/test_mlkem_interop.i: interoperability/test_mlkem_interop.cpp.i
+.PHONY : interoperability/test_mlkem_interop.i
+
+# target to preprocess a source file
+interoperability/test_mlkem_interop.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_interop_test.dir/build.make tests/CMakeFiles/dtls_interop_test.dir/interoperability/test_mlkem_interop.cpp.i
+.PHONY : interoperability/test_mlkem_interop.cpp.i
+
+interoperability/test_mlkem_interop.s: interoperability/test_mlkem_interop.cpp.s
+.PHONY : interoperability/test_mlkem_interop.s
+
+# target to generate assembly for a file
+interoperability/test_mlkem_interop.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_interop_test.dir/build.make tests/CMakeFiles/dtls_interop_test.dir/interoperability/test_mlkem_interop.cpp.s
+.PHONY : interoperability/test_mlkem_interop.cpp.s
+
+memory/test_memory_comprehensive.o: memory/test_memory_comprehensive.cpp.o
+.PHONY : memory/test_memory_comprehensive.o
+
+# target to build an object file
+memory/test_memory_comprehensive.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_memory_test.dir/build.make tests/CMakeFiles/dtls_memory_test.dir/memory/test_memory_comprehensive.cpp.o
+.PHONY : memory/test_memory_comprehensive.cpp.o
+
+memory/test_memory_comprehensive.i: memory/test_memory_comprehensive.cpp.i
+.PHONY : memory/test_memory_comprehensive.i
+
+# target to preprocess a source file
+memory/test_memory_comprehensive.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_memory_test.dir/build.make tests/CMakeFiles/dtls_memory_test.dir/memory/test_memory_comprehensive.cpp.i
+.PHONY : memory/test_memory_comprehensive.cpp.i
+
+memory/test_memory_comprehensive.s: memory/test_memory_comprehensive.cpp.s
+.PHONY : memory/test_memory_comprehensive.s
+
+# target to generate assembly for a file
+memory/test_memory_comprehensive.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_memory_test.dir/build.make tests/CMakeFiles/dtls_memory_test.dir/memory/test_memory_comprehensive.cpp.s
+.PHONY : memory/test_memory_comprehensive.cpp.s
+
+memory/test_zero_copy_crypto_security.o: memory/test_zero_copy_crypto_security.cpp.o
+.PHONY : memory/test_zero_copy_crypto_security.o
+
+# target to build an object file
+memory/test_zero_copy_crypto_security.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_memory_test.dir/build.make tests/CMakeFiles/dtls_memory_test.dir/memory/test_zero_copy_crypto_security.cpp.o
+.PHONY : memory/test_zero_copy_crypto_security.cpp.o
+
+memory/test_zero_copy_crypto_security.i: memory/test_zero_copy_crypto_security.cpp.i
+.PHONY : memory/test_zero_copy_crypto_security.i
+
+# target to preprocess a source file
+memory/test_zero_copy_crypto_security.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_memory_test.dir/build.make tests/CMakeFiles/dtls_memory_test.dir/memory/test_zero_copy_crypto_security.cpp.i
+.PHONY : memory/test_zero_copy_crypto_security.cpp.i
+
+memory/test_zero_copy_crypto_security.s: memory/test_zero_copy_crypto_security.cpp.s
+.PHONY : memory/test_zero_copy_crypto_security.s
+
+# target to generate assembly for a file
+memory/test_zero_copy_crypto_security.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_memory_test.dir/build.make tests/CMakeFiles/dtls_memory_test.dir/memory/test_zero_copy_crypto_security.cpp.s
+.PHONY : memory/test_zero_copy_crypto_security.cpp.s
 
 performance/benchmark_framework.o: performance/benchmark_framework.cpp.o
 .PHONY : performance/benchmark_framework.o
@@ -1049,6 +2007,54 @@ performance/resource_benchmarks.cpp.s:
 	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_performance_test.dir/build.make tests/CMakeFiles/dtls_performance_test.dir/performance/resource_benchmarks.cpp.s
 .PHONY : performance/resource_benchmarks.cpp.s
 
+performance/test_hybrid_pqc_performance.o: performance/test_hybrid_pqc_performance.cpp.o
+.PHONY : performance/test_hybrid_pqc_performance.o
+
+# target to build an object file
+performance/test_hybrid_pqc_performance.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_performance_test.dir/build.make tests/CMakeFiles/dtls_performance_test.dir/performance/test_hybrid_pqc_performance.cpp.o
+.PHONY : performance/test_hybrid_pqc_performance.cpp.o
+
+performance/test_hybrid_pqc_performance.i: performance/test_hybrid_pqc_performance.cpp.i
+.PHONY : performance/test_hybrid_pqc_performance.i
+
+# target to preprocess a source file
+performance/test_hybrid_pqc_performance.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_performance_test.dir/build.make tests/CMakeFiles/dtls_performance_test.dir/performance/test_hybrid_pqc_performance.cpp.i
+.PHONY : performance/test_hybrid_pqc_performance.cpp.i
+
+performance/test_hybrid_pqc_performance.s: performance/test_hybrid_pqc_performance.cpp.s
+.PHONY : performance/test_hybrid_pqc_performance.s
+
+# target to generate assembly for a file
+performance/test_hybrid_pqc_performance.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_performance_test.dir/build.make tests/CMakeFiles/dtls_performance_test.dir/performance/test_hybrid_pqc_performance.cpp.s
+.PHONY : performance/test_hybrid_pqc_performance.cpp.s
+
+performance/test_mlkem_performance.o: performance/test_mlkem_performance.cpp.o
+.PHONY : performance/test_mlkem_performance.o
+
+# target to build an object file
+performance/test_mlkem_performance.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_performance_test.dir/build.make tests/CMakeFiles/dtls_performance_test.dir/performance/test_mlkem_performance.cpp.o
+.PHONY : performance/test_mlkem_performance.cpp.o
+
+performance/test_mlkem_performance.i: performance/test_mlkem_performance.cpp.i
+.PHONY : performance/test_mlkem_performance.i
+
+# target to preprocess a source file
+performance/test_mlkem_performance.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_performance_test.dir/build.make tests/CMakeFiles/dtls_performance_test.dir/performance/test_mlkem_performance.cpp.i
+.PHONY : performance/test_mlkem_performance.cpp.i
+
+performance/test_mlkem_performance.s: performance/test_mlkem_performance.cpp.s
+.PHONY : performance/test_mlkem_performance.s
+
+# target to generate assembly for a file
+performance/test_mlkem_performance.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_performance_test.dir/build.make tests/CMakeFiles/dtls_performance_test.dir/performance/test_mlkem_performance.cpp.s
+.PHONY : performance/test_mlkem_performance.cpp.s
+
 performance/throughput_benchmarks.o: performance/throughput_benchmarks.cpp.o
 .PHONY : performance/throughput_benchmarks.o
 
@@ -1120,6 +2126,30 @@ protocol/test_dtls_records.s: protocol/test_dtls_records.cpp.s
 protocol/test_dtls_records.cpp.s:
 	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_protocol_test.dir/build.make tests/CMakeFiles/dtls_protocol_test.dir/protocol/test_dtls_records.cpp.s
 .PHONY : protocol/test_dtls_records.cpp.s
+
+protocol/test_dtls_records_comprehensive.o: protocol/test_dtls_records_comprehensive.cpp.o
+.PHONY : protocol/test_dtls_records_comprehensive.o
+
+# target to build an object file
+protocol/test_dtls_records_comprehensive.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_protocol_comprehensive_test.dir/build.make tests/CMakeFiles/dtls_protocol_comprehensive_test.dir/protocol/test_dtls_records_comprehensive.cpp.o
+.PHONY : protocol/test_dtls_records_comprehensive.cpp.o
+
+protocol/test_dtls_records_comprehensive.i: protocol/test_dtls_records_comprehensive.cpp.i
+.PHONY : protocol/test_dtls_records_comprehensive.i
+
+# target to preprocess a source file
+protocol/test_dtls_records_comprehensive.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_protocol_comprehensive_test.dir/build.make tests/CMakeFiles/dtls_protocol_comprehensive_test.dir/protocol/test_dtls_records_comprehensive.cpp.i
+.PHONY : protocol/test_dtls_records_comprehensive.cpp.i
+
+protocol/test_dtls_records_comprehensive.s: protocol/test_dtls_records_comprehensive.cpp.s
+.PHONY : protocol/test_dtls_records_comprehensive.s
+
+# target to generate assembly for a file
+protocol/test_dtls_records_comprehensive.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_protocol_comprehensive_test.dir/build.make tests/CMakeFiles/dtls_protocol_comprehensive_test.dir/protocol/test_dtls_records_comprehensive.cpp.s
+.PHONY : protocol/test_dtls_records_comprehensive.cpp.s
 
 protocol/test_fragment_reassembler.o: protocol/test_fragment_reassembler.cpp.o
 .PHONY : protocol/test_fragment_reassembler.o
@@ -1193,6 +2223,198 @@ protocol/test_key_update_simple.cpp.s:
 	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_protocol_test.dir/build.make tests/CMakeFiles/dtls_protocol_test.dir/protocol/test_key_update_simple.cpp.s
 .PHONY : protocol/test_key_update_simple.cpp.s
 
+protocol/test_message_layer_comprehensive.o: protocol/test_message_layer_comprehensive.cpp.o
+.PHONY : protocol/test_message_layer_comprehensive.o
+
+# target to build an object file
+protocol/test_message_layer_comprehensive.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_protocol_test.dir/build.make tests/CMakeFiles/dtls_protocol_test.dir/protocol/test_message_layer_comprehensive.cpp.o
+.PHONY : protocol/test_message_layer_comprehensive.cpp.o
+
+protocol/test_message_layer_comprehensive.i: protocol/test_message_layer_comprehensive.cpp.i
+.PHONY : protocol/test_message_layer_comprehensive.i
+
+# target to preprocess a source file
+protocol/test_message_layer_comprehensive.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_protocol_test.dir/build.make tests/CMakeFiles/dtls_protocol_test.dir/protocol/test_message_layer_comprehensive.cpp.i
+.PHONY : protocol/test_message_layer_comprehensive.cpp.i
+
+protocol/test_message_layer_comprehensive.s: protocol/test_message_layer_comprehensive.cpp.s
+.PHONY : protocol/test_message_layer_comprehensive.s
+
+# target to generate assembly for a file
+protocol/test_message_layer_comprehensive.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_protocol_test.dir/build.make tests/CMakeFiles/dtls_protocol_test.dir/protocol/test_message_layer_comprehensive.cpp.s
+.PHONY : protocol/test_message_layer_comprehensive.cpp.s
+
+protocol/test_message_layer_utilities.o: protocol/test_message_layer_utilities.cpp.o
+.PHONY : protocol/test_message_layer_utilities.o
+
+# target to build an object file
+protocol/test_message_layer_utilities.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_protocol_test.dir/build.make tests/CMakeFiles/dtls_protocol_test.dir/protocol/test_message_layer_utilities.cpp.o
+.PHONY : protocol/test_message_layer_utilities.cpp.o
+
+protocol/test_message_layer_utilities.i: protocol/test_message_layer_utilities.cpp.i
+.PHONY : protocol/test_message_layer_utilities.i
+
+# target to preprocess a source file
+protocol/test_message_layer_utilities.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_protocol_test.dir/build.make tests/CMakeFiles/dtls_protocol_test.dir/protocol/test_message_layer_utilities.cpp.i
+.PHONY : protocol/test_message_layer_utilities.cpp.i
+
+protocol/test_message_layer_utilities.s: protocol/test_message_layer_utilities.cpp.s
+.PHONY : protocol/test_message_layer_utilities.s
+
+# target to generate assembly for a file
+protocol/test_message_layer_utilities.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_protocol_test.dir/build.make tests/CMakeFiles/dtls_protocol_test.dir/protocol/test_message_layer_utilities.cpp.s
+.PHONY : protocol/test_message_layer_utilities.cpp.s
+
+protocol/test_protocol_utilities_simple.o: protocol/test_protocol_utilities_simple.cpp.o
+.PHONY : protocol/test_protocol_utilities_simple.o
+
+# target to build an object file
+protocol/test_protocol_utilities_simple.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_protocol_test.dir/build.make tests/CMakeFiles/dtls_protocol_test.dir/protocol/test_protocol_utilities_simple.cpp.o
+.PHONY : protocol/test_protocol_utilities_simple.cpp.o
+
+protocol/test_protocol_utilities_simple.i: protocol/test_protocol_utilities_simple.cpp.i
+.PHONY : protocol/test_protocol_utilities_simple.i
+
+# target to preprocess a source file
+protocol/test_protocol_utilities_simple.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_protocol_test.dir/build.make tests/CMakeFiles/dtls_protocol_test.dir/protocol/test_protocol_utilities_simple.cpp.i
+.PHONY : protocol/test_protocol_utilities_simple.cpp.i
+
+protocol/test_protocol_utilities_simple.s: protocol/test_protocol_utilities_simple.cpp.s
+.PHONY : protocol/test_protocol_utilities_simple.s
+
+# target to generate assembly for a file
+protocol/test_protocol_utilities_simple.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_protocol_test.dir/build.make tests/CMakeFiles/dtls_protocol_test.dir/protocol/test_protocol_utilities_simple.cpp.s
+.PHONY : protocol/test_protocol_utilities_simple.cpp.s
+
+protocol/test_record_comprehensive.o: protocol/test_record_comprehensive.cpp.o
+.PHONY : protocol/test_record_comprehensive.o
+
+# target to build an object file
+protocol/test_record_comprehensive.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_protocol_test.dir/build.make tests/CMakeFiles/dtls_protocol_test.dir/protocol/test_record_comprehensive.cpp.o
+.PHONY : protocol/test_record_comprehensive.cpp.o
+
+protocol/test_record_comprehensive.i: protocol/test_record_comprehensive.cpp.i
+.PHONY : protocol/test_record_comprehensive.i
+
+# target to preprocess a source file
+protocol/test_record_comprehensive.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_protocol_test.dir/build.make tests/CMakeFiles/dtls_protocol_test.dir/protocol/test_record_comprehensive.cpp.i
+.PHONY : protocol/test_record_comprehensive.cpp.i
+
+protocol/test_record_comprehensive.s: protocol/test_record_comprehensive.cpp.s
+.PHONY : protocol/test_record_comprehensive.s
+
+# target to generate assembly for a file
+protocol/test_record_comprehensive.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_protocol_test.dir/build.make tests/CMakeFiles/dtls_protocol_test.dir/protocol/test_record_comprehensive.cpp.s
+.PHONY : protocol/test_record_comprehensive.cpp.s
+
+protocol/test_record_layer_comprehensive.o: protocol/test_record_layer_comprehensive.cpp.o
+.PHONY : protocol/test_record_layer_comprehensive.o
+
+# target to build an object file
+protocol/test_record_layer_comprehensive.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_protocol_test.dir/build.make tests/CMakeFiles/dtls_protocol_test.dir/protocol/test_record_layer_comprehensive.cpp.o
+.PHONY : protocol/test_record_layer_comprehensive.cpp.o
+
+protocol/test_record_layer_comprehensive.i: protocol/test_record_layer_comprehensive.cpp.i
+.PHONY : protocol/test_record_layer_comprehensive.i
+
+# target to preprocess a source file
+protocol/test_record_layer_comprehensive.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_protocol_test.dir/build.make tests/CMakeFiles/dtls_protocol_test.dir/protocol/test_record_layer_comprehensive.cpp.i
+.PHONY : protocol/test_record_layer_comprehensive.cpp.i
+
+protocol/test_record_layer_comprehensive.s: protocol/test_record_layer_comprehensive.cpp.s
+.PHONY : protocol/test_record_layer_comprehensive.s
+
+# target to generate assembly for a file
+protocol/test_record_layer_comprehensive.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_protocol_test.dir/build.make tests/CMakeFiles/dtls_protocol_test.dir/protocol/test_record_layer_comprehensive.cpp.s
+.PHONY : protocol/test_record_layer_comprehensive.cpp.s
+
+protocol/test_record_layer_decoupling.o: protocol/test_record_layer_decoupling.cpp.o
+.PHONY : protocol/test_record_layer_decoupling.o
+
+# target to build an object file
+protocol/test_record_layer_decoupling.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_protocol_test.dir/build.make tests/CMakeFiles/dtls_protocol_test.dir/protocol/test_record_layer_decoupling.cpp.o
+.PHONY : protocol/test_record_layer_decoupling.cpp.o
+
+protocol/test_record_layer_decoupling.i: protocol/test_record_layer_decoupling.cpp.i
+.PHONY : protocol/test_record_layer_decoupling.i
+
+# target to preprocess a source file
+protocol/test_record_layer_decoupling.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_protocol_test.dir/build.make tests/CMakeFiles/dtls_protocol_test.dir/protocol/test_record_layer_decoupling.cpp.i
+.PHONY : protocol/test_record_layer_decoupling.cpp.i
+
+protocol/test_record_layer_decoupling.s: protocol/test_record_layer_decoupling.cpp.s
+.PHONY : protocol/test_record_layer_decoupling.s
+
+# target to generate assembly for a file
+protocol/test_record_layer_decoupling.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_protocol_test.dir/build.make tests/CMakeFiles/dtls_protocol_test.dir/protocol/test_record_layer_decoupling.cpp.s
+.PHONY : protocol/test_record_layer_decoupling.cpp.s
+
+protocol/test_version_manager.o: protocol/test_version_manager.cpp.o
+.PHONY : protocol/test_version_manager.o
+
+# target to build an object file
+protocol/test_version_manager.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_protocol_test.dir/build.make tests/CMakeFiles/dtls_protocol_test.dir/protocol/test_version_manager.cpp.o
+.PHONY : protocol/test_version_manager.cpp.o
+
+protocol/test_version_manager.i: protocol/test_version_manager.cpp.i
+.PHONY : protocol/test_version_manager.i
+
+# target to preprocess a source file
+protocol/test_version_manager.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_protocol_test.dir/build.make tests/CMakeFiles/dtls_protocol_test.dir/protocol/test_version_manager.cpp.i
+.PHONY : protocol/test_version_manager.cpp.i
+
+protocol/test_version_manager.s: protocol/test_version_manager.cpp.s
+.PHONY : protocol/test_version_manager.s
+
+# target to generate assembly for a file
+protocol/test_version_manager.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_protocol_test.dir/build.make tests/CMakeFiles/dtls_protocol_test.dir/protocol/test_version_manager.cpp.s
+.PHONY : protocol/test_version_manager.cpp.s
+
+protocol/test_version_manager_comprehensive.o: protocol/test_version_manager_comprehensive.cpp.o
+.PHONY : protocol/test_version_manager_comprehensive.o
+
+# target to build an object file
+protocol/test_version_manager_comprehensive.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_protocol_test.dir/build.make tests/CMakeFiles/dtls_protocol_test.dir/protocol/test_version_manager_comprehensive.cpp.o
+.PHONY : protocol/test_version_manager_comprehensive.cpp.o
+
+protocol/test_version_manager_comprehensive.i: protocol/test_version_manager_comprehensive.cpp.i
+.PHONY : protocol/test_version_manager_comprehensive.i
+
+# target to preprocess a source file
+protocol/test_version_manager_comprehensive.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_protocol_test.dir/build.make tests/CMakeFiles/dtls_protocol_test.dir/protocol/test_version_manager_comprehensive.cpp.i
+.PHONY : protocol/test_version_manager_comprehensive.cpp.i
+
+protocol/test_version_manager_comprehensive.s: protocol/test_version_manager_comprehensive.cpp.s
+.PHONY : protocol/test_version_manager_comprehensive.s
+
+# target to generate assembly for a file
+protocol/test_version_manager_comprehensive.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_protocol_test.dir/build.make tests/CMakeFiles/dtls_protocol_test.dir/protocol/test_version_manager_comprehensive.cpp.s
+.PHONY : protocol/test_version_manager_comprehensive.cpp.s
+
 reliability/dtls_reliability_test.o: reliability/dtls_reliability_test.cpp.o
 .PHONY : reliability/dtls_reliability_test.o
 
@@ -1217,6 +2439,30 @@ reliability/dtls_reliability_test.cpp.s:
 	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_reliability_test.dir/build.make tests/CMakeFiles/dtls_reliability_test.dir/reliability/dtls_reliability_test.cpp.s
 .PHONY : reliability/dtls_reliability_test.cpp.s
 
+rfc9147_compliance_test.o: rfc9147_compliance_test.cpp.o
+.PHONY : rfc9147_compliance_test.o
+
+# target to build an object file
+rfc9147_compliance_test.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_error_handling_test.dir/build.make tests/CMakeFiles/dtls_error_handling_test.dir/rfc9147_compliance_test.cpp.o
+.PHONY : rfc9147_compliance_test.cpp.o
+
+rfc9147_compliance_test.i: rfc9147_compliance_test.cpp.i
+.PHONY : rfc9147_compliance_test.i
+
+# target to preprocess a source file
+rfc9147_compliance_test.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_error_handling_test.dir/build.make tests/CMakeFiles/dtls_error_handling_test.dir/rfc9147_compliance_test.cpp.i
+.PHONY : rfc9147_compliance_test.cpp.i
+
+rfc9147_compliance_test.s: rfc9147_compliance_test.cpp.s
+.PHONY : rfc9147_compliance_test.s
+
+# target to generate assembly for a file
+rfc9147_compliance_test.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_error_handling_test.dir/build.make tests/CMakeFiles/dtls_error_handling_test.dir/rfc9147_compliance_test.cpp.s
+.PHONY : rfc9147_compliance_test.cpp.s
+
 security/dtls_security_test.o: security/dtls_security_test.cpp.o
 .PHONY : security/dtls_security_test.o
 
@@ -1240,6 +2486,102 @@ security/dtls_security_test.s: security/dtls_security_test.cpp.s
 security/dtls_security_test.cpp.s:
 	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_security_test.dir/build.make tests/CMakeFiles/dtls_security_test.dir/security/dtls_security_test.cpp.s
 .PHONY : security/dtls_security_test.cpp.s
+
+security/test_hybrid_pqc_security.o: security/test_hybrid_pqc_security.cpp.o
+.PHONY : security/test_hybrid_pqc_security.o
+
+# target to build an object file
+security/test_hybrid_pqc_security.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_security_test.dir/build.make tests/CMakeFiles/dtls_security_test.dir/security/test_hybrid_pqc_security.cpp.o
+.PHONY : security/test_hybrid_pqc_security.cpp.o
+
+security/test_hybrid_pqc_security.i: security/test_hybrid_pqc_security.cpp.i
+.PHONY : security/test_hybrid_pqc_security.i
+
+# target to preprocess a source file
+security/test_hybrid_pqc_security.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_security_test.dir/build.make tests/CMakeFiles/dtls_security_test.dir/security/test_hybrid_pqc_security.cpp.i
+.PHONY : security/test_hybrid_pqc_security.cpp.i
+
+security/test_hybrid_pqc_security.s: security/test_hybrid_pqc_security.cpp.s
+.PHONY : security/test_hybrid_pqc_security.s
+
+# target to generate assembly for a file
+security/test_hybrid_pqc_security.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_security_test.dir/build.make tests/CMakeFiles/dtls_security_test.dir/security/test_hybrid_pqc_security.cpp.s
+.PHONY : security/test_hybrid_pqc_security.cpp.s
+
+security/test_rate_limiter_comprehensive.o: security/test_rate_limiter_comprehensive.cpp.o
+.PHONY : security/test_rate_limiter_comprehensive.o
+
+# target to build an object file
+security/test_rate_limiter_comprehensive.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_security_comprehensive_test.dir/build.make tests/CMakeFiles/dtls_security_comprehensive_test.dir/security/test_rate_limiter_comprehensive.cpp.o
+.PHONY : security/test_rate_limiter_comprehensive.cpp.o
+
+security/test_rate_limiter_comprehensive.i: security/test_rate_limiter_comprehensive.cpp.i
+.PHONY : security/test_rate_limiter_comprehensive.i
+
+# target to preprocess a source file
+security/test_rate_limiter_comprehensive.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_security_comprehensive_test.dir/build.make tests/CMakeFiles/dtls_security_comprehensive_test.dir/security/test_rate_limiter_comprehensive.cpp.i
+.PHONY : security/test_rate_limiter_comprehensive.cpp.i
+
+security/test_rate_limiter_comprehensive.s: security/test_rate_limiter_comprehensive.cpp.s
+.PHONY : security/test_rate_limiter_comprehensive.s
+
+# target to generate assembly for a file
+security/test_rate_limiter_comprehensive.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_security_comprehensive_test.dir/build.make tests/CMakeFiles/dtls_security_comprehensive_test.dir/security/test_rate_limiter_comprehensive.cpp.s
+.PHONY : security/test_rate_limiter_comprehensive.cpp.s
+
+security/test_security_focused.o: security/test_security_focused.cpp.o
+.PHONY : security/test_security_focused.o
+
+# target to build an object file
+security/test_security_focused.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_security_test.dir/build.make tests/CMakeFiles/dtls_security_test.dir/security/test_security_focused.cpp.o
+.PHONY : security/test_security_focused.cpp.o
+
+security/test_security_focused.i: security/test_security_focused.cpp.i
+.PHONY : security/test_security_focused.i
+
+# target to preprocess a source file
+security/test_security_focused.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_security_test.dir/build.make tests/CMakeFiles/dtls_security_test.dir/security/test_security_focused.cpp.i
+.PHONY : security/test_security_focused.cpp.i
+
+security/test_security_focused.s: security/test_security_focused.cpp.s
+.PHONY : security/test_security_focused.s
+
+# target to generate assembly for a file
+security/test_security_focused.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_security_test.dir/build.make tests/CMakeFiles/dtls_security_test.dir/security/test_security_focused.cpp.s
+.PHONY : security/test_security_focused.cpp.s
+
+simple_coverage_test.o: simple_coverage_test.cpp.o
+.PHONY : simple_coverage_test.o
+
+# target to build an object file
+simple_coverage_test.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_simple_coverage_test.dir/build.make tests/CMakeFiles/dtls_simple_coverage_test.dir/simple_coverage_test.cpp.o
+.PHONY : simple_coverage_test.cpp.o
+
+simple_coverage_test.i: simple_coverage_test.cpp.i
+.PHONY : simple_coverage_test.i
+
+# target to preprocess a source file
+simple_coverage_test.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_simple_coverage_test.dir/build.make tests/CMakeFiles/dtls_simple_coverage_test.dir/simple_coverage_test.cpp.i
+.PHONY : simple_coverage_test.cpp.i
+
+simple_coverage_test.s: simple_coverage_test.cpp.s
+.PHONY : simple_coverage_test.s
+
+# target to generate assembly for a file
+simple_coverage_test.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_simple_coverage_test.dir/build.make tests/CMakeFiles/dtls_simple_coverage_test.dir/simple_coverage_test.cpp.s
+.PHONY : simple_coverage_test.cpp.s
 
 test_infrastructure/mock_transport.o: test_infrastructure/mock_transport.cpp.o
 .PHONY : test_infrastructure/mock_transport.o
@@ -1313,6 +2655,30 @@ test_infrastructure/test_utilities.cpp.s:
 	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_test_infrastructure.dir/build.make tests/CMakeFiles/dtls_test_infrastructure.dir/test_infrastructure/test_utilities.cpp.s
 .PHONY : test_infrastructure/test_utilities.cpp.s
 
+transport/test_udp_transport.o: transport/test_udp_transport.cpp.o
+.PHONY : transport/test_udp_transport.o
+
+# target to build an object file
+transport/test_udp_transport.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_transport_test.dir/build.make tests/CMakeFiles/dtls_transport_test.dir/transport/test_udp_transport.cpp.o
+.PHONY : transport/test_udp_transport.cpp.o
+
+transport/test_udp_transport.i: transport/test_udp_transport.cpp.i
+.PHONY : transport/test_udp_transport.i
+
+# target to preprocess a source file
+transport/test_udp_transport.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_transport_test.dir/build.make tests/CMakeFiles/dtls_transport_test.dir/transport/test_udp_transport.cpp.i
+.PHONY : transport/test_udp_transport.cpp.i
+
+transport/test_udp_transport.s: transport/test_udp_transport.cpp.s
+.PHONY : transport/test_udp_transport.s
+
+# target to generate assembly for a file
+transport/test_udp_transport.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/dtls_transport_test.dir/build.make tests/CMakeFiles/dtls_transport_test.dir/transport/test_udp_transport.cpp.s
+.PHONY : transport/test_udp_transport.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -1328,6 +2694,15 @@ help:
 	@echo "... package_source"
 	@echo "... rebuild_cache"
 	@echo "... test"
+	@echo "... coverage_validate"
+	@echo "... dtls_coverage"
+	@echo "... dtls_coverage_clean"
+	@echo "... dtls_crypto_coverage"
+	@echo "... dtls_crypto_coverage_clean"
+	@echo "... dtls_integration_coverage"
+	@echo "... dtls_integration_coverage_clean"
+	@echo "... dtls_protocol_coverage"
+	@echo "... dtls_protocol_coverage_clean"
 	@echo "... performance_summary"
 	@echo "... run_all_tests"
 	@echo "... run_connection_tests"
@@ -1342,19 +2717,27 @@ help:
 	@echo "... run_reliability_tests"
 	@echo "... run_security_tests"
 	@echo "... test_asan"
-	@echo "... test_coverage"
 	@echo "... test_memcheck"
 	@echo "... test_report"
 	@echo "... test_tsan"
 	@echo "... dtls_connection_test"
+	@echo "... dtls_core_protocol_test"
+	@echo "... dtls_core_test"
+	@echo "... dtls_coverage_enhancement_test"
 	@echo "... dtls_crypto_test"
+	@echo "... dtls_error_handling_test"
 	@echo "... dtls_integration_test"
 	@echo "... dtls_interop_test"
+	@echo "... dtls_memory_test"
 	@echo "... dtls_performance_test"
+	@echo "... dtls_protocol_comprehensive_test"
 	@echo "... dtls_protocol_test"
 	@echo "... dtls_reliability_test"
+	@echo "... dtls_security_comprehensive_test"
 	@echo "... dtls_security_test"
+	@echo "... dtls_simple_coverage_test"
 	@echo "... dtls_test_infrastructure"
+	@echo "... dtls_transport_test"
 	@echo "... connection/test_connection_cleanup.o"
 	@echo "... connection/test_connection_cleanup.i"
 	@echo "... connection/test_connection_cleanup.s"
@@ -1364,24 +2747,99 @@ help:
 	@echo "... connection/test_state_transitions.o"
 	@echo "... connection/test_state_transitions.i"
 	@echo "... connection/test_state_transitions.s"
+	@echo "... core/test_alert_manager.o"
+	@echo "... core/test_alert_manager.i"
+	@echo "... core/test_alert_manager.s"
+	@echo "... core/test_error.o"
+	@echo "... core/test_error.i"
+	@echo "... core/test_error.s"
+	@echo "... core/test_result.o"
+	@echo "... core/test_result.i"
+	@echo "... core/test_result.s"
+	@echo "... core/test_types.o"
+	@echo "... core/test_types.i"
+	@echo "... core/test_types.s"
+	@echo "... core_protocol/test_anti_replay_core.o"
+	@echo "... core_protocol/test_anti_replay_core.i"
+	@echo "... core_protocol/test_anti_replay_core.s"
+	@echo "... coverage_enhancement_test.o"
+	@echo "... coverage_enhancement_test.i"
+	@echo "... coverage_enhancement_test.s"
 	@echo "... crypto/test_aead_operations.o"
 	@echo "... crypto/test_aead_operations.i"
 	@echo "... crypto/test_aead_operations.s"
 	@echo "... crypto/test_botan_signature_operations.o"
 	@echo "... crypto/test_botan_signature_operations.i"
 	@echo "... crypto/test_botan_signature_operations.s"
+	@echo "... crypto/test_cross_provider_comprehensive.o"
+	@echo "... crypto/test_cross_provider_comprehensive.i"
+	@echo "... crypto/test_cross_provider_comprehensive.s"
+	@echo "... crypto/test_crypto_coverage_comprehensive.o"
+	@echo "... crypto/test_crypto_coverage_comprehensive.i"
+	@echo "... crypto/test_crypto_coverage_comprehensive.s"
+	@echo "... crypto/test_crypto_dependency_reduction.o"
+	@echo "... crypto/test_crypto_dependency_reduction.i"
+	@echo "... crypto/test_crypto_dependency_reduction.s"
+	@echo "... crypto/test_crypto_edge_cases.o"
+	@echo "... crypto/test_crypto_edge_cases.i"
+	@echo "... crypto/test_crypto_edge_cases.s"
+	@echo "... crypto/test_crypto_operations_abstraction.o"
+	@echo "... crypto/test_crypto_operations_abstraction.i"
+	@echo "... crypto/test_crypto_operations_abstraction.s"
+	@echo "... crypto/test_crypto_operations_comprehensive.o"
+	@echo "... crypto/test_crypto_operations_comprehensive.i"
+	@echo "... crypto/test_crypto_operations_comprehensive.s"
+	@echo "... crypto/test_crypto_security_validation.o"
+	@echo "... crypto/test_crypto_security_validation.i"
+	@echo "... crypto/test_crypto_security_validation.s"
 	@echo "... crypto/test_crypto_security_vectors.o"
 	@echo "... crypto/test_crypto_security_vectors.i"
 	@echo "... crypto/test_crypto_security_vectors.s"
+	@echo "... crypto/test_crypto_system_comprehensive.o"
+	@echo "... crypto/test_crypto_system_comprehensive.i"
+	@echo "... crypto/test_crypto_system_comprehensive.s"
+	@echo "... crypto/test_enhanced_crypto_providers.o"
+	@echo "... crypto/test_enhanced_crypto_providers.i"
+	@echo "... crypto/test_enhanced_crypto_providers.s"
+	@echo "... crypto/test_hardware_acceleration_comprehensive.o"
+	@echo "... crypto/test_hardware_acceleration_comprehensive.i"
+	@echo "... crypto/test_hardware_acceleration_comprehensive.s"
 	@echo "... crypto/test_hkdf_expand_label.o"
 	@echo "... crypto/test_hkdf_expand_label.i"
 	@echo "... crypto/test_hkdf_expand_label.s"
+	@echo "... crypto/test_hybrid_pqc_compliance.o"
+	@echo "... crypto/test_hybrid_pqc_compliance.i"
+	@echo "... crypto/test_hybrid_pqc_compliance.s"
+	@echo "... crypto/test_hybrid_pqc_key_exchange.o"
+	@echo "... crypto/test_hybrid_pqc_key_exchange.i"
+	@echo "... crypto/test_hybrid_pqc_key_exchange.s"
+	@echo "... crypto/test_hybrid_pqc_mlkem_operations.o"
+	@echo "... crypto/test_hybrid_pqc_mlkem_operations.i"
+	@echo "... crypto/test_hybrid_pqc_mlkem_operations.s"
+	@echo "... crypto/test_hybrid_pqc_test_vectors.o"
+	@echo "... crypto/test_hybrid_pqc_test_vectors.i"
+	@echo "... crypto/test_hybrid_pqc_test_vectors.s"
 	@echo "... crypto/test_mac_validation.o"
 	@echo "... crypto/test_mac_validation.i"
 	@echo "... crypto/test_mac_validation.s"
+	@echo "... crypto/test_mlkem_comprehensive.o"
+	@echo "... crypto/test_mlkem_comprehensive.i"
+	@echo "... crypto/test_mlkem_comprehensive.s"
+	@echo "... crypto/test_mlkem_security.o"
+	@echo "... crypto/test_mlkem_security.i"
+	@echo "... crypto/test_mlkem_security.s"
+	@echo "... crypto/test_openssl_provider_comprehensive.o"
+	@echo "... crypto/test_openssl_provider_comprehensive.i"
+	@echo "... crypto/test_openssl_provider_comprehensive.s"
+	@echo "... crypto/test_performance_benchmarks_comprehensive.o"
+	@echo "... crypto/test_performance_benchmarks_comprehensive.i"
+	@echo "... crypto/test_performance_benchmarks_comprehensive.s"
 	@echo "... crypto/test_performance_validation_working.o"
 	@echo "... crypto/test_performance_validation_working.i"
 	@echo "... crypto/test_performance_validation_working.s"
+	@echo "... crypto/test_pure_mlkem_support.o"
+	@echo "... crypto/test_pure_mlkem_support.i"
+	@echo "... crypto/test_pure_mlkem_support.s"
 	@echo "... crypto/test_random_generation.o"
 	@echo "... crypto/test_random_generation.i"
 	@echo "... crypto/test_random_generation.s"
@@ -1394,12 +2852,27 @@ help:
 	@echo "... crypto/test_signature_verification.o"
 	@echo "... crypto/test_signature_verification.i"
 	@echo "... crypto/test_signature_verification.s"
+	@echo "... error_handling_test.o"
+	@echo "... error_handling_test.i"
+	@echo "... error_handling_test.s"
 	@echo "... integration/dtls_integration_test.o"
 	@echo "... integration/dtls_integration_test.i"
 	@echo "... integration/dtls_integration_test.s"
 	@echo "... interoperability/dtls_interop_test.o"
 	@echo "... interoperability/dtls_interop_test.i"
 	@echo "... interoperability/dtls_interop_test.s"
+	@echo "... interoperability/test_hybrid_pqc_interop.o"
+	@echo "... interoperability/test_hybrid_pqc_interop.i"
+	@echo "... interoperability/test_hybrid_pqc_interop.s"
+	@echo "... interoperability/test_mlkem_interop.o"
+	@echo "... interoperability/test_mlkem_interop.i"
+	@echo "... interoperability/test_mlkem_interop.s"
+	@echo "... memory/test_memory_comprehensive.o"
+	@echo "... memory/test_memory_comprehensive.i"
+	@echo "... memory/test_memory_comprehensive.s"
+	@echo "... memory/test_zero_copy_crypto_security.o"
+	@echo "... memory/test_zero_copy_crypto_security.i"
+	@echo "... memory/test_zero_copy_crypto_security.s"
 	@echo "... performance/benchmark_framework.o"
 	@echo "... performance/benchmark_framework.i"
 	@echo "... performance/benchmark_framework.s"
@@ -1415,6 +2888,12 @@ help:
 	@echo "... performance/resource_benchmarks.o"
 	@echo "... performance/resource_benchmarks.i"
 	@echo "... performance/resource_benchmarks.s"
+	@echo "... performance/test_hybrid_pqc_performance.o"
+	@echo "... performance/test_hybrid_pqc_performance.i"
+	@echo "... performance/test_hybrid_pqc_performance.s"
+	@echo "... performance/test_mlkem_performance.o"
+	@echo "... performance/test_mlkem_performance.i"
+	@echo "... performance/test_mlkem_performance.s"
 	@echo "... performance/throughput_benchmarks.o"
 	@echo "... performance/throughput_benchmarks.i"
 	@echo "... performance/throughput_benchmarks.s"
@@ -1424,6 +2903,9 @@ help:
 	@echo "... protocol/test_dtls_records.o"
 	@echo "... protocol/test_dtls_records.i"
 	@echo "... protocol/test_dtls_records.s"
+	@echo "... protocol/test_dtls_records_comprehensive.o"
+	@echo "... protocol/test_dtls_records_comprehensive.i"
+	@echo "... protocol/test_dtls_records_comprehensive.s"
 	@echo "... protocol/test_fragment_reassembler.o"
 	@echo "... protocol/test_fragment_reassembler.i"
 	@echo "... protocol/test_fragment_reassembler.s"
@@ -1433,12 +2915,51 @@ help:
 	@echo "... protocol/test_key_update_simple.o"
 	@echo "... protocol/test_key_update_simple.i"
 	@echo "... protocol/test_key_update_simple.s"
+	@echo "... protocol/test_message_layer_comprehensive.o"
+	@echo "... protocol/test_message_layer_comprehensive.i"
+	@echo "... protocol/test_message_layer_comprehensive.s"
+	@echo "... protocol/test_message_layer_utilities.o"
+	@echo "... protocol/test_message_layer_utilities.i"
+	@echo "... protocol/test_message_layer_utilities.s"
+	@echo "... protocol/test_protocol_utilities_simple.o"
+	@echo "... protocol/test_protocol_utilities_simple.i"
+	@echo "... protocol/test_protocol_utilities_simple.s"
+	@echo "... protocol/test_record_comprehensive.o"
+	@echo "... protocol/test_record_comprehensive.i"
+	@echo "... protocol/test_record_comprehensive.s"
+	@echo "... protocol/test_record_layer_comprehensive.o"
+	@echo "... protocol/test_record_layer_comprehensive.i"
+	@echo "... protocol/test_record_layer_comprehensive.s"
+	@echo "... protocol/test_record_layer_decoupling.o"
+	@echo "... protocol/test_record_layer_decoupling.i"
+	@echo "... protocol/test_record_layer_decoupling.s"
+	@echo "... protocol/test_version_manager.o"
+	@echo "... protocol/test_version_manager.i"
+	@echo "... protocol/test_version_manager.s"
+	@echo "... protocol/test_version_manager_comprehensive.o"
+	@echo "... protocol/test_version_manager_comprehensive.i"
+	@echo "... protocol/test_version_manager_comprehensive.s"
 	@echo "... reliability/dtls_reliability_test.o"
 	@echo "... reliability/dtls_reliability_test.i"
 	@echo "... reliability/dtls_reliability_test.s"
+	@echo "... rfc9147_compliance_test.o"
+	@echo "... rfc9147_compliance_test.i"
+	@echo "... rfc9147_compliance_test.s"
 	@echo "... security/dtls_security_test.o"
 	@echo "... security/dtls_security_test.i"
 	@echo "... security/dtls_security_test.s"
+	@echo "... security/test_hybrid_pqc_security.o"
+	@echo "... security/test_hybrid_pqc_security.i"
+	@echo "... security/test_hybrid_pqc_security.s"
+	@echo "... security/test_rate_limiter_comprehensive.o"
+	@echo "... security/test_rate_limiter_comprehensive.i"
+	@echo "... security/test_rate_limiter_comprehensive.s"
+	@echo "... security/test_security_focused.o"
+	@echo "... security/test_security_focused.i"
+	@echo "... security/test_security_focused.s"
+	@echo "... simple_coverage_test.o"
+	@echo "... simple_coverage_test.i"
+	@echo "... simple_coverage_test.s"
 	@echo "... test_infrastructure/mock_transport.o"
 	@echo "... test_infrastructure/mock_transport.i"
 	@echo "... test_infrastructure/mock_transport.s"
@@ -1448,6 +2969,9 @@ help:
 	@echo "... test_infrastructure/test_utilities.o"
 	@echo "... test_infrastructure/test_utilities.i"
 	@echo "... test_infrastructure/test_utilities.s"
+	@echo "... transport/test_udp_transport.o"
+	@echo "... transport/test_udp_transport.i"
+	@echo "... transport/test_udp_transport.s"
 .PHONY : help
 
 

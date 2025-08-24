@@ -9,6 +9,7 @@
 #include <mutex>
 #include <atomic>
 #include <vector>
+#include <unordered_map>
 
 namespace dtls {
 namespace v13 {

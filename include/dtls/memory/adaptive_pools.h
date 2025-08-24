@@ -12,6 +12,7 @@
 #include <mutex>
 #include <chrono>
 #include <algorithm>
+#include <thread>
 
 namespace dtls {
 namespace v13 {
@@ -77,7 +78,8 @@ public:
         bool enable_predictive_sizing{true}; // Enable predictive algorithms
     };
     
-    explicit AdaptivePoolSizer(const SizingConfig& config = SizingConfig{});
+    AdaptivePoolSizer();
+    explicit AdaptivePoolSizer(const SizingConfig& config);
     
     // Sizing decisions
     size_t calculate_optimal_size(const PoolUsagePattern& pattern) const;
@@ -104,12 +106,13 @@ private:
 // Enhanced buffer pool with adaptive sizing
 class DTLS_API AdaptiveBufferPool : public BufferPool {
 public:
-    AdaptiveBufferPool(size_t buffer_size, size_t initial_pool_size = 16,
-                      const AdaptivePoolSizer::SizingConfig& config = {});
+    AdaptiveBufferPool(size_t buffer_size, size_t initial_pool_size = 16);
+    AdaptiveBufferPool(size_t buffer_size, size_t initial_pool_size,
+                      const AdaptivePoolSizer::SizingConfig& config);
     
     // Enhanced pool operations
-    std::unique_ptr<ZeroCopyBuffer> acquire() override;
-    void release(std::unique_ptr<ZeroCopyBuffer> buffer) override;
+    std::unique_ptr<ZeroCopyBuffer> acquire();
+    void release(std::unique_ptr<ZeroCopyBuffer> buffer);
     
     // Adaptive management
     void update_usage_statistics();
@@ -178,8 +181,9 @@ public:
     
     // Pool management
     AdaptiveBufferPool& get_adaptive_pool(size_t buffer_size);
+    Result<void> create_adaptive_pool(size_t buffer_size, size_t initial_size);
     Result<void> create_adaptive_pool(size_t buffer_size, size_t initial_size,
-                                     const AdaptivePoolSizer::SizingConfig& config = {});
+                                     const AdaptivePoolSizer::SizingConfig& config);
     void remove_adaptive_pool(size_t buffer_size);
     
     // Global adaptation
@@ -316,7 +320,8 @@ private:
 // Factory functions for adaptive pools
 DTLS_API AdaptiveBufferPool& get_adaptive_pool(size_t buffer_size);
 DTLS_API PooledBuffer make_adaptive_buffer(size_t size);
-DTLS_API void configure_adaptive_pools(const AdaptivePoolSizer::SizingConfig& config = {});
+DTLS_API void configure_adaptive_pools();
+DTLS_API void configure_adaptive_pools(const AdaptivePoolSizer::SizingConfig& config);
 DTLS_API void enable_adaptive_sizing(bool enabled = true);
 DTLS_API void optimize_pools_for_high_concurrency();
 

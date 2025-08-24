@@ -257,6 +257,38 @@ DTLS_API bool is_eddsa_signature(SignatureScheme scheme);
 DTLS_API bool is_pss_signature(SignatureScheme scheme);
 DTLS_API HashAlgorithm get_signature_hash_algorithm(SignatureScheme scheme);
 
+// Post-Quantum Signature utilities (FIPS 204 & 205)
+DTLS_API bool is_ml_dsa_signature(SignatureScheme scheme);
+DTLS_API bool is_slh_dsa_signature(SignatureScheme scheme);
+DTLS_API bool is_pure_pqc_signature(SignatureScheme scheme);
+DTLS_API bool is_hybrid_pqc_signature(SignatureScheme scheme);
+DTLS_API bool is_pqc_signature(SignatureScheme scheme);
+
+// PQC signature parameter utilities
+DTLS_API MLDSAParameterSet get_ml_dsa_parameter_set(SignatureScheme scheme);
+DTLS_API SLHDSAParameterSet get_slh_dsa_parameter_set(SignatureScheme scheme);
+DTLS_API size_t get_ml_dsa_signature_max_size(MLDSAParameterSet param_set);
+DTLS_API size_t get_slh_dsa_signature_max_size(SLHDSAParameterSet param_set);
+DTLS_API size_t get_ml_dsa_public_key_size(MLDSAParameterSet param_set);
+DTLS_API size_t get_slh_dsa_public_key_size(SLHDSAParameterSet param_set);
+
+// PQC signature validation utilities
+DTLS_API Result<bool> validate_ml_dsa_signature_format(
+    const std::vector<uint8_t>& signature,
+    MLDSAParameterSet param_set);
+
+DTLS_API Result<bool> validate_slh_dsa_signature_format(
+    const std::vector<uint8_t>& signature,
+    SLHDSAParameterSet param_set);
+
+DTLS_API Result<bool> validate_pqc_signature_context(
+    const std::vector<uint8_t>& context,
+    SignatureScheme scheme);
+
+DTLS_API Result<bool> validate_hybrid_signature_format(
+    const std::vector<uint8_t>& signature,
+    SignatureScheme hybrid_scheme);
+
 // Certificate utilities
 DTLS_API Result<std::vector<uint8_t>> extract_certificate_public_key_bytes(
     const std::vector<uint8_t>& certificate_der);

@@ -143,6 +143,456 @@ private:
     }
     
 protected:
+    // Helper methods for comprehensive fuzzing validation
+    void run_state_machine_fuzzing() {
+        // Test invalid handshake message sequences
+        std::vector<std::vector<HandshakeType>> invalid_sequences = {
+            // Server message before ClientHello
+            {HandshakeType::SERVER_HELLO, HandshakeType::CLIENT_HELLO},
+            
+            // Finished before Certificate
+            {HandshakeType::CLIENT_HELLO, HandshakeType::FINISHED},
+            
+            // Duplicate ClientHello
+            {HandshakeType::CLIENT_HELLO, HandshakeType::CLIENT_HELLO},
+            
+            // Certificate without CertificateVerify
+            {HandshakeType::CLIENT_HELLO, HandshakeType::SERVER_HELLO, 
+             HandshakeType::CERTIFICATE, HandshakeType::FINISHED},
+            
+            // Random message order
+            {HandshakeType::FINISHED, HandshakeType::CERTIFICATE_VERIFY, 
+             HandshakeType::SERVER_HELLO, HandshakeType::CLIENT_HELLO}
+        };
+        
+        for (const auto& sequence : invalid_sequences) {
+            for (size_t i = 0; i < 3; ++i) { // Test each sequence multiple times
+                bool caused_crash = false;
+                bool caused_exception = false;
+                bool caused_hang = false;
+                std::string error_msg;
+                
+                try {
+                    // Create messages following the invalid sequence
+                    std::vector<protocol::HandshakeMessage> messages;
+                    
+                    for (auto msg_type : sequence) {
+                        protocol::HandshakeMessage handshake_msg;
+                        
+                        switch (msg_type) {
+                            case HandshakeType::CLIENT_HELLO: {
+                                // Create a copy of the template for mutation
+                                protocol::ClientHello client_hello;
+                                client_hello.set_legacy_version(static_cast<dtls::v13::protocol::ProtocolVersion>(0xFEFC)); // DTLS v1.3
+                                
+                                std::array<uint8_t, 32> random_array;
+                                auto random_data = generate_secure_random_data(32);
+                                std::copy(random_data.begin(), random_data.end(), random_array.begin());
+                                client_hello.set_random(random_array);
+                                
+                                client_hello.set_cipher_suites({CipherSuite::TLS_AES_256_GCM_SHA384});
+                                
+                                handshake_msg = protocol::HandshakeMessage(std::move(client_hello));
+                                break;
+                            }
+                            case HandshakeType::SERVER_HELLO: {
+                                protocol::ServerHello server_hello;
+                                server_hello.set_legacy_version(static_cast<dtls::v13::protocol::ProtocolVersion>(0xFEFC)); // DTLS v1.3
+                                
+                                std::array<uint8_t, 32> random_array;
+                                auto random_data = generate_secure_random_data(32);
+                                std::copy(random_data.begin(), random_data.end(), random_array.begin());
+                                server_hello.set_random(random_array);
+                                
+                                server_hello.set_cipher_suite(CipherSuite::TLS_AES_256_GCM_SHA384);
+                                
+                                handshake_msg = protocol::HandshakeMessage(std::move(server_hello));
+                                break;
+                            }
+                            case HandshakeType::CERTIFICATE: {
+                                protocol::Certificate certificate;
+                                
+                                protocol::CertificateEntry cert_entry;
+                                auto cert_data = generate_mock_certificate_data();
+                                memory::Buffer cert_buffer(cert_data.size());
+                                auto resize_result = cert_buffer.resize(cert_data.size());
+                                if (resize_result.is_success()) {
+                                    std::memcpy(cert_buffer.mutable_data(), cert_data.data(), cert_data.size());
+                                }
+                                cert_entry.cert_data = std::move(cert_buffer);
+                                
+                                std::vector<protocol::CertificateEntry> cert_list;
+                                cert_list.push_back(std::move(cert_entry));
+                                certificate.set_certificate_list(std::move(cert_list));
+                                
+                                handshake_msg = protocol::HandshakeMessage(std::move(certificate));
+                                break;
+                            }
+                            case HandshakeType::FINISHED: {
+                                protocol::Finished finished;
+                                auto verify_data = generate_secure_random_data(32);
+                                memory::Buffer verify_buffer(verify_data.size());
+                                auto resize_result = verify_buffer.resize(verify_data.size());
+                                if (resize_result.is_success()) {
+                                    std::memcpy(verify_buffer.mutable_data(), verify_data.data(), verify_data.size());
+                                }
+                                finished.set_verify_data(std::move(verify_buffer));
+                                
+                                handshake_msg = protocol::HandshakeMessage(std::move(finished));
+                                break;
+                            }
+                            default:
+                                // Create a minimal valid message for other types
+                                protocol::KeyUpdate key_update;
+                                handshake_msg = protocol::HandshakeMessage(std::move(key_update));
+                                break;
+                        }
+                        
+                        messages.push_back(std::move(handshake_msg));
+                    }
+                    
+                    // Try to serialize all messages in the invalid sequence
+                    for (auto& msg : messages) {
+                        memory::Buffer buffer(4096);
+                        auto result = msg.serialize(buffer);
+                        (void)result; // We don't care about serialization success for fuzzing
+                        
+                        // Validate each message individually
+                        bool is_valid = msg.is_valid();
+                        (void)is_valid; // Individual messages may be valid even if sequence is not
+                    }
+                    
+                    error_msg = "Invalid sequence processed without error";
+                    
+                } catch (const std::exception& e) {
+                    caused_exception = true;
+                    error_msg = e.what();
+                } catch (...) {
+                    caused_crash = true;
+                    error_msg = "Unknown exception/crash in state machine fuzzing";
+                }
+                
+                std::string sequence_str;
+                for (size_t j = 0; j < sequence.size(); ++j) {
+                    sequence_str += std::to_string(static_cast<uint8_t>(sequence[j]));
+                    if (j < sequence.size() - 1) sequence_str += "->";
+                }
+                
+                record_advanced_fuzz_result("StateMachine", "InvalidSequence",
+                                           caused_crash, caused_exception, caused_hang, error_msg);
+            }
+        }
+    }
+    
+    void run_cryptographic_message_fuzzing() {
+        // Test Certificate message fuzzing
+        for (size_t i = 0; i < crypto_fuzz_iterations_; ++i) {
+            bool caused_crash = false;
+            bool caused_exception = false;
+            bool caused_hang = false;
+            std::string error_msg;
+            
+            try {
+                protocol::Certificate certificate;
+                
+                // Create multiple certificate entries with various mutations
+                std::vector<protocol::CertificateEntry> cert_entries;
+                
+                for (int j = 0; j < 3; ++j) {
+                    protocol::CertificateEntry cert_entry;
+                    
+                    // Generate malformed certificate data
+                    std::vector<uint8_t> cert_data;
+                    
+                    if (i % 4 == 0) {
+                        // Empty certificate
+                        cert_data.clear();
+                    } else if (i % 4 == 1) {
+                        // Oversized certificate (simulate huge certificates)
+                        cert_data = generate_secure_random_data(10000); // Reduced size to avoid timeout
+                    } else if (i % 4 == 2) {
+                        // Invalid ASN.1 DER structure
+                        cert_data = {0xFF, 0xFF, 0xFF, 0xFF}; // Invalid DER tag
+                        auto random_data = generate_secure_random_data(rng_() % 1000);
+                        cert_data.insert(cert_data.end(), random_data.begin(), random_data.end());
+                    } else {
+                        // Valid-looking but corrupted certificate
+                        cert_data = generate_mock_certificate_data();
+                        // Corrupt random bytes
+                        for (int k = 0; k < 10; ++k) {
+                            if (cert_data.size() > 10) {
+                                cert_data[rng_() % cert_data.size()] = rng_() % 256;
+                            }
+                        }
+                    }
+                    
+                    if (!cert_data.empty()) {
+                        memory::Buffer cert_buffer(cert_data.size());
+                        auto resize_result = cert_buffer.resize(cert_data.size());
+                        if (resize_result.is_success()) {
+                            std::memcpy(cert_buffer.mutable_data(), cert_data.data(), cert_data.size());
+                        }
+                        cert_entry.cert_data = std::move(cert_buffer);
+                    }
+                    
+                    cert_entries.push_back(std::move(cert_entry));
+                }
+                
+                certificate.set_certificate_list(std::move(cert_entries));
+                
+                // Test serialization and validation
+                memory::Buffer buffer(20000); // Reduced buffer size
+                auto result = certificate.serialize(buffer);
+                
+                bool is_valid = certificate.is_valid();
+                error_msg = "Certificate fuzzing completed, valid: " + std::string(is_valid ? "true" : "false");
+                
+                if (!result.is_success()) {
+                    error_msg += " (serialization failed)";
+                }
+                
+            } catch (const std::exception& e) {
+                caused_exception = true;
+                error_msg = e.what();
+            } catch (...) {
+                caused_crash = true;
+                error_msg = "Unknown exception in certificate fuzzing";
+            }
+            
+            record_advanced_fuzz_result("Cryptographic", "CertificateFuzzing",
+                                       caused_crash, caused_exception, caused_hang, error_msg);
+        }
+    }
+    
+    void run_fragment_reassembly_fuzzing() {
+        for (size_t i = 0; i < fragment_fuzz_iterations_; ++i) {
+            bool caused_crash = false;
+            bool caused_exception = false;
+            bool caused_hang = false;
+            std::string error_msg;
+            
+            try {
+                // Create HandshakeHeader with malicious fragmentation parameters
+                protocol::HandshakeHeader header;
+                header.msg_type = HandshakeType::CERTIFICATE;
+                header.message_seq = static_cast<uint16_t>(i);
+                
+                // Create potentially malicious fragment parameters
+                if (i % 5 == 0) {
+                    // Fragment offset > length (invalid)
+                    header.length = 1000;
+                    header.fragment_offset = 2000;
+                    header.fragment_length = 500;
+                } else if (i % 5 == 1) {
+                    // Fragment length > total length (invalid)
+                    header.length = 1000;
+                    header.fragment_offset = 100;
+                    header.fragment_length = 2000;
+                } else if (i % 5 == 2) {
+                    // Overlapping fragments (fragment_offset + fragment_length > length)
+                    header.length = 1000;
+                    header.fragment_offset = 800;
+                    header.fragment_length = 500;
+                } else if (i % 5 == 3) {
+                    // Very large fragment parameters (potential overflow)
+                    header.length = 0xFFFFFF; // 24-bit max
+                    header.fragment_offset = 0xFFFFFF;
+                    header.fragment_length = 0xFFFFFF;
+                } else {
+                    // Zero-length fragment
+                    header.length = 1000;
+                    header.fragment_offset = 500;
+                    header.fragment_length = 0;
+                }
+                
+                // Test serialization
+                memory::Buffer buffer(4096);
+                auto result = header.serialize(buffer);
+                
+                // Test validation
+                bool is_valid = header.is_valid();
+                error_msg = "Fragment header fuzzing completed, valid: " + std::string(is_valid ? "true" : "false");
+                
+                // Test fragment detection
+                bool is_fragmented = header.is_fragmented();
+                (void)is_fragmented;
+                
+                if (!result.is_success()) {
+                    error_msg += " (serialization failed)";
+                }
+                
+            } catch (const std::exception& e) {
+                caused_exception = true;
+                error_msg = e.what();
+            } catch (...) {
+                caused_crash = true;
+                error_msg = "Unknown exception in fragment fuzzing";
+            }
+            
+            record_advanced_fuzz_result("FragmentReassembly", "MaliciousFragmentParams",
+                                       caused_crash, caused_exception, caused_hang, error_msg);
+        }
+    }
+    
+    void run_concurrent_message_fuzzing() {
+        // Test concurrent serialization/deserialization
+        for (size_t i = 0; i < concurrent_fuzz_iterations_; ++i) {
+            bool caused_crash = false;
+            bool caused_exception = false;
+            bool caused_hang = false;
+            std::string error_msg;
+            
+            try {
+                const size_t num_threads = 4;
+                std::vector<std::future<void>> futures;
+                std::atomic<bool> test_failed{false};
+                std::mutex error_mutex;
+                std::string shared_error;
+                
+                // Launch concurrent operations
+                for (size_t thread_id = 0; thread_id < num_threads; ++thread_id) {
+                    futures.push_back(std::async(std::launch::async, [&, thread_id]() {
+                        try {
+                            // Each thread performs different message operations
+                            for (int j = 0; j < 5; ++j) { // Reduced iterations to avoid timeout
+                                if (thread_id % 2 == 0) {
+                                    // Serialize messages
+                                    protocol::ClientHello client_hello;
+                                    client_hello.set_legacy_version(static_cast<dtls::v13::protocol::ProtocolVersion>(0xFEFC)); // DTLS v1.3
+                                    
+                                    std::array<uint8_t, 32> random_array;
+                                    auto random_data = generate_secure_random_data(32);
+                                    std::copy(random_data.begin(), random_data.end(), random_array.begin());
+                                    client_hello.set_random(random_array);
+                                    
+                                    memory::Buffer buffer(2048);
+                                    auto result = client_hello.serialize(buffer);
+                                    (void)result;
+                                } else {
+                                    // Deserialize random data
+                                    auto random_buffer_data = generate_secure_random_data(200);
+                                    memory::Buffer random_buffer(random_buffer_data.size());
+                                    auto resize_result = random_buffer.resize(random_buffer_data.size());
+                                    if (resize_result.is_success()) {
+                                        std::memcpy(random_buffer.mutable_data(), random_buffer_data.data(), random_buffer_data.size());
+                                    }
+                                    
+                                    auto result = protocol::ClientHello::deserialize(random_buffer);
+                                    (void)result; // Expected to fail most of the time
+                                }
+                                
+                                // Small delay to increase chance of race conditions
+                                std::this_thread::sleep_for(std::chrono::microseconds(5)); // Reduced delay
+                            }
+                        } catch (const std::exception& e) {
+                            test_failed.store(true);
+                            std::lock_guard<std::mutex> lock(error_mutex);
+                            shared_error = e.what();
+                        } catch (...) {
+                            test_failed.store(true);
+                            std::lock_guard<std::mutex> lock(error_mutex);
+                            shared_error = "Unknown exception in thread " + std::to_string(thread_id);
+                        }
+                    }));
+                }
+                
+                // Wait for all threads with timeout
+                bool all_completed = true;
+                for (auto& future : futures) {
+                    auto status = future.wait_for(std::chrono::seconds(2)); // Reduced timeout
+                    if (status == std::future_status::timeout) {
+                        caused_hang = true;
+                        all_completed = false;
+                        break;
+                    }
+                }
+                
+                if (test_failed.load()) {
+                    caused_exception = true;
+                    error_msg = shared_error;
+                } else if (all_completed) {
+                    error_msg = "Concurrent message processing completed successfully";
+                } else {
+                    error_msg = "Some threads timed out";
+                }
+                
+            } catch (const std::exception& e) {
+                caused_exception = true;
+                error_msg = e.what();
+            } catch (...) {
+                caused_crash = true;
+                error_msg = "Unknown exception in concurrent fuzzing";
+            }
+            
+            record_advanced_fuzz_result("Concurrent", "RaceConditionTesting",
+                                       caused_crash, caused_exception, caused_hang, error_msg);
+        }
+    }
+    
+    void run_memory_pressure_fuzzing() {
+        for (size_t i = 0; i < memory_pressure_iterations_; ++i) {
+            bool caused_crash = false;
+            bool caused_exception = false;
+            bool caused_hang = false;
+            std::string error_msg;
+            
+            try {
+                // Create large numbers of messages to test memory management
+                std::vector<std::unique_ptr<protocol::ClientHello>> messages;
+                
+                size_t num_messages = 50 + (i * 20); // Reduced memory pressure to avoid timeout
+                
+                for (size_t j = 0; j < num_messages; ++j) {
+                    auto client_hello = std::make_unique<protocol::ClientHello>();
+                    client_hello->set_legacy_version(static_cast<dtls::v13::protocol::ProtocolVersion>(0xFEFC)); // DTLS v1.3
+                    
+                    // Add large amounts of extension data
+                    for (int k = 0; k < 5; ++k) { // Reduced extension count
+                        auto ext_data = generate_secure_random_data(500); // Reduced size
+                        memory::Buffer ext_buffer(ext_data.size());
+                        auto resize_result = ext_buffer.resize(ext_data.size());
+                        if (resize_result.is_success()) {
+                            std::memcpy(ext_buffer.mutable_data(), ext_data.data(), ext_data.size());
+                        }
+                        
+                        protocol::Extension extension(protocol::ExtensionType::SUPPORTED_GROUPS, 
+                                                     std::move(ext_buffer));
+                        client_hello->add_extension(std::move(extension));
+                    }
+                    
+                    messages.push_back(std::move(client_hello));
+                }
+                
+                // Try to serialize all messages
+                size_t total_serialized = 0;
+                for (const auto& msg : messages) {
+                    memory::Buffer buffer(10000); // Reduced buffer size
+                    auto result = msg->serialize(buffer);
+                    if (result.is_success()) {
+                        total_serialized++;
+                    }
+                }
+                
+                error_msg = "Memory pressure test completed, serialized: " + 
+                           std::to_string(total_serialized) + "/" + std::to_string(num_messages);
+                
+            } catch (const std::bad_alloc& e) {
+                // Expected behavior under memory pressure
+                error_msg = "Memory allocation failed as expected: " + std::string(e.what());
+            } catch (const std::exception& e) {
+                caused_exception = true;
+                error_msg = e.what();
+            } catch (...) {
+                caused_crash = true;
+                error_msg = "Unknown exception in memory pressure fuzzing";
+            }
+            
+            record_advanced_fuzz_result("MemoryPressure", "ResourceExhaustion",
+                                       caused_crash, caused_exception, caused_hang, error_msg);
+        }
+    }
+    
+protected:
     std::vector<uint8_t> generate_secure_random_data(size_t size) {
         std::vector<uint8_t> data(size);
         std::uniform_int_distribution<uint8_t> dist(0, 255);
@@ -809,6 +1259,13 @@ TEST_F(AdvancedFuzzingTest, MemoryPressureFuzzing) {
  * Comprehensive advanced fuzzing validation
  */
 TEST_F(AdvancedFuzzingTest, ComprehensiveAdvancedFuzzingValidation) {
+    // Run all individual fuzzing tests first to populate results
+    run_state_machine_fuzzing();
+    run_cryptographic_message_fuzzing();
+    run_fragment_reassembly_fuzzing();
+    run_concurrent_message_fuzzing();
+    run_memory_pressure_fuzzing();
+    
     // Analyze advanced fuzzing results
     std::map<std::string, size_t> test_counts;
     std::map<std::string, size_t> crash_counts;

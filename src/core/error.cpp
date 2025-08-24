@@ -134,8 +134,8 @@ std::string DTLSErrorCategory::message(int ev) const {
 }
 
 bool DTLSErrorCategory::equivalent(const std::error_code& code, int condition) const noexcept {
-    // Custom equivalence logic can be added here
-    return code.value() == condition;
+    // Only consider equivalent if both the category and value match
+    return (code.category() == *this) && (code.value() == condition);
 }
 
 // Utility functions
@@ -320,7 +320,9 @@ DTLSError alert_to_error(AlertDescription alert) {
         {AlertDescription::CERTIFICATE_REQUIRED, DTLSError::CERTIFICATE_REQUIRED},
         {AlertDescription::NO_APPLICATION_PROTOCOL, DTLSError::NO_APPLICATION_PROTOCOL},
         // Additional DTLS v1.3 reverse mappings (RFC 9147)
-        {AlertDescription::TOO_MANY_CIDS_REQUESTED, DTLSError::CONNECTION_ID_MISMATCH}
+        {AlertDescription::TOO_MANY_CIDS_REQUESTED, DTLSError::CONNECTION_ID_MISMATCH},
+        // Connection management alerts
+        {AlertDescription::CLOSE_NOTIFY, DTLSError::CONNECTION_CLOSED}
     };
     
     auto it = alert_to_error_map.find(alert);

@@ -76,56 +76,80 @@ CPUInfo detect_x86_features() {
     CPUInfo info;
     uint32_t eax, ebx, ecx, edx;
     
-    // Get vendor string
+    // Check maximum supported CPUID leaf first
     get_cpuid(0, 0, &eax, &ebx, &ecx, &edx);
-    char vendor[13] = {0};
-    memcpy(vendor, &ebx, 4);
-    memcpy(vendor + 4, &edx, 4);
-    memcpy(vendor + 8, &ecx, 4);
+    uint32_t max_leaf = eax;
+    
+    // Get vendor string - safely copy 12 bytes from CPUID registers
+    char vendor[13] = {0};  // 12 bytes + null terminator
+    uint32_t vendor_regs[3] = {ebx, edx, ecx};  // EBX, EDX, ECX order for vendor string
+    memcpy(vendor, vendor_regs, 12);
     info.vendor = vendor;
     
-    // Get basic CPU info
-    get_cpuid(1, 0, &eax, &ebx, &ecx, &edx);
-    info.family = (eax >> 8) & 0xF;
-    info.model_id = (eax >> 4) & 0xF;
-    info.stepping = eax & 0xF;
-    
-    // Extended family/model for newer CPUs
-    if (info.family == 0xF) {
-        info.family += (eax >> 20) & 0xFF;
+    // Get basic CPU info - check if leaf 1 is available
+    if (max_leaf >= 1) {
+        get_cpuid(1, 0, &eax, &ebx, &ecx, &edx);
+        info.family = (eax >> 8) & 0xF;
+        info.model_id = (eax >> 4) & 0xF;
+        info.stepping = eax & 0xF;
+        
+        // Extended family/model for newer CPUs
+        if (info.family == 0xF) {
+            info.family += (eax >> 20) & 0xFF;
+        }
+        if (info.family == 0x6 || info.family == 0xF) {
+            info.model_id += ((eax >> 16) & 0xF) << 4;
+        }
+        
+        // Feature detection from CPUID leaf 1
+        // SSE features  
+        if (edx & (1 << 26)) info.capabilities.insert(HardwareCapability::SSE2);
+        if (ecx & (1 << 0)) info.capabilities.insert(HardwareCapability::SSE3);
+        if (ecx & (1 << 19)) info.capabilities.insert(HardwareCapability::SSE4_1);
+        if (ecx & (1 << 20)) info.capabilities.insert(HardwareCapability::SSE4_2);
+        
+        // AES-NI
+        if (ecx & (1 << 25)) info.capabilities.insert(HardwareCapability::AES_NI);
+        
+        // PCLMULQDQ
+        if (ecx & (1 << 1)) info.capabilities.insert(HardwareCapability::PCLMULQDQ);
+        
+        // AVX
+        if (ecx & (1 << 28)) info.capabilities.insert(HardwareCapability::AVX);
     }
-    if (info.family == 0x6 || info.family == 0xF) {
-        info.model_id += ((eax >> 16) & 0xF) << 4;
+    
+    // Extended features - check if leaf 7 is available
+    if (max_leaf >= 7) {
+        get_cpuid(7, 0, &eax, &ebx, &ecx, &edx);
+        if (ebx & (1 << 5)) info.capabilities.insert(HardwareCapability::AVX2);
     }
     
-    // Feature detection
-    // SSE features  
-    if (edx & (1 << 26)) info.capabilities.insert(HardwareCapability::SSE2);
-    if (ecx & (1 << 0)) info.capabilities.insert(HardwareCapability::SSE3);
-    if (ecx & (1 << 19)) info.capabilities.insert(HardwareCapability::SSE4_1);
-    if (ecx & (1 << 20)) info.capabilities.insert(HardwareCapability::SSE4_2);
+    // Get brand string - safely copy 48 bytes from CPUID registers
+    char brand[49] = {0};  // 48 bytes + null terminator
     
-    // AES-NI
-    if (ecx & (1 << 25)) info.capabilities.insert(HardwareCapability::AES_NI);
+    // Check if extended CPUID leaves are available
+    get_cpuid(0x80000000, 0, &eax, &ebx, &ecx, &edx);
+    uint32_t max_ext_leaf = eax;
     
-    // PCLMULQDQ
-    if (ecx & (1 << 1)) info.capabilities.insert(HardwareCapability::PCLMULQDQ);
-    
-    // AVX
-    if (ecx & (1 << 28)) info.capabilities.insert(HardwareCapability::AVX);
-    
-    // Extended features
-    get_cpuid(7, 0, &eax, &ebx, &ecx, &edx);
-    if (ebx & (1 << 5)) info.capabilities.insert(HardwareCapability::AVX2);
-    
-    // Get brand string
-    char brand[49] = {0};
-    get_cpuid(0x80000002, 0, &eax, &ebx, &ecx, &edx);
-    memcpy(brand, &eax, 16);
-    get_cpuid(0x80000003, 0, &eax, &ebx, &ecx, &edx);
-    memcpy(brand + 16, &eax, 16);
-    get_cpuid(0x80000004, 0, &eax, &ebx, &ecx, &edx);
-    memcpy(brand + 32, &eax, 16);
+    if (max_ext_leaf >= 0x80000004) {
+        // Copy first 16 bytes (4 registers × 4 bytes each)
+        get_cpuid(0x80000002, 0, &eax, &ebx, &ecx, &edx);
+        uint32_t regs1[4] = {eax, ebx, ecx, edx};
+        memcpy(brand, regs1, 16);
+        
+        // Copy second 16 bytes
+        get_cpuid(0x80000003, 0, &eax, &ebx, &ecx, &edx);
+        uint32_t regs2[4] = {eax, ebx, ecx, edx};
+        memcpy(brand + 16, regs2, 16);
+        
+        // Copy third 16 bytes
+        get_cpuid(0x80000004, 0, &eax, &ebx, &ecx, &edx);
+        uint32_t regs3[4] = {eax, ebx, ecx, edx};
+        memcpy(brand + 32, regs3, 16);
+    } else {
+        // Fallback to generic brand if extended CPUID not available
+        snprintf(brand, sizeof(brand), "Unknown %s CPU", info.vendor.c_str());
+    }
     info.brand = brand;
     
     return info;

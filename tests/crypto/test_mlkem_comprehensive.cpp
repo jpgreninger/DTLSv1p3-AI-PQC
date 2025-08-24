@@ -559,43 +559,177 @@ TEST_F(MLKEMComprehensiveTest, EndToEndKeyExchange) {
     
     for (auto* provider : providers) {
         for (auto group : ml_kem_groups_) {
-            // Client generates keypair and sends public key
-            PureMLKEMKeyExchangeParams client_params;
-            client_params.mlkem_group = group;
-            client_params.is_encapsulation = true;
-            
-            // First generate keypair for server
+            // Step 1: Server generates keypair
             auto param_set = pqc_utils::get_pure_mlkem_parameter_set(group);
             MLKEMKeyGenParams keygen_params;
             keygen_params.parameter_set = param_set;
             
             auto server_keygen = provider->mlkem_generate_keypair(keygen_params);
-            ASSERT_TRUE(server_keygen.is_success());
+            ASSERT_TRUE(server_keygen.is_success())
+                << "Server key generation failed for " << get_named_group_name(group);
             
             const auto& [server_public_key, server_private_key] = server_keygen.value();
             
-            // Client performs encapsulation using server's public key
+            // Step 2: Client performs encapsulation using server's public key
+            PureMLKEMKeyExchangeParams client_params;
+            client_params.mlkem_group = group;
+            client_params.is_encapsulation = true;
             client_params.peer_public_key = server_public_key;
             
             auto client_result = provider->perform_pure_mlkem_key_exchange(client_params);
             ASSERT_TRUE(client_result.is_success())
-                << "Client key exchange failed for " << get_named_group_name(group);
+                << "Client key exchange failed for " << get_named_group_name(group)
+                << " with provider " << provider->name();
             
-            // Server performs decapsulation using client's ciphertext
+            // Step 3: Server performs decapsulation using client's ciphertext
             PureMLKEMKeyExchangeParams server_params;
             server_params.mlkem_group = group;
-            server_params.is_encapsulation = false;
+            server_params.is_encapsulation = false;  // Server decapsulates
             server_params.private_key = server_private_key;
-            server_params.peer_public_key = client_result.value().ciphertext;
+            server_params.ciphertext = client_result.value().ciphertext;
             
             auto server_result = provider->perform_pure_mlkem_key_exchange(server_params);
             ASSERT_TRUE(server_result.is_success())
-                << "Server key exchange failed for " << get_named_group_name(group);
+                << "Server key exchange failed for " << get_named_group_name(group)
+                << " with provider " << provider->name();
             
-            // Validate shared secrets match
+            // Step 4: Validate shared secrets match
             EXPECT_EQ(client_result.value().shared_secret, 
                      server_result.value().shared_secret)
-                << "Shared secrets must match for end-to-end key exchange";
+                << "Shared secrets must match for end-to-end key exchange with "
+                << get_named_group_name(group) << " using provider " << provider->name();
+            
+            // Step 5: Validate sizes are correct
+            using namespace pqc_utils;
+            auto expected_client_size = get_pure_mlkem_client_keyshare_size(group);
+            auto expected_server_size = get_pure_mlkem_server_keyshare_size(group);
+            
+            EXPECT_EQ(server_public_key.size(), expected_client_size)
+                << "Server public key size incorrect for " << get_named_group_name(group);
+            EXPECT_EQ(client_result.value().ciphertext.size(), expected_server_size)
+                << "Client ciphertext size incorrect for " << get_named_group_name(group);
+            EXPECT_EQ(client_result.value().shared_secret.size(), 32)
+                << "Client shared secret size must be 32 bytes";
+            EXPECT_EQ(server_result.value().shared_secret.size(), 32)
+                << "Server shared secret size must be 32 bytes";
+        }
+    }
+}
+
+/**
+ * Test ML-KEM interface parameter validation
+ */
+TEST_F(MLKEMComprehensiveTest, InterfaceParameterValidation) {
+    auto providers = get_available_providers();
+    if (providers.empty()) {
+        GTEST_SKIP() << "No crypto providers available";
+    }
+    
+    for (auto* provider : providers) {
+        // Test encapsulation with missing public key
+        PureMLKEMKeyExchangeParams encap_params;
+        encap_params.mlkem_group = NamedGroup::MLKEM512;
+        encap_params.is_encapsulation = true;
+        // peer_public_key intentionally left empty
+        
+        auto encap_result = provider->perform_pure_mlkem_key_exchange(encap_params);
+        EXPECT_FALSE(encap_result.is_success())
+            << "Encapsulation should fail with empty public key";
+        EXPECT_EQ(encap_result.error(), DTLSError::INVALID_PARAMETER)
+            << "Should return INVALID_PARAMETER error";
+        
+        // Test decapsulation with missing private key
+        PureMLKEMKeyExchangeParams decap_params;
+        decap_params.mlkem_group = NamedGroup::MLKEM512;
+        decap_params.is_encapsulation = false;
+        // private_key intentionally left empty
+        decap_params.ciphertext = std::vector<uint8_t>(768, 0x42);  // dummy ciphertext
+        
+        auto decap_result = provider->perform_pure_mlkem_key_exchange(decap_params);
+        EXPECT_FALSE(decap_result.is_success())
+            << "Decapsulation should fail with empty private key";
+        EXPECT_EQ(decap_result.error(), DTLSError::INVALID_PARAMETER)
+            << "Should return INVALID_PARAMETER error";
+        
+        // Test decapsulation with missing ciphertext
+        PureMLKEMKeyExchangeParams decap_params2;
+        decap_params2.mlkem_group = NamedGroup::MLKEM512;
+        decap_params2.is_encapsulation = false;
+        decap_params2.private_key = std::vector<uint8_t>(1632, 0x42);  // dummy private key
+        // ciphertext intentionally left empty
+        
+        auto decap_result2 = provider->perform_pure_mlkem_key_exchange(decap_params2);
+        EXPECT_FALSE(decap_result2.is_success())
+            << "Decapsulation should fail with empty ciphertext";
+        EXPECT_EQ(decap_result2.error(), DTLSError::INVALID_PARAMETER)
+            << "Should return INVALID_PARAMETER error";
+    }
+}
+
+/**
+ * Test ML-KEM client/server coordination with multiple rounds
+ */
+TEST_F(MLKEMComprehensiveTest, MultiRoundKeyExchangeCoordination) {
+    auto providers = get_available_providers();
+    if (providers.empty()) {
+        GTEST_SKIP() << "No crypto providers available";
+    }
+    
+    const int num_rounds = 5;
+    
+    for (auto* provider : providers) {
+        for (auto group : ml_kem_groups_) {
+            std::vector<std::vector<uint8_t>> shared_secrets;
+            
+            for (int round = 0; round < num_rounds; ++round) {
+                // Generate fresh server keypair for each round
+                auto param_set = pqc_utils::get_pure_mlkem_parameter_set(group);
+                MLKEMKeyGenParams keygen_params;
+                keygen_params.parameter_set = param_set;
+                
+                auto server_keygen = provider->mlkem_generate_keypair(keygen_params);
+                ASSERT_TRUE(server_keygen.is_success())
+                    << "Server key generation failed in round " << round;
+                
+                const auto& [server_public_key, server_private_key] = server_keygen.value();
+                
+                // Client encapsulation
+                PureMLKEMKeyExchangeParams client_params;
+                client_params.mlkem_group = group;
+                client_params.is_encapsulation = true;
+                client_params.peer_public_key = server_public_key;
+                
+                auto client_result = provider->perform_pure_mlkem_key_exchange(client_params);
+                ASSERT_TRUE(client_result.is_success())
+                    << "Client encapsulation failed in round " << round;
+                
+                // Server decapsulation
+                PureMLKEMKeyExchangeParams server_params;
+                server_params.mlkem_group = group;
+                server_params.is_encapsulation = false;
+                server_params.private_key = server_private_key;
+                server_params.ciphertext = client_result.value().ciphertext;
+                
+                auto server_result = provider->perform_pure_mlkem_key_exchange(server_params);
+                ASSERT_TRUE(server_result.is_success())
+                    << "Server decapsulation failed in round " << round;
+                
+                // Validate shared secrets match
+                EXPECT_EQ(client_result.value().shared_secret, 
+                         server_result.value().shared_secret)
+                    << "Shared secrets mismatch in round " << round;
+                
+                // Store shared secret for uniqueness test
+                shared_secrets.push_back(client_result.value().shared_secret);
+            }
+            
+            // Verify all shared secrets are unique (probabilistically)
+            for (size_t i = 0; i < shared_secrets.size(); ++i) {
+                for (size_t j = i + 1; j < shared_secrets.size(); ++j) {
+                    EXPECT_NE(shared_secrets[i], shared_secrets[j])
+                        << "Shared secrets should be unique across rounds";
+                }
+            }
         }
     }
 }

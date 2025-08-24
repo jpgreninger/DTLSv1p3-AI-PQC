@@ -18,13 +18,22 @@ class SystemCTimingAdapter {
 public:
     // Timing configuration
     struct TimingConfig {
-        sc_core::sc_time anti_replay_check_time{10, sc_core::SC_NS};
-        sc_core::sc_time window_slide_time{50, sc_core::SC_NS};
-        sc_core::sc_time statistics_update_time{5, sc_core::SC_NS};
+        sc_core::sc_time anti_replay_check_time;
+        sc_core::sc_time window_slide_time;
+        sc_core::sc_time statistics_update_time;
         
         // Hardware acceleration can reduce timing
-        bool hardware_accelerated{false};
-        double hw_acceleration_factor{0.5}; // 50% faster with HW acceleration
+        bool hardware_accelerated;
+        double hw_acceleration_factor; // 50% faster with HW acceleration
+        
+        // Constructor with default values
+        TimingConfig() 
+            : anti_replay_check_time(10, sc_core::SC_NS)
+            , window_slide_time(50, sc_core::SC_NS)
+            , statistics_update_time(5, sc_core::SC_NS)
+            , hardware_accelerated(false)
+            , hw_acceleration_factor(0.5)
+        {}
     };
 
     explicit SystemCTimingAdapter(const TimingConfig& config = TimingConfig{});

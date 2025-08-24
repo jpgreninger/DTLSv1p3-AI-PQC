@@ -135,6 +135,40 @@ public:
     Result<HybridKeyExchangeResult> 
         perform_hybrid_key_exchange(const HybridKeyExchangeParams& params) override;
     
+    // Pure Post-Quantum Signatures (FIPS 204 - ML-DSA)
+    Result<std::pair<std::vector<uint8_t>, std::vector<uint8_t>>> 
+        ml_dsa_generate_keypair(const MLDSAKeyGenParams& params) override;
+    
+    Result<std::vector<uint8_t>> 
+        ml_dsa_sign(const MLDSASignatureParams& params) override;
+    
+    Result<bool> 
+        ml_dsa_verify(const MLDSAVerificationParams& params) override;
+    
+    // Pure Post-Quantum Signatures (FIPS 205 - SLH-DSA)
+    Result<std::pair<std::vector<uint8_t>, std::vector<uint8_t>>> 
+        slh_dsa_generate_keypair(const SLHDSAKeyGenParams& params) override;
+    
+    Result<std::vector<uint8_t>> 
+        slh_dsa_sign(const SLHDSASignatureParams& params) override;
+    
+    Result<bool> 
+        slh_dsa_verify(const SLHDSAVerificationParams& params) override;
+    
+    // Unified Pure PQC Signature Interface
+    Result<std::vector<uint8_t>> 
+        pure_pqc_sign(const PurePQCSignatureParams& params) override;
+    
+    Result<bool> 
+        pure_pqc_verify(const PurePQCVerificationParams& params) override;
+    
+    // Hybrid PQC Signature Interface (Classical + PQC)
+    Result<HybridSignatureResult> 
+        hybrid_pqc_sign(const HybridPQCSignatureParams& params) override;
+    
+    Result<bool> 
+        hybrid_pqc_verify(const HybridPQCVerificationParams& params) override;
+    
     // Additional key generation methods for specific algorithms
     Result<std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>> 
         generate_rsa_keypair(int key_size);
@@ -173,6 +207,16 @@ public:
     bool supports_named_group(NamedGroup group) const override;
     bool supports_signature_scheme(SignatureScheme scheme) const override;
     bool supports_hash_algorithm(HashAlgorithm hash) const override;
+    
+    // PQC signature utility functions
+    std::vector<SignatureScheme> get_supported_pqc_signatures() const;
+    bool is_oqsprovider_available() const;
+    
+    // Helper methods for PQC parameter conversion
+    static Result<MLDSAParameterSet> signature_scheme_to_ml_dsa_params(SignatureScheme scheme);
+    static Result<SLHDSAParameterSet> signature_scheme_to_slh_dsa_params(SignatureScheme scheme);
+    static Result<std::string> ml_dsa_params_to_openssl_name(MLDSAParameterSet params);
+    static Result<std::string> slh_dsa_params_to_openssl_name(SLHDSAParameterSet params);
     
     // Performance and security features
     bool has_hardware_acceleration() const override;

@@ -26,7 +26,7 @@ std::string to_string(ContentType type) {
     }
     
     std::ostringstream oss;
-    oss << "UNKNOWN_CONTENT_TYPE(" << static_cast<uint8_t>(type) << ")";
+    oss << "UNKNOWN_CONTENT_TYPE(" << static_cast<int>(type) << ")";
     return oss.str();
 }
 
@@ -61,7 +61,7 @@ std::string to_string(HandshakeType type) {
     }
     
     std::ostringstream oss;
-    oss << "UNKNOWN_HANDSHAKE_TYPE(" << static_cast<uint8_t>(type) << ")";
+    oss << "UNKNOWN_HANDSHAKE_TYPE(" << static_cast<int>(type) << ")";
     return oss.str();
 }
 
@@ -71,7 +71,7 @@ std::string to_string(AlertLevel level) {
         case AlertLevel::FATAL: return "FATAL";
         default:
             std::ostringstream oss;
-            oss << "UNKNOWN_ALERT_LEVEL(" << static_cast<uint8_t>(level) << ")";
+            oss << "UNKNOWN_ALERT_LEVEL(" << static_cast<int>(level) << ")";
             return oss.str();
     }
 }
@@ -113,7 +113,7 @@ std::string to_string(AlertDescription desc) {
     }
     
     std::ostringstream oss;
-    oss << "UNKNOWN_ALERT_DESC(" << static_cast<uint8_t>(desc) << ")";
+    oss << "UNKNOWN_ALERT_DESC(" << static_cast<int>(desc) << ")";
     return oss.str();
 }
 
@@ -158,7 +158,7 @@ std::string to_string(ConnectionState state) {
     }
     
     std::ostringstream oss;
-    oss << "UNKNOWN_CONNECTION_STATE(" << static_cast<uint8_t>(state) << ")";
+    oss << "UNKNOWN_CONNECTION_STATE(" << static_cast<int>(state) << ")";
     return oss.str();
 }
 

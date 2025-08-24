@@ -16,6 +16,8 @@ Result<std::optional<std::vector<uint8_t>>> AlertManager::generate_alert_for_err
     DTLSError error,
     std::shared_ptr<ErrorContext> context) {
     // Stub implementation
+    (void)error;
+    (void)context;
     return make_result<std::optional<std::vector<uint8_t>>>(std::nullopt);
 }
 
@@ -25,6 +27,10 @@ Result<std::optional<std::vector<uint8_t>>> AlertManager::generate_alert(
     const std::string& connection_id,
     std::shared_ptr<ErrorContext> context) {
     // Stub implementation
+    (void)level;
+    (void)description;
+    (void)connection_id;
+    (void)context;
     return make_result<std::optional<std::vector<uint8_t>>>(std::nullopt);
 }
 
@@ -33,6 +39,9 @@ Result<void> AlertManager::handle_invalid_record(
     const std::string& connection_id,
     std::shared_ptr<ErrorContext> context) {
     // Stub implementation
+    (void)record_type;
+    (void)connection_id;
+    (void)context;
     return make_result();
 }
 
@@ -61,6 +70,7 @@ Result<std::pair<AlertLevel, AlertDescription>> AlertManager::parse_alert(
 bool AlertManager::should_terminate_connection(const std::string& connection_id,
                                               std::shared_ptr<ErrorContext> context) {
     // Stub implementation - basic logic
+    (void)connection_id; // Currently unused but kept for future implementation
     if (!context) {
         return false;
     }

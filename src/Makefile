@@ -205,6 +205,30 @@ dtlsv13/fast:
 	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/build
 .PHONY : dtlsv13/fast
 
+compatibility/compatibility_utils.o: compatibility/compatibility_utils.cpp.o
+.PHONY : compatibility/compatibility_utils.o
+
+# target to build an object file
+compatibility/compatibility_utils.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/compatibility/compatibility_utils.cpp.o
+.PHONY : compatibility/compatibility_utils.cpp.o
+
+compatibility/compatibility_utils.i: compatibility/compatibility_utils.cpp.i
+.PHONY : compatibility/compatibility_utils.i
+
+# target to preprocess a source file
+compatibility/compatibility_utils.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/compatibility/compatibility_utils.cpp.i
+.PHONY : compatibility/compatibility_utils.cpp.i
+
+compatibility/compatibility_utils.s: compatibility/compatibility_utils.cpp.s
+.PHONY : compatibility/compatibility_utils.s
+
+# target to generate assembly for a file
+compatibility/compatibility_utils.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/compatibility/compatibility_utils.cpp.s
+.PHONY : compatibility/compatibility_utils.cpp.s
+
 connection/connection.o: connection/connection.cpp.o
 .PHONY : connection/connection.o
 
@@ -229,6 +253,30 @@ connection/connection.cpp.s:
 	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/connection/connection.cpp.s
 .PHONY : connection/connection.cpp.s
 
+core/alert_manager.o: core/alert_manager.cpp.o
+.PHONY : core/alert_manager.o
+
+# target to build an object file
+core/alert_manager.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/core/alert_manager.cpp.o
+.PHONY : core/alert_manager.cpp.o
+
+core/alert_manager.i: core/alert_manager.cpp.i
+.PHONY : core/alert_manager.i
+
+# target to preprocess a source file
+core/alert_manager.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/core/alert_manager.cpp.i
+.PHONY : core/alert_manager.cpp.i
+
+core/alert_manager.s: core/alert_manager.cpp.s
+.PHONY : core/alert_manager.s
+
+# target to generate assembly for a file
+core/alert_manager.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/core/alert_manager.cpp.s
+.PHONY : core/alert_manager.cpp.s
+
 core/error.o: core/error.cpp.o
 .PHONY : core/error.o
 
@@ -252,6 +300,78 @@ core/error.s: core/error.cpp.s
 core/error.cpp.s:
 	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/core/error.cpp.s
 .PHONY : core/error.cpp.s
+
+core/error_context.o: core/error_context.cpp.o
+.PHONY : core/error_context.o
+
+# target to build an object file
+core/error_context.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/core/error_context.cpp.o
+.PHONY : core/error_context.cpp.o
+
+core/error_context.i: core/error_context.cpp.i
+.PHONY : core/error_context.i
+
+# target to preprocess a source file
+core/error_context.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/core/error_context.cpp.i
+.PHONY : core/error_context.cpp.i
+
+core/error_context.s: core/error_context.cpp.s
+.PHONY : core/error_context.s
+
+# target to generate assembly for a file
+core/error_context.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/core/error_context.cpp.s
+.PHONY : core/error_context.cpp.s
+
+core/error_handler.o: core/error_handler.cpp.o
+.PHONY : core/error_handler.o
+
+# target to build an object file
+core/error_handler.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/core/error_handler.cpp.o
+.PHONY : core/error_handler.cpp.o
+
+core/error_handler.i: core/error_handler.cpp.i
+.PHONY : core/error_handler.i
+
+# target to preprocess a source file
+core/error_handler.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/core/error_handler.cpp.i
+.PHONY : core/error_handler.cpp.i
+
+core/error_handler.s: core/error_handler.cpp.s
+.PHONY : core/error_handler.s
+
+# target to generate assembly for a file
+core/error_handler.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/core/error_handler.cpp.s
+.PHONY : core/error_handler.cpp.s
+
+core/error_reporter.o: core/error_reporter.cpp.o
+.PHONY : core/error_reporter.o
+
+# target to build an object file
+core/error_reporter.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/core/error_reporter.cpp.o
+.PHONY : core/error_reporter.cpp.o
+
+core/error_reporter.i: core/error_reporter.cpp.i
+.PHONY : core/error_reporter.i
+
+# target to preprocess a source file
+core/error_reporter.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/core/error_reporter.cpp.i
+.PHONY : core/error_reporter.cpp.i
+
+core/error_reporter.s: core/error_reporter.cpp.s
+.PHONY : core/error_reporter.s
+
+# target to generate assembly for a file
+core/error_reporter.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/core/error_reporter.cpp.s
+.PHONY : core/error_reporter.cpp.s
 
 core/result.o: core/result.cpp.o
 .PHONY : core/result.o
@@ -300,6 +420,30 @@ core/types.s: core/types.cpp.s
 core/types.cpp.s:
 	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/core/types.cpp.s
 .PHONY : core/types.cpp.s
+
+core_protocol/anti_replay_core.o: core_protocol/anti_replay_core.cpp.o
+.PHONY : core_protocol/anti_replay_core.o
+
+# target to build an object file
+core_protocol/anti_replay_core.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/core_protocol/anti_replay_core.cpp.o
+.PHONY : core_protocol/anti_replay_core.cpp.o
+
+core_protocol/anti_replay_core.i: core_protocol/anti_replay_core.cpp.i
+.PHONY : core_protocol/anti_replay_core.i
+
+# target to preprocess a source file
+core_protocol/anti_replay_core.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/core_protocol/anti_replay_core.cpp.i
+.PHONY : core_protocol/anti_replay_core.cpp.i
+
+core_protocol/anti_replay_core.s: core_protocol/anti_replay_core.cpp.s
+.PHONY : core_protocol/anti_replay_core.s
+
+# target to generate assembly for a file
+core_protocol/anti_replay_core.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/core_protocol/anti_replay_core.cpp.s
+.PHONY : core_protocol/anti_replay_core.cpp.s
 
 crypto/botan_provider.o: crypto/botan_provider.cpp.o
 .PHONY : crypto/botan_provider.o
@@ -373,6 +517,30 @@ crypto/crypto_utils.cpp.s:
 	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/crypto/crypto_utils.cpp.s
 .PHONY : crypto/crypto_utils.cpp.s
 
+crypto/hardware_acceleration.o: crypto/hardware_acceleration.cpp.o
+.PHONY : crypto/hardware_acceleration.o
+
+# target to build an object file
+crypto/hardware_acceleration.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/crypto/hardware_acceleration.cpp.o
+.PHONY : crypto/hardware_acceleration.cpp.o
+
+crypto/hardware_acceleration.i: crypto/hardware_acceleration.cpp.i
+.PHONY : crypto/hardware_acceleration.i
+
+# target to preprocess a source file
+crypto/hardware_acceleration.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/crypto/hardware_acceleration.cpp.i
+.PHONY : crypto/hardware_acceleration.cpp.i
+
+crypto/hardware_acceleration.s: crypto/hardware_acceleration.cpp.s
+.PHONY : crypto/hardware_acceleration.s
+
+# target to generate assembly for a file
+crypto/hardware_acceleration.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/crypto/hardware_acceleration.cpp.s
+.PHONY : crypto/hardware_acceleration.cpp.s
+
 crypto/openssl_provider.o: crypto/openssl_provider.cpp.o
 .PHONY : crypto/openssl_provider.o
 
@@ -397,6 +565,30 @@ crypto/openssl_provider.cpp.s:
 	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/crypto/openssl_provider.cpp.s
 .PHONY : crypto/openssl_provider.cpp.s
 
+crypto/operations_impl.o: crypto/operations_impl.cpp.o
+.PHONY : crypto/operations_impl.o
+
+# target to build an object file
+crypto/operations_impl.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/crypto/operations_impl.cpp.o
+.PHONY : crypto/operations_impl.cpp.o
+
+crypto/operations_impl.i: crypto/operations_impl.cpp.i
+.PHONY : crypto/operations_impl.i
+
+# target to preprocess a source file
+crypto/operations_impl.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/crypto/operations_impl.cpp.i
+.PHONY : crypto/operations_impl.cpp.i
+
+crypto/operations_impl.s: crypto/operations_impl.cpp.s
+.PHONY : crypto/operations_impl.s
+
+# target to generate assembly for a file
+crypto/operations_impl.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/crypto/operations_impl.cpp.s
+.PHONY : crypto/operations_impl.cpp.s
+
 crypto/provider_factory.o: crypto/provider_factory.cpp.o
 .PHONY : crypto/provider_factory.o
 
@@ -420,6 +612,30 @@ crypto/provider_factory.s: crypto/provider_factory.cpp.s
 crypto/provider_factory.cpp.s:
 	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/crypto/provider_factory.cpp.s
 .PHONY : crypto/provider_factory.cpp.s
+
+memory/adaptive_pools.o: memory/adaptive_pools.cpp.o
+.PHONY : memory/adaptive_pools.o
+
+# target to build an object file
+memory/adaptive_pools.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/memory/adaptive_pools.cpp.o
+.PHONY : memory/adaptive_pools.cpp.o
+
+memory/adaptive_pools.i: memory/adaptive_pools.cpp.i
+.PHONY : memory/adaptive_pools.i
+
+# target to preprocess a source file
+memory/adaptive_pools.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/memory/adaptive_pools.cpp.i
+.PHONY : memory/adaptive_pools.cpp.i
+
+memory/adaptive_pools.s: memory/adaptive_pools.cpp.s
+.PHONY : memory/adaptive_pools.s
+
+# target to generate assembly for a file
+memory/adaptive_pools.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/memory/adaptive_pools.cpp.s
+.PHONY : memory/adaptive_pools.cpp.s
 
 memory/buffer.o: memory/buffer.cpp.o
 .PHONY : memory/buffer.o
@@ -757,6 +973,78 @@ protocol/record_layer.cpp.s:
 	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/protocol/record_layer.cpp.s
 .PHONY : protocol/record_layer.cpp.s
 
+protocol/record_layer_crypto_abstraction.o: protocol/record_layer_crypto_abstraction.cpp.o
+.PHONY : protocol/record_layer_crypto_abstraction.o
+
+# target to build an object file
+protocol/record_layer_crypto_abstraction.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/protocol/record_layer_crypto_abstraction.cpp.o
+.PHONY : protocol/record_layer_crypto_abstraction.cpp.o
+
+protocol/record_layer_crypto_abstraction.i: protocol/record_layer_crypto_abstraction.cpp.i
+.PHONY : protocol/record_layer_crypto_abstraction.i
+
+# target to preprocess a source file
+protocol/record_layer_crypto_abstraction.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/protocol/record_layer_crypto_abstraction.cpp.i
+.PHONY : protocol/record_layer_crypto_abstraction.cpp.i
+
+protocol/record_layer_crypto_abstraction.s: protocol/record_layer_crypto_abstraction.cpp.s
+.PHONY : protocol/record_layer_crypto_abstraction.s
+
+# target to generate assembly for a file
+protocol/record_layer_crypto_abstraction.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/protocol/record_layer_crypto_abstraction.cpp.s
+.PHONY : protocol/record_layer_crypto_abstraction.cpp.s
+
+protocol/record_layer_factory.o: protocol/record_layer_factory.cpp.o
+.PHONY : protocol/record_layer_factory.o
+
+# target to build an object file
+protocol/record_layer_factory.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/protocol/record_layer_factory.cpp.o
+.PHONY : protocol/record_layer_factory.cpp.o
+
+protocol/record_layer_factory.i: protocol/record_layer_factory.cpp.i
+.PHONY : protocol/record_layer_factory.i
+
+# target to preprocess a source file
+protocol/record_layer_factory.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/protocol/record_layer_factory.cpp.i
+.PHONY : protocol/record_layer_factory.cpp.i
+
+protocol/record_layer_factory.s: protocol/record_layer_factory.cpp.s
+.PHONY : protocol/record_layer_factory.s
+
+# target to generate assembly for a file
+protocol/record_layer_factory.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/protocol/record_layer_factory.cpp.s
+.PHONY : protocol/record_layer_factory.cpp.s
+
+protocol/version_manager.o: protocol/version_manager.cpp.o
+.PHONY : protocol/version_manager.o
+
+# target to build an object file
+protocol/version_manager.cpp.o:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/protocol/version_manager.cpp.o
+.PHONY : protocol/version_manager.cpp.o
+
+protocol/version_manager.i: protocol/version_manager.cpp.i
+.PHONY : protocol/version_manager.i
+
+# target to preprocess a source file
+protocol/version_manager.cpp.i:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/protocol/version_manager.cpp.i
+.PHONY : protocol/version_manager.cpp.i
+
+protocol/version_manager.s: protocol/version_manager.cpp.s
+.PHONY : protocol/version_manager.s
+
+# target to generate assembly for a file
+protocol/version_manager.cpp.s:
+	cd /home/jgreninger/Work/DTLSv1p3 && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/dtlsv13.dir/build.make src/CMakeFiles/dtlsv13.dir/protocol/version_manager.cpp.s
+.PHONY : protocol/version_manager.cpp.s
+
 security/dos_protection.o: security/dos_protection.cpp.o
 .PHONY : security/dos_protection.o
 
@@ -869,18 +1157,36 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... test"
 	@echo "... dtlsv13"
+	@echo "... compatibility/compatibility_utils.o"
+	@echo "... compatibility/compatibility_utils.i"
+	@echo "... compatibility/compatibility_utils.s"
 	@echo "... connection/connection.o"
 	@echo "... connection/connection.i"
 	@echo "... connection/connection.s"
+	@echo "... core/alert_manager.o"
+	@echo "... core/alert_manager.i"
+	@echo "... core/alert_manager.s"
 	@echo "... core/error.o"
 	@echo "... core/error.i"
 	@echo "... core/error.s"
+	@echo "... core/error_context.o"
+	@echo "... core/error_context.i"
+	@echo "... core/error_context.s"
+	@echo "... core/error_handler.o"
+	@echo "... core/error_handler.i"
+	@echo "... core/error_handler.s"
+	@echo "... core/error_reporter.o"
+	@echo "... core/error_reporter.i"
+	@echo "... core/error_reporter.s"
 	@echo "... core/result.o"
 	@echo "... core/result.i"
 	@echo "... core/result.s"
 	@echo "... core/types.o"
 	@echo "... core/types.i"
 	@echo "... core/types.s"
+	@echo "... core_protocol/anti_replay_core.o"
+	@echo "... core_protocol/anti_replay_core.i"
+	@echo "... core_protocol/anti_replay_core.s"
 	@echo "... crypto/botan_provider.o"
 	@echo "... crypto/botan_provider.i"
 	@echo "... crypto/botan_provider.s"
@@ -890,12 +1196,21 @@ help:
 	@echo "... crypto/crypto_utils.o"
 	@echo "... crypto/crypto_utils.i"
 	@echo "... crypto/crypto_utils.s"
+	@echo "... crypto/hardware_acceleration.o"
+	@echo "... crypto/hardware_acceleration.i"
+	@echo "... crypto/hardware_acceleration.s"
 	@echo "... crypto/openssl_provider.o"
 	@echo "... crypto/openssl_provider.i"
 	@echo "... crypto/openssl_provider.s"
+	@echo "... crypto/operations_impl.o"
+	@echo "... crypto/operations_impl.i"
+	@echo "... crypto/operations_impl.s"
 	@echo "... crypto/provider_factory.o"
 	@echo "... crypto/provider_factory.i"
 	@echo "... crypto/provider_factory.s"
+	@echo "... memory/adaptive_pools.o"
+	@echo "... memory/adaptive_pools.i"
+	@echo "... memory/adaptive_pools.s"
 	@echo "... memory/buffer.o"
 	@echo "... memory/buffer.i"
 	@echo "... memory/buffer.s"
@@ -938,6 +1253,15 @@ help:
 	@echo "... protocol/record_layer.o"
 	@echo "... protocol/record_layer.i"
 	@echo "... protocol/record_layer.s"
+	@echo "... protocol/record_layer_crypto_abstraction.o"
+	@echo "... protocol/record_layer_crypto_abstraction.i"
+	@echo "... protocol/record_layer_crypto_abstraction.s"
+	@echo "... protocol/record_layer_factory.o"
+	@echo "... protocol/record_layer_factory.i"
+	@echo "... protocol/record_layer_factory.s"
+	@echo "... protocol/version_manager.o"
+	@echo "... protocol/version_manager.i"
+	@echo "... protocol/version_manager.s"
 	@echo "... security/dos_protection.o"
 	@echo "... security/dos_protection.i"
 	@echo "... security/dos_protection.s"

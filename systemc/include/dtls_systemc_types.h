@@ -33,7 +33,15 @@ public:
         VERIFY,
         KEY_DERIVE,
         RANDOM_GENERATE,
-        HASH_COMPUTE
+        HASH_COMPUTE,
+        // Pure Post-Quantum Signatures
+        PQC_SIGN,
+        PQC_VERIFY,
+        PQC_KEYGEN,
+        // Hybrid Post-Quantum Signatures  
+        HYBRID_PQC_SIGN,
+        HYBRID_PQC_VERIFY,
+        HYBRID_PQC_KEYGEN
     };
     
     operation_type operation{ENCRYPT};

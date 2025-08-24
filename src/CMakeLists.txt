@@ -11,6 +11,12 @@ set(DTLS_CORE_SOURCES
     core/error_reporter.cpp
     memory/buffer.cpp
     memory/pool.cpp
+    memory/adaptive_pools.cpp
+    # memory/leak_detection.cpp      # Temporarily disabled - compilation issues
+    # memory/zero_copy_crypto.cpp    # Temporarily disabled - compilation issues  
+    # memory/connection_pools.cpp    # Temporarily disabled - compilation issues
+    # memory/smart_recycling.cpp     # Temporarily disabled - compilation issues
+    # memory/dos_protection.cpp      # Temporarily disabled - compilation issues (conflicts with security/dos_protection.cpp)
     memory/memory_utils.cpp
     memory/memory_system.cpp
 )

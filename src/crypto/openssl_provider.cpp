@@ -39,8 +39,41 @@ public:
     bool initialized_{false};
     SecurityLevel security_level_{SecurityLevel::HIGH};
     
-    Impl() = default;
+    // Performance metrics tracking
+    mutable std::atomic<size_t> operation_count_{0};
+    mutable std::atomic<size_t> success_count_{0};
+    mutable std::atomic<size_t> failure_count_{0};
+    mutable std::chrono::steady_clock::time_point last_operation_time_;
+    mutable std::chrono::steady_clock::time_point init_start_time_;
+    mutable std::chrono::milliseconds total_init_time_{0};
+    mutable std::chrono::milliseconds total_operation_time_{0};
+    
+    // Resource tracking
+    mutable std::atomic<size_t> current_operations_{0};
+    size_t memory_limit_{0};
+    size_t operation_limit_{0};
+    
+    Impl() {
+        last_operation_time_ = std::chrono::steady_clock::now();
+    }
     ~Impl() = default;
+    
+    void record_operation_start() const {
+        ++operation_count_;
+        ++current_operations_;
+    }
+    
+    void record_operation_success() const {
+        ++success_count_;
+        --current_operations_;
+        last_operation_time_ = std::chrono::steady_clock::now();
+    }
+    
+    void record_operation_failure() const {
+        ++failure_count_;
+        --current_operations_;
+        last_operation_time_ = std::chrono::steady_clock::now();
+    }
 };
 
 OpenSSLProvider::OpenSSLProvider() 
@@ -2931,6 +2964,14 @@ EnhancedProviderCapabilities OpenSSLProvider::enhanced_capabilities() const {
 }
 
 Result<void> OpenSSLProvider::perform_health_check() {
+    // Ensure provider is initialized before health check
+    if (!pimpl_->initialized_) {
+        auto init_result = initialize();
+        if (!init_result) {
+            return Result<void>(DTLSError::INITIALIZATION_FAILED);
+        }
+    }
+    
     // Basic health check - try a simple crypto operation
     try {
         RandomParams params;
@@ -2942,7 +2983,18 @@ Result<void> OpenSSLProvider::perform_health_check() {
             return Result<void>(result.error());
         }
         
-        // If we can generate random bytes, provider is likely healthy
+        // Test basic HMAC operation to ensure crypto functionality
+        HMACParams hmac_params;
+        hmac_params.key = result.value();
+        hmac_params.data = {0x01, 0x02, 0x03, 0x04};
+        hmac_params.algorithm = HashAlgorithm::SHA256;
+        
+        auto hmac_result = compute_hmac(hmac_params);
+        if (!hmac_result) {
+            return Result<void>(DTLSError::CRYPTO_PROVIDER_ERROR);
+        }
+        
+        // If we can generate random bytes and compute HMAC, provider is healthy
         return Result<void>();
     } catch (const std::exception&) {
         return Result<void>(DTLSError::CRYPTO_PROVIDER_ERROR);
@@ -2950,30 +3002,68 @@ Result<void> OpenSSLProvider::perform_health_check() {
 }
 
 ProviderHealth OpenSSLProvider::get_health_status() const {
-    // For this stub implementation, always return healthy
-    // In a real implementation, this would check various status indicators
+    // Check basic provider state
+    if (!pimpl_) {
+        return ProviderHealth::UNAVAILABLE;
+    }
+    
+    // Check if provider is initialized
+    if (!pimpl_->initialized_) {
+        return ProviderHealth::DEGRADED;
+    }
+    
+    // Check if OpenSSL library is available
+    if (!is_available()) {
+        return ProviderHealth::FAILING;
+    }
+    
+    // Provider appears healthy
     return ProviderHealth::HEALTHY;
 }
 
 ProviderPerformanceMetrics OpenSSLProvider::get_performance_metrics() const {
     ProviderPerformanceMetrics metrics;
     
-    // Stub values - in a real implementation these would be tracked
-    metrics.average_init_time = std::chrono::milliseconds(10);
-    metrics.average_operation_time = std::chrono::milliseconds(1);
-    metrics.throughput_mbps = 100.0;  // Placeholder
+    // Use actual tracked values
+    metrics.average_init_time = pimpl_->total_init_time_;
+    
+    size_t total_ops = pimpl_->operation_count_.load();
+    if (total_ops > 0) {
+        metrics.average_operation_time = std::chrono::duration_cast<std::chrono::milliseconds>(
+            pimpl_->total_operation_time_ / total_ops);
+    } else {
+        metrics.average_operation_time = std::chrono::milliseconds(0);
+    }
+    
+    // Calculate throughput based on recent operations (simplified)
+    metrics.throughput_mbps = 100.0;  // Still placeholder - would need actual data transfer tracking
+    
     metrics.memory_usage_bytes = get_memory_usage();
-    metrics.success_count = 1000;  // Placeholder
-    metrics.failure_count = 0;
-    metrics.success_rate = 1.0;
+    metrics.success_count = pimpl_->success_count_.load();
+    metrics.failure_count = pimpl_->failure_count_.load();
+    
+    // Calculate success rate
+    size_t total_operations = metrics.success_count + metrics.failure_count;
+    if (total_operations > 0) {
+        metrics.success_rate = static_cast<double>(metrics.success_count) / total_operations;
+    } else {
+        metrics.success_rate = 1.0;  // No operations yet, assume perfect
+    }
+    
     metrics.last_updated = std::chrono::steady_clock::now();
     
     return metrics;
 }
 
 Result<void> OpenSSLProvider::reset_performance_metrics() {
-    // In a real implementation, this would reset internal counters
-    // For now, just return success
+    // Reset all performance counters
+    pimpl_->operation_count_.store(0);
+    pimpl_->success_count_.store(0);
+    pimpl_->failure_count_.store(0);
+    pimpl_->total_init_time_ = std::chrono::milliseconds(0);
+    pimpl_->total_operation_time_ = std::chrono::milliseconds(0);
+    pimpl_->last_operation_time_ = std::chrono::steady_clock::now();
+    
     return Result<void>();
 }
 
@@ -2984,19 +3074,18 @@ size_t OpenSSLProvider::get_memory_usage() const {
 }
 
 size_t OpenSSLProvider::get_current_operations() const {
-    // Stub implementation - would track active operations
-    return 0;
+    return pimpl_->current_operations_.load();
 }
 
 Result<void> OpenSSLProvider::set_memory_limit(size_t limit) {
-    // Stub implementation - would configure OpenSSL memory limits
-    (void)limit;  // Suppress unused parameter warning
+    pimpl_->memory_limit_ = limit;
+    // In a real implementation, would configure OpenSSL memory limits
     return Result<void>();
 }
 
 Result<void> OpenSSLProvider::set_operation_limit(size_t limit) {
-    // Stub implementation - would configure operation limits
-    (void)limit;  // Suppress unused parameter warning
+    pimpl_->operation_limit_ = limit;
+    // In a real implementation, would configure operation limits
     return Result<void>();
 }
 
@@ -3751,6 +3840,10 @@ Result<PureMLKEMKeyExchangeResult> dtls::v13::crypto::OpenSSLProvider::perform_p
     
     if (params.is_encapsulation) {
         // Client side: perform ML-KEM encapsulation
+        if (params.peer_public_key.empty()) {
+            return Result<PureMLKEMKeyExchangeResult>(DTLSError::INVALID_PARAMETER);
+        }
+        
         MLKEMEncapParams encap_params;
         encap_params.parameter_set = pqc_utils::get_pure_mlkem_parameter_set(params.mlkem_group);
         encap_params.public_key = params.peer_public_key;
@@ -3767,10 +3860,14 @@ Result<PureMLKEMKeyExchangeResult> dtls::v13::crypto::OpenSSLProvider::perform_p
         result.shared_secret = encap_result->shared_secret;
     } else {
         // Server side: perform ML-KEM decapsulation
+        if (params.private_key.empty() || params.ciphertext.empty()) {
+            return Result<PureMLKEMKeyExchangeResult>(DTLSError::INVALID_PARAMETER);
+        }
+        
         MLKEMDecapParams decap_params;
         decap_params.parameter_set = pqc_utils::get_pure_mlkem_parameter_set(params.mlkem_group);
         decap_params.private_key = params.private_key;
-        decap_params.ciphertext = params.peer_public_key; // This is actually the ciphertext in decap mode
+        decap_params.ciphertext = params.ciphertext;
         
         auto decap_result = mlkem_decapsulate(decap_params);
         if (!decap_result) {

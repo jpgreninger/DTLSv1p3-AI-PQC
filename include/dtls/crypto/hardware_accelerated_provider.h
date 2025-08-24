@@ -179,6 +179,28 @@ public:
     
     Result<std::vector<std::vector<uint8_t>>> batch_decrypt_aead(
         const std::vector<AEADDecryptionParams>& params_batch) override;
+    
+    // Pure Post-Quantum Signatures (FIPS 204 - ML-DSA) with hardware acceleration
+    Result<std::pair<std::vector<uint8_t>, std::vector<uint8_t>>> 
+        ml_dsa_generate_keypair(const MLDSAKeyGenParams& params) override;
+    
+    Result<std::vector<uint8_t>> ml_dsa_sign(const MLDSASignatureParams& params) override;
+    Result<bool> ml_dsa_verify(const MLDSAVerificationParams& params) override;
+    
+    // Pure Post-Quantum Signatures (FIPS 205 - SLH-DSA) with hardware acceleration
+    Result<std::pair<std::vector<uint8_t>, std::vector<uint8_t>>> 
+        slh_dsa_generate_keypair(const SLHDSAKeyGenParams& params) override;
+    
+    Result<std::vector<uint8_t>> slh_dsa_sign(const SLHDSASignatureParams& params) override;
+    Result<bool> slh_dsa_verify(const SLHDSAVerificationParams& params) override;
+    
+    // Unified Pure PQC Signature Interface with hardware optimization
+    Result<std::vector<uint8_t>> pure_pqc_sign(const PurePQCSignatureParams& params) override;
+    Result<bool> pure_pqc_verify(const PurePQCVerificationParams& params) override;
+    
+    // Hybrid Post-Quantum + Classical Signatures with hardware acceleration
+    Result<HybridSignatureResult> hybrid_pqc_sign(const HybridPQCSignatureParams& params) override;
+    Result<bool> hybrid_pqc_verify(const HybridPQCVerificationParams& params) override;
 
 private:
     std::unique_ptr<CryptoProvider> base_provider_;

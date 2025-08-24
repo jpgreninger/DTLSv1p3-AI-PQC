@@ -132,6 +132,7 @@ private:
     
     Result<void> ensure_capacity(size_t required_capacity);
     void initialize_shared_state();
+    void convert_to_shared(); // Convert owned buffer to shared state
     const std::byte* get_data_ptr() const noexcept;
     std::byte* get_mutable_data_ptr() noexcept;
 };

@@ -10,6 +10,10 @@ namespace v13 {
 namespace memory {
 
 // AdaptivePoolSizer implementation
+AdaptivePoolSizer::AdaptivePoolSizer() 
+    : config_() {
+}
+
 AdaptivePoolSizer::AdaptivePoolSizer(const SizingConfig& config) 
     : config_(config) {
 }

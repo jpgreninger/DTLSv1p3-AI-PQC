@@ -68,6 +68,7 @@ uint32_t ErrorContext::record_security_error(DTLSError error,
                                             const std::string& attack_type,
                                             double confidence) {
     std::lock_guard<std::mutex> lock(mutex_);
+    (void)confidence; // Currently unused but kept for future implementation
     
     ErrorEvent event(error, "security", attack_type);
     event.sequence_number = next_sequence_number_++;

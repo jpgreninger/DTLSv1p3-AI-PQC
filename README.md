@@ -17,13 +17,13 @@ This project provides a complete DTLS v1.3 protocol stack implementation with du
 
 ### **🔐 Advanced Security**
 - ✅ **Full RFC 9147 Compliance**: Complete DTLS v1.3 protocol implementation
-- ✅ **🆕 Hybrid Post-Quantum Cryptography**: First DTLS implementation with ML-KEM + ECDHE
+- ✅ **🆕 Comprehensive Post-Quantum Cryptography**: Complete PQC key exchange + digital signatures
+- ✅ **🆕 PQC Digital Signatures**: FIPS 204 (ML-DSA) and FIPS 205 (SLH-DSA) support
 - ✅ **Modern Cryptography**: AEAD encryption, perfect forward secrecy, DoS protection
 - ✅ **Multi-Provider Architecture**: OpenSSL, Botan, hardware acceleration support
-- ✅ **Quantum-Resistant Named Groups**:
-  - `ECDHE_P256_MLKEM512` (0x1140) - P-256 ECDHE + ML-KEM-512
-  - `ECDHE_P384_MLKEM768` (0x1141) - P-384 ECDHE + ML-KEM-768  
-  - `ECDHE_P521_MLKEM1024` (0x1142) - P-521 ECDHE + ML-KEM-1024
+- ✅ **Quantum-Resistant Algorithms**:
+  - **Key Exchange**: `ECDHE_P256_MLKEM512`, `ECDHE_P384_MLKEM768`, `ECDHE_P521_MLKEM1024`
+  - **Digital Signatures**: ML-DSA-44/65/87, SLH-DSA variants, hybrid classical+PQC
 
 ### **⚡ High Performance**  
 - ✅ **Ultra-Low Overhead**: <5% performance impact vs plain UDP
@@ -141,9 +141,11 @@ make systemc-test                # Run all SystemC tests
 ## 🔒 **Security Features**
 
 ### **🛡️ Quantum-Resistant Cryptography**
-- **🆕 Hybrid Post-Quantum**: ML-KEM + ECDHE for quantum-resistant key exchange
+- **🆕 Hybrid Post-Quantum Key Exchange**: ML-KEM + ECDHE for quantum-resistant key establishment
+- **🆕 Pure & Hybrid PQC Signatures**: FIPS 204 (ML-DSA) and FIPS 205 (SLH-DSA) digital signatures
 - **Named Groups**: ECDHE_P256_MLKEM512, ECDHE_P384_MLKEM768, ECDHE_P521_MLKEM1024
-- **Spec Compliance**: draft-kwiatkowski-tls-ecdhe-mlkem-03
+- **Signature Algorithms**: ML-DSA-44/65/87, SLH-DSA variants, 20+ hybrid combinations
+- **Spec Compliance**: draft-kwiatkowski-tls-ecdhe-mlkem-03, FIPS 204, FIPS 205
 - **Backward Compatible**: Seamless fallback to classical algorithms
 
 ### **🔐 Classical Cryptography**
@@ -186,18 +188,19 @@ make systemc-test                # Run all SystemC tests
 
 ### ✅ **IMPLEMENTATION COMPLETE** - Quantum-Resistant DTLS v1.3
 
-**🏆 PRODUCTION READY**: Full RFC 9147 compliance + World's first hybrid PQC support
+**🏆 PRODUCTION READY**: Full RFC 9147 compliance + Complete post-quantum cryptography support
 
 - [x] **Requirements Analysis**: Complete PRD and system design
 - [x] **Core Implementation**: Production-ready C++ DTLS v1.3 library
-- [x] **🆕 Hybrid PQC**: Complete ML-KEM + ECDHE implementation  
-- [x] **SystemC Model**: Hardware/software co-design verification with RFC 9147 Connection ID implementation
-- [x] **Comprehensive Testing**: 7 test categories with regression framework
-- [x] **Performance Optimization**: <5% overhead vs plain UDP
+- [x] **🆕 Post-Quantum Key Exchange**: Complete ML-KEM + ECDHE implementation  
+- [x] **🆕 Post-Quantum Signatures**: Complete FIPS 204 (ML-DSA) + FIPS 205 (SLH-DSA) implementation
+- [x] **SystemC Model**: Hardware/software co-design verification with RFC 9147 Connection ID and PQC support
+- [x] **Comprehensive Testing**: 7 test categories with regression framework + PQC test suite
+- [x] **Performance Optimization**: <5% overhead vs plain UDP including PQC algorithms
 - [x] **Documentation**: Complete API docs and usage examples
 
 ### 🏅 **Critical Implementation Milestones**
-**All 13 critical tasks completed** (including new hybrid PQC):
+**All 14 critical tasks completed** (including comprehensive post-quantum cryptography):
 - ✅ DTLSPlaintext/DTLSCiphertext structures with proper record layer handling  
 - ✅ Sequence number encryption for enhanced security
 - ✅ HelloRetryRequest implementation for robust handshake negotiation
@@ -210,7 +213,8 @@ make systemc-test                # Run all SystemC tests
 - ✅ Performance benchmarking and optimization  
 - ✅ 0-RTT early data support for reduced latency
 - ✅ Comprehensive security validation suite
-- ✅ **🆕 Hybrid Post-Quantum Cryptography**: ML-KEM + ECDHE quantum-resistant key exchange
+- ✅ **🆕 Post-Quantum Key Exchange**: ML-KEM + ECDHE quantum-resistant key establishment
+- ✅ **🆕 Post-Quantum Digital Signatures**: FIPS 204 (ML-DSA) and FIPS 205 (SLH-DSA) implementation
 
 ### 🔬 **Testing & Validation**
 - **🎯 Coverage Analysis**: 28.9% line coverage (5,604/19,365 lines), 32.9% function coverage with comprehensive infrastructure
@@ -298,6 +302,13 @@ server->start();  // Production-ready server
 
 © John Peter Greninger 2025 • All Rights Reserved
 
+This proprietary software requires appropriate licensing for use. For licensing information, visit: https://jgreninger.wixsite.com/protocolpp/protocolpp-legal
+
+- **Binary Distribution**: Permitted with attribution and disclaimer requirements
+- **Commercial Use**: Requires fee-based license (contact: protocolpp@outlook.com)
+- **Academic/Research Use**: Requires written permission
+- **Source Code Access**: Available for purchase
+
 See the [LICENSE](LICENSE) file for complete terms and conditions.
 
 ## 🔗 **References & Standards**
@@ -309,6 +320,8 @@ See the [LICENSE](LICENSE) file for complete terms and conditions.
 
 ### **🔒 Post-Quantum Standards**  
 - **[FIPS 203](https://csrc.nist.gov/pubs/fips/203/final)** - Module-Lattice-Based Key-Encapsulation Mechanism (ML-KEM)
+- **[FIPS 204](https://csrc.nist.gov/pubs/fips/204/final)** - Module-Lattice-Based Digital Signature Algorithm (ML-DSA)
+- **[FIPS 205](https://csrc.nist.gov/pubs/fips/205/final)** - Stateless Hash-Based Digital Signature Algorithm (SLH-DSA)
 - **[NIST PQC](https://csrc.nist.gov/projects/post-quantum-cryptography)** - Post-Quantum Cryptography Standardization
 - **[draft-connolly-tls-mlkem-key-agreement-05](https://datatracker.ietf.org/doc/draft-connolly-tls-mlkem-key-agreement/)** - Pure ML-KEM for TLS
 

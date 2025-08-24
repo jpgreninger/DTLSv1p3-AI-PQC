@@ -97,6 +97,16 @@ private:
     void perform_random_generation(tlm::tlm_generic_payload& trans, crypto_extension& ext);
     void perform_hash_computation(tlm::tlm_generic_payload& trans, crypto_extension& ext);
     
+    // Post-Quantum Cryptographic operations
+    void perform_pqc_signing(tlm::tlm_generic_payload& trans, crypto_extension& ext);
+    void perform_pqc_verification(tlm::tlm_generic_payload& trans, crypto_extension& ext);
+    void perform_pqc_key_generation(tlm::tlm_generic_payload& trans, crypto_extension& ext);
+    
+    // Hybrid Post-Quantum + Classical operations
+    void perform_hybrid_pqc_signing(tlm::tlm_generic_payload& trans, crypto_extension& ext);
+    void perform_hybrid_pqc_verification(tlm::tlm_generic_payload& trans, crypto_extension& ext);
+    void perform_hybrid_pqc_key_generation(tlm::tlm_generic_payload& trans, crypto_extension& ext);
+    
     // Statistics updates
     void update_statistics(const crypto_extension& ext);
     

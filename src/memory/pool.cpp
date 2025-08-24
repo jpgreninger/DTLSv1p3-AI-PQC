@@ -57,7 +57,7 @@ std::unique_ptr<ZeroCopyBuffer> BufferPool::acquire() {
         return buffer;
     }
     
-    // No buffers available, try to expand pool
+    // No buffers available, try to expand pool only if allowed
     if (pool_size_.load() < max_pool_size_.load()) {
         auto buffer = create_buffer();
         if (buffer) {
@@ -132,14 +132,26 @@ Result<void> BufferPool::expand_pool(size_t additional_buffers) {
 Result<void> BufferPool::shrink_pool(size_t target_size) {
     std::lock_guard<std::mutex> lock(pool_mutex_);
     
+    size_t current_total = pool_size_.load();
     size_t current_available = available_buffers_.size();
-    if (current_available <= target_size) {
-        return Result<void>(); // Already at or below target
+    size_t current_in_use = current_total - current_available;
+    
+    // Cannot shrink below the number of buffers currently in use
+    if (target_size < current_in_use) {
+        return Result<void>(DTLSError::INVALID_PARAMETER);
     }
     
-    size_t to_remove = current_available - target_size;
+    // If already at or below target, nothing to do
+    if (current_total <= target_size) {
+        return Result<void>();
+    }
     
-    for (size_t i = 0; i < to_remove && !available_buffers_.empty(); ++i) {
+    // Can only remove available buffers, not in-use ones
+    size_t max_removable = current_available;
+    size_t desired_removal = current_total - target_size;
+    size_t actual_removal = std::min(desired_removal, max_removable);
+    
+    for (size_t i = 0; i < actual_removal && !available_buffers_.empty(); ++i) {
         available_buffers_.pop();
         pool_size_.fetch_sub(1, std::memory_order_relaxed);
     }

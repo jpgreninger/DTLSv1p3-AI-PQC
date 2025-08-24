@@ -79,11 +79,18 @@ uint64_t SequenceNumberManager::get_next_sequence_number() {
     std::lock_guard<std::mutex> lock(mutex_);
     
     if (current_sequence_number_ >= MAX_SEQUENCE_NUMBER) {
-        // Sequence number overflow - should trigger key update
-        return MAX_SEQUENCE_NUMBER;
+        // Force key update or connection termination
+        throw DTLSException(DTLSError::SEQUENCE_NUMBER_EXHAUSTED);
     }
     
-    return ++current_sequence_number_;
+    uint64_t next = current_sequence_number_ + 1;
+    if (next < current_sequence_number_) {
+        // Detect overflow before it occurs
+        throw DTLSException(DTLSError::SEQUENCE_NUMBER_OVERFLOW);
+    }
+    
+    current_sequence_number_ = next;
+    return current_sequence_number_;
 }
 
 uint64_t SequenceNumberManager::get_current_sequence_number() const {

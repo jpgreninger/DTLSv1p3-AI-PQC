@@ -343,6 +343,200 @@ Result<bool> HardwareAcceleratedProvider::verify_dtls_certificate_signature(
     return base_provider_->verify_dtls_certificate_signature(params, signature);
 }
 
+// Pure Post-Quantum Signatures (FIPS 204 - ML-DSA) with hardware acceleration
+Result<std::pair<std::vector<uint8_t>, std::vector<uint8_t>>> 
+HardwareAcceleratedProvider::ml_dsa_generate_keypair(const MLDSAKeyGenParams& params) {
+    operations_count_++;
+    
+    // ML-DSA key generation can benefit from hardware random number generation
+    bool use_hw_rng = should_use_hardware_for_operation("random");
+    auto start_time = std::chrono::high_resolution_clock::now();
+    
+    auto result = base_provider_->ml_dsa_generate_keypair(params);
+    
+    auto end_time = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
+    update_performance_metrics("ml-dsa-keygen", duration, use_hw_rng);
+    
+    if (use_hw_rng) hw_accelerated_ops_++; else sw_fallback_ops_++;
+    
+    return result;
+}
+
+Result<std::vector<uint8_t>> HardwareAcceleratedProvider::ml_dsa_sign(const MLDSASignatureParams& params) {
+    operations_count_++;
+    
+    // ML-DSA signing can benefit from vectorized operations and hardware RNG
+    bool use_hw = should_use_hardware_for_operation("ml-dsa-sign");
+    auto start_time = std::chrono::high_resolution_clock::now();
+    
+    auto result = base_provider_->ml_dsa_sign(params);
+    
+    auto end_time = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
+    update_performance_metrics("ml-dsa-sign", duration, use_hw);
+    
+    if (use_hw) hw_accelerated_ops_++; else sw_fallback_ops_++;
+    
+    return result;
+}
+
+Result<bool> HardwareAcceleratedProvider::ml_dsa_verify(const MLDSAVerificationParams& params) {
+    operations_count_++;
+    
+    // ML-DSA verification can benefit from vectorized operations
+    bool use_hw = should_use_hardware_for_operation("ml-dsa-verify");
+    auto start_time = std::chrono::high_resolution_clock::now();
+    
+    auto result = base_provider_->ml_dsa_verify(params);
+    
+    auto end_time = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
+    update_performance_metrics("ml-dsa-verify", duration, use_hw);
+    
+    if (use_hw) hw_accelerated_ops_++; else sw_fallback_ops_++;
+    
+    return result;
+}
+
+// Pure Post-Quantum Signatures (FIPS 205 - SLH-DSA) with hardware acceleration
+Result<std::pair<std::vector<uint8_t>, std::vector<uint8_t>>> 
+HardwareAcceleratedProvider::slh_dsa_generate_keypair(const SLHDSAKeyGenParams& params) {
+    operations_count_++;
+    
+    // SLH-DSA key generation benefits from hardware random number generation
+    bool use_hw_rng = should_use_hardware_for_operation("random");
+    auto start_time = std::chrono::high_resolution_clock::now();
+    
+    auto result = base_provider_->slh_dsa_generate_keypair(params);
+    
+    auto end_time = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
+    update_performance_metrics("slh-dsa-keygen", duration, use_hw_rng);
+    
+    if (use_hw_rng) hw_accelerated_ops_++; else sw_fallback_ops_++;
+    
+    return result;
+}
+
+Result<std::vector<uint8_t>> HardwareAcceleratedProvider::slh_dsa_sign(const SLHDSASignatureParams& params) {
+    operations_count_++;
+    
+    // SLH-DSA signing benefits from SHA-2/SHAKE hardware acceleration and vectorization
+    bool use_hw = should_use_hardware_for_operation("slh-dsa-sign");
+    auto start_time = std::chrono::high_resolution_clock::now();
+    
+    auto result = base_provider_->slh_dsa_sign(params);
+    
+    auto end_time = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
+    update_performance_metrics("slh-dsa-sign", duration, use_hw);
+    
+    if (use_hw) hw_accelerated_ops_++; else sw_fallback_ops_++;
+    
+    return result;
+}
+
+Result<bool> HardwareAcceleratedProvider::slh_dsa_verify(const SLHDSAVerificationParams& params) {
+    operations_count_++;
+    
+    // SLH-DSA verification benefits from SHA-2/SHAKE hardware acceleration
+    bool use_hw = should_use_hardware_for_operation("slh-dsa-verify");
+    auto start_time = std::chrono::high_resolution_clock::now();
+    
+    auto result = base_provider_->slh_dsa_verify(params);
+    
+    auto end_time = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
+    update_performance_metrics("slh-dsa-verify", duration, use_hw);
+    
+    if (use_hw) hw_accelerated_ops_++; else sw_fallback_ops_++;
+    
+    return result;
+}
+
+// Unified Pure PQC Signature Interface with hardware optimization
+Result<std::vector<uint8_t>> HardwareAcceleratedProvider::pure_pqc_sign(const PurePQCSignatureParams& params) {
+    operations_count_++;
+    
+    // Route to appropriate hardware-optimized implementation
+    std::string operation = (params.scheme >= SignatureScheme::ML_DSA_44 && 
+                            params.scheme <= SignatureScheme::ML_DSA_87) ? 
+                           "ml-dsa-sign" : "slh-dsa-sign";
+    
+    bool use_hw = should_use_hardware_for_operation(operation);
+    auto start_time = std::chrono::high_resolution_clock::now();
+    
+    auto result = base_provider_->pure_pqc_sign(params);
+    
+    auto end_time = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
+    update_performance_metrics("pure-pqc-sign", duration, use_hw);
+    
+    if (use_hw) hw_accelerated_ops_++; else sw_fallback_ops_++;
+    
+    return result;
+}
+
+Result<bool> HardwareAcceleratedProvider::pure_pqc_verify(const PurePQCVerificationParams& params) {
+    operations_count_++;
+    
+    // Route to appropriate hardware-optimized implementation
+    std::string operation = (params.scheme >= SignatureScheme::ML_DSA_44 && 
+                            params.scheme <= SignatureScheme::ML_DSA_87) ? 
+                           "ml-dsa-verify" : "slh-dsa-verify";
+    
+    bool use_hw = should_use_hardware_for_operation(operation);
+    auto start_time = std::chrono::high_resolution_clock::now();
+    
+    auto result = base_provider_->pure_pqc_verify(params);
+    
+    auto end_time = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
+    update_performance_metrics("pure-pqc-verify", duration, use_hw);
+    
+    if (use_hw) hw_accelerated_ops_++; else sw_fallback_ops_++;
+    
+    return result;
+}
+
+// Hybrid Post-Quantum + Classical Signatures with hardware acceleration
+Result<HybridSignatureResult> HardwareAcceleratedProvider::hybrid_pqc_sign(const HybridPQCSignatureParams& params) {
+    operations_count_++;
+    
+    // Hybrid signatures benefit from both classical and PQC hardware optimizations
+    bool use_hw = should_use_hardware_for_operation("hybrid-pqc-sign");
+    auto start_time = std::chrono::high_resolution_clock::now();
+    
+    auto result = base_provider_->hybrid_pqc_sign(params);
+    
+    auto end_time = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
+    update_performance_metrics("hybrid-pqc-sign", duration, use_hw);
+    
+    if (use_hw) hw_accelerated_ops_++; else sw_fallback_ops_++;
+    
+    return result;
+}
+
+Result<bool> HardwareAcceleratedProvider::hybrid_pqc_verify(const HybridPQCVerificationParams& params) {
+    operations_count_++;
+    
+    // Hybrid verification benefits from both classical and PQC hardware optimizations
+    bool use_hw = should_use_hardware_for_operation("hybrid-pqc-verify");
+    auto start_time = std::chrono::high_resolution_clock::now();
+    
+    auto result = base_provider_->hybrid_pqc_verify(params);
+    
+    auto end_time = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
+    update_performance_metrics("hybrid-pqc-verify", duration, use_hw);
+    
+    if (use_hw) hw_accelerated_ops_++; else sw_fallback_ops_++;
+    
+    return result;
+}
+
 Result<std::pair<std::unique_ptr<PrivateKey>, std::unique_ptr<PublicKey>>> 
 HardwareAcceleratedProvider::generate_key_pair(NamedGroup group) {
     return base_provider_->generate_key_pair(group);
@@ -366,6 +560,12 @@ HardwareAcceleratedProvider::mlkem_encapsulate(const MLKEMEncapParams& params) {
 Result<std::vector<uint8_t>> 
 HardwareAcceleratedProvider::mlkem_decapsulate(const MLKEMDecapParams& params) {
     return base_provider_->mlkem_decapsulate(params);
+}
+
+// Pure ML-KEM Key Exchange - delegate to base provider
+Result<PureMLKEMKeyExchangeResult>
+HardwareAcceleratedProvider::perform_pure_mlkem_key_exchange(const PureMLKEMKeyExchangeParams& params) {
+    return base_provider_->perform_pure_mlkem_key_exchange(params);
 }
 
 // Hybrid Post-Quantum + Classical Key Exchange - delegate to base provider

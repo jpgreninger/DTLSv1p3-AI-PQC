@@ -599,14 +599,46 @@ void SecurityValidationSuite::setup_security_requirements() {
 
 std::pair<std::unique_ptr<Connection>, std::unique_ptr<Connection>>
 SecurityValidationSuite::create_secure_connection_pair() {
-    // Use the connection from the context (simplified approach)
-    auto client = std::unique_ptr<Connection>(client_context_->get_connection());
-    auto server = std::unique_ptr<Connection>(server_context_->get_connection());
+    // Create proper connections using the Connection factory methods
+    // This ensures proper ownership and avoids use-after-free issues
     
-    // Note: Connection methods like set_transport, enable_security_monitoring
-    // are not available in the current API, so we'll work with what we have
+    // Create basic configuration for test connections
+    ConnectionConfig client_config;
+    ConnectionConfig server_config;
     
-    return {std::move(client), std::move(server)};
+    // Create crypto providers
+    auto client_crypto_result = crypto::ProviderFactory::instance().create_provider("openssl");
+    auto server_crypto_result = crypto::ProviderFactory::instance().create_provider("openssl");
+    
+    if (!client_crypto_result.is_success() || !server_crypto_result.is_success()) {
+        return {nullptr, nullptr};
+    }
+    
+    auto client_crypto = std::move(client_crypto_result).value();
+    auto server_crypto = std::move(server_crypto_result).value();
+    
+    // Create dummy network addresses for testing
+    NetworkAddress server_addr = NetworkAddress::from_ipv4(0x7F000001, 8443); // 127.0.0.1:8443
+    NetworkAddress client_addr = NetworkAddress::from_ipv4(0x7F000001, 0);    // 127.0.0.1:0 (ephemeral)
+    
+    // Create client and server connections
+    auto client_result = Connection::create_client(
+        client_config, 
+        std::move(client_crypto), 
+        server_addr
+    );
+    
+    auto server_result = Connection::create_server(
+        server_config, 
+        std::move(server_crypto), 
+        client_addr
+    );
+    
+    if (!client_result.is_success() || !server_result.is_success()) {
+        return {nullptr, nullptr};
+    }
+    
+    return {std::move(client_result).value(), std::move(server_result).value()};
 }
 
 bool SecurityValidationSuite::perform_secure_handshake(Connection* client, Connection* server) {

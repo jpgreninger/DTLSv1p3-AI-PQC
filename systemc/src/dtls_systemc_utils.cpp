@@ -41,6 +41,24 @@ sc_time get_crypto_timing(crypto_extension::operation_type op, bool hardware_acc
         case crypto_extension::HASH_COMPUTE:
             base_time = g_dtls_timing.hash_computation_time;
             break;
+        case crypto_extension::PQC_SIGN:
+            base_time = sc_time(10, SC_US);  // PQC signing typically takes microseconds
+            break;
+        case crypto_extension::PQC_VERIFY:
+            base_time = sc_time(5, SC_US);   // PQC verification timing
+            break;
+        case crypto_extension::PQC_KEYGEN:
+            base_time = sc_time(50, SC_US);  // PQC key generation is slower
+            break;
+        case crypto_extension::HYBRID_PQC_SIGN:
+            base_time = sc_time(17, SC_US);  // Classical + PQC signing time
+            break;
+        case crypto_extension::HYBRID_PQC_VERIFY:
+            base_time = sc_time(9, SC_US);   // Classical + PQC verification time
+            break;
+        case crypto_extension::HYBRID_PQC_KEYGEN:
+            base_time = sc_time(65, SC_US);  // Classical + PQC key generation time
+            break;
         default:
             base_time = sc_time(100, SC_NS);
             break;

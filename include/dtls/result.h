@@ -304,6 +304,7 @@ template<typename T>
 Result<T> make_error(DTLSError error, const char* message) {
     // For now, ignore the message and just return the error
     // In a more sophisticated implementation, this could store the message
+    (void)message; // Suppress unused parameter warning
     return Result<T>(error);
 }
 
@@ -311,6 +312,7 @@ template<typename T>
 Result<T> make_error(DTLSError error, const std::string& message) {
     // For now, ignore the message and just return the error
     // In a more sophisticated implementation, this could store the message
+    (void)message; // Suppress unused parameter warning
     return Result<T>(error);
 }
 

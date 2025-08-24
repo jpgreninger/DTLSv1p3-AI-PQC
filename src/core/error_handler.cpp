@@ -127,6 +127,7 @@ Result<void> ErrorHandler::handle_invalid_record(ContentType record_type,
                 context ? context->get_connection_info().connection_id_hash : "",
                 context
             );
+            (void)alert_result; // Result checked in more sophisticated implementations
             // Alert manager will apply its own policy
         }
     }

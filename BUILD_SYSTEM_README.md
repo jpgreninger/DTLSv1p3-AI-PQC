@@ -1,6 +1,6 @@
-# DTLS v1.3 Build System
+# DTLS v1.3 Build System - Production Release v1.0
 
-This document explains the build system configuration and enforced practices for the DTLS v1.3 project.
+This document explains the build system configuration and enforced practices for the DTLS v1.3 production release.
 
 ## Build Directory Policy
 

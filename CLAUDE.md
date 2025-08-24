@@ -127,12 +127,45 @@ cd systemc/build && make systemc-test
 
 ## Development Workflows
 
+## ⚠️ CRITICAL DEVELOPMENT REQUIREMENTS ⚠️
+
+**ABSOLUTELY MANDATORY**: Use the following subagents for ALL development work:
+
+- **cpp-pro**: ALWAYS use for implementing new C++ code
+- **debugger**: ALWAYS use for debugging compile errors and runtime bugs  
+- **qa-engineer**: ALWAYS use after each step to review against PRD/RFC 9147, update TASKS.md
+- **test-writer-fixer**: ALWAYS use to write tests and integrate into regression suite
+
+**FAILURE TO USE THESE SUBAGENTS WILL RESULT IN INCOMPLETE/NON-COMPLIANT IMPLEMENTATIONS**
+
+### Required Subagent Usage
+**CRITICAL**: Always use these specialized subagents for development tasks:
+
+- **cpp-pro**: **ALWAYS** use for implementing new C++ code. Use PROACTIVELY for C++ refactoring, performance optimization, or complex .NET solutions.
+- **debugger**: **ALWAYS** use for debugging compile errors, runtime bugs, and build issues. Use proactively when encountering any compilation or runtime issues.
+- **qa-engineer**: **ALWAYS** use after each development step to review code against PRD and RFC 9147 requirements, update TASKS.md with missing features. Use proactively to ensure compliance and code quality.
+- **test-writer-fixer**: **ALWAYS** use to write comprehensive tests for each implementation step and integrate into overall regression test suite. Use proactively after code modifications to ensure comprehensive test coverage and suite health.
+
+**MANDATORY WORKFLOW**: 
+1. Use `cpp-pro` for all code implementation
+2. Use `debugger` immediately when compilation errors or bugs occur
+3. Use `qa-engineer` after each implementation step for compliance review
+4. Use `test-writer-fixer` to create/update tests and integrate into regression suite
+
 ### Adding New Features
-1. Update relevant headers in `include/dtls/`
-2. Implement in corresponding `src/` subdirectory
-3. Add unit tests in `tests/`
-4. Update SystemC model if applicable (`systemc/`)
-5. Add integration tests and examples
+**MANDATORY STEP-BY-STEP WORKFLOW:**
+1. **Planning**: Use `qa-engineer` to review requirements against PRD/RFC 9147
+2. **Headers**: Update relevant headers in `include/dtls/` using `cpp-pro`
+3. **Implementation**: Implement in corresponding `src/` subdirectory using `cpp-pro`
+4. **Debug Issues**: Use `debugger` for any compilation errors or runtime issues
+5. **Code Review**: Use `qa-engineer` to review implementation against PRD/RFC 9147, update TASKS.md
+6. **Unit Testing**: Add comprehensive unit tests in `tests/` using `test-writer-fixer`
+7. **SystemC**: Update SystemC model if applicable (`systemc/`) using `cpp-pro`
+8. **Integration Testing**: Add integration tests and examples using `test-writer-fixer`
+9. **Final Validation**: Use `qa-engineer` to verify complete compliance and test coverage
+10. **Regression Integration**: Use `test-writer-fixer` to ensure all tests are integrated into regression suite
+
+**IMPORTANT**: Never proceed to next step without using the required subagent for current step.
 
 ### Crypto Provider Development
 ```cpp
@@ -167,6 +200,40 @@ ProviderFactory::instance().register_provider(
 - Minimum 95% code coverage for new features
 - All public APIs must have unit tests
 - Security-critical code requires additional validation
+
+### Coverage Analysis and Reporting
+**IMPORTANT**: Always filter coverage reports to exclude system dependencies and build artifacts.
+
+```bash
+# Generate filtered coverage report (ALWAYS USE THIS APPROACH)
+cd build
+
+# Run tests with coverage instrumentation
+cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="--coverage -g -O0" -DCMAKE_C_FLAGS="--coverage -g -O0"
+make -j$(nproc)
+make dtls_coverage  # or run individual test suites
+
+# Filter out system includes, build artifacts, and third-party code
+lcov --remove total_coverage.info '*/build/*' '*/usr/include/*' '*/openssl/include/*' '*/_deps/*' --output-file filtered_source_coverage.info
+
+# Generate clean HTML report (project source only)
+genhtml --output-directory clean_coverage_html filtered_source_coverage.info
+
+# View filtered coverage summary
+lcov --summary filtered_source_coverage.info
+```
+
+**Why Filter Coverage?**
+- System headers and third-party code pollute coverage metrics
+- Build artifacts and generated files create noise in reports
+- Project-only coverage provides accurate implementation assessment
+- Filtered reports show true coverage of DTLS v1.3 source code
+
+**Coverage Report Locations:**
+- **Clean Report**: `clean_coverage_html/index.html` (project files only - USE THIS)
+- **Complete Report**: `latest_coverage_html/index.html` (includes all files)
+- **Filtered Data**: `filtered_source_coverage.info` (project-only coverage)
+- **Complete Data**: `total_coverage.info` (all files including system)
 
 ## Implementation Status
 

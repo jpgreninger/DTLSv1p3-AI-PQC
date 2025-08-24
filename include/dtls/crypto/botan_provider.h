@@ -108,6 +108,40 @@ public:
     Result<HybridKeyExchangeResult> 
         perform_hybrid_key_exchange(const HybridKeyExchangeParams& params) override;
     
+    // Pure Post-Quantum Signatures (FIPS 204 - ML-DSA)
+    Result<std::pair<std::vector<uint8_t>, std::vector<uint8_t>>> 
+        ml_dsa_generate_keypair(const MLDSAKeyGenParams& params) override;
+    
+    Result<std::vector<uint8_t>> 
+        ml_dsa_sign(const MLDSASignatureParams& params) override;
+    
+    Result<bool> 
+        ml_dsa_verify(const MLDSAVerificationParams& params) override;
+    
+    // Pure Post-Quantum Signatures (FIPS 205 - SLH-DSA)
+    Result<std::pair<std::vector<uint8_t>, std::vector<uint8_t>>> 
+        slh_dsa_generate_keypair(const SLHDSAKeyGenParams& params) override;
+    
+    Result<std::vector<uint8_t>> 
+        slh_dsa_sign(const SLHDSASignatureParams& params) override;
+    
+    Result<bool> 
+        slh_dsa_verify(const SLHDSAVerificationParams& params) override;
+    
+    // Unified Pure PQC Signature Interface
+    Result<std::vector<uint8_t>> 
+        pure_pqc_sign(const PurePQCSignatureParams& params) override;
+    
+    Result<bool> 
+        pure_pqc_verify(const PurePQCVerificationParams& params) override;
+    
+    // Hybrid PQC Signature Interface (Classical + PQC)
+    Result<HybridSignatureResult> 
+        hybrid_pqc_sign(const HybridPQCSignatureParams& params) override;
+    
+    Result<bool> 
+        hybrid_pqc_verify(const HybridPQCVerificationParams& params) override;
+    
     // Certificate operations
     Result<bool> validate_certificate_chain(const CertValidationParams& params) override;
     Result<std::unique_ptr<PublicKey>> extract_public_key(
@@ -135,6 +169,29 @@ public:
     bool supports_named_group(NamedGroup group) const override;
     bool supports_signature_scheme(SignatureScheme scheme) const override;
     bool supports_hash_algorithm(HashAlgorithm hash) const override;
+    
+    // Override ML-KEM support - Botan provider currently doesn't have proper ML-KEM implementation
+    bool supports_pure_mlkem_group(NamedGroup group) const override {
+        // Return false to indicate no ML-KEM support until proper implementation is available
+        (void)group;  // Suppress unused parameter warning
+        return false;
+    }
+    
+    // Override PQC signature support - limited Botan PQC signature support
+    bool supports_pure_pqc_signature(SignatureScheme scheme) const override {
+        // Botan has experimental/limited PQC signature support
+        // Return false until proper implementation is available
+        (void)scheme;
+        return false;
+    }
+    
+    // PQC signature utility functions
+    std::vector<SignatureScheme> get_supported_botan_pqc_signatures() const;
+    
+    // Helper methods for PQC parameter conversion (Botan-specific)
+    static Result<std::string> ml_dsa_params_to_botan_name(MLDSAParameterSet params);
+    static Result<std::string> slh_dsa_params_to_botan_name(SLHDSAParameterSet params);
+    }
     
     // Performance and security features
     bool has_hardware_acceleration() const override;
@@ -191,6 +248,9 @@ private:
     // Security policy validation
     bool is_signature_scheme_allowed(SignatureScheme scheme) const;
     bool is_signature_scheme_deprecated(SignatureScheme scheme) const;
+    
+    // Random generation helper functions
+    bool validate_random_entropy(const std::vector<uint8_t>& random_data) const;
 };
 
 /**
